@@ -31,13 +31,13 @@ Matrix3::Matrix3(float elements[9]) {
 	array[1] = elements[1];
 	array[2] = elements[2];
 
-	array[3] = elements[4];
-	array[4] = elements[5];
-	array[5] = elements[6];
+	array[3] = elements[3];
+	array[4] = elements[4];
+	array[5] = elements[5];
 
-	array[6] = elements[8];
-	array[7] = elements[9];
-	array[8] = elements[10];
+	array[6] = elements[6];
+	array[7] = elements[7];
+	array[8] = elements[8];
 }
 
 Matrix3::Matrix3(const Matrix4 &m4) {
