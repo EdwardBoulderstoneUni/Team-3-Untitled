@@ -262,7 +262,7 @@ Vector3 Matrix3::GetRow(unsigned int row) const {
 void Matrix3::SetRow(unsigned int row, const Vector3 &val) {
 	assert(row < 3);
 
-	int start = 3 * row;
+	int start = row;
 
 	array[start] = val.x;
 	array[start + 3] = val.y;
