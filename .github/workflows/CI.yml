@@ -15,6 +15,6 @@ jobs:
     steps:
       - uses: microsoft/setup-msbuild@v1.1
       - name: PC build
-        run: |
-        cd $Env:GITHUB_WORKSPACE
-        dir
+        run: dir $Env:GITHUB_WORKSPACE
+        
+        
