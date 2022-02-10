@@ -13,5 +13,6 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - run: echo building...
-    - run: "$msbuild" "$Solution" /p:Platform="$buildPlatform" "$buildArgs"
+    - run: echo "building..."
+    - run: "$msbuild" "$Solution" /p:Platform=$buildPlatform $buildArgs
+
