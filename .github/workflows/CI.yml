@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  SolutionPath: './CSC8503.sln'
+  SolutionPath: 'CSC8503.sln'
   buildPlatform: x64  
   buildArgs: '/t:Clean,Build'
 
