@@ -7,12 +7,10 @@ env:
   buildPlatform: x64
   buildConfiguration: Debug
   buildArgs: '/t:Clean,Build'
-  msbuild: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe'
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
       - run: echo "building..."
-      - run: "$msbuild" "$Solution" /p:Platform=$buildPlatform $buildArgs
-
+      - run: msbuild "$Solution" /p:Platform=$buildPlatform $buildArgs
