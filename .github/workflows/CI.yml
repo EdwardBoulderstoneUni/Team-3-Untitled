@@ -15,5 +15,4 @@ jobs:
     steps:
       - uses: microsoft/setup-msbuild@v1.1
       - name: PC build
-        run: dir
         run: msbuild "$env:SolutionPath" /t:Rebuild /p:Platform=$env:BuildPlatform
