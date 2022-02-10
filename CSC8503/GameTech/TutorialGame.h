@@ -32,7 +32,9 @@ namespace NCL {
 			void DebugObjectMovement();
 			void LockedObjectMovement();
 
-			void UpdatePlayer(float dt);
+			//void UpdatePlayer(float dt);//TODO readpacket-server  
+			bool MovePlayer(GameObject* player,char buttonstates[8]);
+
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
@@ -70,7 +72,6 @@ namespace NCL {
 			//Coursework Additional functionality	
 			GameObject* lockedObject = nullptr;
 			Vector3 lockedOffset = Vector3(0, 14, 20);
-			GameObject* player = nullptr;
 			void LockCameraToObject(GameObject* o) {
 				lockedObject = o;
 			}

@@ -85,24 +85,24 @@ void NetworkedGame::UpdateAsServer(float dt) {
 void NetworkedGame::UpdateAsClient(float dt) {
 	ClientPacket newPacket;
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT)) {
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
 		std::cout << "fire button pressed!" << std::endl;
 		newPacket.buttonstates[0] = 1;
 		newPacket.lastID = 0;
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::W)) {
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
 		newPacket.buttonstates[1] = 1;
 		newPacket.lastID = 0;
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::S)) {
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
 		newPacket.buttonstates[2] = 1;
 		newPacket.lastID = 0;
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::A)) {
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
 		newPacket.buttonstates[3] = 1;
 		newPacket.lastID = 0;
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::D)) {
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
 		newPacket.buttonstates[4] = 1;
 		newPacket.lastID = 0;
 	}
@@ -187,9 +187,8 @@ void NetworkedGame::SpawnPlayer() {
 	character->GetPhysicsObject()->InitSphereInertia();
 
 	character->SetNetworkObject(0);
-
+	lockedObject = character;
 	world->AddGameObject(character);
-	player = character;
 	localPlayer = character;
 	networkObjects.emplace_back(character->GetNetworkObject());
 
@@ -206,6 +205,8 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	}
 	else if (type == None) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
+		MovePlayer(localPlayer,realPacket->buttonstates);
+		//TODO
 	}
 	//CLIENT version of the game will receive these from the servers
 	else if (type == Delta_State) {
