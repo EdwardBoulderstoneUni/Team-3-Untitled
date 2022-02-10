@@ -17,7 +17,7 @@ namespace NCL {
 
 			void SetGameWorld(GameWorld &g);
 
-			//void ThreadedUpdate();
+			void ThreadedUpdate();
 
 			bool SendGlobalPacket(int msgID);
 			bool SendGlobalPacket(GamePacket& packet);
@@ -30,11 +30,11 @@ namespace NCL {
 			int			clientCount;
 			GameWorld*	gameWorld;
 
-			//std::atomic<bool> threadAlive;
+			std::atomic<bool> threadAlive;
 
 			
 
-			//std::thread updateThread;
+			std::thread updateThread;
 
 			int incomingDataRate;
 			int outgoingDataRate;

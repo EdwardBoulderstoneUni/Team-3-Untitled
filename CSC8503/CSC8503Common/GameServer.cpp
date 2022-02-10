@@ -10,7 +10,7 @@ GameServer::GameServer(int onPort, int maxClients)	{
 	clientMax	= maxClients;
 	clientCount = 0;
 	netHandle	= nullptr;
-	//threadAlive = false;
+	threadAlive = false;
 
 	Initialise();
 }
@@ -22,8 +22,8 @@ GameServer::~GameServer()	{
 void GameServer::Shutdown() {
 	SendGlobalPacket(BasicNetworkMessages::Shutdown);
 
-	//threadAlive = false;
-	//updateThread.join();
+	threadAlive = false;
+	updateThread.join();
 
 	enet_host_destroy(netHandle);
 	netHandle = nullptr;
@@ -40,8 +40,8 @@ bool GameServer::Initialise() {
 		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
 		return false;
 	}
-	//threadAlive		= true;
-	//updateThread	= std::thread(&GameServer::ThreadedUpdate, this);
+	threadAlive		= true;
+	updateThread	= std::thread(&GameServer::ThreadedUpdate, this);
 
 	return true;
 }
@@ -89,11 +89,11 @@ void GameServer::UpdateServer() {
 	}
 }
 
-//void GameServer::ThreadedUpdate() {
-//	while (threadAlive) {
-//		UpdateServer();
-//	}
-//}
+void GameServer::ThreadedUpdate() {
+	while (threadAlive) {
+		UpdateServer();
+	}
+}
 
 //Second networking tutorial stuff
 

@@ -18,11 +18,11 @@ namespace NCL {
 
 			void UpdateClient();
 		protected:	
-			//void ThreadedUpdate();
+			void ThreadedUpdate();
 
 			ENetPeer*	netPeer;
-			//std::atomic<bool>	threadAlive;
-			//std::thread			updateThread;
+			std::atomic<bool>	threadAlive;
+			std::thread			updateThread;
 		};
 	}
 }
