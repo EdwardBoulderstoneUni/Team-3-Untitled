@@ -4,17 +4,14 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  RepositoryUrl: 'https://github.com/${{ github.repository }}'
-  RepositoryBranch: '${{ github.ref }}'
-  Configuration: Release
   SolutionPath: CSC8503.sln
-  buildPlatform: x64
+  buildPlatform: x64  
   buildArgs: '/t:Clean,Build'
 
 jobs:
   build:
-  runs-on: windows-latest
-  steps:
-    - uses: microsoft/setup-msbuild@v1.1
-    - name: PC build
-      run: msbuild $env:SolutionPath /t:Rebuild /p:Platform=$BuildPlatform
+    runs-on: windows-latest
+    steps:
+      - uses: microsoft/setup-msbuild@v1.1
+      - name: PC build
+        run: msbuild $env:SolutionPath /t:Rebuild /p:Platform=$BuildPlatform
