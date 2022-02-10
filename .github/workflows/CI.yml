@@ -2,7 +2,7 @@ name: CI pipeline
 on: 
   pull_request:
 
-variables:
+env:
   solution: CSC8503.sln
   buildPlatform: x64
   buildConfiguration: Debug
@@ -13,5 +13,5 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - echo building...
-    - '& "$msbuild" "$Solution" /p:Platform="$buildPlatform" "$buildArgs"'
+    - run: echo building...
+    - run: '& "$msbuild" "$Solution" /p:Platform=$buildPlatform $buildArgs'
