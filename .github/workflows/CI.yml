@@ -1,5 +1,6 @@
 name: CI pipeline
-on: [pull]
+on: 
+  pull_request:
 
 variables:
   solution: CSC8503.sln
