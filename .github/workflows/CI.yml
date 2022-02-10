@@ -5,13 +5,13 @@ on:
 
 env:
   SolutionPath: CSC8503.sln
-  buildPlatform: x64  
-  buildArgs: '/t:Clean,Build'
 
 jobs:
   build:
+    env:
+      buildPlatform: x64  
     runs-on: windows-latest
     steps:
       - uses: microsoft/setup-msbuild@v1.1
       - name: PC build
-        run: msbuild "$SolutionPath" /t:Rebuild /p:Platform=$BuildPlatform
+        run: msbuild "$env:SolutionPath" /t:Rebuild /p:Platform=$env:BuildPlatform
