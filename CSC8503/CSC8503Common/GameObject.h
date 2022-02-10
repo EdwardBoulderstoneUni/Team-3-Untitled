@@ -4,15 +4,14 @@
 
 #include "PhysicsObject.h"
 #include "RenderObject.h"
-
 #include <vector>
 
 using std::vector;
 
 namespace NCL {
 	namespace CSC8503 {
-
-		class GameObject	{
+		class NetworkObject;
+		class GameObject {
 		public:
 			GameObject(string name = "");
 			~GameObject();
@@ -41,6 +40,9 @@ namespace NCL {
 				return physicsObject;
 			}
 
+			NetworkObject* GetNetworkObject() const {
+				return networkObject;
+			}
 			void SetRenderObject(RenderObject* newObject) {
 				renderObject = newObject;
 			}
@@ -48,6 +50,8 @@ namespace NCL {
 			void SetPhysicsObject(PhysicsObject* newObject) {
 				physicsObject = newObject;
 			}
+
+			void SetNetworkObject(int id);
 
 			const string& GetName() const {
 				return name;
@@ -61,7 +65,7 @@ namespace NCL {
 				//std::cout << "OnCollisionEnd event occured!\n";
 			}
 
-			bool GetBroadphaseAABB(Vector3&outsize) const;
+			bool GetBroadphaseAABB(Vector3& outsize) const;
 
 			void UpdateBroadphaseAABB();
 
@@ -76,15 +80,17 @@ namespace NCL {
 		protected:
 			Transform			transform;
 
-			CollisionVolume*	boundingVolume;
-			PhysicsObject*		physicsObject;
-			RenderObject*		renderObject;
+			CollisionVolume* boundingVolume;
+			PhysicsObject* physicsObject;
+			RenderObject* renderObject;
+			NetworkObject* networkObject;
 
 			bool	isActive;
 			int		worldID;
 			string	name;
 
 			Vector3 broadphaseAABB;
+
 		};
 	}
 }
