@@ -1,5 +1,6 @@
 name: CI pipeline
 on: 
+  push:
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -14,4 +15,4 @@ jobs:
     steps:
       - uses: microsoft/setup-msbuild@v1.1
       - name: PC build
-        run: msbuild "$SolutionPath" /t:Rebuild /p:Platform=$BuildPlatform
+        run: msbuild "././$SolutionPath" /t:Rebuild /p:Platform=$BuildPlatform
