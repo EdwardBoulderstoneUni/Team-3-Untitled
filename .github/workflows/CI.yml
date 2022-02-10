@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  SolutionPath: 'CSC8503.sln'
+  SolutionPath: '$env:GITHUB_WORKSPACE\CSC8503.sln'
   buildPlatform: x64  
   buildArgs: '/t:Clean,Build'
 
@@ -15,6 +15,6 @@ jobs:
     steps:
       - uses: microsoft/setup-msbuild@v1.1
       - name: PC build
-        run: msbuild "$env:GITHUB_WORKSPACE\$env:SolutionPath" /t:Rebuild /p:Platform=$env:BuildPlatform
+        run: msbuild "$env:SolutionPath" /t:Rebuild /p:Platform=$env:BuildPlatform
         
         
