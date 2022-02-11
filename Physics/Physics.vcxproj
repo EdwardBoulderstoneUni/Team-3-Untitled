@@ -142,9 +142,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="physics.h" />
+    <ClInclude Include="SnippetPrint.h" />
+    <ClInclude Include="SnippetPVD.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="physics.cpp" />
+    <ClCompile Include="SnippetsHelloWorld.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
