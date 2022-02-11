@@ -27,8 +27,13 @@ bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 		if (!WriteDeltaPacket(p, stateID)) {
 			return WriteFullPacket(p);
 		}
+		else {
+			return true;
+		}
 	}
-	return WriteFullPacket(p);
+	else {
+		return WriteFullPacket(p);
+	}
 }
 //Client objects recieve these packets
 bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
@@ -37,7 +42,7 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 		return false;
 	}
 
-	UpdateStateHistory(p.fullID);
+	UpdateStateHistory(p.fullID);//fullID有问题 发过来的delta有问题
 
 	Vector3		fullPos = lastFullState.position;
 	Quaternion  fullOrientation = lastFullState.orientation;
@@ -46,7 +51,7 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 	fullPos.y += p.pos[1];
 	fullPos.z += p.pos[2];
 
-	fullOrientation.x += ((float)p.orientation[0]) / 127.0f;
+	fullOrientation.x += ((float)p.orientation[0]) / 127.0f;	
 	fullOrientation.y += ((float)p.orientation[1]) / 127.0f;
 	fullOrientation.z += ((float)p.orientation[2]) / 127.0f;
 	fullOrientation.w += ((float)p.orientation[3]) / 127.0f;
@@ -79,6 +84,7 @@ bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 	dp->objectID = networkID;
 
 	NetworkState state;
+
 	if (!GetNetworkState(stateID, state)) {
 		return false; //can't delta!
 	}
@@ -111,7 +117,7 @@ bool NetworkObject::WriteFullPacket(GamePacket** p) {
 	fp->fullState.position = object.GetTransform().GetPosition();
 	fp->fullState.orientation = object.GetTransform().GetOrientation();
 	fp->fullState.stateID = lastFullState.stateID++;//自动增加的包排序标识符
-
+	stateHistory.emplace_back(fp->fullState);
 	*p = fp;
 	return true;
 }

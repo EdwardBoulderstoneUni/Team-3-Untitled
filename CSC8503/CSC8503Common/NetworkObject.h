@@ -31,7 +31,7 @@ namespace NCL {
 		};
 
 		struct ClientPacket : public GamePacket {
-			int		lastID;
+			int		lastID;//告诉服务器现在的客户端是在什么一个state位置上
 			int		playerID;
 			char	buttonstates[8]; //左右上下 跳蹲 射击 
 

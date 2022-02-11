@@ -107,10 +107,13 @@ void NetworkedGame::UpdateAsClient(float dt) {
 		newPacket.buttonstates[4] = 1;
 		newPacket.lastID = 0;
 	}
-	newPacket.type = Received_Command;
-	newPacket.playerID = localPlayerID;
-	thisClient->SendPacket(newPacket);
-
+	if (localLastID != -1) {
+		newPacket.lastID = localLastID;
+		//newPacket.type = Received_Command;
+		newPacket.type = Received_State;
+		newPacket.playerID = localPlayerID;
+		thisClient->SendPacket(newPacket);
+	}
 }
 
 void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
@@ -126,11 +129,15 @@ void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
 		}
 
 		////TODO - 
-		////when a player has sent the server an acknowledgement and store the lastID somewhere.
+		////when a player has sent the server an acknowledgement and store the lastID somewhere.   ----stateIDs
 		////A map between player and an int could work/part of a NetworkPlayer struct
-
-		int playerState = 0;
-		GamePacket* newPacket = nullptr;
+		
+		int playerState = 0; //导致了闪烁的问题   ！！！！
+		GamePacket* newPacket = nullptr; //这里的问题 这里没有改变 导致deleta的full id一直没变
+		std::map<int, int>::iterator it;
+		it = stateIDs.find(0);
+		if(it!=stateIDs.end())
+			playerState = stateIDs.find(0)->second;
 		if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
 			thisServer->SendGlobalPacket(*newPacket);
 			delete newPacket;
@@ -159,6 +166,7 @@ void NetworkedGame::UpdateMinimumState() {
 			continue;
 		}
 		o->UpdateStateHistory(minID); //clear out old states so they arent taking up memory...
+		//清理客户端里面存的快照  服务器端也有快照
 	}
 }
 
@@ -199,17 +207,29 @@ void NetworkedGame::StartLevel() {
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	if (type == Received_State) {	//Server version of the game receives these from players
-		std::cout << "Server: Received Received_State!" << std::endl;
 		ClientPacket* realPacket = (ClientPacket*)payload;
+
+		//先找如果有 更新 没有添加
+		std::map<int,int>::iterator it=stateIDs.find(realPacket->playerID);
+		if (it != stateIDs.end())
+			it->second = realPacket->lastID;
+		else
+			stateIDs.insert(std::pair<int, int>(realPacket->playerID, realPacket->lastID));
+
+		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
+		if (player)
+		{
+			MovePlayer(player, realPacket->buttonstates);
+		}
 	}
-	else if (type == Received_Command) {
+	/*else if (type == Received_Command) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
 		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
 		if (player)
 		{
 			MovePlayer(player,realPacket->buttonstates);
 		}
-	}
+	}*/
 	else if (type == Spawn_Player) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
 		std::cout << "Spawn_Player!" << realPacket->playerID <<std::endl;
@@ -226,7 +246,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			networkObjects[i]->WriteSpawnPacket(&newPacket,i);
 			thisServer->SendGlobalPacket(*newPacket);
 		}
-		//TODO 发包让其他客户端知道要同步生成这些东西 或者写在FULL包里面 
 		
 	}
 	//CLIENT version of the game will receive these from the servers
@@ -236,13 +255,15 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		if (realPacket->objectID < (int)networkObjects.size()) {
 			networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 		}
-		//TODO 先写了full的部分 注意有else
 	}
 	else if (type == Full_State) {
+		std::cout << "Client: Received FullPacket!" << std::endl;
 		FullPacket* realPacket = (FullPacket*)payload;
 		if (realPacket->objectID < (int)networkObjects.size()) {
 			networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
+			localLastID = realPacket->fullState.stateID;
 		}
+		
 	}
 	else if (type == Message) {
 		MessagePacket* realPacket = (MessagePacket*)payload;
@@ -260,21 +281,18 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			newPacket.playerID = localPlayerID;
 			thisClient->SendPacket(newPacket);
 		}
-	
-	
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
 		std::cout << "Client: Player Disconnected!" << std::endl;
 	}
 	else if (type == Spawn_Object) {
-
 		SpawnPacket* realPacket = (SpawnPacket*)payload;
+		
 		if (realPacket->objectType == ObjectType::Player) {
 			GameObject* newPlayer;
 			newPlayer = SpawnPlayer(realPacket->fullState.position);
 			newPlayer->SetNetworkObject(realPacket->fullState.stateID);
-			std::cout << "Client: Spawn Something!" << realPacket->fullState.stateID << realPacket->fullState.position <<std::endl;
 			networkObjects.emplace_back(newPlayer->GetNetworkObject());
 		}
 
