@@ -33,7 +33,8 @@ void NetworkedGame::StartAsServer() {
 	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
 
 	thisServer->RegisterPacketHandler(Received_State, this);
-	thisServer->RegisterPacketHandler(None, this);
+	thisServer->RegisterPacketHandler(Received_Command, this);
+	thisServer->RegisterPacketHandler(Spawn_Player, this);
 	StartLevel();
 }
 
@@ -45,6 +46,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Full_State, this);
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
+	thisClient->RegisterPacketHandler(Spawn_Object, this);
 
 	StartLevel();
 }
@@ -86,7 +88,6 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	ClientPacket newPacket;
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
-		std::cout << "fire button pressed!" << std::endl;
 		newPacket.buttonstates[0] = 1;
 		newPacket.lastID = 0;
 	}
@@ -106,7 +107,10 @@ void NetworkedGame::UpdateAsClient(float dt) {
 		newPacket.buttonstates[4] = 1;
 		newPacket.lastID = 0;
 	}
+	newPacket.type = Received_Command;
+	newPacket.playerID = localPlayerID;
 	thisClient->SendPacket(newPacket);
+
 }
 
 void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
@@ -160,7 +164,7 @@ void NetworkedGame::UpdateMinimumState() {
 
 
 
-void NetworkedGame::SpawnPlayer() {
+GameObject* NetworkedGame::SpawnPlayer(Vector3 position) {
 
 	float meshSize = 3.0f;
 	float inverseMass = 0.5f;
@@ -173,7 +177,7 @@ void NetworkedGame::SpawnPlayer() {
 
 	character->GetTransform()
 		.SetScale(Vector3(meshSize, meshSize, meshSize))
-		.SetPosition(Vector3(0, 5, 0));
+		.SetPosition(position);
 
 	if (rand() % 2) {
 		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
@@ -185,17 +189,12 @@ void NetworkedGame::SpawnPlayer() {
 
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
-
-	character->SetNetworkObject(0);
-	lockedObject = character;
 	world->AddGameObject(character);
-	localPlayer = character;
-	networkObjects.emplace_back(character->GetNetworkObject());
-
+	return character;
 }
 
 void NetworkedGame::StartLevel() {
-	SpawnPlayer();
+
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
@@ -203,10 +202,32 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		std::cout << "Server: Received Received_State!" << std::endl;
 		ClientPacket* realPacket = (ClientPacket*)payload;
 	}
-	else if (type == None) {
+	else if (type == Received_Command) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
-		MovePlayer(localPlayer,realPacket->buttonstates);
-		//TODO
+		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
+		if (player)
+		{
+			MovePlayer(player,realPacket->buttonstates);
+		}
+	}
+	else if (type == Spawn_Player) {
+		ClientPacket* realPacket = (ClientPacket*)payload;
+		std::cout << "Spawn_Player!" << realPacket->playerID <<std::endl;
+
+		GameObject* newPlayer;
+		newPlayer = SpawnPlayer(Vector3(0, 5, 0));
+		newPlayer->SetNetworkObject(networkObjects.size());
+		networkObjects.emplace_back(newPlayer->GetNetworkObject());
+		serverPlayers.insert(std::pair<int, GameObject*>(realPacket->playerID,newPlayer));
+
+		for (int i = 0; i < networkObjects.size(); ++i)
+		{
+			SpawnPacket* newPacket=nullptr;
+			networkObjects[i]->WriteSpawnPacket(&newPacket,i);
+			thisServer->SendGlobalPacket(*newPacket);
+		}
+		//TODO 发包让其他客户端知道要同步生成这些东西 或者写在FULL包里面 
+		
 	}
 	//CLIENT version of the game will receive these from the servers
 	else if (type == Delta_State) {
@@ -215,6 +236,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		if (realPacket->objectID < (int)networkObjects.size()) {
 			networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 		}
+		//TODO 先写了full的部分 注意有else
 	}
 	else if (type == Full_State) {
 		FullPacket* realPacket = (FullPacket*)payload;
@@ -231,10 +253,31 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	else if (type == Player_Connected) {
 		NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
 		std::cout << "Client: New player connected!" << std::endl;
+		if (localPlayerID == -1) {
+			localPlayerID = realPacket->playerID;
+			ClientPacket newPacket;
+			newPacket.type = Spawn_Player;
+			newPacket.playerID = localPlayerID;
+			thisClient->SendPacket(newPacket);
+		}
+	
+	
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
 		std::cout << "Client: Player Disconnected!" << std::endl;
+	}
+	else if (type == Spawn_Object) {
+
+		SpawnPacket* realPacket = (SpawnPacket*)payload;
+		if (realPacket->objectType == ObjectType::Player) {
+			GameObject* newPlayer;
+			newPlayer = SpawnPlayer(realPacket->fullState.position);
+			newPlayer->SetNetworkObject(realPacket->fullState.stateID);
+			std::cout << "Client: Spawn Something!" << realPacket->fullState.stateID << realPacket->fullState.position <<std::endl;
+			networkObjects.emplace_back(newPlayer->GetNetworkObject());
+		}
+
 	}
 }
 
@@ -250,3 +293,4 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 		thisClient->SendPacket(newPacket);
 	}
 }
+

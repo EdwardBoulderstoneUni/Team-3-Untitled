@@ -18,7 +18,7 @@ namespace NCL {
 
 			void UpdateGame(float dt) override;
 
-			void SpawnPlayer();
+			GameObject* SpawnPlayer(Vector3 position);
 
 			void StartLevel();
 
@@ -32,6 +32,7 @@ namespace NCL {
 
 			void BroadcastSnapshot(bool deltaFrame);
 			void UpdateMinimumState();//
+
 			std::map<int, int> stateIDs;//和上面一个函数一起用
 
 			GameServer* thisServer;
@@ -42,7 +43,8 @@ namespace NCL {
 			std::vector<NetworkObject*> networkObjects;
 
 			std::map<int, GameObject*> serverPlayers;//都没有用
-			GameObject* localPlayer;//都没有用
+			GameObject* localPlayer=nullptr;//指定当前客户端的player
+			int localPlayerID=-1;//指定当前客户端的识别ID
 		};
 	}
 }

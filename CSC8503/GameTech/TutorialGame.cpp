@@ -425,7 +425,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position) {
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
 
-	character->SetNetworkObject(0);
+	//character->SetNetworkObject(0);
 
 	world->AddGameObject(character);
 
@@ -619,15 +619,19 @@ bool NCL::CSC8503::TutorialGame::MovePlayer(GameObject* player,char buttonstates
 	}
 	if (buttonstates[1] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(0, 0, -2));
+		std::cout << "W button pressed!" << std::endl;
 	}
 	if (buttonstates[2] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(0, 0, 2));
+		std::cout << "S button pressed!" << std::endl;
 	}
 	if (buttonstates[3] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(-2, 0, 0));
+		std::cout << "A button pressed!" << std::endl;
 	}
 	if (buttonstates[4] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(2, 0, 0));
+		std::cout << "D button pressed!" << std::endl;
 	}
 
 	return true;

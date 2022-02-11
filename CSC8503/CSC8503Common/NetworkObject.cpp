@@ -116,6 +116,16 @@ bool NetworkObject::WriteFullPacket(GamePacket** p) {
 	return true;
 }
 
+bool NetworkObject::WriteSpawnPacket(SpawnPacket** p,int stateID) {
+	SpawnPacket* sp = new SpawnPacket();
+	sp->objectType = ObjectType::Player;//TODO 如果不是player呢 需要在networkobject里面写类型   
+	sp->fullState.stateID = stateID;
+	sp->fullState.position = object.GetTransform().GetPosition();
+	sp->fullState.orientation = object.GetTransform().GetOrientation();
+	*p = sp;
+	return true;
+}
+
 NetworkState& NetworkObject::GetLatestNetworkState() {
 	return lastFullState;
 }
@@ -140,3 +150,4 @@ void NetworkObject::UpdateStateHistory(int minID) {
 		}
 	}
 }
+

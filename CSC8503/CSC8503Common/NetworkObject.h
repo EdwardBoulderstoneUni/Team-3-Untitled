@@ -4,6 +4,10 @@
 #include "NetworkState.h"
 namespace NCL {
 	namespace CSC8503 {
+		enum class ObjectType
+		{
+			Player
+		};
 		struct FullPacket : public GamePacket {
 			int		objectID = -1;
 			NetworkState fullState;
@@ -28,10 +32,20 @@ namespace NCL {
 
 		struct ClientPacket : public GamePacket {
 			int		lastID;
+			int		playerID;
 			char	buttonstates[8]; //×óÓÒÉÏÏÂ Ìø¶× Éä»÷ 
 
 			ClientPacket() {
 				size = sizeof(ClientPacket);
+			}
+		};
+
+		struct SpawnPacket : public GamePacket {
+			ObjectType  objectType;
+			NetworkState fullState;
+			SpawnPacket() {
+				type = Spawn_Object;
+				size = sizeof(SpawnPacket);
 			}
 		};
 
@@ -45,8 +59,9 @@ namespace NCL {
 			//Called by servers
 			virtual bool WritePacket(GamePacket** p, bool deltaFrame, int stateID);
 
-			void UpdateStateHistory(int minID);
+			virtual bool WriteSpawnPacket(SpawnPacket** p, int stateID);
 
+			void UpdateStateHistory(int minID);
 		protected:
 
 			NetworkState& GetLatestNetworkState();
@@ -58,6 +73,7 @@ namespace NCL {
 
 			virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
 			virtual bool WriteFullPacket(GamePacket** p);
+
 
 			GameObject& object;
 
