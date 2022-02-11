@@ -2,10 +2,10 @@
 #include "CollisionVolume.h"
 #include "../../Common/Vector3.h"
 namespace NCL {
-	class AABBVolume : CollisionVolume
+	class AABBVolume : public CollisionVolume
 	{
 	public:
-		AABBVolume(const Vector3& halfDims) {
+		AABBVolume(const NCL::Maths::Vector3& halfDims) {
 			type		= VolumeType::AABB;
 			halfSizes	= halfDims;
 		}
@@ -13,11 +13,11 @@ namespace NCL {
 
 		}
 
-		Vector3 GetHalfDimensions() const {
+		NCL::Maths::Vector3 GetHalfDimensions() const {
 			return halfSizes;
 		}
 
 	protected:
-		Vector3 halfSizes;
+		NCL::Maths::Vector3 halfSizes;
 	};
 }

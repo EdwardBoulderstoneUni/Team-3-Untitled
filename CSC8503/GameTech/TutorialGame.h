@@ -1,7 +1,7 @@
 #pragma once
 #include "GameTechRenderer.h"
 #include "../CSC8503Common/PhysicsSystem.h"
-
+#include "../../AudioManager/AudioManager.h"
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{
@@ -45,7 +45,7 @@ namespace NCL {
 			GameTechRenderer*	renderer;
 			PhysicsSystem*		physics;
 			GameWorld*			world;
-
+	
 			bool useGravity;
 			bool inSelectionMode;
 
