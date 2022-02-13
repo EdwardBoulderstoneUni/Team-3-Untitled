@@ -1,9 +1,12 @@
+
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include "AssetManager.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Common/MeshGeometry.h"
 #include "../../Common/TextureLoader.h"
-#include <string>
+#include <experimental/filesystem>
+#include "../../Common/Assets.h"
 
 namespace NCL
 {
@@ -17,17 +20,22 @@ namespace NCL
 	void AssetManager::LoadMeshes()
 	{
 		auto loadFunc = [](const std::string& name) {
-			NCL::Rendering::OGLMesh *into = new NCL::Rendering::OGLMesh(name);
+			NCL::Rendering::OGLMesh* into = new NCL::Rendering::OGLMesh(name);
 			(into)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);
 			(into)->UploadToGPU();
 			return into;
 		};
-//To-Do: read file names from a text file/load all msh from assets
-		NCL::Rendering::OGLMesh *mesh = loadFunc("cube.msh");
-		m_Meshes.insert({ "cube", mesh });
+		std::string filename;
+		for (const auto& entry : std::experimental::filesystem::directory_iterator(Assets::MESHDIR))
+		{
+			if (entry.path().extension().generic_string().compare(".msh") == 0)
+			{
+				filename = entry.path().filename().generic_string();
+				NCL::Rendering::OGLMesh* mesh = loadFunc(filename.c_str());				
+				m_Meshes.insert({filename, mesh});
+			}
+		}
 
-		mesh = loadFunc("sphere.msh");
-		m_Meshes.insert({ "sphere", mesh });
 	}
 	void AssetManager::LoadTextures()
 	{

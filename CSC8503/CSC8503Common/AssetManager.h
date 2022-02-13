@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <string>
 namespace NCL
 {
 	namespace Rendering {
@@ -8,7 +9,7 @@ namespace NCL
 	}
 	class AssetManager
 	{
-		std::map<const char*, NCL::Rendering::OGLMesh*> m_Meshes;
+		std::map<std::string, NCL::Rendering::OGLMesh*> m_Meshes;
 		std::map<const char*, NCL::Rendering::OGLTexture*> m_Textures;
 
 		static AssetManager* m_Instance;

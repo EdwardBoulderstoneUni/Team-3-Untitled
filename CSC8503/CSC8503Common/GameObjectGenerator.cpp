@@ -64,13 +64,13 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 	case 0:
 		
 		object->SetRenderObject(new RenderObject
-		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh("sphere"),
+		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
 			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 		break;
 	case 1:
 		
 		object->SetRenderObject(new RenderObject
-		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh("cube"),
+		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
 			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 		break;
 	}
