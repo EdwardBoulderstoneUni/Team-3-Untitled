@@ -17,6 +17,8 @@ namespace NCL {
 			void SendPacket(GamePacket&  payload);
 		
 			void UpdateClient();
+
+			bool Disconnect();
 		protected:	
 			void ThreadedUpdate();
 

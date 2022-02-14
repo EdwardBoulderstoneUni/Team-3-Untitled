@@ -65,12 +65,14 @@ namespace NCL {
 			void UpdateStateIDs(ClientPacket* realPacket);
 
 
-			std::map<int, int> stateIDs;//和上面一个函数一起用
+			std::map<int, int> stateIDs;
 
 			GameServer* thisServer;
 			GameClient* thisClient;
 			float timeToNextPacket;
 			int packetsToSnapshot;
+
+			float timeToUpdateMiniState;
 
 			std::vector<NetworkObject*> networkObjects;
 

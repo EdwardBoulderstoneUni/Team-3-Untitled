@@ -10,8 +10,8 @@ GameClient::GameClient()	{
 }
 
 GameClient::~GameClient()	{
-	//threadAlive = false;
-	//updateThread.join();
+	threadAlive = false;
+	updateThread.join();
 	enet_host_destroy(netHandle);
 }
 
@@ -49,6 +49,12 @@ void GameClient::UpdateClient() {
 		}
 		enet_packet_destroy(event.packet);
 	}
+}
+
+bool GameClient::Disconnect()
+{
+	enet_peer_disconnect(netPeer,0);
+	return true;
 }
 
 void GameClient::SendPacket(GamePacket&  payload) {

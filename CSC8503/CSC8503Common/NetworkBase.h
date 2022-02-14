@@ -5,18 +5,18 @@
 #include <string>
 
 enum BasicNetworkMessages {
-	None,    //没有写recerver 所以按下空格发出的包的type是none
+	None,    
 	Hello,
 	Message,     //碰撞的时候使用
 	String_Message, //还没用到
 	Delta_State,	//1 byte per channel since the last state
 	Full_State,		//Full transform etc
-	Received_State, //received from a client, informs that its received packet n 还没用到 
+	Received_State, //received from a client, informs that its received packet n 
 	Spawn_Player,
 	Spawn_Object,
-	Player_Connected,//
-	Player_Disconnected,//
-	Shutdown //
+	Player_Connected,
+	Player_Disconnected,
+	Shutdown 
 };
 
 struct GamePacket {

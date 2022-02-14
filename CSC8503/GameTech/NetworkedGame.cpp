@@ -21,6 +21,7 @@ NetworkedGame::NetworkedGame() {
 
 	NetworkBase::Initialise();
 	timeToNextPacket = 0.0f;
+	timeToUpdateMiniState = 0.0f;
 	packetsToSnapshot = 0;
 }
 
@@ -46,12 +47,14 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Spawn_Object, this);
+	thisClient->RegisterPacketHandler(Shutdown, this);
 
 	StartLevel();
 }
 
 void NetworkedGame::UpdateGame(float dt) {
 	timeToNextPacket -= dt;
+	timeToUpdateMiniState -= dt;
 	if (timeToNextPacket < 0) {
 		if (thisServer) {
 			UpdateAsServer(dt);
@@ -61,12 +64,22 @@ void NetworkedGame::UpdateGame(float dt) {
 		}
 		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
 	}
+	if (thisServer&&timeToUpdateMiniState < 0) {
+		UpdateMinimumState();
+		timeToUpdateMiniState += 10.0f;
+	}
 
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9)) {
 		StartAsServer();
 	}
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
 		StartAsClient(127, 0, 0, 1);
+	}
+	if (!thisServer&& Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
+		thisClient->Disconnect();
+	}
+	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
+		thisServer->Shutdown();
 	}
 
 	TutorialGame::UpdateGame(dt);
@@ -119,7 +132,6 @@ void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
 	std::vector<GameObject*>::const_iterator last;
 
 	world->GetObjectIterators(first, last);
-
 	for (auto i = first; i != last; ++i) {
 		NetworkObject* o = (*i)->GetNetworkObject();
 		if (!o) {
@@ -250,6 +262,9 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			if(localLastID==-1)localLastID = realPacket->fullState.stateID;//TODO Strategy Pattern Consortium
 			OutputDebug("[Spawn_Object] [localLastID:%d]", localLastID);
 		}
+	}
+	else if (type == Shutdown) {
+		std::cout << "Server shutdown!" << std::endl;
 	}
 }
 
