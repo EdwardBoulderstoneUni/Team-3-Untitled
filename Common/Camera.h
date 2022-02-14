@@ -30,7 +30,7 @@ namespace NCL
 			farPlane = 100.0f;
 
 			camType = CameraType::Perspective;
-		};
+		}
 
 		Camera(float pitch, float yaw, const Vector3& position) : Camera()
 		{
@@ -44,10 +44,6 @@ namespace NCL
 
 			this->camType = CameraType::Perspective;
 		}
-
-		~Camera(void)
-		{
-		};
 
 		void UpdateCamera(float dt);
 
