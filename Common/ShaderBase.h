@@ -1,9 +1,13 @@
 #pragma once
 #include <string>
 using std::string;
-namespace NCL {
-	namespace Rendering {
-		enum class ShaderStages {
+
+namespace NCL
+{
+	namespace Rendering
+	{
+		enum class ShaderStages
+		{
 			SHADER_VERTEX,
 			SHADER_FRAGMENT,
 			SHADER_GEOMETRY,
@@ -12,18 +16,20 @@ namespace NCL {
 			SHADER_MAX
 		};
 
-		class ShaderBase	{
+		class ShaderBase
+		{
 		public:
-			ShaderBase() {
+			ShaderBase()
+			{
 			}
-			ShaderBase(const string& vertex, const string& fragment, const string& geometry = "", const string& domain = "", const string& hull = "");
+
+			ShaderBase(const string& vertex, const string& fragment, const string& geometry = "",
+			           const string& domain = "", const string& hull = "");
 			virtual ~ShaderBase();
 
 			virtual void ReloadShader() = 0;
 		protected:
-
-			string shaderFiles[(int)ShaderStages::SHADER_MAX];
+			string shaderFiles[static_cast<int>(ShaderStages::SHADER_MAX)];
 		};
 	}
 }
-

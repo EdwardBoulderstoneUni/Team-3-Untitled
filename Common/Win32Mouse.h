@@ -9,30 +9,37 @@ _-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
 -_-_-_-_-_-_-~|__( ^ .^) /
 _-_-_-_-_-_-_-""  ""   
 
-*//////////////////////////////////////////////////////////////////////////////
+*/ /////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifdef _WIN32
 #include "Mouse.h"
 #include "Win32Window.h"
 
-namespace NCL {
-	namespace Win32Code {
-		class Win32Mouse : public NCL::Mouse {
+namespace NCL
+{
+	namespace Win32Code
+	{
+		class Win32Mouse : public Mouse
+		{
 		public:
 			friend class Win32Window;
 
 		protected:
-			Win32Mouse(HWND &hwnd);
-			virtual ~Win32Mouse(void) {}
+			Win32Mouse(HWND& hwnd);
 
-			void UpdateWindowPosition(const Vector2& newPos) {
+			~Win32Mouse(void) override
+			{
+			}
+
+			void UpdateWindowPosition(const Vector2& newPos)
+			{
 				windowPosition = newPos;
 			}
 
-			virtual void	UpdateRAW(RAWINPUT* raw);
-			RAWINPUTDEVICE	rid;			//Windows OS hook 
+			virtual void UpdateRAW(RAWINPUT* raw);
+			RAWINPUTDEVICE rid; //Windows OS hook 
 
-			bool		setAbsolute;
+			bool setAbsolute;
 		};
 	}
 }

@@ -9,22 +9,22 @@
 
 using std::string;
 
-int main(void) {
-
-	string inFont	= "PressStart2P.ttf";
-	string outTex	= "PressStart2P.png";
-	string outData	= "PressStart2P.fnt";
+int main(void)
+{
+	string inFont = "PressStart2P.ttf";
+	string outTex = "PressStart2P.png";
+	string outData = "PressStart2P.fnt";
 
 	int xSize = 512;
 	int ySize = 512;
 
-	unsigned char* bitmapData	= new unsigned char[xSize * ySize];
+	auto bitmapData = new unsigned char[xSize * ySize];
 
-	unsigned char* fontData		= new unsigned char[1 << 20];
+	auto fontData = new unsigned char[1 << 20];
 	fread(fontData, 1, 1 << 20, fopen(inFont.c_str(), "rb"));
 
-	int startChar	= 32;
-	int numChars	= 96;
+	int startChar = 32;
+	int numChars = 96;
 
 	stbtt_bakedchar cdata[96];
 
@@ -38,20 +38,21 @@ int main(void) {
 
 	std::ofstream fntFile(outData, std::ios::out);
 
-	fntFile << xSize	 << std::endl;
-	fntFile << ySize	 << std::endl;
+	fntFile << xSize << std::endl;
+	fntFile << ySize << std::endl;
 	fntFile << startChar << std::endl;
-	fntFile << numChars  << std::endl;
+	fntFile << numChars << std::endl;
 
-	for (int i = 0; i < 96; ++i) {
-		fntFile << cdata[i].x0		<< " "
-				<< cdata[i].y0		<< " "
-				<< cdata[i].x1		<< " "
-				<< cdata[i].y1		<< " "
-				<< cdata[i].xoff	<< " "
-				<< cdata[i].yoff	<< " "
-				<< cdata[i].xadvance
-				<< std::endl;
+	for (int i = 0; i < 96; ++i)
+	{
+		fntFile << cdata[i].x0 << " "
+			<< cdata[i].y0 << " "
+			<< cdata[i].x1 << " "
+			<< cdata[i].y1 << " "
+			<< cdata[i].xoff << " "
+			<< cdata[i].yoff << " "
+			<< cdata[i].xadvance
+			<< std::endl;
 	}
 
 	return 0;

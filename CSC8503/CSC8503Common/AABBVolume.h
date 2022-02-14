@@ -1,19 +1,24 @@
 #pragma once
 #include "CollisionVolume.h"
 #include "../../Common/Vector3.h"
-namespace NCL {
+
+namespace NCL
+{
 	class AABBVolume : CollisionVolume
 	{
 	public:
-		AABBVolume(const Vector3& halfDims) {
-			type		= VolumeType::AABB;
-			halfSizes	= halfDims;
-		}
-		~AABBVolume() {
-
+		AABBVolume(const Vector3& halfDims)
+		{
+			type = VolumeType::AABB;
+			halfSizes = halfDims;
 		}
 
-		Vector3 GetHalfDimensions() const {
+		~AABBVolume()
+		{
+		}
+
+		Vector3 GetHalfDimensions() const
+		{
 			return halfSizes;
 		}
 

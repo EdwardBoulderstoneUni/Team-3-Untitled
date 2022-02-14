@@ -1,8 +1,10 @@
 #pragma once
 #include <stack>
 
-namespace NCL {
-	namespace CSC8503 {
+namespace NCL
+{
+	namespace CSC8503
+	{
 		class PushdownState;
 
 		class PushdownMachine
@@ -14,10 +16,9 @@ namespace NCL {
 			void Update();
 
 		protected:
-			PushdownState * activeState;
+			PushdownState* activeState;
 
 			std::stack<PushdownState*> stateStack;
 		};
 	}
 }
-

@@ -14,27 +14,34 @@
 using namespace NCL;
 using namespace Rendering;
 
-Window*		Window::window		= nullptr;
-Keyboard*	Window::keyboard	= nullptr;
-Mouse*		Window::mouse		= nullptr;
-GameTimer*	Window::timer		= nullptr;
+Window* Window::window = nullptr;
+Keyboard* Window::keyboard = nullptr;
+Mouse* Window::mouse = nullptr;
+GameTimer* Window::timer = nullptr;
 
-Window::Window()	{
-	renderer	= nullptr;
-	window		= this;
-	timer		= new GameTimer();
+Window::Window()
+{
+	renderer = nullptr;
+	window = this;
+	timer = new GameTimer();
 }
 
-Window::~Window()	{
-	delete keyboard;keyboard= nullptr;
-	delete mouse;	mouse	= nullptr;
-	delete timer;	timer	= nullptr;
+Window::~Window()
+{
+	delete keyboard;
+	keyboard = nullptr;
+	delete mouse;
+	mouse = nullptr;
+	delete timer;
+	timer = nullptr;
 	window = nullptr;
 	delete timer;
 }
 
-Window* Window::CreateGameWindow(std::string title, int sizeX, int sizeY, bool fullScreen, int offsetX, int offsetY) {
-	if (window) {
+Window* Window::CreateGameWindow(std::string title, int sizeX, int sizeY, bool fullScreen, int offsetX, int offsetY)
+{
+	if (window)
+	{
 		return nullptr;
 	}
 #ifdef _WIN32
@@ -45,33 +52,41 @@ Window* Window::CreateGameWindow(std::string title, int sizeX, int sizeY, bool f
 #endif
 }
 
-void	Window::SetRenderer(RendererBase* r) {
-	if (renderer && renderer != r) {
+void Window::SetRenderer(RendererBase* r)
+{
+	if (renderer && renderer != r)
+	{
 		renderer->OnWindowDetach();
 	}
 	renderer = r;
 
-	if (r) {
-		renderer->OnWindowResize((int)size.x, (int)size.y);
+	if (r)
+	{
+		renderer->OnWindowResize(static_cast<int>(size.x), static_cast<int>(size.y));
 	}
 }
 
-bool	Window::UpdateWindow() {
+bool Window::UpdateWindow()
+{
 	std::this_thread::yield();
 	timer->Tick();
 
-	if (mouse) {
+	if (mouse)
+	{
 		mouse->UpdateFrameState(timer->GetTimeDeltaMSec());
 	}
-	if (keyboard) {
+	if (keyboard)
+	{
 		keyboard->UpdateFrameState(timer->GetTimeDeltaMSec());
 	}
 
 	return InternalUpdate();
 }
 
-void Window::ResizeRenderer() {
-	if (renderer) {
-		renderer->OnWindowResize((int)size.x, (int)size.y);
+void Window::ResizeRenderer()
+{
+	if (renderer)
+	{
+		renderer->OnWindowResize(static_cast<int>(size.x), static_cast<int>(size.y));
 	}
 }

@@ -1,29 +1,34 @@
 #pragma once
 #include "CollisionVolume.h"
 
-namespace NCL {
-    class CapsuleVolume : public CollisionVolume
-    {
-    public:
-        CapsuleVolume(float halfHeight, float radius) {
-            this->halfHeight    = halfHeight;
-            this->radius        = radius;
-            this->type          = VolumeType::Capsule;
-        };
-        ~CapsuleVolume() {
+namespace NCL
+{
+	class CapsuleVolume : public CollisionVolume
+	{
+	public:
+		CapsuleVolume(float halfHeight, float radius)
+		{
+			this->halfHeight = halfHeight;
+			this->radius = radius;
+			this->type = VolumeType::Capsule;
+		};
 
-        }
-        float GetRadius() const {
-            return radius;
-        }
+		~CapsuleVolume()
+		{
+		}
 
-        float GetHalfHeight() const {
-            return halfHeight;
-        }
+		float GetRadius() const
+		{
+			return radius;
+		}
 
-    protected:
-        float radius;
-        float halfHeight;
-    };
+		float GetHalfHeight() const
+		{
+			return halfHeight;
+		}
+
+	protected:
+		float radius;
+		float halfHeight;
+	};
 }
-

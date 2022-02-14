@@ -6,51 +6,54 @@
 
 #include "../CSC8503Common/GameWorld.h"
 
-namespace NCL {
-	class Maths::Vector3;
-	class Maths::Vector4;
-	namespace CSC8503 {
+namespace NCL
+{
+	class Vector3;
+	class Vector4;
+
+	namespace CSC8503
+	{
 		class RenderObject;
 
-		class GameTechRenderer : public OGLRenderer	{
+		class GameTechRenderer : public OGLRenderer
+		{
 		public:
 			GameTechRenderer(GameWorld& world);
-			~GameTechRenderer();
+			~GameTechRenderer() override;
 
 		protected:
-			void RenderFrame()	override;
+			void RenderFrame() override;
 
-			Matrix4 SetupDebugLineMatrix()	const override;
-			Matrix4 SetupDebugStringMatrix()const override;
+			Matrix4 SetupDebugLineMatrix() const override;
+			Matrix4 SetupDebugStringMatrix() const override;
 
-			OGLShader*		defaultShader;
+			OGLShader* defaultShader;
 
-			GameWorld&	gameWorld;
+			GameWorld& gameWorld;
 
 			void BuildObjectList();
 			void SortObjectList();
 			void RenderShadowMap();
-			void RenderCamera(); 
+			void RenderCamera();
 			void RenderSkybox();
 
 			void LoadSkybox();
 
 			vector<const RenderObject*> activeObjects;
 
-			OGLShader*  skyboxShader;
-			OGLMesh*	skyboxMesh;
-			GLuint		skyboxTex;
+			OGLShader* skyboxShader;
+			OGLMesh* skyboxMesh;
+			GLuint skyboxTex;
 
 			//shadow mapping things
-			OGLShader*	shadowShader;
-			GLuint		shadowTex;
-			GLuint		shadowFBO;
-			Matrix4     shadowMatrix;
+			OGLShader* shadowShader;
+			GLuint shadowTex;
+			GLuint shadowFBO;
+			Matrix4 shadowMatrix;
 
-			Vector4		lightColour;
-			float		lightRadius;
-			Vector3		lightPosition;
+			Vector4 lightColour;
+			float lightRadius;
+			Vector3 lightPosition;
 		};
 	}
 }
-

@@ -4,7 +4,8 @@
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 
-namespace NCL {
+namespace NCL
+{
 	class Camera;
 	class MeshAnimation;
 
@@ -12,18 +13,18 @@ namespace NCL {
 	{
 	public:
 		NavMeshRenderer();
-		virtual ~NavMeshRenderer();
+		~NavMeshRenderer() override;
 		void Update(float dt) override;
 
 		void DebugDrawSkeleton(const OGLMesh* mesh, const Matrix4* matrices);
 
 	protected:
-		void RenderFrame()	override;
+		void RenderFrame() override;
 		MeshAnimation* testAnim;
-		OGLMesh*	navMesh;
-		OGLShader*	navShader;
+		OGLMesh* navMesh;
+		OGLShader* navShader;
 		OGLTexture* testTex;
-		Camera*		camera;
+		Camera* camera;
 		OGLShader* debugShader;
 		int frame;
 
@@ -31,4 +32,3 @@ namespace NCL {
 		float allTime;
 	};
 }
-

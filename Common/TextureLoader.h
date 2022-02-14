@@ -14,23 +14,25 @@ using std::map;
 
 #include "TextureBase.h"
 
-namespace NCL {
+namespace NCL
+{
+	using TextureLoadFunction = std::function<bool(const std::string& filename, char*& outData, int& width, int& height,
+	                                               int& channels, int& flags)>;
 
-	typedef std::function<bool(const std::string& filename, char*& outData, int& width, int &height, int &channels, int&flags)> TextureLoadFunction;
+	using APILoadFunction = std::function<Rendering::TextureBase*(const std::string& filename)>;
 
-	typedef std::function<Rendering::TextureBase*(const std::string& filename)> APILoadFunction;
-
-	class TextureLoader	{
+	class TextureLoader
+	{
 	public:
-		static bool LoadTexture(const std::string& filename, char*& outData, int& width, int &height, int &channels, int&flags);
+		static bool LoadTexture(const std::string& filename, char*& outData, int& width, int& height, int& channels,
+		                        int& flags);
 
-		static void RegisterTextureLoadFunction(TextureLoadFunction f, const std::string&fileExtension);
+		static void RegisterTextureLoadFunction(TextureLoadFunction f, const std::string& fileExtension);
 
 		static void RegisterAPILoadFunction(APILoadFunction f);
 
-		static Rendering::TextureBase* LoadAPITexture(const std::string&filename);
+		static Rendering::TextureBase* LoadAPITexture(const std::string& filename);
 	protected:
-
 		static std::string GetFileExtension(const std::string& fileExtension);
 
 		static std::map<std::string, TextureLoadFunction> fileHandlers;
@@ -38,4 +40,3 @@ namespace NCL {
 		static APILoadFunction apiFunction;
 	};
 }
-
