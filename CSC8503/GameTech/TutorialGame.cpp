@@ -7,6 +7,7 @@
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
+#include "../../Common/Assets.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -39,8 +40,9 @@ void TutorialGame::InitialiseAssets() {
 	InitCamera();
 	InitWorld();
 	GameObjectGenerator g;
-	g.Generate("C:\\Users\\Prabhanshu\\Downloads\\worldCoord(1).json", world->GetGameObjects());
-//	g.Generate("c:\\Users\\c0089913\\source\\worldCoord(1).json", world->GetGameObjects());
+	std::string worldFilePath = Assets::DATADIR;
+	worldFilePath.append("world.json");
+	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
 }
 
 TutorialGame::~TutorialGame()	{
