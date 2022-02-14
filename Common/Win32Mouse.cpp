@@ -55,9 +55,7 @@ void Win32Mouse::UpdateRAW(RAWINPUT* raw)	{
 			absolutePosition.y = std::min(absolutePosition.y, absolutePositionBounds.y);
 		}
 
-		/*
-		TODO: How framerate independent is this?
-		*/
+		
 		if(raw->data.mouse.usButtonFlags & RI_MOUSE_WHEEL)	{		
 			if(raw->data.mouse.usButtonData == 120) {
 				frameWheel = 1;

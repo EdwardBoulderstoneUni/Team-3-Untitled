@@ -125,7 +125,7 @@ bool NetworkObject::WriteFullPacket(GamePacket** p, int stateID) {
 bool NetworkObject::WriteSpawnPacket(SpawnPacket** p,int networkID) {
 	SpawnPacket* sp = new SpawnPacket();
 	sp->networkID = networkID;
-	sp->objectType = ObjectType::Player;//TODO 如果不是player呢 需要在networkobject里面写类型   
+	sp->objectType = ObjectType::Player;//TODO 考虑策略模式和使用联合体 更改包的数据发送方式 
 	sp->fullState.stateID = lastFullState.stateID;
 	sp->fullState.position = object.GetTransform().GetPosition();
 	sp->fullState.orientation = object.GetTransform().GetOrientation();

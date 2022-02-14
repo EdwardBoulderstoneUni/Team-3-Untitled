@@ -280,7 +280,6 @@ void NetworkedGame::DistributeSnapshot(NetworkObject* o,bool deltaFrame)
 		int playerState = GetClientStateID(i);
 		if (playerState != -1) {
 			if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
-				//TODO 写一次就加了 所以会加两次 写full包要判断能不能查到 把下一个full包发过去
 				thisServer->SendPacketToPeer(*newPacket, i); 
 			}
 		}
