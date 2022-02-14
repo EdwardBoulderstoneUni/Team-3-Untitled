@@ -1,4 +1,6 @@
 #include "GameTechRenderer.h"
+
+#include "OGLTexture.h"
 #include "../CSC8503Common/GameObject.h"
 #include "../../Common/Camera.h"
 #include "../../Common/Vector3.h"
@@ -162,7 +164,7 @@ void GameTechRenderer::RenderShadowMap()
 	{
 		Matrix4 modelMatrix = (*i).GetTransform()->GetMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
-		glUniformMatrix4fv(mvpLocation, 1, false, static_cast<float*>(&mvpMatrix));
+		glUniformMatrix4fv(mvpLocation, 1, false, reinterpret_cast<float*>(&mvpMatrix));
 		BindMesh((*i).GetMesh());
 		int layerCount = (*i).GetMesh()->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i)
@@ -260,8 +262,8 @@ void GameTechRenderer::RenderCamera()
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
-			glUniform3fv(lightPosLocation, 1, static_cast<float*>(&lightPosition));
-			glUniform4fv(lightColourLocation, 1, static_cast<float*>(&lightColour));
+			glUniform3fv(lightPosLocation, 1, reinterpret_cast<float*>(&lightPosition));
+			glUniform4fv(lightColourLocation, 1, reinterpret_cast<float*>(&lightColour));
 			glUniform1f(lightRadiusLocation, lightRadius);
 
 			int shadowTexLocation = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
