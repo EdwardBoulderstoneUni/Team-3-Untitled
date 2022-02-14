@@ -10,6 +10,7 @@
 #include "..//..//Plugins/OpenGLRendering/OGLMesh.h"
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
 #include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
+#include "../../Common/MeshMaterial.h"
 
 NCL::CSC8503::GameObjectGenerator::GameObjectGenerator()
 {
@@ -59,19 +60,25 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)
 {
 	int objectType = value["objShape"].GetInt();
+	MeshMaterial* material = nullptr;
+	if (value.HasMember("materialPath"))
+	{
+		material = AssetManager::GetInstance()->GetMaterial(value["materialPath"].GetString());
+	}
+
 	switch (objectType)
 	{
 	case 0:
 		
 		object->SetRenderObject(new RenderObject
 		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
-			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
 		break;
 	case 1:
 		
 		object->SetRenderObject(new RenderObject
 		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
-			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
 		break;
 	}
 }

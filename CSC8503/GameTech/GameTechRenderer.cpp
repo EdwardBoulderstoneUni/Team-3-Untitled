@@ -213,6 +213,8 @@ void GameTechRenderer::RenderCamera() {
 
 	int cameraLocation = 0;
 
+	bool useMaterial = false;
+
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
 
@@ -220,7 +222,7 @@ void GameTechRenderer::RenderCamera() {
 		OGLShader* shader = (OGLShader*)(*i).GetShader();
 		BindShader(shader);
 
-		BindTextureToShader((OGLTexture*)(*i).GetDefaultTexture(), "mainTex", 0);
+		useMaterial = i->GetMaterial() != nullptr;
 
 		if (activeShader != shader) {
 			projLocation	= glGetUniformLocation(shader->GetProgramID(), "projMatrix");
@@ -261,12 +263,23 @@ void GameTechRenderer::RenderCamera() {
 
 		glUniform1i(hasVColLocation, !(*i).GetMesh()->GetColourData().empty());
 
-		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetDefaultTexture() ? 1:0);
+		if (!useMaterial)
+		{
+			BindTextureToShader((OGLTexture*)(*i).GetDefaultTexture(), "mainTex", 0);
+			glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetDefaultTexture() ? 1 : 0);
+		}
 
 		BindMesh((*i).GetMesh());
 		int layerCount = (*i).GetMesh()->GetSubMeshCount();
-		for (int i = 0; i < layerCount; ++i) {
-			DrawBoundMesh(i);
+		for (int count = 0; count < layerCount; ++count) {
+
+			if (useMaterial)
+			{
+				TextureBase* texture = (*i).GetMaterial()->GetMaterialForLayer(count)->GetEntry("Diffuse");
+				BindTextureToShader((OGLTexture*)texture, "mainTex", 0);
+				glUniform1i(hasTexLocation, (OGLTexture*)texture ? 1 : 0);
+			}
+			DrawBoundMesh(count);
 		}
 	}
 }

@@ -7,6 +7,7 @@
 #include "../../Common/TextureLoader.h"
 #include <experimental/filesystem>
 #include "../../Common/Assets.h"
+#include "../../Common/MeshMaterial.h"
 
 namespace NCL
 {
@@ -16,6 +17,7 @@ namespace NCL
 	{
 		LoadMeshes();
 		LoadTextures();
+		LoadMaterials();
 	}
 	void AssetManager::LoadMeshes()
 	{
@@ -43,6 +45,20 @@ namespace NCL
 												TextureLoader::LoadAPITexture("checkerboard.png");
 		m_Textures.insert({"checkerboard", basicTex});
 	}
+	void AssetManager::LoadMaterials()
+	{
+		std::string filename;
+		for (const auto& entry : std::experimental::filesystem::directory_iterator(Assets::MESHDIR))
+		{
+			if (entry.path().extension().generic_string().compare(".mat") == 0)
+			{
+				filename = entry.path().filename().generic_string();
+				NCL::MeshMaterial* material = new NCL::MeshMaterial(filename.c_str());
+				material->LoadTextures();
+				m_Materials.insert({filename, material});
+			}
+		}
+	}
 	AssetManager* AssetManager::GetInstance()
 	{
 		return m_Instance;
@@ -69,6 +85,11 @@ namespace NCL
 		{
 			delete i.second;
 		}
+
+		for (auto& i : m_Materials)
+		{
+			delete i.second;
+		}
 	}
 
 	NCL::Rendering::OGLMesh* AssetManager::GetMesh(const char* name)
@@ -79,6 +100,11 @@ namespace NCL
 	NCL::Rendering::OGLTexture* AssetManager::GetTexture(const char* name)
 	{
 		return m_Textures.at(name);
+	}
+
+	NCL::MeshMaterial* AssetManager::GetMaterial(const char*name)
+	{
+		return m_Materials.at(name);
 	}
 
 };
