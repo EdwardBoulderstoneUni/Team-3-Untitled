@@ -21,8 +21,8 @@ namespace NCL {
 		struct DeltaPacket : public GamePacket {
 			int		fullID = -1;
 			int		objectID = -1;
-			char	pos[3];
-			char	orientation[4];
+			char	pos[3] = {0};
+			char	orientation[4] = {0};
 
 			DeltaPacket() {
 				type = Delta_State;
@@ -31,9 +31,9 @@ namespace NCL {
 		};
 
 		struct ClientPacket : public GamePacket {
-			int		lastID;//告诉服务器现在的客户端是在什么一个state位置上
-			int		playerID;
-			char	buttonstates[8]; //左右上下 跳蹲 射击 
+			int		lastID=-1;//告诉服务器现在的客户端是在什么一个state位置上
+			int		playerID=-1;
+			char	buttonstates[8] = {0}; //左右上下 跳蹲 射击 
 
 			ClientPacket() {
 				size = sizeof(ClientPacket);
@@ -41,8 +41,8 @@ namespace NCL {
 		};
 
 		struct SpawnPacket : public GamePacket {
-			int networkID;
-			ObjectType  objectType;
+			int networkID=-1;
+			ObjectType  objectType = {};
 			NetworkState fullState;
 			SpawnPacket() {
 				type = Spawn_Object;

@@ -6,8 +6,8 @@
 #define COLLISION_MSG 30
 
 struct MessagePacket : public GamePacket {
-	short playerID;
-	short messageID;
+	short playerID=-1;
+	short messageID=-1;
 
 	MessagePacket() {
 		type = Message;
@@ -206,7 +206,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			thisServer->SendPacketToPeer(*newPacket,source);
 		}
 		SpawnPacket* newPacket = nullptr;
-		networkObjects[networkObjects.size()-1]->WriteSpawnPacket(&newPacket, networkObjects.size() - 1);
+		networkObjects[networkObjects.size()-1]->WriteSpawnPacket(&newPacket,int(networkObjects.size() - 1));
 		thisServer->SendGlobalPacket(*newPacket);
 	}
 
@@ -240,14 +240,14 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
-		std::cout << "Client: Player Disconnected!" << std::endl;
+		std::cout << "Client: Player Disconnected!" << std::endl; //TODO this
 	}
 	else if (type == Spawn_Object) {
 		SpawnPacket* realPacket = (SpawnPacket*)payload;
 		if (realPacket->objectType == ObjectType::Player) {
 			GameObject* newPlayer = SpawnPlayer(realPacket->fullState.position);
 			ToggleNetworkState(newPlayer, true);
-			if(localLastID==-1)localLastID = realPacket->fullState.stateID;
+			if(localLastID==-1)localLastID = realPacket->fullState.stateID;//TODO Strategy Pattern Consortium
 			OutputDebug("[Spawn_Object] [localLastID:%d]", localLastID);
 		}
 	}
@@ -301,7 +301,7 @@ void NetworkedGame::OutputDebug(const char* strOutputString, ...)
 void NetworkedGame::ToggleNetworkState(GameObject* object,bool state)
 {
 	if (state) {
-		object->SetNetworkObject(networkObjects.size());
+		object->SetNetworkObject(int(networkObjects.size()));
 		networkObjects.emplace_back(object->GetNetworkObject());
 	}
 	else {

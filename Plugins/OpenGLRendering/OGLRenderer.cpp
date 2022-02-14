@@ -298,7 +298,7 @@ void OGLRenderer::DrawDebugStrings() {
 	debugTextMesh->SetVertexPositions(vertPos);
 	debugTextMesh->SetVertexTextureCoords(vertTex);
 	debugTextMesh->SetVertexColours(vertColours);
-	debugTextMesh->UpdateGPUBuffers(0, vertPos.size());
+	debugTextMesh->UpdateGPUBuffers(0, unsigned int(vertPos.size()));
 
 	BindMesh(debugTextMesh);
 	DrawBoundMesh();
@@ -320,7 +320,7 @@ void OGLRenderer::DrawDebugLines() {
 
 	debugLinesMesh->SetVertexPositions(vertPos);
 	debugLinesMesh->SetVertexColours(vertCol);
-	debugLinesMesh->UpdateGPUBuffers(0, vertPos.size());
+	debugLinesMesh->UpdateGPUBuffers(0, unsigned int(vertPos.size()));
 
 	BindMesh(debugLinesMesh);
 	DrawBoundMesh();
@@ -447,7 +447,7 @@ bool OGLRenderer::SetVerticalSync(VerticalSyncState s) {
 	if (!wglSwapIntervalEXT) {
 		return false;
 	}
-	GLuint state;
+	GLuint state = {};
 
 	switch (s) {
 		case VerticalSyncState::VSync_OFF:		state =  0; break;

@@ -29,7 +29,7 @@ int main() {
 	if (!w->HasInitialised()) {
 		return -1;
 	}	
-	srand(time(0));
+	srand(unsigned int(time(0)));
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(false);
 

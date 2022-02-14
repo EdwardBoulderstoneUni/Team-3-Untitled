@@ -178,7 +178,7 @@ void NavMeshRenderer::RenderFrame() {
 }
 
 void NavMeshRenderer::DebugDrawSkeleton(const OGLMesh* mesh, const Matrix4* matrices) {
-	int matCount = mesh->GetBindPose().size();
+	int matCount =int(mesh->GetBindPose().size());
 
 	vector<Vector3> verts;
 	vector<unsigned int> indices;

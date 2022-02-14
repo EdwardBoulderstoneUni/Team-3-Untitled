@@ -89,7 +89,7 @@ namespace NCL {
 			struct DebugString {
 				Maths::Vector4 colour;
 				Maths::Vector2	pos;
-				float			size;
+				float			size = {};
 				std::string		text;
 			};
 
