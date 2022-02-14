@@ -1,16 +1,11 @@
 #pragma once
 #include "../../Plugins/OpenGLRendering/OGLRenderer.h"
-#include "../../Plugins/OpenGLRendering/OGLShader.h"
-#include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
-
+#include "OGLShader.h"
 #include "../CSC8503Common/GameWorld.h"
 
 namespace NCL
 {
-	class Vector3;
-	class Vector4;
-
 	namespace CSC8503
 	{
 		class RenderObject;
