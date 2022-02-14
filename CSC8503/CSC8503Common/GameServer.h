@@ -21,9 +21,9 @@ namespace NCL {
 
 			bool SendGlobalPacket(int msgID);
 			bool SendGlobalPacket(GamePacket& packet);
-
+			bool SendPacketToPeer(GamePacket& packet,int source);
 			virtual void UpdateServer();
-
+			ENetPeer* GetClientPeerPointer(int source);
 		protected:
 			int			port;
 			int			clientMax;
@@ -31,7 +31,7 @@ namespace NCL {
 			GameWorld*	gameWorld;
 
 			std::atomic<bool> threadAlive;
-
+			std::map<int, ENetPeer*> clientPeerPointers;
 			
 
 			std::thread updateThread;

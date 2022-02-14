@@ -41,6 +41,7 @@ namespace NCL {
 		};
 
 		struct SpawnPacket : public GamePacket {
+			int networkID;
 			ObjectType  objectType;
 			NetworkState fullState;
 			SpawnPacket() {
@@ -59,12 +60,13 @@ namespace NCL {
 			//Called by servers
 			virtual bool WritePacket(GamePacket** p, bool deltaFrame, int stateID);
 
-			virtual bool WriteSpawnPacket(SpawnPacket** p, int stateID);
+			virtual bool WriteSpawnPacket(SpawnPacket** p, int networkID);
 
 			void UpdateStateHistory(int minID);
-		protected:
 
 			NetworkState& GetLatestNetworkState();
+
+		protected:
 
 			bool GetNetworkState(int frameID, NetworkState& state);
 
@@ -72,7 +74,7 @@ namespace NCL {
 			virtual bool ReadFullPacket(FullPacket& p);
 
 			virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
-			virtual bool WriteFullPacket(GamePacket** p);
+			virtual bool WriteFullPacket(GamePacket** p, int stateID);
 
 
 			GameObject& object;

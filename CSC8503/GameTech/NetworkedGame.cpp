@@ -33,7 +33,6 @@ void NetworkedGame::StartAsServer() {
 	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
 
 	thisServer->RegisterPacketHandler(Received_State, this);
-	thisServer->RegisterPacketHandler(Received_Command, this);
 	thisServer->RegisterPacketHandler(Spawn_Player, this);
 	StartLevel();
 }
@@ -107,13 +106,12 @@ void NetworkedGame::UpdateAsClient(float dt) {
 		newPacket.buttonstates[4] = 1;
 		newPacket.lastID = 0;
 	}
-	if (localLastID != -1) {
-		newPacket.lastID = localLastID;
-		//newPacket.type = Received_Command;
-		newPacket.type = Received_State;
-		newPacket.playerID = localPlayerID;
-		thisClient->SendPacket(newPacket);
-	}
+	if (localLastID == -1) return;
+	newPacket.lastID = localLastID;
+	OutputDebug("localastID: %d", localLastID);
+	newPacket.type = Received_State;
+	newPacket.playerID = localPlayerID;
+	thisClient->SendPacket(newPacket);
 }
 
 void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
@@ -127,21 +125,7 @@ void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
 		if (!o) {
 			continue;
 		}
-
-		////TODO - 
-		////when a player has sent the server an acknowledgement and store the lastID somewhere.   ----stateIDs
-		////A map between player and an int could work/part of a NetworkPlayer struct
-		
-		int playerState = 0; //导致了闪烁的问题   ！！！！
-		GamePacket* newPacket = nullptr; //这里的问题 这里没有改变 导致deleta的full id一直没变
-		std::map<int, int>::iterator it;
-		it = stateIDs.find(0);
-		if(it!=stateIDs.end())
-			playerState = stateIDs.find(0)->second;
-		if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
-			thisServer->SendGlobalPacket(*newPacket);
-			delete newPacket;
-		}
+		DistributeSnapshot(o,deltaFrame);
 	}
 }
 
@@ -170,8 +154,6 @@ void NetworkedGame::UpdateMinimumState() {
 	}
 }
 
-
-
 GameObject* NetworkedGame::SpawnPlayer(Vector3 position) {
 
 	float meshSize = 3.0f;
@@ -187,17 +169,15 @@ GameObject* NetworkedGame::SpawnPlayer(Vector3 position) {
 		.SetScale(Vector3(meshSize, meshSize, meshSize))
 		.SetPosition(position);
 
-	if (rand() % 2) {
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
-	}
-	else {
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, basicShader));
-	}
+
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
+
 	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
 	world->AddGameObject(character);
+
 	return character;
 }
 
@@ -206,64 +186,41 @@ void NetworkedGame::StartLevel() {
 }
 
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
-	if (type == Received_State) {	//Server version of the game receives these from players
+	//server
+	if (type == Received_State) {	
 		ClientPacket* realPacket = (ClientPacket*)payload;
-
-		//先找如果有 更新 没有添加
-		std::map<int,int>::iterator it=stateIDs.find(realPacket->playerID);
-		if (it != stateIDs.end())
-			it->second = realPacket->lastID;
-		else
-			stateIDs.insert(std::pair<int, int>(realPacket->playerID, realPacket->lastID));
-
+		UpdateStateIDs(realPacket);
 		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
-		if (player)
-		{
-			MovePlayer(player, realPacket->buttonstates);
-		}
+		if (!player)return;
+		MovePlayer(player, realPacket->buttonstates);
 	}
-	/*else if (type == Received_Command) {
-		ClientPacket* realPacket = (ClientPacket*)payload;
-		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
-		if (player)
-		{
-			MovePlayer(player,realPacket->buttonstates);
-		}
-	}*/
 	else if (type == Spawn_Player) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
-		std::cout << "Spawn_Player!" << realPacket->playerID <<std::endl;
-
-		GameObject* newPlayer;
-		newPlayer = SpawnPlayer(Vector3(0, 5, 0));
-		newPlayer->SetNetworkObject(networkObjects.size());
-		networkObjects.emplace_back(newPlayer->GetNetworkObject());
+		OutputDebug("[Spawn_Player] call from [PlayerID: %d]", realPacket->playerID);
+		GameObject* newPlayer = SpawnPlayer(Vector3(0, 5, 0));
+		ToggleNetworkState(newPlayer,true);
 		serverPlayers.insert(std::pair<int, GameObject*>(realPacket->playerID,newPlayer));
-
-		for (int i = 0; i < networkObjects.size(); ++i)
-		{
+		for (int i = 0; i < networkObjects.size()-1; ++i){
 			SpawnPacket* newPacket=nullptr;
 			networkObjects[i]->WriteSpawnPacket(&newPacket,i);
-			thisServer->SendGlobalPacket(*newPacket);
+			thisServer->SendPacketToPeer(*newPacket,source);
 		}
-		
+		SpawnPacket* newPacket = nullptr;
+		networkObjects[networkObjects.size()-1]->WriteSpawnPacket(&newPacket, networkObjects.size() - 1);
+		thisServer->SendGlobalPacket(*newPacket);
 	}
-	//CLIENT version of the game will receive these from the servers
+
+	//client
 	else if (type == Delta_State) {
-		std::cout << "Client: Received DeltaPacket!" << std::endl;
 		DeltaPacket* realPacket = (DeltaPacket*)payload;
-		if (realPacket->objectID < (int)networkObjects.size()) {
-			networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
-		}
+		if (realPacket->objectID >= (int)networkObjects.size())return;
+		networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 	}
 	else if (type == Full_State) {
-		std::cout << "Client: Received FullPacket!" << std::endl;
 		FullPacket* realPacket = (FullPacket*)payload;
-		if (realPacket->objectID < (int)networkObjects.size()) {
-			networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
-			localLastID = realPacket->fullState.stateID;
-		}
-		
+		if (realPacket->objectID >= (int)networkObjects.size())return;
+		if (!networkObjects[realPacket->objectID]->ReadPacket(*realPacket))return;
+		localLastID = networkObjects[realPacket->objectID]->GetLatestNetworkState().stateID;
 	}
 	else if (type == Message) {
 		MessagePacket* realPacket = (MessagePacket*)payload;
@@ -274,13 +231,12 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	else if (type == Player_Connected) {
 		NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
 		std::cout << "Client: New player connected!" << std::endl;
-		if (localPlayerID == -1) {
-			localPlayerID = realPacket->playerID;
-			ClientPacket newPacket;
-			newPacket.type = Spawn_Player;
-			newPacket.playerID = localPlayerID;
-			thisClient->SendPacket(newPacket);
-		}
+		if (localPlayerID != -1)return;
+		localPlayerID = realPacket->playerID;
+		ClientPacket newPacket;
+		newPacket.type = Spawn_Player;
+		newPacket.playerID = localPlayerID;
+		thisClient->SendPacket(newPacket);
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
@@ -288,14 +244,12 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	}
 	else if (type == Spawn_Object) {
 		SpawnPacket* realPacket = (SpawnPacket*)payload;
-		
 		if (realPacket->objectType == ObjectType::Player) {
-			GameObject* newPlayer;
-			newPlayer = SpawnPlayer(realPacket->fullState.position);
-			newPlayer->SetNetworkObject(realPacket->fullState.stateID);
-			networkObjects.emplace_back(newPlayer->GetNetworkObject());
+			GameObject* newPlayer = SpawnPlayer(realPacket->fullState.position);
+			ToggleNetworkState(newPlayer, true);
+			if(localLastID==-1)localLastID = realPacket->fullState.stateID;
+			OutputDebug("[Spawn_Object] [localLastID:%d]", localLastID);
 		}
-
 	}
 }
 
@@ -312,3 +266,65 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 	}
 }
 
+int NetworkedGame::GetClientStateID(int clientID)
+{
+	std::map<int, int>::iterator it = stateIDs.find(clientID);
+	return it != stateIDs.end() ? it->second : -1;
+}
+
+void NetworkedGame::DistributeSnapshot(NetworkObject* o,bool deltaFrame)
+{
+	for (int i = 0; i < stateIDs.size(); i++)
+	{
+		GamePacket* newPacket = nullptr;
+		int playerState = GetClientStateID(i);
+		if (playerState != -1) {
+			if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
+				//TODO 写一次就加了 所以会加两次 写full包要判断能不能查到 把下一个full包发过去
+				thisServer->SendPacketToPeer(*newPacket, i); 
+			}
+		}
+		delete newPacket;
+	}
+}
+
+void NetworkedGame::OutputDebug(const char* strOutputString, ...)
+{
+	char strBuffer[4096] = { 0 };
+	va_list vlArgs;
+	va_start(vlArgs, strOutputString);
+	_vsnprintf_s(strBuffer, sizeof(strBuffer) - 1, strOutputString, vlArgs);
+	//vsprintf(strBuffer, strOutputString, vlArgs);
+	va_end(vlArgs);
+	OutputDebugString(strBuffer);
+}
+
+void NetworkedGame::ToggleNetworkState(GameObject* object,bool state)
+{
+	if (state) {
+		object->SetNetworkObject(networkObjects.size());
+		networkObjects.emplace_back(object->GetNetworkObject());
+	}
+	else {
+		//TODO 取消物体的联网状态还没写
+		/*object->SetNetworkObject(networkObjects.size());
+		networkObjects.emplace_back(object->GetNetworkObject())*/;
+	}
+}
+
+void NetworkedGame::UpdateStateIDs(ClientPacket* realPacket) {
+	if (stateIDs.size() == 0)
+		stateIDs.insert(std::pair<int, int>(realPacket->playerID, realPacket->lastID));
+	else {
+		std::map<int, int>::iterator it = stateIDs.find(realPacket->playerID);
+		if (it != stateIDs.end()) {
+			if (it->second < realPacket->lastID) {
+				it->second = realPacket->lastID;
+				localLastID = realPacket->lastID;
+			}
+		}
+		else {
+			stateIDs.insert(std::pair<int, int>(realPacket->playerID, localLastID));
+		}
+	}
+}

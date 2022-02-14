@@ -615,23 +615,18 @@ void TutorialGame::MoveSelectedObject() {
 bool NCL::CSC8503::TutorialGame::MovePlayer(GameObject* player,char buttonstates[8])
 {
 	if (buttonstates[0]==1) {
-		std::cout << "fire button pressed!" << std::endl;
 	}
 	if (buttonstates[1] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(0, 0, -2));
-		std::cout << "W button pressed!" << std::endl;
 	}
 	if (buttonstates[2] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(0, 0, 2));
-		std::cout << "S button pressed!" << std::endl;
 	}
 	if (buttonstates[3] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(-2, 0, 0));
-		std::cout << "A button pressed!" << std::endl;
 	}
 	if (buttonstates[4] == 1) {
 		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(2, 0, 0));
-		std::cout << "D button pressed!" << std::endl;
 	}
 
 	return true;

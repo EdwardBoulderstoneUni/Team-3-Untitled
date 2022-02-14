@@ -12,7 +12,6 @@ enum BasicNetworkMessages {
 	Delta_State,	//1 byte per channel since the last state
 	Full_State,		//Full transform etc
 	Received_State, //received from a client, informs that its received packet n 还没用到 
-	Received_Command,
 	Spawn_Player,
 	Spawn_Object,
 	Player_Connected,//
@@ -23,7 +22,6 @@ enum BasicNetworkMessages {
 struct GamePacket {
 	short size;
 	short type;
-
 	GamePacket() {
 		type = BasicNetworkMessages::None;
 		size = 0;

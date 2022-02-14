@@ -25,24 +25,24 @@ bool NetworkObject::ReadPacket(GamePacket& p) {
 bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 	if (deltaFrame) {
 		if (!WriteDeltaPacket(p, stateID)) {
-			return WriteFullPacket(p);
+			return WriteFullPacket(p,stateID);
 		}
 		else {
 			return true;
 		}
 	}
 	else {
-		return WriteFullPacket(p);
+		return WriteFullPacket(p, stateID);
 	}
 }
 //Client objects recieve these packets
 bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
-	if (p.fullID != lastFullState.stateID) {
-		deltaErrors++; //can't delta this frame
+	if (p.fullID < lastFullState.stateID) {
+		//deltaErrors++; //can't delta this frame
 		return false;
 	}
 
-	UpdateStateHistory(p.fullID);//fullID有问题 发过来的delta有问题
+	UpdateStateHistory(p.fullID);
 
 	Vector3		fullPos = lastFullState.position;
 	Quaternion  fullOrientation = lastFullState.orientation;
@@ -55,16 +55,15 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 	fullOrientation.y += ((float)p.orientation[1]) / 127.0f;
 	fullOrientation.z += ((float)p.orientation[2]) / 127.0f;
 	fullOrientation.w += ((float)p.orientation[3]) / 127.0f;
-
+	
 	object.GetTransform()
 		.SetPosition(fullPos)
 		.SetOrientation(fullOrientation);
-
 	return true;
 }
 
 bool NetworkObject::ReadFullPacket(FullPacket& p) {
-	if (p.fullState.stateID < lastFullState.stateID) {
+	if (p.fullState.stateID <= lastFullState.stateID) {
 		return false; // received an 'old' packet, ignore!
 	}
 	lastFullState = p.fullState;
@@ -72,25 +71,21 @@ bool NetworkObject::ReadFullPacket(FullPacket& p) {
 	object.GetTransform()
 		.SetPosition(lastFullState.position)
 		.SetOrientation(lastFullState.orientation);
-
 	stateHistory.emplace_back(lastFullState);
 
 	return true;
 }
-
 bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 	DeltaPacket* dp = new DeltaPacket();
 
 	dp->objectID = networkID;
-
 	NetworkState state;
 
 	if (!GetNetworkState(stateID, state)) {
 		return false; //can't delta!
 	}
-
+	
 	dp->fullID = stateID;
-
 	Vector3		currentPos = object.GetTransform().GetPosition();
 	Quaternion  currentOrientation = object.GetTransform().GetOrientation();
 
@@ -110,22 +105,28 @@ bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 	return true;
 }
 
-bool NetworkObject::WriteFullPacket(GamePacket** p) {
+bool NetworkObject::WriteFullPacket(GamePacket** p, int stateID) {
 	FullPacket* fp = new FullPacket();
-
-	fp->objectID = networkID;//客户端和服务器共同维护的同一标识符
-	fp->fullState.position = object.GetTransform().GetPosition();
-	fp->fullState.orientation = object.GetTransform().GetOrientation();
-	fp->fullState.stateID = lastFullState.stateID++;//自动增加的包排序标识符
-	stateHistory.emplace_back(fp->fullState);
+	fp->objectID = networkID;
+	NetworkState state;
+	if (!GetNetworkState(stateID+1, state)) {	
+		fp->fullState.position = object.GetTransform().GetPosition();
+		fp->fullState.orientation = object.GetTransform().GetOrientation();
+		fp->fullState.stateID = lastFullState.stateID++;//自动增加的包排序标识符
+		stateHistory.emplace_back(fp->fullState);
+	}
+	else {
+		fp->fullState = state;
+	}
 	*p = fp;
 	return true;
 }
 
-bool NetworkObject::WriteSpawnPacket(SpawnPacket** p,int stateID) {
+bool NetworkObject::WriteSpawnPacket(SpawnPacket** p,int networkID) {
 	SpawnPacket* sp = new SpawnPacket();
+	sp->networkID = networkID;
 	sp->objectType = ObjectType::Player;//TODO 如果不是player呢 需要在networkobject里面写类型   
-	sp->fullState.stateID = stateID;
+	sp->fullState.stateID = lastFullState.stateID;
 	sp->fullState.position = object.GetTransform().GetPosition();
 	sp->fullState.orientation = object.GetTransform().GetOrientation();
 	*p = sp;

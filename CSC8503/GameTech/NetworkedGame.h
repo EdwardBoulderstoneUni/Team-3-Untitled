@@ -26,12 +26,44 @@ namespace NCL {
 
 			void OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b);
 
+			/// <summary>
+			/// Get the status of the corresponding client
+			/// </summary>
+			/// <param name="clientID">ID of the client</param>
+			/// <returns>Client's state ID/-1</returns>
+			int GetClientStateID(int clientID);
+
+
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
-
 			void BroadcastSnapshot(bool deltaFrame);
+			/// <summary>
+			/// 
+			/// </summary>
+			/// <param name="strOutputString"></param>
+			/// <param name=""></param>
+			/// <returns></returns>
+			void ToggleNetworkState(GameObject* object,bool state);
+			/// <summary>
+			/// 
+			/// </summary>
+			/// <param name="strOutputString"></param>
+			/// <param name=""></param>
+			void OutputDebug(const char* strOutputString, ...);
+
+			/// <summary>
+			/// Distribute state packages based on client state
+			/// </summary>
+			/// <param name="o">NetworkObject pointer</param>
+			/// <param name="deltaFrame">isDeltaFrame?</param>
+			void DistributeSnapshot(NetworkObject* o,bool deltaFrame);
+
 			void UpdateMinimumState();//
+
+			void UpdateStateIDs(ClientPacket* realPacket);
+
 
 			std::map<int, int> stateIDs;//和上面一个函数一起用
 
