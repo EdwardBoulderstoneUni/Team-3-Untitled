@@ -18,7 +18,7 @@ using std::string;
 OGLComputeShader::OGLComputeShader(const std::string& s)
 {
 	string fileContents = "";
-	Assets::ReadTextFile(Assets::SHADERDIR + s, fileContents);
+	Assets::ReadTextFile(Assets::shaderdir + s, fileContents);
 
 	programID = glCreateProgram();
 	shaderID = glCreateShader(GL_COMPUTE_SHADER);

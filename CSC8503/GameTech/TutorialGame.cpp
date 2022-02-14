@@ -175,7 +175,7 @@ void TutorialGame::LockedObjectMovement()
 	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
 	Matrix4 camWorld = view.Inverse();
 
-	Vector3 rightAxis = Vector3(camWorld.GetColumn(0)); //view is inverse of model!
+	auto rightAxis = Vector3(camWorld.GetColumn(0)); //view is inverse of model!
 
 	//forward is more tricky -  camera forward is 'into' the screen...
 	//so we can take a guess, and use the cross of straight up, and
@@ -298,9 +298,9 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 {
 	auto floor = new GameObject();
 
-	Vector3 floorSize = Vector3(100, 2, 100);
-	AABBVolume* volume = new AABBVolume(floorSize);
-	floor->SetBoundingVolume(static_cast<CollisionVolume*>(volume));
+	auto floorSize = Vector3(100, 2, 100);
+	auto volume = new AABBVolume(floorSize);
+	floor->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
 	floor->GetTransform()
 	     .SetScale(floorSize * 2)
 	     .SetPosition(position);
@@ -327,7 +327,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 {
 	auto sphere = new GameObject();
 
-	Vector3 sphereSize = Vector3(radius, radius, radius);
+	auto sphereSize = Vector3(radius, radius, radius);
 	auto volume = new SphereVolume(radius);
 	sphere->SetBoundingVolume((CollisionVolume*)volume);
 
@@ -372,9 +372,9 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 {
 	auto cube = new GameObject();
 
-	AABBVolume* volume = new AABBVolume(dimensions);
+	auto volume = new AABBVolume(dimensions);
 
-	cube->SetBoundingVolume(static_cast<CollisionVolume*>(volume));
+	cube->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
 
 	cube->GetTransform()
 	    .SetPosition(position)
@@ -397,7 +397,7 @@ void TutorialGame::InitSphereGridWorld(int numRows, int numCols, float rowSpacin
 	{
 		for (int z = 0; z < numRows; ++z)
 		{
-			Vector3 position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
+			auto position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
 			AddSphereToWorld(position, radius, 1.0f);
 		}
 	}
@@ -407,13 +407,13 @@ void TutorialGame::InitSphereGridWorld(int numRows, int numCols, float rowSpacin
 void TutorialGame::InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing)
 {
 	float sphereRadius = 1.0f;
-	Vector3 cubeDims = Vector3(1, 1, 1);
+	auto cubeDims = Vector3(1, 1, 1);
 
 	for (int x = 0; x < numCols; ++x)
 	{
 		for (int z = 0; z < numRows; ++z)
 		{
-			Vector3 position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
+			auto position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
 
 			if (rand() % 2)
 			{
@@ -434,7 +434,7 @@ void TutorialGame::InitCubeGridWorld(int numRows, int numCols, float rowSpacing,
 	{
 		for (int z = 1; z < numRows + 1; ++z)
 		{
-			Vector3 position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
+			auto position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
 			AddCubeToWorld(position, cubeDims, 1.0f);
 		}
 	}

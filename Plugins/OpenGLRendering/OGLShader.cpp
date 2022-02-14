@@ -57,7 +57,7 @@ void OGLShader::ReloadShader()
 	{
 		if (!shaderFiles[i].empty())
 		{
-			if (Assets::ReadTextFile(Assets::SHADERDIR + shaderFiles[i], fileContents))
+			if (Assets::ReadTextFile(Assets::shaderdir + shaderFiles[i], fileContents))
 			{
 				shaderIDs[i] = glCreateShader(shaderTypes[i]);
 
