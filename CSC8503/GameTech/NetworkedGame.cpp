@@ -306,9 +306,9 @@ void NetworkedGame::ToggleNetworkState(GameObject* object,bool state)
 		networkObjects.emplace_back(object->GetNetworkObject());
 	}
 	else {
-		//TODO 取消物体的联网状态还没写
-		/*object->SetNetworkObject(networkObjects.size());
-		networkObjects.emplace_back(object->GetNetworkObject())*/;
+		int networkID = object->GetNetworkObject()->GetNetworkID();
+		networkObjects.erase(networkObjects.begin()+networkID);
+		object->SetNetworkObject(nullptr);
 	}
 }
 
