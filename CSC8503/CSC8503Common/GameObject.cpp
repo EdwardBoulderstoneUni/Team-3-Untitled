@@ -48,3 +48,6 @@ void GameObject::UpdateBroadphaseAABB() {
 void GameObject::SetNetworkObject(int id) {
 	networkObject = new NetworkObject(*this, id);
 }
+void  GameObject::SetNetworkObject(NetworkObject* object) {
+	networkObject = object;
+}

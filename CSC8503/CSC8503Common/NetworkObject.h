@@ -66,6 +66,7 @@ namespace NCL {
 
 			NetworkState& GetLatestNetworkState();
 
+			int GetNetworkID() { return networkID; }
 		protected:
 
 			bool GetNetworkState(int frameID, NetworkState& state);

@@ -52,6 +52,7 @@ namespace NCL {
 			}
 
 			void SetNetworkObject(int id);
+			void SetNetworkObject(NetworkObject* object);
 
 			const string& GetName() const {
 				return name;
