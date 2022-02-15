@@ -6,7 +6,6 @@ namespace NCL
         ShaderManager* ShaderManager::m_Instance = nullptr;
         ShaderManager::ShaderManager()
         {
-            m_Init = false;
             m_Shaders.insert({ "default", new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl") });
 
             for (auto& shader : m_Shaders)
@@ -15,8 +14,7 @@ namespace NCL
                 {
                     return;
                 }
-            }
-            m_Init = true;
+            }            
         }
         ShaderManager* ShaderManager::GetInstance()
         {           

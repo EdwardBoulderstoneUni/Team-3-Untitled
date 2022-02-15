@@ -12,12 +12,11 @@ namespace NCL
 			std::map<const char*, OGLShader*> m_Shaders;
 			ShaderManager();
 			~ShaderManager();
-			bool m_Init;
+			
 		public:
 			static ShaderManager* GetInstance();
 			static void Init();
-			static void Finish();
-			bool InitSuccess() { return m_Init; }
+			static void Finish();			
 			OGLShader* GetShader(const char* name);			
 		};
 	}
