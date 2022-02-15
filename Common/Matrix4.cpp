@@ -73,10 +73,6 @@ Matrix4::Matrix4(const Quaternion& quat) : Matrix4()
 	array[10] = 1 - 2 * xx - 2 * yy;
 }
 
-Matrix4::~Matrix4(void)
-{
-}
-
 void Matrix4::ToZero()
 {
 	for (int i = 0; i < 16; i++)
