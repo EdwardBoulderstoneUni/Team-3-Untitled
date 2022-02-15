@@ -4,6 +4,7 @@ on:
   push:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches: [master, main]
 
 env:
   # Path to the solution file relative to the root of the project.
