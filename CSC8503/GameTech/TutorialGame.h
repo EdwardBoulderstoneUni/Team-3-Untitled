@@ -33,7 +33,7 @@ namespace NCL {
 			void LockedObjectMovement();
 
 			void UpdatePlayer(float dt);
-			bool MovePlayerAndFire(GameObject* player,char buttonstates[8]);
+			bool MovePlayerAndFire(GameObject* player,char buttonstates[8], int angle[3]);
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);

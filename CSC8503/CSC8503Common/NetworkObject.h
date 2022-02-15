@@ -34,7 +34,7 @@ namespace NCL {
 			int		lastID=-1;
 			int		playerID=-1;
 			char	buttonstates[8] = {0}; //×óÓÒÉÏÏÂ Ìø¶× Éä»÷ 
-
+			int     angles[3] = {0};
 			ClientPacket() {
 				size = sizeof(ClientPacket);
 			}

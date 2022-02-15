@@ -101,26 +101,23 @@ void NetworkedGame::UpdateAsClient(float dt) {
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
 		newPacket.buttonstates[0] = 1;  //TODO:fire!  Command (add angle(pitch yaw)) & snapshots
-		newPacket.lastID = 0;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
 		newPacket.buttonstates[1] = 1;
-		newPacket.lastID = 0;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
 		newPacket.buttonstates[2] = 1;
-		newPacket.lastID = 0;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
 		newPacket.buttonstates[3] = 1;
-		newPacket.lastID = 0;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
 		newPacket.buttonstates[4] = 1;
-		newPacket.lastID = 0;
 	}
+	//TODO angle wrong   second player
+	newPacket.angles[0] = Window::GetMouse()->GetRelativePosition().x;
 	if (localLastID == -1) return;
-	newPacket.lastID = localLastID;
+	newPacket.lastID = localLastID;//TODO: ? every
 	OutputDebug("localastID: %d", localLastID);
 	newPacket.type = Received_State;
 	newPacket.playerID = localPlayerID;
@@ -203,7 +200,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		UpdateStateIDs(realPacket);
 		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
 		if (!player)return;
-		MovePlayerAndFire(player, realPacket->buttonstates);
+		MovePlayerAndFire(player, realPacket->buttonstates,realPacket->angles);
 	}
 	else if (type == Spawn_Player) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
