@@ -113,7 +113,7 @@ void GameTechRenderer::RenderFrame()
 	render_shadow_map();
 	render_skybox();
 	render_camera();
-	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
+	glDisable(GL_CULL_FACE);
 }
 
 void GameTechRenderer::build_object_list()
