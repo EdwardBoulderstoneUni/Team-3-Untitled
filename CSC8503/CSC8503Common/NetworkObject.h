@@ -31,7 +31,7 @@ namespace NCL {
 		};
 
 		struct ClientPacket : public GamePacket {
-			int		lastID=-1;//告诉服务器现在的客户端是在什么一个state位置上
+			int		lastID=-1;
 			int		playerID=-1;
 			char	buttonstates[8] = {0}; //左右上下 跳蹲 射击 
 
@@ -42,6 +42,7 @@ namespace NCL {
 
 		struct SpawnPacket : public GamePacket {
 			int networkID=-1;
+			int playerID = -1;
 			ObjectType  objectType = {};
 			NetworkState fullState;
 			SpawnPacket() {
@@ -60,7 +61,7 @@ namespace NCL {
 			//Called by servers
 			virtual bool WritePacket(GamePacket** p, bool deltaFrame, int stateID);
 
-			virtual bool WriteSpawnPacket(SpawnPacket** p, int networkID);
+			virtual bool WriteSpawnPacket(SpawnPacket** p, int networkID, int playerID);
 
 			void UpdateStateHistory(int minID);
 

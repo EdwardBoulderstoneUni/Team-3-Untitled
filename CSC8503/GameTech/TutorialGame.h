@@ -32,9 +32,8 @@ namespace NCL {
 			void DebugObjectMovement();
 			void LockedObjectMovement();
 
-			//void UpdatePlayer(float dt);//TODO readpacket-server  
-			bool MovePlayer(GameObject* player,char buttonstates[8]);
-
+			void UpdatePlayer(float dt);
+			bool MovePlayerAndFire(GameObject* player,char buttonstates[8]);
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
@@ -56,6 +55,7 @@ namespace NCL {
 			float		forceMagnitude;
 
 			GameObject* selectionObject = nullptr;
+			GameObject* localPlayer = nullptr;
 
 			OGLMesh* capsuleMesh = nullptr;
 			OGLMesh* cubeMesh = nullptr;

@@ -77,7 +77,7 @@ namespace NCL {
 			std::vector<NetworkObject*> networkObjects;
 
 			std::map<int, GameObject*> serverPlayers;
-			GameObject* localPlayer=nullptr;//指定当前客户端的player
+			
 			int localPlayerID=-1;//指定当前客户端的识别ID
 			int localLastID=-1;//最近接受到的full包的ID
 		};

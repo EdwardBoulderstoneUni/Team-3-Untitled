@@ -71,7 +71,10 @@ void TutorialGame::UpdateGame(float dt) {
 	if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
-
+	if (localPlayer) {
+		inSelectionMode = true;
+		UpdatePlayer(dt);
+	}
 	UpdateKeys();
 
 	if (useGravity) {
@@ -557,62 +560,59 @@ line - after the third, they'll be able to twist under torque aswell.
 void TutorialGame::MoveSelectedObject() {
 
 }
-//void TutorialGame::UpdatePlayer(float dt) {
-//	Update the mouse by how much
-//
-//	Vector3 position = player->GetTransform().GetPosition();
-//	Quaternion orientation = player->GetTransform().GetOrientation();
-//	Vector3 euler = orientation.ToEuler(); //roll yaw pitch
-//
-//	euler.y -= (Window::GetMouse()->GetRelativePosition().x);
-//
-//
-//	Bounds check the pitch, to be between straight up and straight down ;)
-//
-//	if (euler.y < 0) {
-//		euler.y += 360.0f;
-//	}
-//	if (euler.y > 360.0f) {
-//		euler.y -= 360.0f;
-//	}
-//
-//	float frameSpeed = 30 * dt;
-//
-//	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
-//		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-//	}
-//	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
-//		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
-//	}
-//
-//	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
-//		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
-//	}
-//	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
-//		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
-//	}
-//
-//	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
-//		position.y += frameSpeed;
-//	}
-//	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::CONTROL)) {
-//		position.y -= frameSpeed;
-//	}
-//	player->GetTransform().SetPosition(position);
-//	player->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(euler.z, euler.y, euler.x));
-//
-//	Vector3 cameraPosition = position + Matrix4::Rotation(player->GetTransform().GetOrientation().ToEuler().y,
-//		Vector3(0, 1, 0)) * Vector3(0, 20, 30);
-//
-//	float pitch = euler.z;
-//	float yaw = euler.y;
-//	world->GetMainCamera()->SetPosition(cameraPosition);
-//	world->GetMainCamera()->SetPitch(-30.0f);
-//	world->GetMainCamera()->SetYaw(yaw);
-//
-//}
+void TutorialGame::UpdatePlayer(float dt) {
+	
+	Vector3 position = localPlayer->GetTransform().GetPosition();
+	Quaternion orientation = localPlayer->GetTransform().GetOrientation();
+	Vector3 euler = orientation.ToEuler(); //roll yaw pitch
 
-bool NCL::CSC8503::TutorialGame::MovePlayer(GameObject* player,char buttonstates[8])
+	euler.y -= (Window::GetMouse()->GetRelativePosition().x);
+
+
+	if (euler.y < 0) {
+		euler.y += 360.0f;
+	}
+	if (euler.y > 360.0f) {
+		euler.y -= 360.0f;
+	}
+
+	float frameSpeed = 30 * dt;
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
+		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
+		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
+	}
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
+		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
+		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
+	}
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
+		position.y += frameSpeed;
+	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::CONTROL)) {
+		position.y -= frameSpeed;
+	}
+	localPlayer->GetTransform().SetPosition(position);
+	localPlayer->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(euler.z, euler.y, euler.x));
+
+	Vector3 cameraPosition = position + Matrix4::Rotation(localPlayer->GetTransform().GetOrientation().ToEuler().y,
+		Vector3(0, 1, 0)) * Vector3(0, 20, 30);
+
+	float pitch = euler.z;
+	float yaw = euler.y;
+	world->GetMainCamera()->SetPosition(cameraPosition);
+	world->GetMainCamera()->SetPitch(-30.0f);
+	world->GetMainCamera()->SetYaw(yaw);
+
+}
+
+bool NCL::CSC8503::TutorialGame::MovePlayerAndFire(GameObject* player,char buttonstates[8])
 {
 	if (buttonstates[0]==1) {
 	}

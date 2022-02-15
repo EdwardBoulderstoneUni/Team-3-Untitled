@@ -100,7 +100,7 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	ClientPacket newPacket;
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
-		newPacket.buttonstates[0] = 1;
+		newPacket.buttonstates[0] = 1;  //TODO:fire!  Command (add angle(pitch yaw)) & snapshots
 		newPacket.lastID = 0;
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
@@ -162,7 +162,6 @@ void NetworkedGame::UpdateMinimumState() {
 			continue;
 		}
 		o->UpdateStateHistory(minID); //clear out old states so they arent taking up memory...
-		//清理客户端里面存的快照  服务器端也有快照
 	}
 }
 
@@ -204,7 +203,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		UpdateStateIDs(realPacket);
 		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
 		if (!player)return;
-		MovePlayer(player, realPacket->buttonstates);
+		MovePlayerAndFire(player, realPacket->buttonstates);
 	}
 	else if (type == Spawn_Player) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
@@ -214,11 +213,12 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		serverPlayers.insert(std::pair<int, GameObject*>(realPacket->playerID,newPlayer));
 		for (int i = 0; i < networkObjects.size()-1; ++i){
 			SpawnPacket* newPacket=nullptr;
-			networkObjects[i]->WriteSpawnPacket(&newPacket,i);
+			networkObjects[i]->WriteSpawnPacket(&newPacket,i,realPacket->playerID);
 			thisServer->SendPacketToPeer(*newPacket,source);
 		}
 		SpawnPacket* newPacket = nullptr;
-		networkObjects[networkObjects.size()-1]->WriteSpawnPacket(&newPacket,int(networkObjects.size() - 1));
+		networkObjects[networkObjects.size()-1]
+			->WriteSpawnPacket(&newPacket,int(networkObjects.size() - 1),realPacket->playerID);
 		thisServer->SendGlobalPacket(*newPacket);
 	}
 
@@ -252,14 +252,16 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
-		std::cout << "Client: Player Disconnected!" << std::endl; //TODO this
+		std::cout << "Client: Player Disconnected!" << std::endl; //TODO:delete player when client is disconnected
 	}
 	else if (type == Spawn_Object) {
 		SpawnPacket* realPacket = (SpawnPacket*)payload;
 		if (realPacket->objectType == ObjectType::Player) {
 			GameObject* newPlayer = SpawnPlayer(realPacket->fullState.position);
+			if (localPlayerID == realPacket->playerID)
+				localPlayer = newPlayer;
 			ToggleNetworkState(newPlayer, true);
-			if(localLastID==-1)localLastID = realPacket->fullState.stateID;//TODO Strategy Pattern Consortium
+			if(localLastID==-1)localLastID = realPacket->fullState.stateID;//TODO:Strategy Pattern/Consortium
 			OutputDebug("[Spawn_Object] [localLastID:%d]", localLastID);
 		}
 	}
