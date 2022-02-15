@@ -26,7 +26,6 @@ namespace NCL
 			Matrix4(float elements[16]);
 			Matrix4(const Matrix3& m3);
 			Matrix4(const Quaternion& quat);
-			~Matrix4(void);
 
 			float array[16];
 

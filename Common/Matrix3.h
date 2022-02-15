@@ -29,8 +29,6 @@ namespace NCL
 			Matrix3(const Matrix4& m4);
 			Matrix3(const Quaternion& quat);
 
-			~Matrix3(void);
-
 			//Set all matrix values to zero
 			void ToZero();
 

@@ -28,10 +28,6 @@ Matrix2::Matrix2(float elements[4])
 	array[3] = elements[3];
 }
 
-Matrix2::~Matrix2(void)
-{
-}
-
 void Matrix2::ToZero()
 {
 	array[0] = 0.0f;
