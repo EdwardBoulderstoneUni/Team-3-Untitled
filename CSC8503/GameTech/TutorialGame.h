@@ -11,73 +11,69 @@ namespace NCL
 		{
 		public:
 			TutorialGame();
-			~TutorialGame();
+			virtual ~TutorialGame();
 
-			virtual void UpdateGame(float dt);
+			virtual void update_game(float dt);
 
 		protected:
-			void InitialiseAssets();
+			void initialise_assets();
 
-			void InitCamera();
-			void UpdateKeys();
+			void init_camera();
+			void update_keys();
 
-			void InitWorld();
+			void init_world() const;
 
-			void InitGameExamples();
+			void init_game_examples() const;
 
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing,
-			                       const Vector3& cubeDims);
-			void InitDefaultFloor();
-			void BridgeConstraintTest();
+			void init_sphere_grid_world(int num_rows, int num_cols, float row_spacing, float col_spacing, float radius) const;
+			void init_mixed_grid_world(int num_rows, int num_cols, float row_spacing, float col_spacing) const;
+			void init_cube_grid_world(int num_rows, int num_cols, float row_spacing, float col_spacing,
+			                       const Vector3& cube_dims) const;
+			void init_default_floor() const;
 
-			bool SelectObject();
-			void MoveSelectedObject();
-			void DebugObjectMovement();
-			void LockedObjectMovement();
+			bool select_object();
+			void debug_object_movement() const;
+			void locked_object_movement() const;
 
-			GameObject* AddFloorToWorld(const Vector3& position);
-			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
-			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
+			GameObject* add_floor_to_world(const Vector3& position) const;
+			GameObject* add_sphere_to_world(const Vector3& position, float radius, float inverse_mass = 10.0f) const;
+			GameObject* add_cube_to_world(const Vector3& position, const Vector3& dimensions, float inverse_mass = 10.0f) const;
 
-			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius,
-			                              float inverseMass = 10.0f);
+			GameObject* add_capsule_to_world(const Vector3& position, float half_height, float radius,
+			                              float inverse_mass = 10.0f) const;
 
-			GameObject* AddPlayerToWorld(const Vector3& position);
-			GameObject* AddEnemyToWorld(const Vector3& position);
-			GameObject* AddBonusToWorld(const Vector3& position);
+			GameObject* add_player_to_world(const Vector3& position) const;
+			GameObject* add_enemy_to_world(const Vector3& position) const;
+			GameObject* add_bonus_to_world(const Vector3& position) const;
 
-			GameTechRenderer* renderer;
-			PhysicsSystem* physics;
-			GameWorld* world;
+			GameTechRenderer* renderer_;
+			PhysicsSystem* physics_;
+			GameWorld* world_;
 
-			bool useGravity;
-			bool inSelectionMode;
+			bool use_gravity_;
+			bool in_selection_mode_;
 
-			float forceMagnitude;
+			float force_magnitude_;
 
-			GameObject* selectionObject = nullptr;
+			GameObject* selection_object_ = nullptr;
 
-			OGLMesh* capsuleMesh = nullptr;
-			OGLMesh* cubeMesh = nullptr;
-			OGLMesh* sphereMesh = nullptr;
-			OGLTexture* basicTex = nullptr;
-			OGLShader* basicShader = nullptr;
+			OGLMesh* capsule_mesh_ = nullptr;
+			OGLMesh* cube_mesh_ = nullptr;
+			OGLMesh* sphere_mesh_ = nullptr;
+			OGLTexture* basic_tex_ = nullptr;
+			OGLShader* basic_shader_ = nullptr;
+			
+			OGLMesh* char_mesh_a_ = nullptr;
+			OGLMesh* char_mesh_b_ = nullptr;
+			OGLMesh* enemy_mesh_ = nullptr;
+			OGLMesh* bonus_mesh_ = nullptr;
+			
+			GameObject* locked_object_ = nullptr;
+			Vector3 locked_offset_ = Vector3(0, 14, 20);
 
-			//Coursework Meshes
-			OGLMesh* charMeshA = nullptr;
-			OGLMesh* charMeshB = nullptr;
-			OGLMesh* enemyMesh = nullptr;
-			OGLMesh* bonusMesh = nullptr;
-
-			//Coursework Additional functionality	
-			GameObject* lockedObject = nullptr;
-			Vector3 lockedOffset = Vector3(0, 14, 20);
-
-			void LockCameraToObject(GameObject* o)
+			void lock_camera_to_object(GameObject* o)
 			{
-				lockedObject = o;
+				locked_object_ = o;
 			}
 		};
 	}
