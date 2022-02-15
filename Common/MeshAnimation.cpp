@@ -61,7 +61,7 @@ const Matrix4* MeshAnimation::GetJointData(unsigned int frame) const
 	}
 	int matStart = frame * jointCount;
 
-	auto dataStart = (Matrix4*)allJoints.data();
+	auto dataStart = const_cast<Matrix4*>(allJoints.data());
 
 	return dataStart + matStart;
 }
