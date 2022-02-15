@@ -2,40 +2,44 @@
 #include <vector>
 #include <string>
 
-namespace NCL {
-
-namespace Maths {
-	class Matrix4;
-}
-using namespace Maths;
-
-class MeshAnimation
+namespace NCL
 {
-public:
-	MeshAnimation();
-	MeshAnimation(const std::string& filename);
-	virtual ~MeshAnimation();
-
-	unsigned int GetJointCount() const {
-		return jointCount;
+	namespace Maths
+	{
+		class Matrix4;
 	}
 
-	unsigned int GetFrameCount() const {
-		return frameCount;
-	}
+	using namespace Maths;
 
-	float GetFrameRate() const {
-		return frameRate;
-	}
+	class MeshAnimation
+	{
+	public:
+		MeshAnimation();
+		MeshAnimation(const std::string& filename);
+		virtual ~MeshAnimation();
 
-	const Matrix4* GetJointData(unsigned int frame) const;
+		unsigned int GetJointCount() const
+		{
+			return jointCount;
+		}
 
-protected:
-	unsigned int	jointCount;
-	unsigned int	frameCount;
-	float			frameRate;
+		unsigned int GetFrameCount() const
+		{
+			return frameCount;
+		}
 
-	std::vector<Matrix4>		allJoints;
-};
+		float GetFrameRate() const
+		{
+			return frameRate;
+		}
+
+		const Matrix4* GetJointData(unsigned int frame) const;
+
+	protected:
+		unsigned int jointCount;
+		unsigned int frameCount;
+		float frameRate;
+
+		std::vector<Matrix4> allJoints;
+	};
 }
-

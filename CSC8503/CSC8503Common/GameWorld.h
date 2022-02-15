@@ -3,17 +3,22 @@
 #include "Ray.h"
 #include "CollisionDetection.h"
 #include "QuadTree.h"
-namespace NCL {
-		class Camera;
-		using Maths::Ray;
-	namespace CSC8503 {
+
+namespace NCL
+{
+	class Camera;
+	using Maths::Ray;
+
+	namespace CSC8503
+	{
 		class GameObject;
 		class Constraint;
 
-		typedef std::function<void(GameObject*)> GameObjectFunc;
-		typedef std::vector<GameObject*>::const_iterator GameObjectIterator;
+		using GameObjectFunc = std::function<void(GameObject*)>;
+		using GameObjectIterator = std::vector<GameObject*>::const_iterator;
 
-		class GameWorld	{
+		class GameWorld
+		{
 		public:
 			GameWorld();
 			~GameWorld();
@@ -27,15 +32,18 @@ namespace NCL {
 			void AddConstraint(Constraint* c);
 			void RemoveConstraint(Constraint* c, bool andDelete = false);
 
-			Camera* GetMainCamera() const {
+			Camera* GetMainCamera() const
+			{
 				return mainCamera;
 			}
 
-			void ShuffleConstraints(bool state) {
+			void ShuffleConstraints(bool state)
+			{
 				shuffleConstraints = state;
 			}
 
-			void ShuffleObjects(bool state) {
+			void ShuffleObjects(bool state)
+			{
 				shuffleObjects = state;
 			}
 
@@ -60,10 +68,9 @@ namespace NCL {
 
 			Camera* mainCamera;
 
-			bool	shuffleConstraints;
-			bool	shuffleObjects;
-			int		worldIDCounter;
+			bool shuffleConstraints;
+			bool shuffleObjects;
+			int worldIDCounter;
 		};
 	}
 }
-

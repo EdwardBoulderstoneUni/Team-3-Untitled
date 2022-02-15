@@ -1,6 +1,7 @@
 #pragma once
 #include "CollisionVolume.h"
 #include "../../Common/Vector3.h"
+
 namespace NCL {
 	class AABBVolume : public CollisionVolume
 	{
@@ -9,8 +10,9 @@ namespace NCL {
 			type		= VolumeType::AABB;
 			halfSizes	= halfDims;
 		}
-		~AABBVolume() {
 
+		~AABBVolume()
+		{
 		}
 
 		NCL::Maths::Vector3 GetHalfDimensions() const {

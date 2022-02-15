@@ -9,15 +9,17 @@ https://research.ncl.ac.uk/game/
 #pragma once
 #include <string>
 
-namespace NCL {
-	namespace Assets {
-		const std::string SHADERDIR("../../Assets/Shaders/");
+namespace NCL
+{
+	namespace Assets
+	{
+		const std::string shaderdir("../../Assets/Shaders/");
 		const std::string MESHDIR("../../Assets/Meshes/");
 		const std::string TEXTUREDIR("../../Assets/Textures/");
 		const std::string SOUNDSDIR("../../Assets/Sounds/");
 		const std::string FONTSSDIR("../../Assets/Fonts/");
 		const std::string DATADIR("../../Assets/Data/");
-		extern bool ReadTextFile(const std::string &filepath, std::string& result);
-		extern bool ReadBinaryFile(const std::string &filepath, char** into, size_t& size);
+		extern bool ReadTextFile(const std::string& filepath, std::string& result);
+		extern bool ReadBinaryFile(const std::string& filepath, char** into, size_t& size);
 	}
 }

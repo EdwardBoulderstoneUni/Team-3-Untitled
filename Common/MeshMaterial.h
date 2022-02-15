@@ -7,29 +7,38 @@ using std::string;
 using std::vector;
 using std::map;
 
-namespace NCL {
-
-	namespace Rendering {
+namespace NCL
+{
+	namespace Rendering
+	{
 		class TextureBase;
 	}
-	class MeshMaterialEntry {
+
+	class MeshMaterialEntry
+	{
 		friend class MeshMaterial;
 	public:
-		bool GetEntry(const string& name, const string** output) const {
+		bool GetEntry(const string& name, const string** output) const
+		{
 			auto i = entries.find(name);
-			if (i == entries.end()) {
+			if (i == entries.end())
+			{
 				return false;
 			}
 			*output = &i->second.first;
 			return true;
 		}
-		Rendering::TextureBase* GetEntry(const string& name) const {
+
+		Rendering::TextureBase* GetEntry(const string& name) const
+		{
 			auto i = entries.find(name);
-			if (i == entries.end()) {
+			if (i == entries.end())
+			{
 				return nullptr;
 			}
 			return i->second.second;
 		}
+
 		void LoadTextures();
 
 	protected:
@@ -43,9 +52,12 @@ namespace NCL {
 		std::vector<MeshMaterialEntry*> meshLayers;
 	public:
 		MeshMaterial(const std::string& filename);
-		~MeshMaterial() {}
+
+		~MeshMaterial()
+		{
+		}
+
 		const MeshMaterialEntry* GetMaterialForLayer(int i) const;
 		void LoadTextures();
 	};
-
 }

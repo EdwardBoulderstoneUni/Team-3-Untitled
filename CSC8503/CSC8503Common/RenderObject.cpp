@@ -11,8 +11,9 @@ RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, Textu
 	this->shader	= shader;
 	this->colour	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	this->material = mat;
+
 }
 
-RenderObject::~RenderObject() {
-
+RenderObject::~RenderObject()
+{
 }

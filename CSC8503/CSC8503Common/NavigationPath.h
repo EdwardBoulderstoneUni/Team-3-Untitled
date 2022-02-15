@@ -2,22 +2,37 @@
 #include "../../Common/Vector3.h"
 #include <vector>
 
-namespace NCL {
-	using namespace NCL::Maths;
-	namespace CSC8503 {
-		class NavigationPath		{
-		public:
-			NavigationPath() {}
-			~NavigationPath() {}
+namespace NCL
+{
+	using namespace Maths;
 
-			void	Clear() {
+	namespace CSC8503
+	{
+		class NavigationPath
+		{
+		public:
+			NavigationPath()
+			{
+			}
+
+			~NavigationPath()
+			{
+			}
+
+			void Clear()
+			{
 				waypoints.clear();
 			}
-			void	PushWaypoint(const Vector3& wp) {
+
+			void PushWaypoint(const Vector3& wp)
+			{
 				waypoints.emplace_back(wp);
 			}
-			bool	PopWaypoint(Vector3& waypoint) {
-				if (waypoints.empty()) {
+
+			bool PopWaypoint(Vector3& waypoint)
+			{
+				if (waypoints.empty())
+				{
 					return false;
 				}
 				waypoint = waypoints.back();
@@ -26,9 +41,7 @@ namespace NCL {
 			}
 
 		protected:
-
-			std::vector <Vector3> waypoints;
+			std::vector<Vector3> waypoints;
 		};
 	}
 }
-

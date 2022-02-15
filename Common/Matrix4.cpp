@@ -14,20 +14,24 @@ https://research.ncl.ac.uk/game/
 #include "Quaternion.h"
 
 using namespace NCL;
-using namespace NCL::Maths;
-Matrix4::Matrix4(void)	{
+using namespace Maths;
+
+Matrix4::Matrix4(void)
+{
 	ToZero();
-	array[0]  = 1.0f;
-	array[5]  = 1.0f;
+	array[0] = 1.0f;
+	array[5] = 1.0f;
 	array[10] = 1.0f;
 	array[15] = 1.0f;
 }
 
-Matrix4::Matrix4( float elements[16] )	{
-	memcpy(this->array,elements,16*sizeof(float));
+Matrix4::Matrix4(float elements[16])
+{
+	memcpy(this->array, elements, 16 * sizeof(float));
 }
 
-Matrix4::Matrix4(const Matrix3& m3) {
+Matrix4::Matrix4(const Matrix3& m3)
+{
 	ToZero();
 	array[0] = m3.array[0];
 	array[1] = m3.array[1];
@@ -44,7 +48,8 @@ Matrix4::Matrix4(const Matrix3& m3) {
 	array[15] = 1.0f;
 }
 
-Matrix4::Matrix4(const Quaternion& quat) : Matrix4() {
+Matrix4::Matrix4(const Quaternion& quat) : Matrix4()
+{
 	float yy = quat.y * quat.y;
 	float zz = quat.z * quat.z;
 	float xy = quat.x * quat.y;
@@ -68,78 +73,84 @@ Matrix4::Matrix4(const Quaternion& quat) : Matrix4() {
 	array[10] = 1 - 2 * xx - 2 * yy;
 }
 
-Matrix4::~Matrix4(void)	{
-}
-
-void Matrix4::ToZero()	{
-	for(int i = 0; i < 16; i++)	{
+void Matrix4::ToZero()
+{
+	for (int i = 0; i < 16; i++)
+	{
 		array[i] = 0.0f;
 	}
 }
 
-Vector3 Matrix4::GetPositionVector() const{
-	return Vector3(array[12],array[13],array[14]);
+Vector3 Matrix4::GetPositionVector() const
+{
+	return Vector3(array[12], array[13], array[14]);
 }
 
-void	Matrix4::SetPositionVector(const Vector3& in) {
+void Matrix4::SetPositionVector(const Vector3& in)
+{
 	array[12] = in.x;
 	array[13] = in.y;
-	array[14] = in.z;		
+	array[14] = in.z;
 }
 
-Vector3 Matrix4::GetDiagonal() const{
-	return Vector3(array[0],array[5],array[10]);
+Vector3 Matrix4::GetDiagonal() const
+{
+	return Vector3(array[0], array[5], array[10]);
 }
 
-void	Matrix4::SetDiagonal(const Vector3 &in) {
-	array[0]  = in.x;
-	array[5]  = in.y;
-	array[10] = in.z;		
+void Matrix4::SetDiagonal(const Vector3& in)
+{
+	array[0] = in.x;
+	array[5] = in.y;
+	array[10] = in.z;
 }
 
-Matrix4 Matrix4::Perspective(float znear, float zfar, float aspect, float fov) {
+Matrix4 Matrix4::Perspective(float znear, float zfar, float aspect, float fov)
+{
 	Matrix4 m;
 
-	const float h = 1.0f / tan(fov*Maths::PI_OVER_360);
-	float neg_depth = znear-zfar;
+	const float h = 1.0f / tan(fov * PI_OVER_360);
+	float neg_depth = znear - zfar;
 
-	m.array[0]		= h / aspect;
-	m.array[5]		= h;
-	m.array[10]	= (zfar + znear)/neg_depth;
-	m.array[11]	= -1.0f;
-	m.array[14]	= 2.0f*(znear*zfar)/neg_depth;
-	m.array[15]	= 0.0f;
+	m.array[0] = h / aspect;
+	m.array[5] = h;
+	m.array[10] = (zfar + znear) / neg_depth;
+	m.array[11] = -1.0f;
+	m.array[14] = 2.0f * (znear * zfar) / neg_depth;
+	m.array[15] = 0.0f;
 
 	return m;
 }
 
 //http://www.opengl.org/sdk/docs/man/xhtml/glOrtho.xml
-Matrix4 Matrix4::Orthographic(float znear, float zfar,float right, float left, float top, float bottom)	{
+Matrix4 Matrix4::Orthographic(float znear, float zfar, float right, float left, float top, float bottom)
+{
 	Matrix4 m;
 
-	m.array[0]	= 2.0f / (right-left);
-	m.array[5]	= 2.0f / (top-bottom);
-	m.array[10]	= -2.0f / (zfar-znear);
+	m.array[0] = 2.0f / (right - left);
+	m.array[5] = 2.0f / (top - bottom);
+	m.array[10] = -2.0f / (zfar - znear);
 
-	m.array[12]  = -(right+left)/(right-left);
-	m.array[13]  = -(top+bottom)/(top-bottom);
-	m.array[14]  = -(zfar+znear)/(zfar-znear);
-	m.array[15]  = 1.0f;
+	m.array[12] = -(right + left) / (right - left);
+	m.array[13] = -(top + bottom) / (top - bottom);
+	m.array[14] = -(zfar + znear) / (zfar - znear);
+	m.array[15] = 1.0f;
 
 	return m;
 }
 
-Matrix4 Matrix4::BuildViewMatrix(const Vector3& from, const Vector3& lookingAt, const Vector3& up)	{
+Matrix4 Matrix4::BuildViewMatrix(const Vector3& from, const Vector3& lookingAt, const Vector3& up)
+{
 	Matrix4 r;
-	r.SetPositionVector(Vector3(-from.x,-from.y,-from.z));
+	r.SetPositionVector(Vector3(-from.x, -from.y, -from.z));
 
 	Matrix4 m;
 
 	Vector3 f = (lookingAt - from);
 	f.Normalise();
 
-	Vector3 s = Vector3::Cross(f,up).Normalised();
-	Vector3 u = Vector3::Cross(s,f).Normalised();
+	Vector3 s = Vector3::Cross(f, up).Normalised();
+	Vector3 u = Vector3::Cross(s, f).Normalised();
 
 	m.array[0] = s.x;
 	m.array[4] = s.y;
@@ -149,60 +160,64 @@ Matrix4 Matrix4::BuildViewMatrix(const Vector3& from, const Vector3& lookingAt, 
 	m.array[5] = u.y;
 	m.array[9] = u.z;
 
-	m.array[2]  = -f.x;
-	m.array[6]  = -f.y;
+	m.array[2] = -f.x;
+	m.array[6] = -f.y;
 	m.array[10] = -f.z;
 
-	return m*r;
+	return m * r;
 }
 
-Matrix4 Matrix4::Rotation(float degrees, const Vector3 &inaxis)	 {
+Matrix4 Matrix4::Rotation(float degrees, const Vector3& inaxis)
+{
 	Matrix4 m;
 
 	Vector3 axis = inaxis;
 
 	axis.Normalise();
 
-	float c = cos((float)Maths::DegreesToRadians(degrees));
-	float s = sin((float)Maths::DegreesToRadians(degrees));
+	float c = cos(DegreesToRadians(degrees));
+	float s = sin(DegreesToRadians(degrees));
 
-	m.array[0]  = (axis.x * axis.x) * (1.0f - c) + c;
-	m.array[1]  = (axis.y * axis.x) * (1.0f - c) + (axis.z * s);
-	m.array[2]  = (axis.z * axis.x) * (1.0f - c) - (axis.y * s);
+	m.array[0] = (axis.x * axis.x) * (1.0f - c) + c;
+	m.array[1] = (axis.y * axis.x) * (1.0f - c) + (axis.z * s);
+	m.array[2] = (axis.z * axis.x) * (1.0f - c) - (axis.y * s);
 
-	m.array[4]  = (axis.x * axis.y) * (1.0f - c) - (axis.z * s);
-	m.array[5]  = (axis.y * axis.y) * (1.0f - c) + c;
-	m.array[6]  = (axis.z * axis.y) * (1.0f - c) + (axis.x * s);
+	m.array[4] = (axis.x * axis.y) * (1.0f - c) - (axis.z * s);
+	m.array[5] = (axis.y * axis.y) * (1.0f - c) + c;
+	m.array[6] = (axis.z * axis.y) * (1.0f - c) + (axis.x * s);
 
-	m.array[8]  = (axis.x * axis.z) * (1.0f - c) + (axis.y * s);
-	m.array[9]  = (axis.y * axis.z) * (1.0f - c) - (axis.x * s);
+	m.array[8] = (axis.x * axis.z) * (1.0f - c) + (axis.y * s);
+	m.array[9] = (axis.y * axis.z) * (1.0f - c) - (axis.x * s);
 	m.array[10] = (axis.z * axis.z) * (1.0f - c) + c;
 
 	return m;
 }
 
-Matrix4 Matrix4::Scale( const Vector3 &scale )	{
+Matrix4 Matrix4::Scale(const Vector3& scale)
+{
 	Matrix4 m;
 
-	m.array[0]  = scale.x;
-	m.array[5]  = scale.y;
-	m.array[10] = scale.z;	
+	m.array[0] = scale.x;
+	m.array[5] = scale.y;
+	m.array[10] = scale.z;
 
 	return m;
 }
 
-Matrix4 Matrix4::Translation( const Vector3 &translation )	{
+Matrix4 Matrix4::Translation(const Vector3& translation)
+{
 	Matrix4 m;
 
 	m.array[12] = translation.x;
 	m.array[13] = translation.y;
-	m.array[14] = translation.z;	
+	m.array[14] = translation.z;
 
 	return m;
 }
 
 //Yoinked from the Open Source Doom 3 release - all credit goes to id software!
-void    Matrix4::Invert() {
+void Matrix4::Invert()
+{
 	float det, invDet;
 
 	// 2x2 sub-determinants required to calculate 4x4 determinant
@@ -275,15 +290,18 @@ void    Matrix4::Invert() {
 	array[15] = +det3_201_012 * invDet;
 }
 
-Matrix4 Matrix4::Inverse()	const {
+Matrix4 Matrix4::Inverse() const
+{
 	Matrix4 temp(*this);
 	temp.Invert();
 	return temp;
 }
 
-Vector4 Matrix4::GetRow(unsigned int row) const {
+Vector4 Matrix4::GetRow(unsigned int row) const
+{
 	Vector4 out(0, 0, 0, 1);
-	if (row <= 3) {
+	if (row <= 3)
+	{
 		int start = row;
 
 		out.x = array[start];
@@ -294,26 +312,29 @@ Vector4 Matrix4::GetRow(unsigned int row) const {
 	return out;
 }
 
-Vector4 Matrix4::GetColumn(unsigned int column) const {
+Vector4 Matrix4::GetColumn(unsigned int column) const
+{
 	Vector4 out(0, 0, 0, 1);
 
-	if (column <= 3) {
+	if (column <= 3)
+	{
 		memcpy(&out, &array[4 * column], sizeof(Vector4));
 	}
 
 	return out;
 }
 
-Vector3 Matrix4::operator*(const Vector3 &v) const {
+Vector3 Matrix4::operator*(const Vector3& v) const
+{
 	Vector3 vec;
 
 	float temp;
 
-	vec.x = v.x*array[0] + v.y*array[4] + v.z*array[8] + array[12];
-	vec.y = v.x*array[1] + v.y*array[5] + v.z*array[9] + array[13];
-	vec.z = v.x*array[2] + v.y*array[6] + v.z*array[10] + array[14];
+	vec.x = v.x * array[0] + v.y * array[4] + v.z * array[8] + array[12];
+	vec.y = v.x * array[1] + v.y * array[5] + v.z * array[9] + array[13];
+	vec.z = v.x * array[2] + v.y * array[6] + v.z * array[10] + array[14];
 
-	temp = v.x*array[3] + v.y*array[7] + v.z*array[11] + array[15];
+	temp = v.x * array[3] + v.y * array[7] + v.z * array[11] + array[15];
 
 	vec.x = vec.x / temp;
 	vec.y = vec.y / temp;
@@ -322,11 +343,12 @@ Vector3 Matrix4::operator*(const Vector3 &v) const {
 	return vec;
 }
 
-Vector4 Matrix4::operator*(const Vector4 &v) const {
+Vector4 Matrix4::operator*(const Vector4& v) const
+{
 	return Vector4(
-		v.x*array[0] + v.y*array[4] + v.z*array[8] + v.w * array[12],
-		v.x*array[1] + v.y*array[5] + v.z*array[9] + v.w * array[13],
-		v.x*array[2] + v.y*array[6] + v.z*array[10] + v.w * array[14],
-		v.x*array[3] + v.y*array[7] + v.z*array[11] + v.w * array[15]
+		v.x * array[0] + v.y * array[4] + v.z * array[8] + v.w * array[12],
+		v.x * array[1] + v.y * array[5] + v.z * array[9] + v.w * array[13],
+		v.x * array[2] + v.y * array[6] + v.z * array[10] + v.w * array[14],
+		v.x * array[3] + v.y * array[7] + v.z * array[11] + v.w * array[15]
 	);
 }

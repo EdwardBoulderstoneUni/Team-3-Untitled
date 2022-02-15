@@ -29,8 +29,8 @@ typedef SOCKET ENetSocket;
 
 typedef struct
 {
-    size_t dataLength;
-    void * data;
+	size_t dataLength;
+	void* data;
 } ENetBuffer;
 
 #define ENET_CALLBACK __cdecl
@@ -53,5 +53,3 @@ typedef fd_set ENetSocketSet;
 #define ENET_SOCKETSET_CHECK(sockset, socket)  FD_ISSET (socket, & (sockset))
 
 #endif /* __ENET_WIN32_H__ */
-
-

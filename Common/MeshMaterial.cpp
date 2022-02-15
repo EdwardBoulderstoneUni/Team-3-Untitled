@@ -6,23 +6,26 @@
 #include <iostream>
 
 using namespace NCL;
-using namespace NCL::Rendering;
+using namespace Rendering;
 using std::ifstream;
 
-MeshMaterial::MeshMaterial(const std::string& filename) {
+MeshMaterial::MeshMaterial(const std::string& filename)
+{
 	ifstream file(Assets::MESHDIR + filename);
 
 	string dataType;
 	file >> dataType;
 
-	if (dataType != "MeshMat") {
+	if (dataType != "MeshMat")
+	{
 		std::cout << "File " << filename << " is not a MeshMaterial!\n";
 		return;
 	}
 	int version;
 	file >> version;
 
-	if (version != 1) {
+	if (version != 1)
+	{
 		std::cout << "File " << filename << " has incompatible version " << version << "!\n";
 		return;
 	}
@@ -34,13 +37,15 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 
 	materialLayers.resize(matCount);
 
-	for (int i = 0; i < matCount; ++i) {
+	for (int i = 0; i < matCount; ++i)
+	{
 		string name;
 		int count;
 		file >> name;
 		file >> count;
 
-		for (int j = 0; j < count; ++j) {
+		for (int j = 0; j < count; ++j)
+		{
 			string entryData;
 			file >> entryData;
 			string channel;
@@ -53,28 +58,35 @@ MeshMaterial::MeshMaterial(const std::string& filename) {
 		}
 	}
 
-	for (int i = 0; i < meshCount; ++i) {
+	for (int i = 0; i < meshCount; ++i)
+	{
 		int entry;
 		file >> entry;
 		meshLayers.emplace_back(&materialLayers[entry]);
 	}
 }
 
-const MeshMaterialEntry* MeshMaterial::GetMaterialForLayer(int i) const {
-	if (i < 0 || i >= meshLayers.size()) {
+const MeshMaterialEntry* MeshMaterial::GetMaterialForLayer(int i) const
+{
+	if (i < 0 || i >= meshLayers.size())
+	{
 		return nullptr;
 	}
 	return meshLayers[i];
 }
 
-void MeshMaterial::LoadTextures() {
-	for(auto & i : meshLayers) {
+void MeshMaterial::LoadTextures()
+{
+	for (auto& i : meshLayers)
+	{
 		i->LoadTextures();
 	}
 }
 
-void MeshMaterialEntry::LoadTextures() {
-	for (auto& i : entries) {
+void MeshMaterialEntry::LoadTextures()
+{
+	for (auto& i : entries)
+	{
 		string filename = Assets::TEXTUREDIR + i.second.first;
 
 		TextureBase* t = TextureLoader::LoadAPITexture(filename);
