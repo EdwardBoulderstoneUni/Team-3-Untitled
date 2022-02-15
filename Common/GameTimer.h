@@ -26,8 +26,8 @@ namespace NCL
 		double GetTotalTimeSeconds() const;
 		double GetTotalTimeMSec() const;
 
-		float GetTimeDeltaSeconds() const { return timeDelta; };
-		float GetTimeDeltaMSec() const { return timeDelta * 1000.0f; };
+		float GetTimeDeltaSeconds() const { return timeDelta; }
+		float GetTimeDeltaMSec() const { return timeDelta * 1000.0f; }
 
 		void Tick();
 	protected:

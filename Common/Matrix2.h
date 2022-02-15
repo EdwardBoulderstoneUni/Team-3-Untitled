@@ -81,7 +81,7 @@ namespace NCL
 				vec.y = v.x * array[1] + v.y * array[3];
 
 				return vec;
-			};
+			}
 
 			static Matrix2 Rotation(float degrees);
 
