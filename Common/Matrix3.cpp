@@ -99,10 +99,6 @@ Matrix3::Matrix3(const Quaternion& quat)
 }
 
 
-Matrix3::~Matrix3(void)
-{
-}
-
 Matrix3 Matrix3::Rotation(float degrees, const Vector3& inaxis)
 {
 	Matrix3 m;

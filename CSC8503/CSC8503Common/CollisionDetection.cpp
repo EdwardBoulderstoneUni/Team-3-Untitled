@@ -46,17 +46,15 @@ bool CollisionDetection::RayIntersection(const Ray& r, GameObject& object, RayCo
 
 	switch (volume->type)
 	{
-	case VolumeType::AABB: hasCollided = RayAABBIntersection(r, worldTransform, static_cast<const AABBVolume&>(*volume),
+	case VolumeType::AABB: hasCollided = RayAABBIntersection(r, worldTransform, *reinterpret_cast<const AABBVolume*>(volume),
 	                                                         collision);
 		break;
-	case VolumeType::OBB: hasCollided = RayOBBIntersection(r, worldTransform, static_cast<const OBBVolume&>(*volume),
+	case VolumeType::OBB: hasCollided = RayOBBIntersection(r, worldTransform, *reinterpret_cast<const OBBVolume*>(volume),
 	                                                       collision);
 		break;
-	case VolumeType::Sphere: hasCollided = RaySphereIntersection(r, worldTransform,
-	                                                             static_cast<const SphereVolume&>(*volume), collision);
+	case VolumeType::Sphere: hasCollided = RaySphereIntersection(r, worldTransform, *reinterpret_cast<const SphereVolume*>(volume), collision);
 		break;
-	case VolumeType::Capsule: hasCollided = RayCapsuleIntersection(r, worldTransform,
-	                                                               static_cast<const CapsuleVolume&>(*volume),
+	case VolumeType::Capsule: hasCollided = RayCapsuleIntersection(r, worldTransform, *reinterpret_cast<const CapsuleVolume*>(volume),
 	                                                               collision);
 		break;
 	}
