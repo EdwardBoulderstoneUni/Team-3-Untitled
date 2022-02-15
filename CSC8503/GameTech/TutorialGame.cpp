@@ -578,32 +578,32 @@ void TutorialGame::UpdatePlayer(float dt) {
 
 bool NCL::CSC8503::TutorialGame::MovePlayerAndFire(GameObject* player,char buttonstates[8],int angle[3])
 {
-	if (buttonstates[0]==1) {
-	}
-	if (buttonstates[1] == 1) {
-		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(0, 0, -2));
-	}
-	if (buttonstates[2] == 1) {
-		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(0, 0, 2));
-	}
-	if (buttonstates[3] == 1) {
-		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(-2, 0, 0));
-	}
-	if (buttonstates[4] == 1) {
-		player->GetTransform().SetPosition(player->GetTransform().GetPosition() + Vector3(2, 0, 0));
-	}
+	int Speed = 2;
+	Vector3 position = player->GetTransform().GetPosition();
 	Quaternion orientation = player->GetTransform().GetOrientation();
 	Vector3 euler = orientation.ToEuler(); //roll yaw pitch
-
 	euler.y -= (angle[0]);
-
 	if (euler.y < 0) {
 		euler.y += 360.0f;
 	}
 	if (euler.y > 360.0f) {
 		euler.y -= 360.0f;
 	}
+	if (buttonstates[0]==1) {
+	}
+	if (buttonstates[1] == 1) {
+		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * Speed;
+	}
+	if (buttonstates[2] == 1) {
+		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * Speed;
+	}
+	if (buttonstates[3] == 1) {
+		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * Speed;
+	}
+	if (buttonstates[4] == 1) {
+		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * Speed;
+	}
 	player->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(euler.z, euler.y, euler.x));
-
+	player->GetTransform().SetPosition(position);
 	return true;
 }

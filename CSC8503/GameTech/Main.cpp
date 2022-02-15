@@ -31,7 +31,7 @@ int main() {
 	}	
 	srand(unsigned int(time(0)));
 	w->ShowOSPointer(false);
-	w->LockMouseToWindow(false);
+	w->LockMouseToWindow(true);
 
 	//TutorialGame* g = new TutorialGame();
 	NetworkedGame* g = new NetworkedGame();
