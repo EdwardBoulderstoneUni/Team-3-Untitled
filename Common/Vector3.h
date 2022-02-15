@@ -30,7 +30,7 @@ namespace NCL
 					float z;
 				};
 
-				float array[3];
+				float array[3]{};
 			};
 
 		public:
@@ -38,16 +38,10 @@ namespace NCL
 			{
 			}
 
-			constexpr Vector3(float xVal, float yVal, float zVal) : x(xVal), y(yVal), z(zVal)
-			{
-			}
+			constexpr Vector3(const float x_val, const float y_val, const float z_val) : x(x_val), y(y_val), z(z_val){}
 
 			Vector3(const Vector2& v2, float z = 0.0f);
 			Vector3(const Vector4& v4);
-
-			~Vector3(void)
-			{
-			}
 
 			Vector3 Normalised() const
 			{
