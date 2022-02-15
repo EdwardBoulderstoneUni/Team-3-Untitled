@@ -98,11 +98,6 @@ Matrix3::Matrix3(const Quaternion& quat)
 	array[8] = 1 - 2 * xx - 2 * yy;
 }
 
-
-Matrix3::~Matrix3(void)
-{
-}
-
 Matrix3 Matrix3::Rotation(float degrees, const Vector3& inaxis)
 {
 	Matrix3 m;
