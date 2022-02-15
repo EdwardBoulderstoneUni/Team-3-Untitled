@@ -13,7 +13,7 @@ namespace NCL
 		class GameTechRenderer : public OGLRenderer
 		{
 		public:
-			GameTechRenderer(GameWorld& world);
+			explicit GameTechRenderer(GameWorld& world);
 			~GameTechRenderer() override;
 
 		protected:
@@ -22,33 +22,30 @@ namespace NCL
 			Matrix4 SetupDebugLineMatrix() const override;
 			Matrix4 SetupDebugStringMatrix() const override;
 
-			OGLShader* defaultShader;
+			GameWorld& game_world_;
 
-			GameWorld& gameWorld;
+			void build_object_list();
+			void render_shadow_map();
+			void render_camera();
+			void render_skybox();
 
-			void BuildObjectList();
-			void SortObjectList();
-			void RenderShadowMap();
-			void RenderCamera();
-			void RenderSkybox();
+			void load_skybox();
 
-			void LoadSkybox();
+			vector<const RenderObject*> active_objects_;
 
-			vector<const RenderObject*> activeObjects;
-
-			OGLShader* skyboxShader;
-			OGLMesh* skyboxMesh;
-			GLuint skyboxTex;
+			OGLShader* skybox_shader_;
+			OGLMesh* skybox_mesh_;
+			GLuint skybox_tex_;
 
 			//shadow mapping things
-			OGLShader* shadowShader;
-			GLuint shadowTex;
-			GLuint shadowFBO;
-			Matrix4 shadowMatrix;
+			OGLShader* shadow_shader_;
+			GLuint shadow_tex_;
+			GLuint shadow_fbo_;
+			Matrix4 shadow_matrix_;
 
-			Vector4 lightColour;
-			float lightRadius;
-			Vector3 lightPosition;
+			Vector4 light_colour_;
+			float light_radius_;
+			Vector3 light_position_;
 		};
 	}
 }
