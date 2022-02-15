@@ -17,11 +17,10 @@ namespace NCL
 		using GameObjectFunc = std::function<void(GameObject*)>;
 		using GameObjectIterator = std::vector<GameObject*>::const_iterator;
 
-		class GameWorld
+		class GameWorld final
 		{
 		public:
 			GameWorld();
-			~GameWorld();
 
 			void Clear();
 			void ClearAndErase();
