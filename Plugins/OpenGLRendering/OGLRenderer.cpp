@@ -172,7 +172,7 @@ void OGLRenderer::BindMesh(MeshGeometry* m)
 	}
 }
 
-void OGLRenderer::DrawBoundMesh(int subLayer, int numInstances)
+void OGLRenderer::DrawBoundMesh(unsigned subLayer, unsigned numInstances)
 {
 	if (!boundMesh)
 	{
