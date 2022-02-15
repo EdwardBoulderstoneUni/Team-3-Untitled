@@ -10,7 +10,8 @@
 #include <iostream>
 using namespace NCL;
 
-NavMeshRenderer::NavMeshRenderer() : OGLRenderer(*Window::GetWindow())	{
+NavMeshRenderer::NavMeshRenderer() : OGLRenderer(*Window::GetWindow())
+{
 	navMesh = new OGLMesh();
 
 	std::ifstream mapFile(Assets::DATADIR + "test.navmesh");
@@ -21,10 +22,11 @@ NavMeshRenderer::NavMeshRenderer() : OGLRenderer(*Window::GetWindow())	{
 	mapFile >> vCount;
 	mapFile >> iCount;
 
-	vector<Vector3>			meshVerts;
-	vector<unsigned int>	meshIndices;
+	vector<Vector3> meshVerts;
+	vector<unsigned int> meshIndices;
 
-	for (int i = 0; i < vCount; ++i) {
+	for (int i = 0; i < vCount; ++i)
+	{
 		Vector3 temp;
 		mapFile >> temp.x;
 		mapFile >> temp.y;
@@ -32,22 +34,25 @@ NavMeshRenderer::NavMeshRenderer() : OGLRenderer(*Window::GetWindow())	{
 		meshVerts.emplace_back(temp);
 	}
 
-	for (int i = 0; i < iCount; ++i) {
+	for (int i = 0; i < iCount; ++i)
+	{
 		unsigned int temp = -1;
 		mapFile >> temp;
 		meshIndices.emplace_back(temp);
 	}
 
-	struct TriNeighbours {
+	struct TriNeighbours
+	{
 		int indices[3];
 	};
 
-	int numTris = iCount / 3;	//the indices describe n / 3 triangles
-	vector< TriNeighbours> allNeighbours;
+	int numTris = iCount / 3; //the indices describe n / 3 triangles
+	vector<TriNeighbours> allNeighbours;
 	//Each of these triangles will be sharing edges with some other triangles
 	//so it has a maximum of 3 'neighbours', desribed by an index into n / 3 tris
 	//if its a -1, then the edge is along the edge of the map...
-	for (int i = 0; i < numTris; ++i) {
+	for (int i = 0; i < numTris; ++i)
+	{
 		TriNeighbours neighbours;
 		mapFile >> neighbours.indices[0];
 		mapFile >> neighbours.indices[1];
@@ -72,7 +77,7 @@ NavMeshRenderer::NavMeshRenderer() : OGLRenderer(*Window::GetWindow())	{
 
 	debugShader = new OGLShader("BasicMatrixVert.glsl", "basicFrag.glsl");
 
-	testTex = (OGLTexture*)OGLTexture::RGBATextureFromFilename("Monster_X_diffuse_Green.png");
+	testTex = static_cast<OGLTexture*>(OGLTexture::RGBATextureFromFilename("Monster_X_diffuse_Green.png"));
 
 	camera = new Camera();
 
@@ -80,26 +85,29 @@ NavMeshRenderer::NavMeshRenderer() : OGLRenderer(*Window::GetWindow())	{
 	camera->SetFarPlane(1000.0f);
 	camera->SetPosition(Vector3(0, 3, 10));
 
-	frame		= 0;
-	frameTime	= 0.0f;
-	allTime		= 0.0f;
+	frame = 0;
+	frameTime = 0.0f;
+	allTime = 0.0f;
 }
 
-NavMeshRenderer::~NavMeshRenderer() {
+NavMeshRenderer::~NavMeshRenderer()
+{
 	delete navMesh;
 	delete navShader;
 	delete camera;
 	delete testAnim;
 }
 
-void NavMeshRenderer::Update(float dt) {
+void NavMeshRenderer::Update(float dt)
+{
 	camera->UpdateCamera(dt);
 
 	allTime += dt;
 
 	frameTime -= dt;
 
-	if (frameTime < 0) {
+	if (frameTime < 0)
+	{
 		frameTime += 1.0f / 24.0f;
 		frame++;
 		frame = frame % testAnim->GetFrameCount();
@@ -107,17 +115,18 @@ void NavMeshRenderer::Update(float dt) {
 	//frame = 0;
 }
 
-void NavMeshRenderer::RenderFrame() {
+void NavMeshRenderer::RenderFrame()
+{
 	BindShader(navShader);
 
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 
-	float screenAspect = (float)currentWidth / (float)currentHeight;
+	float screenAspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
 
 	Matrix4 viewMatrix = camera->BuildViewMatrix();
 	Matrix4 projMatrix = camera->BuildProjectionMatrix(screenAspect);
-	Matrix4 modelMat = Matrix4();
+	auto modelMat = Matrix4();
 
 	//modelMat = Matrix4::Rotation(-90.0f, Vector3(1, 0, 0)) *Matrix4::Scale(Vector3(10.1f, 10.1f, 10.1f));
 
@@ -125,23 +134,23 @@ void NavMeshRenderer::RenderFrame() {
 
 	//modelMat = Matrix4::Scale(Vector3(0.1f, 0.1f, 0.1f));
 
-	
+
 	modelMat = Matrix4::Scale(Vector3(10.0f, 10.0f, 10.0f));
 
-	int projLocation	= glGetUniformLocation(navShader->GetProgramID(), "projMatrix");
-	int viewLocation	= glGetUniformLocation(navShader->GetProgramID(), "viewMatrix");
-	int modelLocation	= glGetUniformLocation(navShader->GetProgramID(), "modelMatrix");
-	int hasTexLocation	= glGetUniformLocation(navShader->GetProgramID(), "hasTexture");
+	int projLocation = glGetUniformLocation(navShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(navShader->GetProgramID(), "viewMatrix");
+	int modelLocation = glGetUniformLocation(navShader->GetProgramID(), "modelMatrix");
+	int hasTexLocation = glGetUniformLocation(navShader->GetProgramID(), "hasTexture");
 
 
 	int invBindLocation = glGetUniformLocation(navShader->GetProgramID(), "invBindPose");
 
-	int jointsLocation		= glGetUniformLocation(navShader->GetProgramID(), "joints");
-	int jointCountLocation	= glGetUniformLocation(navShader->GetProgramID(), "jointCount");
+	int jointsLocation = glGetUniformLocation(navShader->GetProgramID(), "joints");
+	int jointCountLocation = glGetUniformLocation(navShader->GetProgramID(), "jointCount");
 
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMat);
-	glUniformMatrix4fv(viewLocation , 1, false, (float*)&viewMatrix);
-	glUniformMatrix4fv(projLocation , 1, false, (float*)&projMatrix);
+	glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+	glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 
 	int jointCount = navMesh->GetJointCount();
 
@@ -152,7 +161,8 @@ void NavMeshRenderer::RenderFrame() {
 	vector<Matrix4> invBindPose = navMesh->GetInverseBindPose();
 	vector<Matrix4> transformedMats;
 
-	for (int i = 0; i < joints.size(); ++i) {
+	for (int i = 0; i < joints.size(); ++i)
+	{
 		Matrix4 m;
 		m = frameJoints[i] * invBindPose[i];
 		//m = joints[i];
@@ -177,29 +187,34 @@ void NavMeshRenderer::RenderFrame() {
 	DebugDrawSkeleton(navMesh, frameJoints);
 }
 
-void NavMeshRenderer::DebugDrawSkeleton(const OGLMesh* mesh, const Matrix4* matrices) {
+void NavMeshRenderer::DebugDrawSkeleton(const OGLMesh* mesh, const Matrix4* matrices)
+{
 	int matCount = mesh->GetBindPose().size();
 
 	vector<Vector3> verts;
 	vector<unsigned int> indices;
 
-	for (int i = 0; i < matCount; ++i) {
+	for (int i = 0; i < matCount; ++i)
+	{
 		verts.emplace_back(matrices[i].GetPositionVector());
 	}
-	for (int i = 0; i < matCount; ++i) {
+	for (int i = 0; i < matCount; ++i)
+	{
 		indices.emplace_back(i);
 		int p = mesh->GetJointParents()[i];
-		if (i == -1) {
+		if (i == -1)
+		{
 			indices.emplace_back(i);
 		}
-		else {
+		else
+		{
 			indices.emplace_back(p);
 		}
 	}
-	OGLMesh* m = new OGLMesh();
+	auto m = new OGLMesh();
 	m->SetVertexPositions(verts);
 	m->SetVertexIndices(indices);
-	m->SetPrimitiveType(NCL::GeometryPrimitive::Lines);
+	m->SetPrimitiveType(Lines);
 	m->UploadToGPU();
 
 	BindShader(debugShader);
@@ -207,10 +222,10 @@ void NavMeshRenderer::DebugDrawSkeleton(const OGLMesh* mesh, const Matrix4* matr
 	int projLocation = glGetUniformLocation(debugShader->GetProgramID(), "projMatrix");
 	int viewLocation = glGetUniformLocation(debugShader->GetProgramID(), "viewMatrix");
 	int modelLocation = glGetUniformLocation(debugShader->GetProgramID(), "modelMatrix");
-	float screenAspect = (float)currentWidth / (float)currentHeight;
+	float screenAspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
 	Matrix4 viewMatrix = camera->BuildViewMatrix();
 	Matrix4 projMatrix = camera->BuildProjectionMatrix(screenAspect);
-	Matrix4 modelMat = Matrix4();
+	auto modelMat = Matrix4();
 
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMat);
 	glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
@@ -221,5 +236,4 @@ void NavMeshRenderer::DebugDrawSkeleton(const OGLMesh* mesh, const Matrix4* matr
 
 	glEnable(GL_DEPTH_TEST);
 	delete m;
-
 }

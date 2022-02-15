@@ -12,14 +12,15 @@ https://research.ncl.ac.uk/game/
 #include "../../Common/TextureLoader.h"
 
 using namespace NCL;
-using namespace NCL::Rendering;
+using namespace Rendering;
 
 OGLTexture::OGLTexture()
 {
 	glGenTextures(1, &texID);
 }
 
-OGLTexture::OGLTexture(GLuint texToOwn) {
+OGLTexture::OGLTexture(GLuint texToOwn)
+{
 	texID = texToOwn;
 }
 
@@ -28,19 +29,25 @@ OGLTexture::~OGLTexture()
 	glDeleteTextures(1, &texID);
 }
 
-TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, int channels) {
-	OGLTexture* tex = new OGLTexture();
+TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, int channels)
+{
+	auto tex = new OGLTexture();
 
 	int dataSize = width * height * channels; //This always assumes data is 1 byte per channel
 
 	int sourceType = GL_RGB;
 
-	switch (channels) {
-		case 1: sourceType = GL_RED	; break;
+	switch (channels)
+	{
+	case 1: sourceType = GL_RED;
+		break;
 
-		case 2: sourceType = GL_RG	; break;
-		case 3: sourceType = GL_RGB	; break;
-		case 4: sourceType = GL_RGBA; break;
+	case 2: sourceType = GL_RG;
+		break;
+	case 3: sourceType = GL_RGB;
+		break;
+	case 4: sourceType = GL_RGBA;
+		break;
 		//default:
 	}
 
@@ -58,13 +65,14 @@ TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, 
 	return tex;
 }
 
-TextureBase* OGLTexture::RGBATextureFromFilename(const std::string&name) {
-	char* texData	= nullptr;
-	int width		= 0;
-	int height		= 0;
-	int channels	= 0;
-	int flags		= 0;
-	TextureLoader::LoadTexture(name, texData, width, height, channels, flags);  
+TextureBase* OGLTexture::RGBATextureFromFilename(const std::string& name)
+{
+	char* texData = nullptr;
+	int width = 0;
+	int height = 0;
+	int channels = 0;
+	int flags = 0;
+	TextureLoader::LoadTexture(name, texData, width, height, channels, flags);
 
 	TextureBase* glTex = RGBATextureFromData(texData, width, height, channels);
 

@@ -1,11 +1,19 @@
 #pragma once
 
-namespace NCL {
-	namespace CSC8503 {
-		class Constraint	{
+namespace NCL
+{
+	namespace CSC8503
+	{
+		class Constraint
+		{
 		public:
-			Constraint() {}
-			virtual ~Constraint() {}
+			Constraint()
+			{
+			}
+
+			virtual ~Constraint()
+			{
+			}
 
 			virtual void UpdateConstraint(float dt) = 0;
 		};

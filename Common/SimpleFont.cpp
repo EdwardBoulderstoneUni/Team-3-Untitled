@@ -19,13 +19,13 @@ using namespace NCL;
 using namespace Rendering;
 using namespace Maths;
 
-SimpleFont::SimpleFont(const std::string&filename, const std::string&texName)
+SimpleFont::SimpleFont(const std::string& filename, const std::string& texName)
 {
-	startChar	= 0;
-	numChars	= 0;
-	allCharData	= nullptr;
+	startChar = 0;
+	numChars = 0;
+	allCharData = nullptr;
 
-	texture		= TextureLoader::LoadAPITexture(texName);
+	texture = TextureLoader::LoadAPITexture(texName);
 
 	std::ifstream fontFile(Assets::FONTSSDIR + filename);
 
@@ -36,7 +36,8 @@ SimpleFont::SimpleFont(const std::string&filename, const std::string&texName)
 
 	allCharData = new FontChar[numChars];
 
-	for (int i = 0; i < numChars; ++i) {
+	for (int i = 0; i < numChars; ++i)
+	{
 		fontFile >> allCharData[i].x0;
 		fontFile >> allCharData[i].y0;
 		fontFile >> allCharData[i].x1;
@@ -46,18 +47,21 @@ SimpleFont::SimpleFont(const std::string&filename, const std::string&texName)
 		fontFile >> allCharData[i].yOff;
 		fontFile >> allCharData[i].xAdvance;
 	}
-	texWidthRecip	= 1.0f / texWidth;
-	texHeightRecip	= 1.0f / texHeight;
+	texWidthRecip = 1.0f / texWidth;
+	texHeightRecip = 1.0f / texHeight;
 }
 
 
 SimpleFont::~SimpleFont()
 {
-	delete[]	allCharData;
-	delete		texture;
+	delete[] allCharData;
+	delete texture;
 }
 
-int SimpleFont::BuildVerticesForString(std::string &text, Vector2&startPos, Vector4&colour, float size, std::vector<Vector3>&positions, std::vector<Vector2>&texCoords, std::vector<Vector4>&colours) {
+int SimpleFont::BuildVerticesForString(std::string& text, Vector2& startPos, Vector4& colour, float size,
+                                       std::vector<Vector3>& positions, std::vector<Vector2>& texCoords,
+                                       std::vector<Vector4>& colours)
+{
 	int vertsWritten = 0;
 
 	int endChar = startChar + numChars;
@@ -68,13 +72,16 @@ int SimpleFont::BuildVerticesForString(std::string &text, Vector2&startPos, Vect
 	colours.reserve(colours.size() + (text.length() * 6));
 	texCoords.reserve(texCoords.size() + (text.length() * 6));
 
-	for (size_t i = 0; i < text.length(); ++i) {
-		int charIndex = (int)text[i];
+	for (size_t i = 0; i < text.length(); ++i)
+	{
+		int charIndex = text[i];
 
-		if (charIndex < startChar) {
+		if (charIndex < startChar)
+		{
 			continue;
 		}
-		if (charIndex > endChar) {
+		if (charIndex > endChar)
+		{
 			continue;
 		}
 		FontChar& charData = allCharData[charIndex - startChar];
@@ -82,13 +89,13 @@ int SimpleFont::BuildVerticesForString(std::string &text, Vector2&startPos, Vect
 		float scale = size;
 		//For basic vertex buffers, we're assuming we should add 6 vertices
 
-		float charWidth  = (float)((charData.x1 - charData.x0)/ texWidth) * scale;
-		float charHeight = (float)(charData.y1 - charData.y0);
+		float charWidth = (charData.x1 - charData.x0) / texWidth * scale;
+		float charHeight = static_cast<float>(charData.y1 - charData.y0);
 
-		float xStart	= ((charData.xOff + currentX) * texWidthRecip) * scale;
-		float yStart	= startPos.y;
-		float yHeight	= (charHeight * texHeightRecip) * scale;
-		float yOff		= ((charHeight + charData.yOff) * texHeightRecip) * scale;
+		float xStart = ((charData.xOff + currentX) * texWidthRecip) * scale;
+		float yStart = startPos.y;
+		float yHeight = (charHeight * texHeightRecip) * scale;
+		float yOff = ((charHeight + charData.yOff) * texHeightRecip) * scale;
 
 		positions.emplace_back(Vector3(startPos.x + xStart, yStart + yOff, 0));
 		positions.emplace_back(Vector3(startPos.x + xStart, yStart + yOff - yHeight, 0));
