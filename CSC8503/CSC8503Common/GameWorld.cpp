@@ -17,10 +17,6 @@ GameWorld::GameWorld()
 	worldIDCounter = 0;
 }
 
-GameWorld::~GameWorld()
-{
-}
-
 void GameWorld::Clear()
 {
 	gameObjects.clear();
