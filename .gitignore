@@ -25,7 +25,8 @@
 *.la
 *.a
 *.lib
-!libs/
+!libs/*.lib
+!libs/**/*.lib
 
 # Executables
 *.exe
