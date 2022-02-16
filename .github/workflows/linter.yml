@@ -15,9 +15,9 @@ name: Lint Code Base
 # Start the job on all push #
 #############################
 on:
-  #push:
-  #pull_request:
-  #  branches: [master, main]
+  push:
+  pull_request:
+    branches: [master, main]
 
 ###############
 # Set the Job #
@@ -49,6 +49,9 @@ jobs:
         uses: megalinter/megalinter@v5
         env:
           VALIDATE_ALL_CODEBASE: false
+          APPLY_FIXES: all
+          APPLY_FIXES_EVENT: all
+          APPLY_FIXES_MODE: pull_request
           # Change to 'master' if your main branch differs
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
