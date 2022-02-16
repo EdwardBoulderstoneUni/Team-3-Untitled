@@ -35,8 +35,8 @@
 */
 
 #include "PxPhysXConfig.h"
-#include "foundation/PxFlags.h"
-#include "foundation/PxBounds3.h"
+#include "../pxshared/include/foundation/PxFlags.h"
+#include "../pxshared/include/foundation/PxBounds3.h"
 #include "PxFiltering.h"
 #include "PxBroadPhase.h"
 #include "common/PxTolerancesScale.h"

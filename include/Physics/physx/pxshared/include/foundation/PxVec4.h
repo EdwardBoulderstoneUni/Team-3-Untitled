@@ -32,9 +32,9 @@
 /** \addtogroup foundation
 @{
 */
-#include "foundation/PxMath.h"
-#include "foundation/PxVec3.h"
-#include "foundation/PxSharedAssert.h"
+#include "../foundation/PxMath.h"
+#include "../foundation/PxVec3.h"
+#include "../foundation/PxSharedAssert.h"
 
 /**
 \brief 4 Element vector class.

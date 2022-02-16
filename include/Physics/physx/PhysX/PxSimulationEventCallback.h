@@ -34,9 +34,9 @@
 @{
 */
 
-#include "foundation/PxVec3.h"
-#include "foundation/PxTransform.h"
-#include "foundation/PxMemory.h"
+#include "../pxshared/include/foundation/PxVec3.h"
+#include "../pxshared/include/foundation/PxTransform.h"
+#include "../pxshared/include/foundation/PxMemory.h"
 #include "PxPhysXConfig.h"
 #include "PxFiltering.h"
 #include "PxContact.h"

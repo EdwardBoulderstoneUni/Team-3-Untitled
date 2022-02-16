@@ -36,7 +36,7 @@
 
 #include "PxPhysXConfig.h"
 #include "PxDeletionListener.h"
-#include "foundation/PxTransform.h"
+#include "../pxshared/include/foundation/PxTransform.h"
 #include "PxShape.h"
 
 #if !PX_DOXYGEN

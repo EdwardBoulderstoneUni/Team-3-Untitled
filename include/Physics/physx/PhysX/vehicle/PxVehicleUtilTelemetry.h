@@ -33,9 +33,9 @@
   @{
 */
 
-#include "vehicle/PxVehicleSDK.h"
-#include "foundation/PxSimpleTypes.h"
-#include "foundation/PxVec3.h"
+#include "../vehicle/PxVehicleSDK.h"
+#include "../../pxshared/include/foundation/PxSimpleTypes.h"
+#include "../../pxshared/include/foundation/PxVec3.h"
 
 #if !PX_DOXYGEN
 namespace physx

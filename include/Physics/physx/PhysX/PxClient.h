@@ -31,7 +31,7 @@
 #ifndef PX_PHYSICS_NX_CLIENT
 #define PX_PHYSICS_NX_CLIENT
 
-#include "foundation/PxFlags.h"
+#include "../pxshared/include/foundation/PxFlags.h"
 
 #if !PX_DOXYGEN
 namespace physx

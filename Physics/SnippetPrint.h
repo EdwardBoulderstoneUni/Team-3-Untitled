@@ -30,7 +30,7 @@
 #ifndef PHYSX_SNIPPET_PRINT_H
 #define PHYSX_SNIPPET_PRINT_H
 
-#include "foundation/PxPreprocessor.h"
+#include "../../pxshared/include/foundation/PxPreprocessor.h"
 
 #if PX_XBOXONE
 void OutputDebugPrint(const char*, ...);

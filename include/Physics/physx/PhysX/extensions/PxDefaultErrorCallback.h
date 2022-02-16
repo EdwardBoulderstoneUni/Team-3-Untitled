@@ -30,7 +30,7 @@
 #ifndef PX_PHYSICS_EXTENSIONS_DEFAULT_ERROR_CALLBACK_H
 #define PX_PHYSICS_EXTENSIONS_DEFAULT_ERROR_CALLBACK_H
 
-#include "foundation/PxErrorCallback.h"
+#include "../../pxshared/include/foundation/PxErrorCallback.h"
 #include "PxPhysXConfig.h"
 
 #if !PX_DOXYGEN

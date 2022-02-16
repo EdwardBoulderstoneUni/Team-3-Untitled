@@ -53,6 +53,10 @@ namespace NCL {
 				return name;
 			}
 
+			void SetName(string val) {
+				name = val;
+			}
+
 			virtual void OnCollisionBegin(GameObject* otherObject) {
 				//std::cout << "OnCollisionBegin event occured!\n";
 			}

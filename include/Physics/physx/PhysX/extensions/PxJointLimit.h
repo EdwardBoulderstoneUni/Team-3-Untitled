@@ -33,10 +33,10 @@
   @{
 */
 
-#include "foundation/PxMath.h"
-#include "common/PxTolerancesScale.h"
-#include "extensions/PxJoint.h"
-#include "PxPhysXConfig.h"
+#include "../../pxshared/include/foundation/PxMath.h"
+#include "../common/PxTolerancesScale.h"
+#include "../extensions/PxJoint.h"
+#include "../PxPhysXConfig.h"
 
 #if !PX_DOXYGEN
 namespace physx

@@ -34,17 +34,17 @@
 @{
 */
 
-#include "foundation/PxPlane.h"
-#include "foundation/PxTransform.h"
-#include "foundation/PxUnionCast.h"
-#include "common/PxPhysXCommonConfig.h"
-#include "geometry/PxGeometry.h"
-#include "geometry/PxBoxGeometry.h"
-#include "geometry/PxSphereGeometry.h"
-#include "geometry/PxCapsuleGeometry.h"
-#include "geometry/PxPlaneGeometry.h"
-#include "geometry/PxConvexMeshGeometry.h"
-#include "geometry/PxHeightFieldGeometry.h"
+#include "../../pxshared/include/foundation/PxPlane.h"
+#include "../../pxshared/include/foundation/PxTransform.h"
+#include "../../pxshared/include/foundation/PxUnionCast.h"
+#include "../common/PxPhysXCommonConfig.h"
+#include "../geometry/PxGeometry.h"
+#include "../geometry/PxBoxGeometry.h"
+#include "../geometry/PxSphereGeometry.h"
+#include "../geometry/PxCapsuleGeometry.h"
+#include "../geometry/PxPlaneGeometry.h"
+#include "../geometry/PxConvexMeshGeometry.h"
+#include "../geometry/PxHeightFieldGeometry.h"
 
 #if !PX_DOXYGEN
 namespace physx

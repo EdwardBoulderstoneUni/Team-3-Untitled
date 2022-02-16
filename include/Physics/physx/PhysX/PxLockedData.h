@@ -35,7 +35,7 @@
 */
 
 #include "PxPhysXConfig.h"
-#include "foundation/PxFlags.h"
+#include "../pxshared/include/foundation/PxFlags.h"
 
 #if !PX_DOXYGEN
 namespace physx

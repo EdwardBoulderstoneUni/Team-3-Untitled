@@ -2,6 +2,9 @@
 #include "GameTechRenderer.h"
 #include "../CSC8503Common/PhysicsSystem.h"
 
+#include "../../include/Physics/physx/PhysX/PxPhysicsAPI.h"
+//#include "../../include/Physics/physx/PhysX/PxRigidStatic.h"
+
 
 
 namespace NCL {
@@ -11,6 +14,9 @@ namespace NCL {
 			TutorialGame();
 			~TutorialGame();
 
+			
+			GameObject* AddPxFloorToWorld(GameObject* cube, physx::PxRigidStatic* body, const Vector3& position, Vector3 dimensions);
+
 			virtual void UpdateGame(float dt);
 
 		protected:
@@ -19,22 +25,24 @@ namespace NCL {
 			void InitCamera();
 			void UpdateKeys();
 
+
 			void InitWorld();
+			
 
-			void InitGameExamples();
+			//void InitGameExamples();
 
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims);
+			//void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
+			//void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
+			//void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims);
 			void InitDefaultFloor();
-			void BridgeConstraintTest();
+			//void BridgeConstraintTest();
 	
 			bool SelectObject();
 			void MoveSelectedObject();
 			void DebugObjectMovement();
 			void LockedObjectMovement();
 
-			GameObject* AddFloorToWorld(const Vector3& position);
+			/*GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
 			
@@ -42,7 +50,7 @@ namespace NCL {
 
 			GameObject* AddPlayerToWorld(const Vector3& position);
 			GameObject* AddEnemyToWorld(const Vector3& position);
-			GameObject* AddBonusToWorld(const Vector3& position);
+			GameObject* AddBonusToWorld(const Vector3& position);*/
 
 			GameTechRenderer*	renderer;
 			PhysicsSystem*		physics;

@@ -29,8 +29,8 @@
 #define PXTASK_PXTASKMANAGER_H
 
 #include "task/PxTaskDefine.h"
-#include "foundation/PxSimpleTypes.h"
-#include "foundation/PxErrorCallback.h"
+#include "../../pxshared/include/foundation/PxSimpleTypes.h"
+#include "../../pxshared/include/foundation/PxErrorCallback.h"
 
 namespace physx
 {

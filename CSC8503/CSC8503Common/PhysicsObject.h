@@ -1,6 +1,9 @@
 #pragma once
 #include "../../Common/Vector3.h"
 #include "../../Common/Matrix3.h"
+#include "../../include/Physics/physx/PhysX/PxPhysicsAPI.h"
+#include <ctype.h>
+
 
 using namespace NCL::Maths;
 
@@ -12,7 +15,7 @@ namespace NCL {
 
 		class PhysicsObject	{
 		public:
-			PhysicsObject(Transform* parentTransform, const CollisionVolume* parentVolume);
+			PhysicsObject(Transform* parentTransform, physx::PxRigidActor* pxTrans, const CollisionVolume* parentVolume);
 			~PhysicsObject();
 
 			Vector3 GetLinearVelocity() const {

@@ -30,8 +30,8 @@
 #ifndef PXFOUNDATION_PXWINDOWSINTRINSICS_H
 #define PXFOUNDATION_PXWINDOWSINTRINSICS_H
 
-#include "foundation/Px.h"
-#include "foundation/PxSharedAssert.h"
+#include "../Px.h"
+#include "../PxSharedAssert.h"
 
 #if !PX_WINDOWS_FAMILY
 #error "This file should only be included by Windows builds!!"

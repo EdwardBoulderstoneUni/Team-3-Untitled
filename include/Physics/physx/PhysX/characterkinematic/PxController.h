@@ -33,10 +33,10 @@
   @{
 */
 
-#include "characterkinematic/PxExtended.h"
-#include "characterkinematic/PxControllerObstacles.h"
-#include "PxQueryFiltering.h"
-#include "foundation/PxErrorCallback.h"
+#include "../characterkinematic/PxExtended.h"
+#include "../characterkinematic/PxControllerObstacles.h"
+#include "../PxQueryFiltering.h"
+#include "../../pxshared/include/foundation/PxErrorCallback.h"
 
 #if !PX_DOXYGEN
 namespace physx

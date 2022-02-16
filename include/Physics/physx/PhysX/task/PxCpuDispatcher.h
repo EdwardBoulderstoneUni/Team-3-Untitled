@@ -29,7 +29,7 @@
 #define PXTASK_PXCPUDISPATCHER_H
 
 #include "task/PxTaskDefine.h"
-#include "foundation/PxSimpleTypes.h"
+#include "../../pxshared/include/foundation/PxSimpleTypes.h"
 
 namespace physx
 {

@@ -28,7 +28,7 @@
 #ifndef PXCUDACONTEXTMANAGER_PXCUDAMEMORYMANAGER_H
 #define PXCUDACONTEXTMANAGER_PXCUDAMEMORYMANAGER_H
 
-#include "foundation/PxPreprocessor.h"
+#include "../../pxshared/include/foundation/PxPreprocessor.h"
 
 #if PX_SUPPORT_GPU_PHYSX
 

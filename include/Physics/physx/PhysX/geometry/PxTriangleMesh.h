@@ -33,10 +33,10 @@
 /** \addtogroup geomutils 
 @{ */
 
-#include "foundation/PxVec3.h"
-#include "foundation/PxBounds3.h"
-#include "common/PxPhysXCommonConfig.h"
-#include "common/PxBase.h"
+#include "../../pxshared/include/foundation/PxVec3.h"
+#include "../../pxshared/include/foundation/PxBounds3.h"
+#include "../common/PxPhysXCommonConfig.h"
+#include "../common/PxBase.h"
 
 #if !PX_DOXYGEN
 namespace physx

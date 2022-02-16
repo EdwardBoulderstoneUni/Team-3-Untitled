@@ -34,9 +34,9 @@
   @{
 */
 
-#include "foundation/Px.h"
-#include "foundation/PxErrors.h"
-#include "foundation/PxFoundationConfig.h"
+#include "../pxshared/include/foundation/Px.h"
+#include "../pxshared/include/foundation/PxErrors.h"
+#include "../PhysX/foundation/PxFoundationConfig.h"
 
 #if !PX_DOXYGEN
 namespace physx

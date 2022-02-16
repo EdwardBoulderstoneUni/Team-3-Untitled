@@ -34,11 +34,11 @@
 @{
 */
 
-#include "foundation/PxAssert.h"
-#include "foundation/PxAllocatorCallback.h"
-#include "common/PxSerialFramework.h"
-#include "common/PxCollection.h"
-#include "PxFoundation.h"
+#include "../foundation/PxAssert.h"
+#include "../../pxshared/include/foundation/PxAllocatorCallback.h"
+#include "../common/PxSerialFramework.h"
+#include "../common/PxCollection.h"
+#include "../PxFoundation.h"
 
 
 #if !PX_DOXYGEN

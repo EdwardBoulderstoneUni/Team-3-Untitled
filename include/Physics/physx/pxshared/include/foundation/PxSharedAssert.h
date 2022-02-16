@@ -33,7 +33,7 @@
 /** \addtogroup foundation
 @{ */
 
-#include "foundation/Px.h"
+#include "../foundation/Px.h"
 
 #if !PX_ENABLE_ASSERTS
 	#define PX_SHARED_ASSERT(exp) ((void)0)

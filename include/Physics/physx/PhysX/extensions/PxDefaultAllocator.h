@@ -34,8 +34,8 @@
   @{
 */
 
-#include "foundation/PxAllocatorCallback.h"
-#include "foundation/PxAssert.h"
+#include "../../pxshared/include/foundation/PxAllocatorCallback.h"
+#include "../foundation/PxAssert.h"
 #include "common/PxPhysXCommonConfig.h"
 
 #include <stdlib.h>

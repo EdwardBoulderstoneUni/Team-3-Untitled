@@ -37,7 +37,7 @@
 #include "PxPhysXConfig.h"
 #include "PxShape.h"
 #include "PxContact.h"
-#include "foundation/PxTransform.h"
+#include "../pxshared/include/foundation/PxTransform.h"
 
 #if !PX_DOXYGEN
 namespace physx

@@ -36,7 +36,7 @@
 */
 
 #include "PxPhysXConfig.h"
-#include "foundation/PxBounds3.h"
+#include "../pxshared/include/foundation/PxBounds3.h"
 #include "PxClient.h"
 #include "common/PxBase.h"
 

@@ -30,7 +30,7 @@
 #ifndef PXFOUNDATION_PXBITANDDATA_H
 #define PXFOUNDATION_PXBITANDDATA_H
 
-#include "foundation/Px.h"
+#include "../../include/foundation/Px.h"
 
 /** \addtogroup foundation
   @{

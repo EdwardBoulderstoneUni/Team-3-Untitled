@@ -31,7 +31,7 @@
 #ifndef PX_PHYSICS_NX_FORCE_MODE
 #define PX_PHYSICS_NX_FORCE_MODE
 
-#include "foundation/PxPreprocessor.h"
+#include "../pxshared/include/foundation/PxPreprocessor.h"
 
 /** \addtogroup physics
 @{

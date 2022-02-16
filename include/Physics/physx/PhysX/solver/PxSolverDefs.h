@@ -30,12 +30,12 @@
 #ifndef PX_SOLVER_DEFS_H
 #define PX_SOLVER_DEFS_H
 
-#include "PxPhysXConfig.h"
-#include "foundation/PxVec3.h"
-#include "foundation/PxMat33.h"
-#include "foundation/PxTransform.h"
-#include "PxConstraintDesc.h"
-#include "geomutils/GuContactPoint.h"
+#include "../PxPhysXConfig.h"
+#include "../../pxshared/include/foundation/PxVec3.h"
+#include "../../pxshared/include/foundation/PxMat33.h"
+#include "../../pxshared/include/foundation/PxTransform.h"
+#include "../PxConstraintDesc.h"
+#include "../geomutils/GuContactPoint.h"
 
 #if PX_VC
 #pragma warning(push)

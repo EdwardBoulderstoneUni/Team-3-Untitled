@@ -35,8 +35,8 @@
 */
 
 #include "PxPhysXConfig.h"
-#include "foundation/PxFlags.h"
-#include "foundation/PxVec3.h"
+#include "../pxshared/include/foundation/PxFlags.h"
+#include "../pxshared/include/foundation/PxVec3.h"
 #include "common/PxBase.h"
 
 #if !PX_DOXYGEN

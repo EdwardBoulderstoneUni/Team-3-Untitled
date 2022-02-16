@@ -34,8 +34,8 @@
 @{
 */
 
-#include "foundation/PxPreprocessor.h"
-#include "foundation/PxSimpleTypes.h"
+#include "../../pxshared/include/foundation/PxPreprocessor.h"
+#include "../../pxshared/include/foundation/PxSimpleTypes.h"
 
 #if !PX_DOXYGEN
 namespace physx

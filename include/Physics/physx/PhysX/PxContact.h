@@ -31,8 +31,8 @@
 #ifndef PX_CONTACT_H
 #define PX_CONTACT_H
 
-#include "foundation/PxVec3.h"
-#include "foundation/PxAssert.h"
+#include "../pxshared/include/foundation/PxVec3.h"
+#include "../PhysX/foundation/PxAssert.h"
 
 #if !PX_DOXYGEN
 namespace physx

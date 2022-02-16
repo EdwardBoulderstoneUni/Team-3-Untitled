@@ -34,10 +34,10 @@
   @{
 */
 
-#include "foundation/Px.h"
-#include "foundation/PxFoundationConfig.h"
-#include "foundation/PxPlane.h"
-#include "foundation/PxTransform.h"
+#include "../../pxshared/include/foundation/Px.h"
+#include "../foundation/PxFoundationConfig.h"
+#include "../../pxshared/include/foundation/PxPlane.h"
+#include "../../pxshared/include/foundation/PxTransform.h"
 
 #if !PX_DOXYGEN
 namespace physx

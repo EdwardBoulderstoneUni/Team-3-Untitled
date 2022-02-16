@@ -33,9 +33,9 @@
 /** \addtogroup scenequery
 @{
 */
-#include "foundation/PxVec3.h"
-#include "foundation/PxFlags.h"
-#include "foundation/PxAssert.h"
+#include "../pxshared/include/foundation/PxVec3.h"
+#include "../pxshared/include/foundation/PxFlags.h"
+#include "../PhysX/foundation/PxAssert.h"
 #include "PxPhysXConfig.h"
 
 #if !PX_DOXYGEN

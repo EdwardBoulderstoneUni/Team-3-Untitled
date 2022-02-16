@@ -31,7 +31,7 @@
 #ifndef PX_PHYSICS_NX_DEBUG_VISUALIZATION_PARAMETER
 #define PX_PHYSICS_NX_DEBUG_VISUALIZATION_PARAMETER
 
-#include "foundation/PxPreprocessor.h"
+#include "../pxshared/include/foundation/PxPreprocessor.h"
 
 /** \addtogroup physics
 @{

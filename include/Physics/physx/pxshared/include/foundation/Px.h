@@ -34,7 +34,7 @@
 @{
 */
 
-#include "foundation/PxSimpleTypes.h"
+#include "../foundation/PxSimpleTypes.h"
 
 /** files to always include */
 #include <string.h>
@@ -45,44 +45,44 @@ namespace physx
 {
 #endif
 
-typedef uint32_t PxU32;
+	typedef uint32_t PxU32;
 
-class PxAllocatorCallback;
-class PxErrorCallback;
-struct PxErrorCode;
-class PxAssertHandler;
+	class PxAllocatorCallback;
+	class PxErrorCallback;
+	struct PxErrorCode;
+	class PxAssertHandler;
 
-class PxInputStream;
-class PxInputData;
-class PxOutputStream;
+	class PxInputStream;
+	class PxInputData;
+	class PxOutputStream;
 
-class PxVec2;
-class PxVec3;
-class PxVec4;
-class PxMat33;
-class PxMat44;
-class PxPlane;
-class PxQuat;
-class PxTransform;
-class PxBounds3;
+	class PxVec2;
+	class PxVec3;
+	class PxVec4;
+	class PxMat33;
+	class PxMat44;
+	class PxPlane;
+	class PxQuat;
+	class PxTransform;
+	class PxBounds3;
 
-/** enum for empty constructor tag*/
-enum PxEMPTY
-{
-	PxEmpty
-};
+	/** enum for empty constructor tag*/
+	enum PxEMPTY
+	{
+		PxEmpty
+	};
 
-/** enum for zero constructor tag for vectors and matrices */
-enum PxZERO
-{
-	PxZero
-};
+	/** enum for zero constructor tag for vectors and matrices */
+	enum PxZERO
+	{
+		PxZero
+	};
 
-/** enum for identity constructor flag for quaternions, transforms, and matrices */
-enum PxIDENTITY
-{
-	PxIdentity
-};
+	/** enum for identity constructor flag for quaternions, transforms, and matrices */
+	enum PxIDENTITY
+	{
+		PxIdentity
+	};
 
 #if !PX_DOXYGEN
 } // namespace physx

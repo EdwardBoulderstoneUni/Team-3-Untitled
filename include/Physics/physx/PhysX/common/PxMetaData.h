@@ -34,8 +34,8 @@
 @{
 */
 
-#include "foundation/Px.h"
-#include "foundation/PxIO.h"
+#include "../../pxshared/include/foundation/Px.h"
+#include "../../pxshared/include/foundation/PxIO.h"
 #include "PxMetaDataFlags.h"
 
 

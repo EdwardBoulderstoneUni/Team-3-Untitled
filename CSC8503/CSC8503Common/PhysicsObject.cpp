@@ -1,16 +1,26 @@
 #include "PhysicsObject.h"
 #include "PhysicsSystem.h"
 #include "../CSC8503Common/Transform.h"
+
+using namespace physx;
 using namespace NCL;
 using namespace CSC8503;
 
-PhysicsObject::PhysicsObject(Transform* parentTransform, const CollisionVolume* parentVolume)	{
-	transform	= parentTransform;
-	volume		= parentVolume;
+//PhysicsObject::PhysicsObject(Transform* parentTransform, const CollisionVolume* parentVolume)	{
+//	transform	= parentTransform;
+//	volume		= parentVolume;
+//
+//	inverseMass = 1.0f;
+//	elasticity	= 0.8f;
+//	friction	= 0.8f;
+//}
 
+PhysicsObject::PhysicsObject(Transform* parentTransform, physx::PxRigidActor* p, const CollisionVolume* parentVolume) {
+	transform = parentTransform;
+	volume = parentVolume;
 	inverseMass = 1.0f;
-	elasticity	= 0.8f;
-	friction	= 0.8f;
+	elasticity = 0.8f;
+	friction = 0.8f;
 }
 
 PhysicsObject::~PhysicsObject()	{
