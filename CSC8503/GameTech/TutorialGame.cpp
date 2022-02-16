@@ -1,10 +1,14 @@
 // ReSharper disable CppClangTidyConcurrencyMtUnsafe
 #include "TutorialGame.h"
 #include "../CSC8503Common/GameWorld.h"
+#include "../CSC8503Common/GameObjectGenerator.h"
+#include "../CSC8503Common/AssetManager.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 #include "../../Plugins/OpenGLRendering/OGLShader.h"
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
+#include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
+#include "../../Common/Assets.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -18,45 +22,25 @@ TutorialGame::TutorialGame() : world_(new GameWorld()), use_gravity_(false), in_
 	initialise_assets();
 }
 
-void TutorialGame::initialise_assets()
-{
-	auto load_func = [](const string& name, OGLMesh** into)
-	{
-		*into = new OGLMesh(name);
-		(*into)->SetPrimitiveType(Triangles);
-		(*into)->UploadToGPU();
-	};
+void TutorialGame::initialise_assets() {
 
-	load_func("cube.msh", &cube_mesh_);
-	load_func("sphere.msh", &sphere_mesh_);
-	load_func("Male1.msh", &char_mesh_a_);
-	load_func("courier.msh", &char_mesh_b_);
-	load_func("security.msh", &enemy_mesh_);
-	load_func("coin.msh", &bonus_mesh_);
-	load_func("capsule.msh", &capsule_mesh_);
-
-	basic_tex_ = dynamic_cast<OGLTexture*>(TextureLoader::LoadAPITexture("checkerboard.png"));
-	basic_shader_ = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
-
+	ShaderManager::GetInstance()->Init();
+	AssetManager::GetInstance()->Init();
 	init_camera();
 	init_world();
+	GameObjectGenerator g;
+	std::string worldFilePath = Assets::DATADIR;
+	worldFilePath.append("world.json");
+	g.Generate(worldFilePath.c_str(), world_->GetGameObjects());
 }
 
-TutorialGame::~TutorialGame()
-{
-	delete cube_mesh_;
-	delete sphere_mesh_;
-	delete char_mesh_a_;
-	delete char_mesh_b_;
-	delete enemy_mesh_;
-	delete bonus_mesh_;
-
-	delete basic_tex_;
-	delete basic_shader_;
+TutorialGame::~TutorialGame()	{
+	AudioManager::Cleanup();
 
 	delete physics_;
 	delete renderer_;
 	delete world_;
+
 }
 
 void TutorialGame::update_game(const float dt)
@@ -67,9 +51,9 @@ void TutorialGame::update_game(const float dt)
 	}
 
 	update_keys();
-
-	if (use_gravity_)
-	{
+	AudioManager::GetInstance().Play_Sound();
+	AudioManager::GetInstance().Update(dt);
+	if (use_gravity_) {
 		Debug::Print("(G)ravity on", Vector2(5, 95));
 	}
 	else
@@ -78,7 +62,7 @@ void TutorialGame::update_game(const float dt)
 	}
 
 	select_object();
-	physics_->Update(dt);
+	//physics_->Update(dt);
 
 	if (locked_object_ != nullptr)
 	{
@@ -256,6 +240,8 @@ void TutorialGame::init_world() const
 	init_mixed_grid_world(5, 5, 3.5f, 3.5f);
 	init_game_examples();
 	init_default_floor();
+	AudioManager::Startup();
+	//AudioManager::GetInstance().Play_Sound();
 }
 
 GameObject* TutorialGame::add_floor_to_world(const Vector3& position) const
@@ -264,7 +250,7 @@ GameObject* TutorialGame::add_floor_to_world(const Vector3& position) const
 
 	constexpr auto floor_size = Vector3(100, 2, 100);
 	const auto volume = new AABBVolume(floor_size);
-	floor->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	floor->SetBoundingVolume(volume);
 	floor->GetTransform()
 	     .SetScale(floor_size * 2)
 	     .SetPosition(position);
@@ -287,18 +273,17 @@ GameObject* TutorialGame::add_sphere_to_world(const Vector3& position, const flo
 
 	const auto sphere_size = Vector3(radius, radius, radius);
 	const auto volume = new SphereVolume(radius);
-	sphere->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	sphere->SetBoundingVolume(volume);
 
 	sphere->GetTransform()
 	      .SetScale(sphere_size)
 	      .SetPosition(position);
 
 	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphere_mesh_, basic_tex_, basic_shader_));
-	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
+	/*sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
-	sphere->GetPhysicsObject()->SetInverseMass(inverse_mass);
-	sphere->GetPhysicsObject()->InitSphereInertia();
-
+	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
+	sphere->GetPhysicsObject()->InitSphereInertia();*/
 	world_->AddGameObject(sphere);
 
 	return sphere;
@@ -332,17 +317,18 @@ GameObject* TutorialGame::add_cube_to_world(const Vector3& position, const Vecto
 
 	const auto volume = new AABBVolume(dimensions);
 
-	cube->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	cube->SetBoundingVolume(volume);
 
 	cube->GetTransform()
 	    .SetPosition(position)
 	    .SetScale(dimensions * 2);
 
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cube_mesh_, basic_tex_, basic_shader_));
-	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
 
-	cube->GetPhysicsObject()->SetInverseMass(inverse_mass);
-	cube->GetPhysicsObject()->InitCubeInertia();
+	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cube_mesh_, basic_tex_, basic_shader_));
+	/*cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+
+	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
+	cube->GetPhysicsObject()->InitCubeInertia();*/
 
 	world_->AddGameObject(cube);
 
@@ -418,7 +404,7 @@ GameObject* TutorialGame::add_player_to_world(const Vector3& position) const
 
 	const auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * mesh_size);
 
-	character->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	character->SetBoundingVolume(volume);
 
 	character->GetTransform()
 	         .SetScale(Vector3(mesh_size, mesh_size, mesh_size))
@@ -450,7 +436,7 @@ GameObject* TutorialGame::add_enemy_to_world(const Vector3& position) const
 	const auto character = new GameObject();
 
 	const auto volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * mesh_size);
-	character->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	character->SetBoundingVolume(volume);
 
 	character->GetTransform()
 	         .SetScale(Vector3(mesh_size, mesh_size, mesh_size))
@@ -472,7 +458,7 @@ GameObject* TutorialGame::add_bonus_to_world(const Vector3& position) const
 	const auto apple = new GameObject();
 
 	const auto volume = new SphereVolume(0.25f);
-	apple->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	apple->SetBoundingVolume(volume);
 	apple->GetTransform()
 	     .SetScale(Vector3(0.25, 0.25, 0.25))
 	     .SetPosition(position);

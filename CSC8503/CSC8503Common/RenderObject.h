@@ -3,6 +3,7 @@
 #include "../../Common/TextureBase.h"
 #include "../../Common/ShaderBase.h"
 #include "../../Common/Vector4.h"
+#include "../../Common/MeshMaterial.h"
 
 namespace NCL
 {
@@ -18,7 +19,7 @@ namespace NCL
 		class RenderObject
 		{
 		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
+			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
 			~RenderObject();
 
 			void SetDefaultTexture(TextureBase* t)
@@ -56,12 +57,17 @@ namespace NCL
 				return colour;
 			}
 
+			MeshMaterial* GetMaterial() const {
+				return material;
+			}
+
 		protected:
-			MeshGeometry* mesh;
-			TextureBase* texture;
-			ShaderBase* shader;
-			Transform* transform;
-			Vector4 colour;
+			MeshGeometry*	mesh;
+			TextureBase*	texture;
+			ShaderBase*		shader;
+			Transform*		transform;
+			Vector4			colour;
+			MeshMaterial*	material;
 		};
 	}
 }
