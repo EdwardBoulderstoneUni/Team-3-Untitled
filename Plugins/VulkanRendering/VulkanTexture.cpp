@@ -88,7 +88,7 @@ int VulkanTexture::CalculateMipCount(int width, int height) {
 
 	 vkRenderer->EndCmdBufferWait(cmdBuffer);
 
-	 device.destroyBuffer(stagingBuffer); //These can't be destroyed until the cmd buffer has definately completed...
+	 device.destroyBuffer(stagingBuffer); //These can't be destroyed until the cmd buffer has definitely completed...
 	 device.freeMemory(stagingMemory);
 
 	 return outTex;

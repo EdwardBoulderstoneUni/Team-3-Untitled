@@ -117,7 +117,7 @@ namespace NCL
 		bool holdButtons[static_cast<int>(MouseButtons::MAXVAL)];
 		//Current doubleClick counter for each button
 		bool doubleClicks[static_cast<int>(MouseButtons::MAXVAL)];
-		//Counter to remember when last mouse click occured
+		//Counter to remember when last mouse click occurred
 		float lastClickTime[static_cast<int>(MouseButtons::MAXVAL)];
 
 		//last mousewheel updated position
