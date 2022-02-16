@@ -1,9 +1,13 @@
-#include "TutorialGame.h"
+﻿#include "TutorialGame.h"
 #include "../CSC8503Common/GameWorld.h"
+#include "../CSC8503Common/GameObjectGenerator.h"
+#include "../CSC8503Common/AssetManager.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 #include "../../Plugins/OpenGLRendering/OGLShader.h"
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
+#include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
+#include "../../Common/Assets.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -30,41 +34,20 @@ and the same texture and shader. There's no need to ever load in anything else
 for this module, even in the coursework, but you can add it if you like!
 
 */
-void TutorialGame::InitialiseAssets()
-{
-	auto loadFunc = [](const string& name, OGLMesh** into)
-	{
-		*into = new OGLMesh(name);
-		(*into)->SetPrimitiveType(Triangles);
-		(*into)->UploadToGPU();
-	};
+void TutorialGame::InitialiseAssets() {
 
-	loadFunc("cube.msh", &cubeMesh);
-	loadFunc("sphere.msh", &sphereMesh);
-	loadFunc("Male1.msh", &charMeshA);
-	loadFunc("courier.msh", &charMeshB);
-	loadFunc("security.msh", &enemyMesh);
-	loadFunc("coin.msh", &bonusMesh);
-	loadFunc("capsule.msh", &capsuleMesh);
-
-	basicTex = static_cast<OGLTexture*>(TextureLoader::LoadAPITexture("checkerboard.png"));
-	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
-
+	ShaderManager::GetInstance()->Init();
+	AssetManager::GetInstance()->Init();
 	InitCamera();
 	InitWorld();
+	GameObjectGenerator g;
+	std::string worldFilePath = Assets::DATADIR;
+	worldFilePath.append("world.json");
+	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
 }
 
-TutorialGame::~TutorialGame()
-{
-	delete cubeMesh;
-	delete sphereMesh;
-	delete charMeshA;
-	delete charMeshB;
-	delete enemyMesh;
-	delete bonusMesh;
-
-	delete basicTex;
-	delete basicShader;
+TutorialGame::~TutorialGame()	{
+	AudioManager::Cleanup();
 
 	delete physics;
 	delete renderer;
@@ -79,9 +62,9 @@ void TutorialGame::UpdateGame(float dt)
 	}
 
 	UpdateKeys();
-
-	if (useGravity)
-	{
+	AudioManager::GetInstance().Play_Sound();
+	AudioManager::GetInstance().Update(dt);
+	if (useGravity) {
 		Debug::Print("(G)ravity on", Vector2(5, 95));
 	}
 	else
@@ -91,7 +74,7 @@ void TutorialGame::UpdateGame(float dt)
 
 	SelectObject();
 	MoveSelectedObject();
-	physics->Update(dt);
+	//physics->Update(dt);
 
 	if (lockedObject != nullptr)
 	{
@@ -283,6 +266,8 @@ void TutorialGame::InitWorld()
 	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	InitGameExamples();
 	InitDefaultFloor();
+	AudioManager::Startup();
+	//AudioManager::GetInstance().Play_Sound();
 }
 
 void TutorialGame::BridgeConstraintTest()
@@ -336,10 +321,10 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 	      .SetPosition(position);
 
 	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
-	sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
+	/*sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
 
 	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
-	sphere->GetPhysicsObject()->InitSphereInertia();
+	sphere->GetPhysicsObject()->InitSphereInertia();*/
 
 	world->AddGameObject(sphere);
 
@@ -381,10 +366,10 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	    .SetScale(dimensions * 2);
 
 	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
-	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+	/*cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
 
 	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	cube->GetPhysicsObject()->InitCubeInertia();
+	cube->GetPhysicsObject()->InitCubeInertia();*/
 
 	world->AddGameObject(cube);
 

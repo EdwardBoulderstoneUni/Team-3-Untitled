@@ -2,13 +2,10 @@
 #include "GameTechRenderer.h"
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsSystem.h"
-
-namespace NCL
-{
-	namespace CSC8503
-	{
-		class TutorialGame
-		{
+#include "../../AudioManager/AudioManager.h"
+namespace NCL {
+	namespace CSC8503 {
+		class TutorialGame		{
 		public:
 			TutorialGame();
 			~TutorialGame();
@@ -48,10 +45,10 @@ namespace NCL
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 
-			GameTechRenderer* renderer;
-			PhysicsSystem* physics;
-			GameWorld* world;
-
+			GameTechRenderer*	renderer;
+			PhysicsSystem*		physics;
+			GameWorld*			world;
+	
 			bool useGravity;
 			bool inSelectionMode;
 

@@ -46,7 +46,11 @@ namespace NCL
 	};
 
 	class MeshMaterial
-	{
+	{		
+	protected:
+		std::vector<MeshMaterialEntry>	materialLayers;
+		std::vector<MeshMaterialEntry*> meshLayers;
+	public:
 		MeshMaterial(const std::string& filename);
 
 		~MeshMaterial()
@@ -54,11 +58,6 @@ namespace NCL
 		}
 
 		const MeshMaterialEntry* GetMaterialForLayer(int i) const;
-
 		void LoadTextures();
-
-	protected:
-		std::vector<MeshMaterialEntry> materialLayers;
-		std::vector<MeshMaterialEntry*> meshLayers;
 	};
 }
