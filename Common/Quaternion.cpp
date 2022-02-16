@@ -10,6 +10,7 @@ https://research.ncl.ac.uk/game/
 #include "Matrix4.h"
 #include "Matrix3.h"
 #include "Vector3.h"
+#include "Vector4.h"
 #include "Maths.h"
 #include <algorithm>
 #include <cmath>
@@ -39,9 +40,15 @@ Quaternion::Quaternion(const Vector3& vector, float w)
 	this->w = w;
 }
 
-Quaternion::Quaternion(const Matrix4& m)
-{
-	w = sqrt(std::max(0.0f, (1.0f + m.array[0] + m.array[5] + m.array[10]))) * 0.5f;
+Quaternion::Quaternion(const Vector4& vector) {
+	this->x = vector.x;
+	this->y = vector.y;
+	this->z = vector.z;
+	this->w = vector.w;
+}
+
+Quaternion::Quaternion(const Matrix4 &m) {
+	w = sqrt(std::max(0.0f, (1.0f + m.array[0] + m.array[5] + m.array[10])))  * 0.5f;
 
 	if (abs(w) < 0.0001f)
 	{

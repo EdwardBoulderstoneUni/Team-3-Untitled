@@ -16,6 +16,7 @@ namespace NCL
 		class Matrix3;
 		class Matrix4;
 		class Vector3;
+		class Vector4;
 
 		class Quaternion
 		{
@@ -37,6 +38,7 @@ namespace NCL
 			Quaternion(void);
 			Quaternion(float x, float y, float z, float w);
 			Quaternion(const Vector3& vector, float w);
+			Quaternion(const Vector4& vector);
 
 			Quaternion(const Matrix3& m);
 			Quaternion(const Matrix4& m);

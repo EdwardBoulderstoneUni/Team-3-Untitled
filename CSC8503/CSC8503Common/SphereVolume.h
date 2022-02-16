@@ -1,9 +1,9 @@
 #pragma once
 #include "CollisionVolume.h"
 
-namespace NCL
-{
-	class SphereVolume : CollisionVolume
+namespace NCL {
+	class SphereVolume : public CollisionVolume
+
 	{
 	public:
 		SphereVolume(float sphereRadius = 1.0f)
