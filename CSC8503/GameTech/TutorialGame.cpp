@@ -22,7 +22,7 @@ TutorialGame::TutorialGame() : world_(new GameWorld()), use_gravity_(false), in_
 	initialise_assets();
 }
 
-void TutorialGame::InitialiseAssets() {
+void TutorialGame::initialise_assets() {
 
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
@@ -31,7 +31,7 @@ void TutorialGame::InitialiseAssets() {
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
-	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
+	g.Generate(worldFilePath.c_str(), world_->GetGameObjects());
 }
 
 TutorialGame::~TutorialGame()	{
@@ -250,7 +250,7 @@ GameObject* TutorialGame::add_floor_to_world(const Vector3& position) const
 
 	constexpr auto floor_size = Vector3(100, 2, 100);
 	const auto volume = new AABBVolume(floor_size);
-	floor->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	floor->SetBoundingVolume(volume);
 	floor->GetTransform()
 	     .SetScale(floor_size * 2)
 	     .SetPosition(position);
@@ -273,7 +273,7 @@ GameObject* TutorialGame::add_sphere_to_world(const Vector3& position, const flo
 
 	const auto sphere_size = Vector3(radius, radius, radius);
 	const auto volume = new SphereVolume(radius);
-	sphere->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	sphere->SetBoundingVolume(volume);
 
 	sphere->GetTransform()
 	      .SetScale(sphere_size)
@@ -317,7 +317,7 @@ GameObject* TutorialGame::add_cube_to_world(const Vector3& position, const Vecto
 
 	const auto volume = new AABBVolume(dimensions);
 
-	cube->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	cube->SetBoundingVolume(volume);
 
 	cube->GetTransform()
 	    .SetPosition(position)
@@ -404,7 +404,7 @@ GameObject* TutorialGame::add_player_to_world(const Vector3& position) const
 
 	const auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * mesh_size);
 
-	character->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	character->SetBoundingVolume(volume);
 
 	character->GetTransform()
 	         .SetScale(Vector3(mesh_size, mesh_size, mesh_size))
@@ -436,7 +436,7 @@ GameObject* TutorialGame::add_enemy_to_world(const Vector3& position) const
 	const auto character = new GameObject();
 
 	const auto volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * mesh_size);
-	character->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	character->SetBoundingVolume(volume);
 
 	character->GetTransform()
 	         .SetScale(Vector3(mesh_size, mesh_size, mesh_size))
@@ -458,7 +458,7 @@ GameObject* TutorialGame::add_bonus_to_world(const Vector3& position) const
 	const auto apple = new GameObject();
 
 	const auto volume = new SphereVolume(0.25f);
-	apple->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	apple->SetBoundingVolume(volume);
 	apple->GetTransform()
 	     .SetScale(Vector3(0.25, 0.25, 0.25))
 	     .SetPosition(position);
