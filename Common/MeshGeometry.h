@@ -5,19 +5,25 @@
 #include "Vector4.h"
 using std::vector;
 
-namespace NCL {
-	namespace Maths {
+namespace NCL
+{
+	namespace Maths
+	{
 		class Vector2;
 		class Vector3;
 		class Vector4;
 		class Matrix4;
 	}
-	namespace Rendering {
+
+	namespace Rendering
+	{
 		class RendererBase;
 	}
+
 	using namespace Maths;
 
-	enum GeometryPrimitive {
+	enum GeometryPrimitive
+	{
 		Points,
 		Lines,
 		Triangles,
@@ -26,7 +32,8 @@ namespace NCL {
 		Patches
 	};
 
-	enum VertexAttribute {
+	enum VertexAttribute
+	{
 		Positions,
 		Colours,
 		TextureCoords,
@@ -37,78 +44,91 @@ namespace NCL {
 		MAX_ATTRIBUTES
 	};
 
-	struct SubMesh {
+	struct SubMesh
+	{
 		int start;
 		int count;
 	};
 
 	class MeshGeometry
 	{
-	public:		
+	public:
 		virtual ~MeshGeometry();
 
-		GeometryPrimitive GetPrimitiveType() const {
+		GeometryPrimitive GetPrimitiveType() const
+		{
 			return primType;
 		}
 
-		void SetPrimitiveType(GeometryPrimitive type) {
+		void SetPrimitiveType(GeometryPrimitive type)
+		{
 			primType = type;
 		}
 
-		unsigned int GetVertexCount() const {
-			return (unsigned int)positions.size();
+		unsigned int GetVertexCount() const
+		{
+			return static_cast<unsigned>(positions.size());
 		}
 
-		unsigned int GetIndexCount()  const {
-			return (unsigned int)indices.size();
+		unsigned int GetIndexCount() const
+		{
+			return static_cast<unsigned>(indices.size());
 		}
 
-		unsigned int GetJointCount() const {
-			return (unsigned int)jointNames.size();
+		unsigned int GetJointCount() const
+		{
+			return static_cast<unsigned>(jointNames.size());
 		}
 
-		unsigned int GetSubMeshCount() const {
-			return (unsigned int)subMeshes.size();
+		unsigned int GetSubMeshCount() const
+		{
+			return static_cast<unsigned>(subMeshes.size());
 		}
 
-		const SubMesh* GetSubMesh(unsigned int i) const {
-			if (i > subMeshes.size()) {
+		const SubMesh* GetSubMesh(unsigned int i) const
+		{
+			if (i > subMeshes.size())
+			{
 				return nullptr;
 			}
 			return &subMeshes[i];
 		}
 
-		int GetIndexForJoint(const std::string &name) const;
+		int GetIndexForJoint(const std::string& name) const;
 
-		const vector<Matrix4>& GetBindPose() const {
+		const vector<Matrix4>& GetBindPose() const
+		{
 			return bindPose;
 		}
-		const vector<Matrix4>& GetInverseBindPose() const {
+
+		const vector<Matrix4>& GetInverseBindPose() const
+		{
 			return inverseBindPose;
 		}
 
-		void SetJointNames(std::vector < std::string > & newnames);
+		void SetJointNames(std::vector<std::string>& newnames);
 
 		bool GetTriangle(unsigned int i, Vector3& a, Vector3& b, Vector3& c) const;
 		bool GetNormalForTri(unsigned int i, Vector3& n) const;
 		bool HasTriangle(unsigned int i) const;
 
-		const vector<Vector3>&		GetPositionData()		const { return positions;	}
-		const vector<Vector2>&		GetTextureCoordData()	const { return texCoords;	}
-		const vector<Vector4>&		GetColourData()			const { return colours;		}
-		const vector<Vector3>&		GetNormalData()			const { return normals;		}
-		const vector<Vector4>&		GetTangentData()		const { return tangents;	}
+		const vector<Vector3>& GetPositionData() const { return positions; }
+		const vector<Vector2>& GetTextureCoordData() const { return texCoords; }
+		const vector<Vector4>& GetColourData() const { return colours; }
+		const vector<Vector3>& GetNormalData() const { return normals; }
+		const vector<Vector4>& GetTangentData() const { return tangents; }
 
 
-		const vector<Vector4>& GetSkinWeightData()		const { return skinWeights; }
-		const vector<Vector4>& GetSkinIndexData()		const { return skinIndices; }
+		const vector<Vector4>& GetSkinWeightData() const { return skinWeights; }
+		const vector<Vector4>& GetSkinIndexData() const { return skinIndices; }
 
-		const vector<int>& GetJointParents()	const {
+		const vector<int>& GetJointParents() const
+		{
 			return jointParents;
 		}
 
 
-		const vector<unsigned int>& GetIndexData()			const { return indices;		}
+		const vector<unsigned int>& GetIndexData() const { return indices; }
 
 
 		void SetVertexPositions(const vector<Vector3>& newVerts);
@@ -123,7 +143,7 @@ namespace NCL {
 		void SetVertexSkinIndices(const vector<Vector4>& newSkinIndices);
 
 
-		void	TransformVertices(const Matrix4& byMatrix);
+		void TransformVertices(const Matrix4& byMatrix);
 
 		void RecalculateNormals();
 		void RecalculateTangents();
@@ -136,7 +156,7 @@ namespace NCL {
 
 	protected:
 		MeshGeometry();
-		MeshGeometry(const std::string&filename);
+		MeshGeometry(const std::string& filename);
 
 		void ReadRigPose(std::ifstream& file, vector<Matrix4>& into);
 		void ReadJointParents(std::ifstream& file);
@@ -144,30 +164,30 @@ namespace NCL {
 		void ReadSubMeshes(std::ifstream& file, int count);
 		void ReadSubMeshNames(std::ifstream& file, int count);
 
-		bool	GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsigned int& b, unsigned int& c) const;
+		bool GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsigned int& b, unsigned int& c) const;
 
 		virtual bool ValidateMeshData();
 
-		std::string			debugName; //used when an APU allows setting debug tags
-		GeometryPrimitive	primType;
-		vector<Vector3>		positions;
+		std::string debugName; //used when an APU allows setting debug tags
+		GeometryPrimitive primType;
+		vector<Vector3> positions;
 
-		vector<Vector2>			texCoords;
-		vector<Vector4>			colours;
-		vector<Vector3>			normals;
-		vector<Vector4>			tangents;
-		vector<unsigned int>	indices;
+		vector<Vector2> texCoords;
+		vector<Vector4> colours;
+		vector<Vector3> normals;
+		vector<Vector4> tangents;
+		vector<unsigned int> indices;
 
-		vector<SubMesh>			subMeshes;
-		vector<std::string>		subMeshNames;
+		vector<SubMesh> subMeshes;
+		vector<std::string> subMeshNames;
 
 		//Allows us to have 4 weight skinning 
-		vector<Vector4>		skinWeights;
-		vector<Vector4>		skinIndices;
-		vector<std::string>	jointNames;
-		vector<int>			jointParents;
+		vector<Vector4> skinWeights;
+		vector<Vector4> skinIndices;
+		vector<std::string> jointNames;
+		vector<int> jointParents;
 
-		vector<Matrix4>		bindPose;
-		vector<Matrix4>		inverseBindPose;
+		vector<Matrix4> bindPose;
+		vector<Matrix4> inverseBindPose;
 	};
 }

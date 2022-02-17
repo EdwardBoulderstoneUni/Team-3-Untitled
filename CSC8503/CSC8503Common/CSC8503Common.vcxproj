@@ -133,9 +133,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AABBVolume.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="CapsuleVolume.h" />
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="GameObjectGenerator.h" />
     <ClInclude Include="NavigationGrid.h" />
     <ClInclude Include="NavigationMap.h" />
     <ClInclude Include="NavigationMesh.h" />
@@ -164,11 +166,13 @@
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="CollisionDetection.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="GameObjectGenerator.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="NavigationGrid.cpp" />
     <ClCompile Include="NavigationMesh.cpp" />

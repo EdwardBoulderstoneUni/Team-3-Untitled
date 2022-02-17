@@ -16,27 +16,33 @@ namespace NCL {
 			GameObject(string name = "");
 			~GameObject();
 
-			void SetBoundingVolume(CollisionVolume* vol) {
+			void SetBoundingVolume(CollisionVolume* vol)
+			{
 				boundingVolume = vol;
 			}
 
-			const CollisionVolume* GetBoundingVolume() const {
+			const CollisionVolume* GetBoundingVolume() const
+			{
 				return boundingVolume;
 			}
 
-			bool IsActive() const {
+			bool IsActive() const
+			{
 				return isActive;
 			}
 
-			Transform& GetTransform() {
+			Transform& GetTransform()
+			{
 				return transform;
 			}
 
-			RenderObject* GetRenderObject() const {
+			RenderObject* GetRenderObject() const
+			{
 				return renderObject;
 			}
 
-			PhysicsObject* GetPhysicsObject() const {
+			PhysicsObject* GetPhysicsObject() const
+			{
 				return physicsObject;
 			}
 
@@ -47,7 +53,8 @@ namespace NCL {
 				renderObject = newObject;
 			}
 
-			void SetPhysicsObject(PhysicsObject* newObject) {
+			void SetPhysicsObject(PhysicsObject* newObject)
+			{
 				physicsObject = newObject;
 			}
 
@@ -58,11 +65,13 @@ namespace NCL {
 				return name;
 			}
 
-			virtual void OnCollisionBegin(GameObject* otherObject) {
+			virtual void OnCollisionBegin(GameObject* otherObject)
+			{
 				//std::cout << "OnCollisionBegin event occured!\n";
 			}
 
-			virtual void OnCollisionEnd(GameObject* otherObject) {
+			virtual void OnCollisionEnd(GameObject* otherObject)
+			{
 				//std::cout << "OnCollisionEnd event occured!\n";
 			}
 
@@ -70,29 +79,30 @@ namespace NCL {
 
 			void UpdateBroadphaseAABB();
 
-			void SetWorldID(int newID) {
+			void SetWorldID(int newID)
+			{
 				worldID = newID;
 			}
 
-			int		GetWorldID() const {
+			int GetWorldID() const
+			{
 				return worldID;
 			}
 
 		protected:
-			Transform			transform;
+			Transform transform;
 
 			CollisionVolume* boundingVolume;
 			PhysicsObject* physicsObject;
 			RenderObject* renderObject;
 			NetworkObject* networkObject;
 
-			bool	isActive;
-			int		worldID;
-			string	name;
+			bool isActive;
+			int worldID;
+			string name;
 
 			Vector3 broadphaseAABB;
 
 		};
 	}
 }
-

@@ -5,9 +5,11 @@
 
 using namespace NCL;
 
-bool Assets::ReadTextFile(const std::string &filepath, std::string& result) {
+bool Assets::ReadTextFile(const std::string& filepath, std::string& result)
+{
 	std::ifstream file(filepath, std::ios::in);
-	if (file) {
+	if (file)
+	{
 		std::ostringstream stream;
 
 		stream << file.rdbuf();
@@ -16,16 +18,16 @@ bool Assets::ReadTextFile(const std::string &filepath, std::string& result) {
 
 		return true;
 	}
-	else {
-		std::cout << __FUNCTION__ << " can't read file " << filepath << std::endl;
-		return false;
-	}
+	std::cout << __FUNCTION__ << " can't read file " << filepath << std::endl;
+	return false;
 }
 
-bool	Assets::ReadBinaryFile(const std::string& filename, char** into, size_t& size) {
+bool Assets::ReadBinaryFile(const std::string& filename, char** into, size_t& size)
+{
 	std::ifstream file(filename, std::ios::binary);
 
-	if (!file) {
+	if (!file)
+	{
 		return false;
 	}
 
@@ -35,7 +37,7 @@ bool	Assets::ReadBinaryFile(const std::string& filename, char** into, size_t& si
 
 	file.seekg(0, std::ios_base::beg);
 
-	char* data = new char[(unsigned int)filesize];
+	auto data = new char[static_cast<unsigned>(filesize)];
 
 	file.read(data, filesize);
 
@@ -44,5 +46,5 @@ bool	Assets::ReadBinaryFile(const std::string& filename, char** into, size_t& si
 	*into = data;
 	size = filesize;
 
-	return data == NULL ? true : false;
+	return data == nullptr ? true : false;
 }

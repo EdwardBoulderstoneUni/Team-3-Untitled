@@ -5,62 +5,72 @@
 #include <list>
 #include <functional>
 
-namespace NCL {
-	using namespace NCL::Maths;
-	namespace CSC8503 {
-		template<class T>
+namespace NCL
+{
+	using namespace Maths;
+
+	namespace CSC8503
+	{
+		template <class T>
 		class QuadTree;
 
-		template<class T>
-		struct QuadTreeEntry {
+		template <class T>
+		struct QuadTreeEntry
+		{
 			Vector3 pos;
 			Vector3 size;
 			T object;
 
-			QuadTreeEntry(T obj, Vector3 pos, Vector3 size) {
-				object		= obj;
-				this->pos	= pos;
-				this->size	= size;
+			QuadTreeEntry(T obj, Vector3 pos, Vector3 size)
+			{
+				object = obj;
+				this->pos = pos;
+				this->size = size;
 			}
 		};
 
-		template<class T>
-		class QuadTreeNode	{
+		template <class T>
+		class QuadTreeNode
+		{
 		public:
-			typedef std::function<void(std::list<QuadTreeEntry<T>>&)> QuadTreeFunc;
+			using QuadTreeFunc = std::function<void(std::list<QuadTreeEntry<T>>&)>;
 		protected:
 			friend class QuadTree<T>;
 
-			QuadTreeNode() {}
-
-			QuadTreeNode(Vector2 pos, Vector2 size) {
-				children		= nullptr;
-				this->position	= pos;
-				this->size		= size;
+			QuadTreeNode()
+			{
 			}
 
-			~QuadTreeNode() {
+			QuadTreeNode(Vector2 pos, Vector2 size)
+			{
+				children = nullptr;
+				this->position = pos;
+				this->size = size;
+			}
+
+			~QuadTreeNode()
+			{
 				delete[] children;
 			}
 
-			void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize) {
-
+			void Insert(T& object, const Vector3& objectPos, const Vector3& objectSize, int depthLeft, int maxSize)
+			{
 			}
 
-			void Split() {
-
+			void Split()
+			{
 			}
 
-			void DebugDraw() {
-
+			void DebugDraw()
+			{
 			}
 
-			void OperateOnContents(QuadTreeFunc& func) {
-
+			void OperateOnContents(QuadTreeFunc& func)
+			{
 			}
 
 		protected:
-			std::list< QuadTreeEntry<T> >	contents;
+			std::list<QuadTreeEntry<T>> contents;
 
 			Vector2 position;
 			Vector2 size;
@@ -71,30 +81,39 @@ namespace NCL {
 }
 
 
-namespace NCL {
-	using namespace NCL::Maths;
-	namespace CSC8503 {
-		template<class T>
+namespace NCL
+{
+	using namespace Maths;
+
+	namespace CSC8503
+	{
+		template <class T>
 		class QuadTree
 		{
 		public:
-			QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5){
+			QuadTree(Vector2 size, int maxDepth = 6, int maxSize = 5)
+			{
 				root = QuadTreeNode<T>(Vector2(), size);
-				this->maxDepth	= maxDepth;
-				this->maxSize	= maxSize;
-			}
-			~QuadTree() {
+				this->maxDepth = maxDepth;
+				this->maxSize = maxSize;
 			}
 
-			void Insert(T object, const Vector3& pos, const Vector3& size) {
+			~QuadTree()
+			{
+			}
+
+			void Insert(T object, const Vector3& pos, const Vector3& size)
+			{
 				root.Insert(object, pos, size, maxDepth, maxSize);
 			}
 
-			void DebugDraw() {
+			void DebugDraw()
+			{
 				root.DebugDraw();
 			}
 
-			void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc  func) {
+			void OperateOnContents(typename QuadTreeNode<T>::QuadTreeFunc func)
+			{
 				root.OperateOnContents(func);
 			}
 

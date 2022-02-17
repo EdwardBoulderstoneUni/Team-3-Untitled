@@ -13,7 +13,8 @@ GameObject::GameObject(string objectName) {
 	networkObject = nullptr;
 }
 
-GameObject::~GameObject() {
+GameObject::~GameObject()
+{
 	delete boundingVolume;
 	delete physicsObject;
 	delete renderObject;
@@ -27,21 +28,26 @@ bool GameObject::GetBroadphaseAABB(Vector3& outSize) const {
 	return true;
 }
 
-void GameObject::UpdateBroadphaseAABB() {
-	if (!boundingVolume) {
+void GameObject::UpdateBroadphaseAABB()
+{
+	if (!boundingVolume)
+	{
 		return;
 	}
-	if (boundingVolume->type == VolumeType::AABB) {
-		broadphaseAABB = ((AABBVolume&)*boundingVolume).GetHalfDimensions();
+	if (boundingVolume->type == VolumeType::AABB)
+	{
+		broadphaseAABB = reinterpret_cast<AABBVolume&>(boundingVolume).GetHalfDimensions();
 	}
-	else if (boundingVolume->type == VolumeType::Sphere) {
-		float r = ((SphereVolume&)*boundingVolume).GetRadius();
+	else if (boundingVolume->type == VolumeType::Sphere)
+	{
+		float r = reinterpret_cast<SphereVolume&>(boundingVolume).GetRadius();
 		broadphaseAABB = Vector3(r, r, r);
 	}
-	else if (boundingVolume->type == VolumeType::OBB) {
-		Matrix3 mat = Matrix3(transform.GetOrientation());
+	else if (boundingVolume->type == VolumeType::OBB)
+	{
+		auto mat = Matrix3(transform.GetOrientation());
 		mat = mat.Absolute();
-		Vector3 halfSizes = ((OBBVolume&)*boundingVolume).GetHalfDimensions();
+		Vector3 halfSizes = reinterpret_cast<OBBVolume&>(boundingVolume).GetHalfDimensions();
 		broadphaseAABB = mat * halfSizes;
 	}
 }

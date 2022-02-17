@@ -9,10 +9,11 @@ _-_-_-_-_-_-_-|   /\_/\   NYANYANYAN
 -_-_-_-_-_-_-~|__( ^ .^) /
 _-_-_-_-_-_-_-""  ""
 
-*//////////////////////////////////////////////////////////////////////////////
+*/ /////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-namespace NCL {
+namespace NCL
+{
 	//http://msdn.microsoft.com/en-us/library/ms645540(VS.85).aspx
 	enum class KeyboardKeys {
 		LBUTTON = 0x01,  // Left mouse button  
@@ -161,29 +162,39 @@ namespace NCL {
 		MAXVALUE = 0xFF
 	};
 
-	class Keyboard {
+	class Keyboard
+	{
 	public:
 		friend class Window;
 
 		//Is this key currently pressed down?
-		bool KeyDown(KeyboardKeys key) const {
-			return keyStates[(int)key];
+		bool KeyDown(KeyboardKeys key) const
+		{
+			return keyStates[static_cast<int>(key)];
 		}
+
 		//Has this key been held down for multiple frames?
-		bool KeyHeld(KeyboardKeys key) const {
-			if (KeyDown(key) && holdStates[(int)key]) {
+		bool KeyHeld(KeyboardKeys key) const
+		{
+			if (KeyDown(key) && holdStates[static_cast<int>(key)])
+			{
 				return true;
 			}
 			return false;
 		}
+
 		//Is this the first update the key has been pressed for?
-		bool KeyPressed(KeyboardKeys key) const {
+		bool KeyPressed(KeyboardKeys key) const
+		{
 			return (KeyDown(key) && !KeyHeld(key));
 		}
 
 	protected:
 		Keyboard();
-		virtual ~Keyboard() {}
+
+		virtual ~Keyboard()
+		{
+		}
 
 		void UpdateFrameState(float msec);
 
@@ -191,7 +202,7 @@ namespace NCL {
 		void Wake();
 
 		bool isAwake;
-		bool keyStates[(int)KeyboardKeys::MAXVALUE];		//Is the key down?
-		bool holdStates[(int)KeyboardKeys::MAXVALUE];		//Has the key been down for multiple updates?
+		bool keyStates[static_cast<int>(KeyboardKeys::MAXVALUE)]; //Is the key down?
+		bool holdStates[static_cast<int>(KeyboardKeys::MAXVALUE)]; //Has the key been down for multiple updates?
 	};
 }

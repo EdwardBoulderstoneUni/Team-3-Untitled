@@ -1,0 +1,3 @@
+{"Objects": [
+{"objShape":1,"position":{"x":6.0,"y":0.0,"z":0.0},"quaternion":{"x":0.0,"y":0.0,"z":0.0,"w":1.0},"scale":{"x":10.0,"y":10.0,"z":10.0},"dimensions":{"x":1.0,"y":1.0,"z":1.0},"materialPath":"Corridor_Floor_Basic.mat", "meshPath":"Corridor_Floor_Basic.msh"}
+]}

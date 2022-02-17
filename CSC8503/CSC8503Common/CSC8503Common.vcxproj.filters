@@ -119,6 +119,11 @@
     </ClInclude>
     <ClInclude Include="NetworkState.h">
       <Filter>Networking</Filter>
+    <ClInclude Include="GameObjectGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +186,12 @@
     </ClCompile>
     <ClCompile Include="NetworkState.cpp">
       <Filter>Networking</Filter>
+     </ClCompile>
+    <ClCompile Include="GameObjectGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -10,25 +10,29 @@ https://research.ncl.ac.uk/game/
 
 #include <chrono>
 
-namespace NCL {
-	typedef  std::chrono::time_point<std::chrono::high_resolution_clock>  Timepoint;
+namespace NCL
+{
+	using Timepoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
-	class GameTimer {
+	class GameTimer
+	{
 	public:
 		GameTimer(void);
-		~GameTimer(void) {}
 
-		double	GetTotalTimeSeconds()	const;
-		double	GetTotalTimeMSec()		const;
+		~GameTimer(void)
+		{
+		}
 
-		float	GetTimeDeltaSeconds()	const { return timeDelta; };
-		float	GetTimeDeltaMSec()		const { return timeDelta * 1000.0f; };
+		double GetTotalTimeSeconds() const;
+		double GetTotalTimeMSec() const;
 
-		void	Tick();
+		float GetTimeDeltaSeconds() const { return timeDelta; }
+		float GetTimeDeltaMSec() const { return timeDelta * 1000.0f; }
+
+		void Tick();
 	protected:
-		float		timeDelta;
-		Timepoint	firstPoint;
-		Timepoint	nowPoint;
+		float timeDelta;
+		Timepoint firstPoint;
+		Timepoint nowPoint;
 	};
 }
-
