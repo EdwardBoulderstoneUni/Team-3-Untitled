@@ -10,8 +10,8 @@ GameClient::GameClient()	{
 }
 
 GameClient::~GameClient()	{
-	//threadAlive = false;
-	//updateThread.join();
+	threadAlive = false;
+	updateThread.join();
 	enet_host_destroy(netHandle);
 }
 
@@ -24,8 +24,8 @@ bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum
 	netPeer = enet_host_connect(netHandle, &address, 2, 0);
 
 	if (netPeer != nullptr) {
-		//threadAlive = true;
-		//updateThread = std::thread(&GameClient::ThreadedUpdate, this);
+		threadAlive = true;
+		updateThread = std::thread(&GameClient::ThreadedUpdate, this);
 	}
 
 	return netPeer != nullptr;
@@ -58,8 +58,14 @@ void GameClient::SendPacket(GamePacket&  payload) {
 	int test = enet_peer_send(netPeer, 0, dataPacket);
 }
 
-//void GameClient::ThreadedUpdate() {
-//	while (threadAlive) {
-//		UpdateClient();
-//	}
-//}
+void GameClient::ThreadedUpdate() {
+	while (threadAlive) {
+		UpdateClient();
+	}
+}
+
+bool GameClient::Disconnect()
+{
+	enet_peer_disconnect(netPeer, 0);
+	return true;
+}

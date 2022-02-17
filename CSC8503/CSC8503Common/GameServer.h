@@ -17,10 +17,12 @@ namespace NCL {
 
 			void SetGameWorld(GameWorld &g);
 
-			//void ThreadedUpdate();
+			void ThreadedUpdate();
 
 			bool SendGlobalPacket(int msgID);
 			bool SendGlobalPacket(GamePacket& packet);
+			bool SendPacketToPeer(GamePacket& packet, int source);
+			ENetPeer* GetClientPeerPointer(int source);
 
 			virtual void UpdateServer();
 
@@ -30,11 +32,12 @@ namespace NCL {
 			int			clientCount;
 			GameWorld*	gameWorld;
 
-			//std::atomic<bool> threadAlive;
+			std::atomic<bool> threadAlive;
 
+			std::map<int, ENetPeer*> clientPeerPointers;
 			
 
-			//std::thread updateThread;
+			std::thread updateThread;
 
 			int incomingDataRate;
 			int outgoingDataRate;

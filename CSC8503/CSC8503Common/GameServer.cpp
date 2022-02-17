@@ -10,7 +10,7 @@ GameServer::GameServer(int onPort, int maxClients)	{
 	clientMax	= maxClients;
 	clientCount = 0;
 	netHandle	= nullptr;
-	//threadAlive = false;
+	threadAlive = false;
 
 	Initialise();
 }
@@ -22,8 +22,8 @@ GameServer::~GameServer()	{
 void GameServer::Shutdown() {
 	SendGlobalPacket(BasicNetworkMessages::Shutdown);
 
-	//threadAlive = false;
-	//updateThread.join();
+	threadAlive = false;
+	updateThread.join();
 
 	enet_host_destroy(netHandle);
 	netHandle = nullptr;
@@ -40,8 +40,8 @@ bool GameServer::Initialise() {
 		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
 		return false;
 	}
-	//threadAlive		= true;
-	//updateThread	= std::thread(&GameServer::ThreadedUpdate, this);
+	threadAlive		= true;
+	updateThread	= std::thread(&GameServer::ThreadedUpdate, this);
 
 	return true;
 }
@@ -73,6 +73,7 @@ void GameServer::UpdateServer() {
 
 		if (type == ENetEventType::ENET_EVENT_TYPE_CONNECT) {
 			std::cout << "Server: New client connected" << std::endl;
+			clientPeerPointers.insert(std::pair<int, ENetPeer*>(peer, p));
 			NewPlayerPacket player(peer);
 			SendGlobalPacket(player);
 		}
@@ -89,14 +90,26 @@ void GameServer::UpdateServer() {
 	}
 }
 
-//void GameServer::ThreadedUpdate() {
-//	while (threadAlive) {
-//		UpdateServer();
-//	}
-//}
+void GameServer::ThreadedUpdate() {
+	while (threadAlive) {
+		UpdateServer();
+	}
+}
 
 //Second networking tutorial stuff
 
 void GameServer::SetGameWorld(GameWorld &g) {
 	gameWorld = &g;
+}
+
+ENetPeer* GameServer::GetClientPeerPointer(int source) {
+	std::map<int, ENetPeer*>::iterator it;
+	it = clientPeerPointers.find(source);
+	return it != clientPeerPointers.end() ? it->second : nullptr;
+}
+
+bool GameServer::SendPacketToPeer(GamePacket& packet, int source) {
+	ENetPacket* dataPacket = enet_packet_create(&packet, packet.GetTotalSize(), 0);
+	ENetPeer* netPeer = GetClientPeerPointer(source);
+	return enet_peer_send(netPeer, 0, dataPacket);
 }

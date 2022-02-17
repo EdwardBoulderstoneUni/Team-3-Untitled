@@ -35,7 +35,6 @@ for this module, even in the coursework, but you can add it if you like!
 
 */
 void TutorialGame::InitialiseAssets() {
-
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
 	InitCamera();
