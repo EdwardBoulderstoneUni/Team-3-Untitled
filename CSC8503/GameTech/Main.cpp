@@ -35,8 +35,8 @@ int main()
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	//auto g = new TutorialGame();
-	auto g = new NetworkedGame();
+	auto g = new TutorialGame();
+	//auto g = new NetworkedGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
 	{
