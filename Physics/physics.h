@@ -9,7 +9,22 @@ namespace NCL {
 		Physics();
 		~Physics();
 
-		void Update(float dt);
+		void update(float dt);
 	private:
+		PxDefaultAllocator			gAllocator;
+		PxDefaultErrorCallback		gErrorCallback;
+
+		PxFoundation* gFoundation = NULL;
+		PxPhysics* gPhysics = NULL;
+
+		PxDefaultCpuDispatcher* gDispatcher = NULL;
+		PxScene* gScene = NULL;
+
+		/* TODO
+			Make able to faciliate more materials in the future
+		*/
+		PxMaterial* gMaterial = NULL;
+
+		PxPvd* gPvd = NULL;
 	};
 }

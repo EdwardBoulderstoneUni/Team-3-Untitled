@@ -7,36 +7,24 @@
 
 using namespace physx;
 
-PxDefaultAllocator			gAllocator;
-PxDefaultErrorCallback		gErrorCallback;
-
-PxFoundation*				gFoundation = NULL;
-PxPhysics*					gPhysics = NULL;
-
-PxDefaultCpuDispatcher*		gDispatcher = NULL;
-PxScene*					gScene = NULL;
-
-/* TODO
-	Make able to faciliate more materials in the future
-*/
-PxMaterial*					gMaterial = NULL;
-
-PxPvd*						gPvd = NULL;
-
 PxReal stackZ = 10.0f;
 
 TutorialGame* game;
 namespace NCL
 {
-	Physics::Physics() {
+	Physics::Physics(const PxTransform& transform, const PxGeometry& geometry, const PxVec3& velocity = PxVec3(0)) {
+		PxRigidDynamic* dynamic = PxCreateDynamic(*gPhysics, transform, geometry, *gMaterial, 10.0f);
 
+		gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 	}
+
 	Physics::~Physics()
 	{
 
 	}
 
-	void Physics::Update(float dt) {
+	void Physics::update(float dt) 
+	{
 
 	}
 }
