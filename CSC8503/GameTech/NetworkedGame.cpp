@@ -100,7 +100,7 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	ClientPacket newPacket;
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
-		newPacket.buttonstates[0] = 1;  //TODO:fire!  Command (add angle(pitch yaw)) & snapshots
+		newPacket.buttonstates[0] = 1;  //TODO:fire!
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
 		newPacket.buttonstates[1] = 1;
@@ -114,10 +114,9 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
 		newPacket.buttonstates[4] = 1;
 	}
-	//TODO angle wrong   second player
 	newPacket.angles[0] = Window::GetMouse()->GetRelativePosition().x;
 	if (localLastID == -1) return;
-	newPacket.lastID = localLastID;//TODO: ? every
+	newPacket.lastID = localLastID;
 	OutputDebug("localastID: %d", localLastID);
 	newPacket.type = Received_State;
 	newPacket.playerID = localPlayerID;
