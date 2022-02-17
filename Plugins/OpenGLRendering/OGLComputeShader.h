@@ -7,17 +7,20 @@ Comments and queries to: richard-gordon.davison AT ncl.ac.uk
 https://research.ncl.ac.uk/game/
 */
 #pragma once
-#include "glad\glad.h"
+#include "glad/glad.h"
 
 #include <string>
 
-namespace NCL {
-	class OGLComputeShader	{
+namespace NCL
+{
+	class OGLComputeShader
+	{
 	public:
 		OGLComputeShader(const std::string& s);
 		~OGLComputeShader();
 
-		int GetProgramID() const {
+		int GetProgramID() const
+		{
 			return programID;
 		}
 
@@ -27,7 +30,7 @@ namespace NCL {
 		//number of threads within a group is determined shader side
 		void Execute(int x, int y = 1, int z = 1) const;
 
-		void GetThreadsInGroup(int&x, int& y, int&z) const;
+		void GetThreadsInGroup(int& x, int& y, int& z) const;
 
 		int GetThreadXCount() const;
 		int GetThreadYCount() const;
@@ -36,10 +39,9 @@ namespace NCL {
 		void Unbind();
 
 	protected:
-		GLuint	shaderID;
-		GLuint	programID;
-		int		programValid;
-		GLint	threadsInGroup[3];
+		GLuint shaderID;
+		GLuint programID;
+		int programValid;
+		GLint threadsInGroup[3];
 	};
 }
-

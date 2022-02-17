@@ -19,18 +19,21 @@ and the forces that are added to objects to change those positions
 
 */
 
-PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)	{
-	applyGravity	= false;
-	useBroadPhase	= false;	
-	dTOffset		= 0.0f;
-	globalDamping	= 0.995f;
+PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)
+{
+	applyGravity = false;
+	useBroadPhase = false;
+	dTOffset = 0.0f;
+	globalDamping = 0.995f;
 	SetGravity(Vector3(0.0f, -9.8f, 0.0f));
 }
 
-PhysicsSystem::~PhysicsSystem()	{
+PhysicsSystem::~PhysicsSystem()
+{
 }
 
-void PhysicsSystem::SetGravity(const Vector3& g) {
+void PhysicsSystem::SetGravity(const Vector3& g)
+{
 	gravity = g;
 }
 
@@ -44,7 +47,8 @@ you'll need to iterate through this collisions list to remove
 any collisions they are in.
 
 */
-void PhysicsSystem::Clear() {
+void PhysicsSystem::Clear()
+{
 	allCollisions.clear();
 }
 
@@ -56,7 +60,7 @@ This is the core of the physics engine update
 int constraintIterationCount = 10;
 
 //This is the fixed timestep we'd LIKE to have
-const int   idealHZ = 120;
+const int idealHZ = 120;
 const float idealDT = 1.0f / idealHZ;
 
 /*
@@ -65,19 +69,23 @@ If physics takes too long it starts to kill the framerate, it'll drop the
 iteration count down until the FPS stabilises, even if that ends up
 being at a low rate. 
 */
-int realHZ		= idealHZ;
-float realDT	= idealDT;
+int realHZ = idealHZ;
+float realDT = idealDT;
 
-void PhysicsSystem::Update(float dt) {	
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::B)) {
+void PhysicsSystem::Update(float dt)
+{
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::B))
+	{
 		useBroadPhase = !useBroadPhase;
 		std::cout << "Setting broadphase to " << useBroadPhase << std::endl;
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::I)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::I))
+	{
 		constraintIterationCount--;
 		std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::O)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::O))
+	{
 		constraintIterationCount++;
 		std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
 	}
@@ -87,33 +95,38 @@ void PhysicsSystem::Update(float dt) {
 	GameTimer t;
 	t.GetTimeDeltaSeconds();
 
-	if (useBroadPhase) {
+	if (useBroadPhase)
+	{
 		UpdateObjectAABBs();
 	}
 
-	while(dTOffset >= realDT) {
+	while (dTOffset >= realDT)
+	{
 		IntegrateAccel(realDT); //Update accelerations from external forces
-		if (useBroadPhase) {
+		if (useBroadPhase)
+		{
 			BroadPhase();
 			NarrowPhase();
 		}
-		else {
+		else
+		{
 			BasicCollisionDetection();
 		}
 
 		//This is our simple iterative solver - 
 		//we just run things multiple times, slowly moving things forward
 		//and then rechecking that the constraints have been met		
-		float constraintDt = realDT /  (float)constraintIterationCount;
-		for (int i = 0; i < constraintIterationCount; ++i) {
-			UpdateConstraints(constraintDt);	
+		float constraintDt = realDT / static_cast<float>(constraintIterationCount);
+		for (int i = 0; i < constraintIterationCount; ++i)
+		{
+			UpdateConstraints(constraintDt);
 		}
 		IntegrateVelocity(realDT); //update positions from new velocity changes
 
 		dTOffset -= realDT;
 	}
 
-	ClearForces();	//Once we've finished with the forces, reset them to zero
+	ClearForces(); //Once we've finished with the forces, reset them to zero
 
 	UpdateCollisionList(); //Remove any old collisions
 
@@ -121,21 +134,26 @@ void PhysicsSystem::Update(float dt) {
 	float updateTime = t.GetTimeDeltaSeconds();
 
 	//Uh oh, physics is taking too long...
-	if (updateTime > realDT) {
+	if (updateTime > realDT)
+	{
 		realHZ /= 2;
 		realDT *= 2;
 		std::cout << "Dropping iteration count due to long physics time...(now " << realHZ << ")\n";
 	}
-	else if(dt*2 < realDT) { //we have plenty of room to increase iteration count!
+	else if (dt * 2 < realDT)
+	{
+		//we have plenty of room to increase iteration count!
 		int temp = realHZ;
 		realHZ *= 2;
 		realDT /= 2;
 
-		if (realHZ > idealHZ) {
+		if (realHZ > idealHZ)
+		{
 			realHZ = idealHZ;
 			realDT = idealDT;
 		}
-		if (temp != realHZ) {
+		if (temp != realHZ)
+		{
 			std::cout << "Raising iteration count due to short physics time...(now " << realHZ << ")\n";
 		}
 	}
@@ -152,27 +170,34 @@ From this simple mechanism, we we build up gameplay interactions inside the
 OnCollisionBegin / OnCollisionEnd functions (removing health when hit by a 
 rocket launcher, gaining a point when the player hits the gold coin, and so on).
 */
-void PhysicsSystem::UpdateCollisionList() {
-	for (std::set<CollisionDetection::CollisionInfo>::iterator i = allCollisions.begin(); i != allCollisions.end(); ) {
-		if ((*i).framesLeft == numCollisionFrames) {
+void PhysicsSystem::UpdateCollisionList()
+{
+	for (auto i = allCollisions.begin(); i != allCollisions.end();)
+	{
+		if ((*i).framesLeft == numCollisionFrames)
+		{
 			i->a->OnCollisionBegin(i->b);
 			i->b->OnCollisionBegin(i->a);
 		}
 		(*i).framesLeft = (*i).framesLeft - 1;
-		if ((*i).framesLeft < 0) {
+		if ((*i).framesLeft < 0)
+		{
 			i->a->OnCollisionEnd(i->b);
 			i->b->OnCollisionEnd(i->a);
 			i = allCollisions.erase(i);
 		}
-		else {
+		else
+		{
 			++i;
 		}
 	}
 }
 
-void PhysicsSystem::UpdateObjectAABBs() {
+void PhysicsSystem::UpdateObjectAABBs()
+{
 	gameWorld.OperateOnContents(
-		[](GameObject* g) {
+		[](GameObject* g)
+		{
 			g->UpdateBroadphaseAABB();
 		}
 	);
@@ -187,8 +212,8 @@ to the collision set for later processing. The set will guarantee that
 a particular pair will only be added once, so objects colliding for
 multiple frames won't flood the set with duplicates.
 */
-void PhysicsSystem::BasicCollisionDetection() {
-
+void PhysicsSystem::BasicCollisionDetection()
+{
 }
 
 /*
@@ -197,8 +222,8 @@ In tutorial 5, we start determining the correct response to a collision,
 so that objects separate back out. 
 
 */
-void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const {
-
+void PhysicsSystem::ImpulseResolveCollision(GameObject& a, GameObject& b, CollisionDetection::ContactPoint& p) const
+{
 }
 
 /*
@@ -210,8 +235,8 @@ compare the collisions that we absolutely need to.
 
 */
 
-void PhysicsSystem::BroadPhase() {
-
+void PhysicsSystem::BroadPhase()
+{
 }
 
 /*
@@ -219,8 +244,8 @@ void PhysicsSystem::BroadPhase() {
 The broadphase will now only give us likely collisions, so we can now go through them,
 and work out if they are truly colliding, and if so, add them into the main collision list
 */
-void PhysicsSystem::NarrowPhase() {
-
+void PhysicsSystem::NarrowPhase()
+{
 }
 
 /*
@@ -232,17 +257,18 @@ This function will update both linear and angular acceleration,
 based on any forces that have been accumulated in the objects during
 the course of the previous game frame.
 */
-void PhysicsSystem::IntegrateAccel(float dt) {
-
+void PhysicsSystem::IntegrateAccel(float dt)
+{
 }
+
 /*
 This function integrates linear and angular velocity into
 position and orientation. It may be called multiple times
 throughout a physics update, to slowly move the objects through
 the world, looking for collisions.
 */
-void PhysicsSystem::IntegrateVelocity(float dt) {
-
+void PhysicsSystem::IntegrateVelocity(float dt)
+{
 }
 
 /*
@@ -250,9 +276,11 @@ Once we're finished with a physics update, we have to
 clear out any accumulated forces, ready to receive new
 ones in the next 'game' frame.
 */
-void PhysicsSystem::ClearForces() {
+void PhysicsSystem::ClearForces()
+{
 	gameWorld.OperateOnContents(
-		[](GameObject* o) {
+		[](GameObject* o)
+		{
 			o->GetPhysicsObject()->ClearForces();
 		}
 	);
@@ -266,12 +294,14 @@ to constrain objects based on some extra calculation, allowing
 us to model springs and ropes etc. 
 
 */
-void PhysicsSystem::UpdateConstraints(float dt) {
+void PhysicsSystem::UpdateConstraints(float dt)
+{
 	std::vector<Constraint*>::const_iterator first;
 	std::vector<Constraint*>::const_iterator last;
 	gameWorld.GetConstraintIterators(first, last);
 
-	for (auto i = first; i != last; ++i) {
+	for (auto i = first; i != last; ++i)
+	{
 		(*i)->UpdateConstraint(dt);
 	}
 }

@@ -7,44 +7,53 @@
 
 using namespace NCL::Maths;
 
-namespace NCL {
+namespace NCL
+{
 	class CollisionVolume;
-	
-	namespace CSC8503 {
+
+	namespace CSC8503
+	{
 		class Transform;
 
-		class PhysicsObject	{
+		class PhysicsObject
+		{
 		public:
 			PhysicsObject(Transform* parentTransform, physx::PxRigidActor* pxTrans, const CollisionVolume* parentVolume);
 			~PhysicsObject();
 
-			Vector3 GetLinearVelocity() const {
+			Vector3 GetLinearVelocity() const
+			{
 				return linearVelocity;
 			}
 
-			Vector3 GetAngularVelocity() const {
+			Vector3 GetAngularVelocity() const
+			{
 				return angularVelocity;
 			}
 
-			Vector3 GetTorque() const {
+			Vector3 GetTorque() const
+			{
 				return torque;
 			}
 
-			Vector3 GetForce() const {
+			Vector3 GetForce() const
+			{
 				return force;
 			}
 
-			void SetInverseMass(float invMass) {
+			void SetInverseMass(float invMass)
+			{
 				inverseMass = invMass;
 			}
 
-			float GetInverseMass() const {
+			float GetInverseMass() const
+			{
 				return inverseMass;
 			}
 
 			void ApplyAngularImpulse(const Vector3& force);
 			void ApplyLinearImpulse(const Vector3& force);
-			
+
 			void AddForce(const Vector3& force);
 
 			void AddForceAtPosition(const Vector3& force, const Vector3& position);
@@ -54,11 +63,13 @@ namespace NCL {
 
 			void ClearForces();
 
-			void SetLinearVelocity(const Vector3& v) {
+			void SetLinearVelocity(const Vector3& v)
+			{
 				linearVelocity = v;
 			}
 
-			void SetAngularVelocity(const Vector3& v) {
+			void SetAngularVelocity(const Vector3& v)
+			{
 				angularVelocity = v;
 			}
 
@@ -67,13 +78,14 @@ namespace NCL {
 
 			void UpdateInertiaTensor();
 
-			Matrix3 GetInertiaTensor() const {
+			Matrix3 GetInertiaTensor() const
+			{
 				return inverseInteriaTensor;
 			}
 
 		protected:
 			const CollisionVolume* volume;
-			Transform*		transform;
+			Transform* transform;
 
 			float inverseMass;
 			float elasticity;
@@ -82,7 +94,7 @@ namespace NCL {
 			//linear stuff
 			Vector3 linearVelocity;
 			Vector3 force;
-			
+
 
 			//angular stuff
 			Vector3 angularVelocity;
@@ -92,4 +104,3 @@ namespace NCL {
 		};
 	}
 }
-
