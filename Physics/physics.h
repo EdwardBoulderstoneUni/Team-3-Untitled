@@ -9,7 +9,7 @@ namespace physx {
 		Physics();
 		~Physics();
 
-		void Update(float dt);
+		void update(float dt);
 	private:
 
 		PxRigidDynamic* createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity = PxVec3(0));

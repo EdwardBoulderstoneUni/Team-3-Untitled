@@ -7,22 +7,6 @@
 
 using namespace physx;
 
-PxDefaultAllocator			gAllocator;
-PxDefaultErrorCallback		gErrorCallback;
-
-PxFoundation*				gFoundation = NULL;
-PxPhysics*					gPhysics = NULL;
-
-PxDefaultCpuDispatcher*		gDispatcher = NULL;
-PxScene*					gScene = NULL;
-
-/* TODO
-	Make able to faciliate more materials in the future
-*/
-PxMaterial*					gMaterial = NULL;
-
-PxPvd*						gPvd = NULL;
-
 PxReal stackZ = 10.0f;
 
 TutorialGame* game;
