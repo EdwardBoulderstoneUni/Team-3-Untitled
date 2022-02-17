@@ -7,6 +7,9 @@
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
+#include "../../AudioManager/AudioManager.h"
+#include"../../Common/Assets.h"
+
 //#include "../../include/Physics/physx/PhysX/PxPhysicsAPI.h"
 
 using namespace physx;
@@ -56,7 +59,7 @@ TutorialGame::~TutorialGame()	{
 }
 
 void TutorialGame::UpdateGame(float dt)
-{
+{ 
 	if (!inSelectionMode)
 	{
 		world->GetMainCamera()->UpdateCamera(dt);
@@ -410,18 +413,18 @@ physics worlds. You'll probably need another function for the creation of OBB cu
 //}
 //
 void TutorialGame::InitDefaultFloor() {
-	PxPhysics* gPhysics = NULL;
+	//PxPhysics* gPhysics = NULL;
 
-	PxMaterial* gMaterial = NULL;
+	//PxMaterial* gMaterial = NULL;
 
-	GameObject* cube = new GameObject();
-	//gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-	PxRigidStatic* body = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
-	////PxPhysics* gPhysics = NULL;
-	////PxTransform localTm(Vector3(0, -2, 0).p);
-	////body = gPhysics->createRigidStatic(t.transform(localTm));
+	//GameObject* cube = new GameObject();
+	////gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	//PxRigidStatic* body = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
+	//////PxPhysics* gPhysics = NULL;
+	//////PxTransform localTm(Vector3(0, -2, 0).p);
+	//////body = gPhysics->createRigidStatic(t.transform(localTm));
 
-	AddPxFloorToWorld(cube, body, Vector3(0, -2, 0), Vector3(100, 2, 100));
+	//AddPxFloorToWorld(cube, body, Vector3(0, -2, 0), Vector3(100, 2, 100));
 }
 //
 //void TutorialGame::InitGameExamples() {
@@ -601,16 +604,16 @@ void TutorialGame::MoveSelectedObject() {
 
 
 
-GameObject* TutorialGame::AddPxFloorToWorld(GameObject* cube, PxRigidStatic* body, const Vector3& position, Vector3 dimensions) {
-	//CollisionVolume* volume;
-	AABBVolume* volume = new AABBVolume(dimensions);
-	//cube->SetName("floor");
-	cube->SetBoundingVolume((CollisionVolume*)volume);
-	cube->GetTransform().SetPosition(position).SetScale(dimensions * 2);
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
-	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), body, cube->GetBoundingVolume()));
-
-	world->AddGameObject(cube);
-	return cube;
-}
+//GameObject* TutorialGame::AddPxFloorToWorld(GameObject* cube, PxRigidStatic* body, const Vector3& position, Vector3 dimensions) {
+//	//CollisionVolume* volume;
+//	AABBVolume* volume = new AABBVolume(dimensions);
+//	//cube->SetName("floor");
+//	cube->SetBoundingVolume((CollisionVolume*)volume);
+//	cube->GetTransform().SetPosition(position).SetScale(dimensions * 2);
+//	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
+//	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), body, cube->GetBoundingVolume()));
+//
+//	world->AddGameObject(cube);
+//	return cube;
+//}
 

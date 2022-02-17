@@ -26,20 +26,48 @@ PxPvd*						gPvd = NULL;
 PxReal stackZ = 10.0f;
 
 TutorialGame* game;
-namespace NCL
-{
-	Physics::Physics() {
 
-	}
-	Physics::~Physics()
-	{
+Physics::Physics() {
 
-	}
-
-	void Physics::Update(float dt) {
-
-	}
 }
+Physics::~Physics()
+{
+
+}
+
+void Physics::Update(float dt) {
+
+}
+
+PxRigidDynamic* createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity = PxVec3(0))
+{
+	PxRigidDynamic* dynamic = PxCreateDynamic(*gPhysics, t, geometry, *gMaterial, 10.0f);
+	dynamic->setAngularDamping(0.5f);
+	dynamic->setLinearVelocity(velocity);
+	gScene->addActor(*dynamic);
+	return dynamic;
+}
+
+void Physics::createStack(const PxTransform& t, PxU32 size, PxReal halfExtent)
+{
+	
+}
+
+void Physics::initPhysics(bool interactive)
+{
+		
+}
+
+void Physics::stepPhysics(bool /*interactive*/)
+{
+		
+}
+
+void Physics::cleanupPhysics(bool /*interactive*/)
+{
+		
+}
+
 
 
 //	void AddFloorToWorld(const PxTransform& t, PxVec3 fullExtents) {
