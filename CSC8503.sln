@@ -29,7 +29,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NavMeshVisualiser", "OtherP
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioManager", "AudioManager\AudioManager.vcxproj", "{51E1E077-93C5-41FC-8036-A9DA421F1136}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Physics\Physics.vcxproj", "{573A96F4-FA54-45CC-A866-6EAC592190FA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Physics", "Physics\PhysicsManager.vcxproj", "{573A96F4-FA54-45CC-A866-6EAC592190FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

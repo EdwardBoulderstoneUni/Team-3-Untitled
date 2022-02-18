@@ -53,7 +53,6 @@ void Physics::cleanupPhysics(bool /*interactive*/)
 }
 
 
-
 //	void AddFloorToWorld(const PxTransform& t, PxVec3 fullExtents) {
 //		GameObject* floor;
 //		PxRigidStatic* body;

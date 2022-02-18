@@ -1,9 +1,9 @@
 #pragma once
 #include "GameTechRenderer.h"
-#include "../../Plugins/OpenGLRendering/OGLTexture.h"
+#include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsSystem.h"
 
-//#include "../../include/Physics/physx/PhysX/PxPhysicsAPI.h"
+#include "../../include/Physics/physx/PhysX/PxPhysicsAPI.h"
 //#include "../../include/Physics/physx/PhysX/PxRigidStatic.h"
 
 
@@ -15,7 +15,7 @@ namespace NCL {
 			~TutorialGame();
 
 			
-			//GameObject* AddPxFloorToWorld(GameObject* cube, physx::PxRigidStatic* body, const Vector3& position, Vector3 dimensions);
+			GameObject* AddPxFloorToWorld(GameObject* cube, physx::PxRigidStatic* body, const Vector3& position, Vector3 dimensions);
 
 			virtual void UpdateGame(float dt);
 

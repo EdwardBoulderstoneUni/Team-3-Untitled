@@ -1,7 +1,7 @@
 #pragma once
 #include "../../Plugins/OpenGLRendering/OGLRenderer.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
-#include "../../Plugins/OpenGLRendering/OGLShader.h"
+#include "OGLShader.h"
 #include "../CSC8503Common/GameWorld.h"
 
 namespace NCL

@@ -2,7 +2,7 @@
 #include "PxPhysicsAPI.h"
 #include "../CSC8503/GameTech/TutorialGame.h"
 
-namespace physx {
+namespace NCL {
 	class Physics
 	{
 	public:
