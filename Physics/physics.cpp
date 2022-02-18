@@ -23,7 +23,7 @@ void Physics::Update(float dt) {
 
 }
 
-PxRigidDynamic* createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity = PxVec3(0))
+PxRigidDynamic* Physics::createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity)
 {
 	PxRigidDynamic* dynamic = PxCreateDynamic(*gPhysics, t, geometry, *gMaterial, 10.0f);
 	dynamic->setAngularDamping(0.5f);
