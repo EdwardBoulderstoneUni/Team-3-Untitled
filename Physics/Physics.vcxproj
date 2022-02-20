@@ -129,10 +129,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PhysXobject.cpp" />
+    <ClCompile Include="PhysXsystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Physics.h" />
+    <ClInclude Include="PhysXobject.h" />
+    <ClInclude Include="PhysXsystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

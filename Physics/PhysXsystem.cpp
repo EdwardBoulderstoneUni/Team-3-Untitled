@@ -1,5 +1,5 @@
-#include "Physics.h"
-#include "PxPhysicsAPI.h"
+#include "PhysXsystem.h"
+
 
 //#include "SnippetUtils.h"
 #define PX_RELEASE(x)      if(x)  { x->release(); x = NULL;  }
@@ -11,19 +11,51 @@ PxReal stackZ = 10.0f;
 
 TutorialGame* game;
 
-Physics::Physics() {
+PhysXsystem::PhysXsystem() {
+	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
+
+	gPvd = PxCreatePvd(*gFoundation);
+	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
+	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
+
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
+
+	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	gDispatcher = PxDefaultCpuDispatcherCreate(2);
+	sceneDesc.cpuDispatcher = gDispatcher;
+	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	gScene = gPhysics->createScene(sceneDesc);
+
+	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
+	if (pvdClient)
+	{
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+	}
+	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
 }
-Physics::~Physics()
+PhysXsystem::~PhysXsystem()
 {
+	PX_RELEASE(gScene);
+	PX_RELEASE(gDispatcher);
+	PX_RELEASE(gPhysics);
+	if (gPvd)
+	{
+		PxPvdTransport* transport = gPvd->getTransport();
+		gPvd->release();	gPvd = NULL;
+		PX_RELEASE(transport);
+	}
+	PX_RELEASE(gFoundation);
+}
+
+void PhysXsystem::Update(float dt) {
 
 }
 
-void Physics::Update(float dt) {
-
-}
-
-PxRigidDynamic* Physics::createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity)
+PxRigidDynamic* PhysXsystem::createDynamic(const PxTransform& t, const PxGeometry& geometry, const PxVec3& velocity)
 {
 	PxRigidDynamic* dynamic = PxCreateDynamic(*gPhysics, t, geometry, *gMaterial, 10.0f);
 	dynamic->setAngularDamping(0.5f);
@@ -32,25 +64,18 @@ PxRigidDynamic* Physics::createDynamic(const PxTransform& t, const PxGeometry& g
 	return dynamic;
 }
 
-void Physics::createStack(const PxTransform& t, PxU32 size, PxReal halfExtent)
+//void PhysXsystem::createStack(const PxTransform& t, PxU32 size, PxReal halfExtent)
+//{
+//	
+//}
+
+
+void PhysXsystem::stepPhysics(float fixedDeltaTime)
 {
-	
+	gScene->simulate(fixedDeltaTime);
+	gScene->fetchResults(true);
 }
 
-void Physics::initPhysics(bool interactive)
-{
-		
-}
-
-void Physics::stepPhysics(bool /*interactive*/)
-{
-		
-}
-
-void Physics::cleanupPhysics(bool /*interactive*/)
-{
-		
-}
 
 
 //	void AddFloorToWorld(const PxTransform& t, PxVec3 fullExtents) {

@@ -1,6 +1,6 @@
 #pragma once
 #include "GameTechRenderer.h"
-#include "OGLTexture.h"
+#include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../CSC8503Common/PhysicsSystem.h"
 
 #include "../../include/Physics/physx/PhysX/PxPhysicsAPI.h"
