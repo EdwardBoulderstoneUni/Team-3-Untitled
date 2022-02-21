@@ -107,7 +107,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>AudioManager.lib;CSC8503Common.lib;Common.lib;OpenGLRendering.lib;Networking-ENet.lib;ws2_32.lib;Winmm.lib;User32.lib;Gdi32.lib;fmodL_vc.lib;assimp-vc142-mtd.lib;zlibstaticd.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../libs/Audio/fmod/;./../../libs/assimp/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../libs/audio/fmod;./../../libs/assimp/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,7 +139,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>AudioManager.lib;CSC8503Common.lib;Common.lib;OpenGLRendering.lib;Networking-ENet.lib;ws2_32.lib;Winmm.lib;User32.lib;Gdi32.lib;fmod_vc.lib;assimp-vc142-mt.lib;zlibstatic.lib;advapi32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../libs/Audio/fmod/;./../../libs/assimp/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./../../libs/audio/fmod;./../../libs/assimp/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
