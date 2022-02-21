@@ -157,12 +157,16 @@ namespace NCL
 	protected:
 		MeshGeometry();
 		MeshGeometry(const std::string& filename);
+		MeshGeometry(const void* meshData);
 
 		void ReadRigPose(std::ifstream& file, vector<Matrix4>& into);
 		void ReadJointParents(std::ifstream& file);
 		void ReadJointNames(std::ifstream& file);
 		void ReadSubMeshes(std::ifstream& file, int count);
 		void ReadSubMeshNames(std::ifstream& file, int count);
+
+		void ParseMsh(const std::string& filename);
+		void Parsefbx(const void *meshData);
 
 		bool GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsigned int& b, unsigned int& c) const;
 

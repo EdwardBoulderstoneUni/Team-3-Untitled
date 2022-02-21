@@ -8,6 +8,23 @@
 #include <experimental/filesystem>
 #include "../../Common/Assets.h"
 #include "../../Common/MeshMaterial.h"
+#include "../../include/assimp/Importer.hpp"
+#include <assimp/scene.h>
+#include<assimp/postprocess.h>
+
+aiMesh *processNode(aiNode* node, const aiScene* scene)
+{
+	// process all the node's meshes (if any) and return the first
+	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	{
+		return scene->mMeshes[node->mMeshes[i]];
+		//meshes.push_back(processMesh(mesh, scene));
+	}
+	for (unsigned int i = 0; i < node->mNumChildren; i++)
+	{
+		processNode(node->mChildren[i], scene);
+	}
+}
 
 namespace NCL
 {
@@ -15,6 +32,9 @@ namespace NCL
 
 	AssetManager::AssetManager()
 	{
+		m_Importer = new Assimp::Importer();
+		
+		
 		LoadMeshes();
 		LoadTextures();
 		LoadMaterials();
@@ -30,11 +50,21 @@ namespace NCL
 		std::string filename;
 		for (const auto& entry : std::experimental::filesystem::directory_iterator(Assets::MESHDIR))
 		{
-			if (entry.path().extension().generic_string().compare(".msh") == 0)
+			if (entry.path().extension().generic_string().compare(".msh") == 0)			
 			{
 				filename = entry.path().filename().generic_string();
 				NCL::Rendering::OGLMesh* mesh = loadFunc(filename.c_str());				
 				m_Meshes.insert({filename, mesh});
+			}
+			if (entry.path().extension().generic_string().compare(".fbx") == 0)
+			{
+				filename = entry.path().filename().generic_string();
+				const aiScene* scene = m_Importer->ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+				aiMesh *mesh = processNode(scene->mRootNode, scene);
+				NCL::Rendering::OGLMesh* into = new NCL::Rendering::OGLMesh(mesh);
+				(into)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);
+				(into)->UploadToGPU();
+				m_Meshes.insert({ filename, into });
 			}
 		}
 
@@ -90,6 +120,8 @@ namespace NCL
 		{
 			delete i.second;
 		}
+
+		delete m_Importer;
 	}
 
 	NCL::Rendering::OGLMesh* AssetManager::GetMesh(const char* name)
@@ -105,6 +137,11 @@ namespace NCL
 	NCL::MeshMaterial* AssetManager::GetMaterial(const char*name)
 	{
 		return m_Materials.at(name);
+	}
+
+	Assimp::Importer* AssetManager::GetAssetImporter()
+	{
+		return m_Importer;
 	}
 
 };

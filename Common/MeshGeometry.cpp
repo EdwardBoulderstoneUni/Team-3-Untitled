@@ -124,77 +124,12 @@ void ReadIndices(std::ifstream& file, vector<unsigned int>& elements, int numInd
 
 MeshGeometry::MeshGeometry(const std::string& filename)
 {
-	primType = Triangles;
-	std::ifstream file(Assets::MESHDIR + filename);
+	ParseMsh(filename);
+}
 
-	std::string filetype;
-	int fileVersion;
-
-	file >> filetype;
-
-	if (filetype != "MeshGeometry")
-	{
-		std::cout << "File is not a MeshGeometry file!" << std::endl;
-		return;
-	}
-
-	file >> fileVersion;
-
-	if (fileVersion != 1)
-	{
-		std::cout << "MeshGeometry file has incompatible version!" << std::endl;
-		return;
-	}
-
-	int numMeshes = 0; //read
-	int numVertices = 0; //read
-	int numIndices = 0; //read
-	int numChunks = 0; //read
-
-	file >> numMeshes;
-	file >> numVertices;
-	file >> numIndices;
-	file >> numChunks;
-
-	for (int i = 0; i < numChunks; ++i)
-	{
-		int chunkType = static_cast<int>(GeometryChunkTypes::VPositions);
-
-		file >> chunkType;
-
-		switch (static_cast<GeometryChunkTypes>(chunkType))
-		{
-		case GeometryChunkTypes::VPositions: ReadTextFloats(file, positions, numVertices);
-			break;
-		case GeometryChunkTypes::VColors: ReadTextFloats(file, colours, numVertices);
-			break;
-		case GeometryChunkTypes::VNormals: ReadTextFloats(file, normals, numVertices);
-			break;
-		case GeometryChunkTypes::VTangents: ReadTextFloats(file, tangents, numVertices);
-			break;
-		case GeometryChunkTypes::VTex0: ReadTextFloats(file, texCoords, numVertices);
-			break;
-		case GeometryChunkTypes::Indices: ReadIndices(file, indices, numIndices);
-			break;
-
-		case GeometryChunkTypes::VWeightValues: ReadTextFloats(file, skinWeights, numVertices);
-			break;
-		case GeometryChunkTypes::VWeightIndices: ReadTextFloats(file, skinIndices, numVertices);
-			break;
-		case GeometryChunkTypes::JointNames: ReadJointNames(file);
-			break;
-		case GeometryChunkTypes::JointParents: ReadJointParents(file);
-			break;
-		case GeometryChunkTypes::BindPose: ReadRigPose(file, bindPose);
-			break;
-		case GeometryChunkTypes::BindPoseInv: ReadRigPose(file, inverseBindPose);
-			break;
-		case GeometryChunkTypes::SubMeshes: ReadSubMeshes(file, numMeshes);
-			break;
-		case GeometryChunkTypes::SubMeshNames: ReadSubMeshNames(file, numMeshes);
-			break;
-		}
-	}
+NCL::MeshGeometry::MeshGeometry(const void* meshData)
+{
+	Parsefbx(meshData);
 }
 
 MeshGeometry::~MeshGeometry()
@@ -420,6 +355,86 @@ void MeshGeometry::ReadSubMeshNames(std::ifstream& file, int count)
 		std::getline(file, meshName);
 		subMeshNames.emplace_back(meshName);
 	}
+}
+
+void NCL::MeshGeometry::ParseMsh(const std::string& filename)
+{
+	primType = Triangles;
+	std::ifstream file(Assets::MESHDIR + filename);
+
+	std::string filetype;
+	int fileVersion;
+
+	file >> filetype;
+
+	if (filetype != "MeshGeometry")
+	{
+		std::cout << "File is not a MeshGeometry file!" << std::endl;
+		return;
+	}
+
+	file >> fileVersion;
+
+	if (fileVersion != 1)
+	{
+		std::cout << "MeshGeometry file has incompatible version!" << std::endl;
+		return;
+	}
+
+	int numMeshes = 0; //read
+	int numVertices = 0; //read
+	int numIndices = 0; //read
+	int numChunks = 0; //read
+
+	file >> numMeshes;
+	file >> numVertices;
+	file >> numIndices;
+	file >> numChunks;
+
+	for (int i = 0; i < numChunks; ++i)
+	{
+		int chunkType = static_cast<int>(GeometryChunkTypes::VPositions);
+
+		file >> chunkType;
+
+		switch (static_cast<GeometryChunkTypes>(chunkType))
+		{
+		case GeometryChunkTypes::VPositions: ReadTextFloats(file, positions, numVertices);
+			break;
+		case GeometryChunkTypes::VColors: ReadTextFloats(file, colours, numVertices);
+			break;
+		case GeometryChunkTypes::VNormals: ReadTextFloats(file, normals, numVertices);
+			break;
+		case GeometryChunkTypes::VTangents: ReadTextFloats(file, tangents, numVertices);
+			break;
+		case GeometryChunkTypes::VTex0: ReadTextFloats(file, texCoords, numVertices);
+			break;
+		case GeometryChunkTypes::Indices: ReadIndices(file, indices, numIndices);
+			break;
+
+		case GeometryChunkTypes::VWeightValues: ReadTextFloats(file, skinWeights, numVertices);
+			break;
+		case GeometryChunkTypes::VWeightIndices: ReadTextFloats(file, skinIndices, numVertices);
+			break;
+		case GeometryChunkTypes::JointNames: ReadJointNames(file);
+			break;
+		case GeometryChunkTypes::JointParents: ReadJointParents(file);
+			break;
+		case GeometryChunkTypes::BindPose: ReadRigPose(file, bindPose);
+			break;
+		case GeometryChunkTypes::BindPoseInv: ReadRigPose(file, inverseBindPose);
+			break;
+		case GeometryChunkTypes::SubMeshes: ReadSubMeshes(file, numMeshes);
+			break;
+		case GeometryChunkTypes::SubMeshNames: ReadSubMeshNames(file, numMeshes);
+			break;
+		}
+	}
+}
+
+void NCL::MeshGeometry::Parsefbx(const void *meshData)
+{
+
 }
 
 bool MeshGeometry::ValidateMeshData()
