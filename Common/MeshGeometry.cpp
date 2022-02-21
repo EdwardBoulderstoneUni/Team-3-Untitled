@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <string>
+#include <assimp/mesh.h>
 
 using namespace NCL;
 using namespace Maths;
@@ -434,7 +435,21 @@ void NCL::MeshGeometry::ParseMsh(const std::string& filename)
 
 void NCL::MeshGeometry::Parsefbx(const void *meshData)
 {
+	const aiMesh* mesh = static_cast<const aiMesh *>(meshData);
+	
+	positions.reserve(mesh->mNumVertices);
+	for (unsigned int i = 0; i< mesh->mNumVertices; ++i)
+	{
+		positions.push_back(Vector3(mesh->mVertices->x, mesh->mVertices->y, mesh->mVertices->z));
+	}
 
+
+	colours.reserve(mesh->mNumVertices);
+	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+	{
+		colours.push_back(Vector4(mesh->mColors[0][i].r, mesh->mColors[0][i].g, mesh->mColors[0][i].b, mesh->mColors[0][i].a));
+	}
+	
 }
 
 bool MeshGeometry::ValidateMeshData()
