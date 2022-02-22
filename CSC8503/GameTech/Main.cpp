@@ -34,7 +34,7 @@ int main()
 	srand(time(nullptr));
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
-
+	//This is a test!
 	auto g = new TutorialGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
