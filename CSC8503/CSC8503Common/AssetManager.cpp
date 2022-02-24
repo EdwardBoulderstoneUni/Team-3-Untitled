@@ -11,19 +11,28 @@
 #include "../../include/assimp/Importer.hpp"
 #include <assimp/scene.h>
 #include<assimp/postprocess.h>
-
-aiMesh *processNode(aiNode* node, const aiScene* scene)
+#include <stack>
+aiMesh *processNode(aiNode* rootNode, const aiScene* scene)
 {
-	// process all the node's meshes (if any) and return the first
-	for (unsigned int i = 0; i < node->mNumMeshes; i++)
+	std::stack<aiNode*> nodes;
+	nodes.push(rootNode);
+
+	while (!nodes.empty())
 	{
-		return scene->mMeshes[node->mMeshes[i]];
-		//meshes.push_back(processMesh(mesh, scene));
+		aiNode* node = nodes.top();
+		nodes.pop();
+
+		for (unsigned int j = 0; j < node->mNumMeshes; j++)
+		{
+			return scene->mMeshes[node->mMeshes[j]];
+			//meshes.push_back(processMesh(mesh, scene));
+		}
+		for (unsigned int i = 0; i < node->mNumChildren; i++)
+		{
+			nodes.push(node->mChildren[i]);
+		}
 	}
-	for (unsigned int i = 0; i < node->mNumChildren; i++)
-	{
-		processNode(node->mChildren[i], scene);
-	}
+	return nullptr;
 }
 
 namespace NCL
@@ -59,7 +68,7 @@ namespace NCL
 			if (entry.path().extension().generic_string().compare(".fbx") == 0)
 			{
 				filename = entry.path().filename().generic_string();
-				const aiScene* scene = m_Importer->ReadFile(filename.c_str(), aiProcess_Triangulate | aiProcess_FlipUVs);
+				const aiScene* scene = m_Importer->ReadFile(entry.path().generic_string().c_str(), aiProcess_Triangulate  | aiProcess_GenNormals);
 				aiMesh *mesh = processNode(scene->mRootNode, scene);
 				NCL::Rendering::OGLMesh* into = new NCL::Rendering::OGLMesh(mesh);
 				(into)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);

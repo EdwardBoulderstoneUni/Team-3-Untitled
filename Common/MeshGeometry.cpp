@@ -436,20 +436,71 @@ void NCL::MeshGeometry::ParseMsh(const std::string& filename)
 void NCL::MeshGeometry::Parsefbx(const void *meshData)
 {
 	const aiMesh* mesh = static_cast<const aiMesh *>(meshData);
-	
+	primType = Triangles;
 	positions.reserve(mesh->mNumVertices);
 	for (unsigned int i = 0; i< mesh->mNumVertices; ++i)
 	{
-		positions.push_back(Vector3(mesh->mVertices->x, mesh->mVertices->y, mesh->mVertices->z));
+		positions.push_back(Vector3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
 	}
 
-
-	colours.reserve(mesh->mNumVertices);
-	for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+	if (mesh->mColors[0] != nullptr)
 	{
-		colours.push_back(Vector4(mesh->mColors[0][i].r, mesh->mColors[0][i].g, mesh->mColors[0][i].b, mesh->mColors[0][i].a));
+		colours.reserve(mesh->mNumVertices);
+		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+		{
+			colours.push_back(Vector4(mesh->mColors[0][i].r, mesh->mColors[0][i].g, mesh->mColors[0][i].b, mesh->mColors[0][i].a));
+		}
+	}
+
+	if (mesh->mNormals != nullptr)
+	{
+		normals.reserve(mesh->mNumVertices);
+		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+		{
+			normals.push_back(Vector3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+		}
 	}
 	
+	if (mesh->mTangents != nullptr)
+	{
+		normals.reserve(mesh->mNumVertices);
+		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+		{
+			tangents.push_back(Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z));
+		}
+	}
+	if (mesh->mTextureCoords[0] != nullptr)
+	{
+		colours.reserve(mesh->mNumVertices);
+		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+		{
+			texCoords.push_back(Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+		}
+	}
+	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+	{
+		aiFace face = mesh->mFaces[i];
+		for (unsigned int j = 0; j < face.mNumIndices; j++)
+		{
+			indices.push_back(face.mIndices[j]);
+		}
+	}
+	subMeshes.push_back(SubMesh(0, indices.size()));
+			//case GeometryChunkTypes::VWeightValues: ReadTextFloats(file, skinWeights, numVertices);
+			//	break;
+			//case GeometryChunkTypes::VWeightIndices: ReadTextFloats(file, skinIndices, numVertices);
+			//	break;
+			//case GeometryChunkTypes::JointNames: ReadJointNames(file);
+			//	break;
+			//case GeometryChunkTypes::JointParents: ReadJointParents(file);
+			//	break;
+			//case GeometryChunkTypes::BindPose: ReadRigPose(file, bindPose);
+			//	break;
+			//case GeometryChunkTypes::BindPoseInv: ReadRigPose(file, inverseBindPose);
+			//	break;
+			//case GeometryChunkTypes::SubMeshes: ReadSubMeshes(file, numMeshes);
+			//	break;
+			//case GeometryChunkTypes::SubMeshNames: ReadSubMeshNames(file, numMeshes);
 }
 
 bool MeshGeometry::ValidateMeshData()

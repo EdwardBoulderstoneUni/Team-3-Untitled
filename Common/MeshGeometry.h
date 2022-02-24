@@ -48,6 +48,15 @@ namespace NCL
 	{
 		int start;
 		int count;
+		SubMesh()
+		{
+			start = count = 0;
+		}
+		SubMesh(int _start, int _count)
+		{
+			start = _start;
+			count = _count;
+		}
 	};
 
 	class MeshGeometry
