@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "../GameTech/imgui/imgui.h"
+#include "./imgui/imgui.h"
 
 class GameMenu
 {
