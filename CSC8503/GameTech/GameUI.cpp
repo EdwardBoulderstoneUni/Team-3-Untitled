@@ -1,9 +1,9 @@
 #include "../GameTech/GameUI.h"
 #include "../../Common/Win32Window.h"
 #include "../../Common/Window.h"
-#include "./imgui/imgui.h"
-#include "./imgui/backends/imgui_impl_win32.h"
-#include "./imgui/backends/imgui_impl_opengl3.h"
+#include "../../imgui/imgui.h"
+#include "../../imgui/backends/imgui_impl_win32.h"
+#include "../../imgui/backends/imgui_impl_opengl3.h"
 
 using namespace NCL;
 
