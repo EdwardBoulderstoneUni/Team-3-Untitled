@@ -3,6 +3,7 @@
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsSystem.h"
 #include "../../AudioManager/AudioManager.h"
+#include "../CSC8503Common/PushdownMachine.h"
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{
@@ -11,10 +12,18 @@ namespace NCL {
 			~TutorialGame();
 
 			virtual void UpdateGame(float dt);
+			virtual void UpdateRender(float dt);
 
+			GameUI* GetUI()const { return gameUI; };
+			bool IsFreezed()const { return freezed; };
+			void SetFreeze(bool freeze) { freezed = freeze; };
+			bool ShouldQuit()const { return quit; };
+
+			void SetSingleMode();
+			void SetMultiMode();
 		protected:
 			void InitialiseAssets();
-
+			void InitialiseUI();
 			void InitCamera();
 			void UpdateKeys();
 
@@ -76,6 +85,21 @@ namespace NCL {
 			{
 				lockedObject = o;
 			}
+
+			friend class GameMode;
+			// two friend class in single mode and multi mode.
+			//friend class BallGameMode;
+			//friend class MazeGameMode;
+			//friend class MazeMap;
+
+			friend class TutorialMenu;
+			std::shared_ptr<TutorialMenu> gameMenu = nullptr;
+
+			GameUI* gameUI;
+
+			bool quit;
+			bool freezed;
+			PushdownMachine* pauseMachine;
 		};
 	}
 }

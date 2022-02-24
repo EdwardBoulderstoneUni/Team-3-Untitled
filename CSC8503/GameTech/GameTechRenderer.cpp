@@ -5,6 +5,7 @@
 #include "../../Common/Camera.h"
 #include "../../Common/Vector3.h"
 #include "../../Common/TextureLoader.h"
+#include "../GameTech/GameUI.h"
 using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
@@ -114,6 +115,10 @@ void GameTechRenderer::RenderFrame()
 	render_skybox();
 	render_camera();
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
+	if (gameUI)
+	{
+		gameUI->DrawUI();
+	}
 }
 
 void GameTechRenderer::build_object_list()

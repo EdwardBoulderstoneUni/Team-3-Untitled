@@ -7,6 +7,8 @@
 #include "../CSC8503Common/NavigationGrid.h"
 
 #include "TutorialGame.h"
+#include "GameUI.h"
+#include "PauseMenu.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -23,45 +25,43 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
-int main()
-{
+int main() {
+	srand(time(0));
+
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
 
-	if (!w->HasInitialised())
-	{
+	if (!w->HasInitialised()) {
 		return -1;
 	}
-	srand(time(nullptr));
-	w->ShowOSPointer(false);
+
+	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
 
-	auto g = new TutorialGame();
+	TutorialGame* g = new TutorialGame();
+
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
-	{
+	while (w->UpdateWindow() && !g->ShouldQuit()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
-		if (dt > 0.1f)
-		{
+		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
 			continue; //must have hit a breakpoint or something to have a 1 second frame time!
 		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR))
-		{
+		/*if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
 			w->ShowConsole(true);
 		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT))
-		{
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
 			w->ShowConsole(false);
 		}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T))
-		{
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
 			w->SetWindowPosition(0, 0);
 		}
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
-
+		*/
+		g->UpdateRender(dt);
 		g->UpdateGame(dt);
 	}
+	delete g;
 	Window::DestroyGameWindow();
 }

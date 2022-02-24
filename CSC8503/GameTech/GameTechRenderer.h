@@ -3,6 +3,7 @@
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 #include "OGLShader.h"
 #include "../CSC8503Common/GameWorld.h"
+#include "../GameTech/GameUI.h"
 
 namespace NCL
 {
@@ -15,7 +16,7 @@ namespace NCL
 		public:
 			explicit GameTechRenderer(GameWorld& world);
 			~GameTechRenderer() override;
-
+			void SetUI(const GameUI* ui) { gameUI = ui; };
 		protected:
 			void RenderFrame() override;
 
@@ -46,6 +47,8 @@ namespace NCL
 			Vector4 light_colour_;
 			float light_radius_;
 			Vector3 light_position_;
+
+			const GameUI* gameUI = nullptr;
 		};
 	}
 }

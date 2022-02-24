@@ -134,9 +134,6 @@
     <ClCompile Include="StateTransition.cpp">
       <Filter>AI</Filter>
     </ClCompile>
-    <ClCompile Include="PushdownState.cpp">
-      <Filter>AI</Filter>
-    </ClCompile>
     <ClCompile Include="PushdownMachine.cpp">
       <Filter>AI</Filter>
     </ClCompile>
