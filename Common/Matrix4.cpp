@@ -12,6 +12,7 @@ https://research.ncl.ac.uk/game/
 #include "Vector3.h"
 #include "Vector4.h"
 #include "Quaternion.h"
+#include <assimp/matrix4x4.h>
 
 using namespace NCL;
 using namespace Maths;
@@ -321,6 +322,24 @@ Vector4 Matrix4::GetColumn(unsigned int column) const
 		memcpy(&out, &array[4 * column], sizeof(Vector4));
 	}
 
+	return out;
+}
+
+Matrix4 Matrix4::operator*(const aiMatrix4x4t<float>* mat) const
+{
+	Matrix4 out;
+	//Students! You should be able to think up a really easy way of speeding this up...
+	for (unsigned int r = 0; r < 4; ++r)
+	{
+		for (unsigned int c = 0; c < 4; ++c)
+		{
+			out.array[c + (r * 4)] = 0.0f;
+			for (unsigned int i = 0; i < 4; ++i)
+			{
+				out.array[c + (r * 4)] += this->array[c + (i * 4)] * mat[i][r];   // a.array[(r * 4) + i];
+			}
+		}
+	}
 	return out;
 }
 
