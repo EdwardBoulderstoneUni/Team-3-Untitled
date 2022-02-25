@@ -10,7 +10,6 @@ https://research.ncl.ac.uk/game/
 
 #include <iostream>
 
-template <typename T>class aiMatrix4x4t;
 namespace NCL
 {
 	namespace Maths
@@ -94,7 +93,7 @@ namespace NCL
 				}
 				return out;
 			}
-			Matrix4 operator*(const aiMatrix4x4t<float>*) const;
+
 			Vector3 operator*(const Vector3& v) const;
 			Vector4 operator*(const Vector4& v) const;
 

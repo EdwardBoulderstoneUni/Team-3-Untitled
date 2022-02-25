@@ -8,7 +8,6 @@
 #include <experimental/filesystem>
 #include "../../Common/Assets.h"
 #include "../../Common/MeshMaterial.h"
-#include "../../Common/Matrix4.h"
 #include "../../include/assimp/Importer.hpp"
 #include <assimp/scene.h>
 #include<assimp/postprocess.h>
@@ -17,11 +16,10 @@ aiMesh *processNode(aiNode* rootNode, const aiScene* scene)
 {
 	std::stack<aiNode*> nodes;
 	nodes.push(rootNode);
-	NCL::Maths::Matrix4 transform;
+
 	while (!nodes.empty())
 	{
 		aiNode* node = nodes.top();
-		transform = transform * node->mTransformation ;
 		nodes.pop();
 
 		for (unsigned int j = 0; j < node->mNumMeshes; j++)
