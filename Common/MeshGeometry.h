@@ -3,6 +3,8 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Matrix4.h"
+
 using std::vector;
 
 namespace NCL
@@ -94,6 +96,11 @@ namespace NCL
 			return static_cast<unsigned>(subMeshes.size());
 		}
 
+		Matrix4& GetLocalTransform()
+		{
+			return localTransform;
+		}
+
 		const SubMesh* GetSubMesh(unsigned int i) const
 		{
 			if (i > subMeshes.size())
@@ -166,7 +173,7 @@ namespace NCL
 	protected:
 		MeshGeometry();
 		MeshGeometry(const std::string& filename);
-		MeshGeometry(const void* meshData);
+		MeshGeometry(const void* meshData, Matrix4 transform);
 
 		void ReadRigPose(std::ifstream& file, vector<Matrix4>& into);
 		void ReadJointParents(std::ifstream& file);
@@ -202,5 +209,7 @@ namespace NCL
 
 		vector<Matrix4> bindPose;
 		vector<Matrix4> inverseBindPose;
+
+		Matrix4 localTransform;
 	};
 }

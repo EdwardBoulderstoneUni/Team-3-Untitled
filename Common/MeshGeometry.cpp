@@ -125,12 +125,14 @@ void ReadIndices(std::ifstream& file, vector<unsigned int>& elements, int numInd
 
 MeshGeometry::MeshGeometry(const std::string& filename)
 {
+	localTransform = Matrix4();
 	ParseMsh(filename);
 }
 
-NCL::MeshGeometry::MeshGeometry(const void* meshData)
+NCL::MeshGeometry::MeshGeometry(const void* meshData, Matrix4 transform)
 {
 	Parsefbx(meshData);
+	localTransform = transform;
 }
 
 MeshGeometry::~MeshGeometry()
