@@ -13,6 +13,7 @@ namespace NCL
 {
 	namespace CSC8503
 	{
+		class NetworkObject;
 		class GameObject
 		{
 		public:
@@ -49,6 +50,10 @@ namespace NCL
 				return physicsObject;
 			}
 
+			NetworkObject* GetNetworkObject() const {
+				return networkObject;
+			}
+
 			void SetRenderObject(RenderObject* newObject)
 			{
 				renderObject = newObject;
@@ -57,6 +62,12 @@ namespace NCL
 			void SetPhysicsObject(PhysicsObject* newObject)
 			{
 				physicsObject = newObject;
+			}
+
+			void SetNetworkObject(int id);
+
+			void SetNetworkObject(NetworkObject* object) {
+				networkObject = object;
 			}
 
 			const string& GetName() const
@@ -94,6 +105,7 @@ namespace NCL
 			CollisionVolume* boundingVolume;
 			PhysicsObject* physicsObject;
 			RenderObject* renderObject;
+			NetworkObject* networkObject;
 
 			bool isActive;
 			int worldID;
