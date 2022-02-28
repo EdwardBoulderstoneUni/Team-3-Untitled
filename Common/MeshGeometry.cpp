@@ -438,7 +438,9 @@ void NCL::MeshGeometry::AddSubMeshFromFBXData(const void *meshData)
 {
 	const aiMesh* mesh = static_cast<const aiMesh *>(meshData);
 	primType = Triangles;
-	int startCount = indices.size();
+
+	unsigned int subMeshStartOffset = indices.size();
+	unsigned indicesOffset = positions.size();
 
 	positions.reserve(mesh->mNumVertices);
 	for (unsigned int i = 0; i< mesh->mNumVertices; ++i)
@@ -486,10 +488,10 @@ void NCL::MeshGeometry::AddSubMeshFromFBXData(const void *meshData)
 		indices.reserve(face.mNumIndices);
 		for (unsigned int j = 0; j < face.mNumIndices; j++)
 		{
-			indices.push_back(face.mIndices[j]);
+			indices.push_back(face.mIndices[j] + indicesOffset);
 		}
 	}
-	subMeshes.push_back(SubMesh(startCount, indices.size()));
+	subMeshes.push_back(SubMesh(subMeshStartOffset, indices.size()));
 	//case GeometryChunkTypes::VWeightValues: ReadTextFloats(file, skinWeights, numVertices);
 	//	break;
 	//case GeometryChunkTypes::VWeightIndices: ReadTextFloats(file, skinIndices, numVertices);
