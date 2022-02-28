@@ -111,6 +111,9 @@
     <ClCompile Include="MeshMaterial.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="UserInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="MeshMaterial.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInput.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
