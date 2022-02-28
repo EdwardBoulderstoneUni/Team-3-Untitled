@@ -39,7 +39,7 @@ OGLMesh::OGLMesh(const std::string& filename) : MeshGeometry(filename)
 	indexBuffer = 0;
 }
 
-NCL::Rendering::OGLMesh::OGLMesh(const void* meshData, Matrix4 transform) : MeshGeometry(meshData, transform)
+NCL::Rendering::OGLMesh::OGLMesh(Matrix4 transform) : MeshGeometry(transform)
 {
 	vao = 0;
 	subCount = 1;

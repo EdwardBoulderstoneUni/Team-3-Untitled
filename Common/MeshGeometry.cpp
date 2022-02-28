@@ -129,9 +129,8 @@ MeshGeometry::MeshGeometry(const std::string& filename)
 	ParseMsh(filename);
 }
 
-NCL::MeshGeometry::MeshGeometry(const void* meshData, Matrix4 transform)
+NCL::MeshGeometry::MeshGeometry(Matrix4 transform)
 {
-	Parsefbx(meshData);
 	localTransform = transform;
 }
 
@@ -435,10 +434,12 @@ void NCL::MeshGeometry::ParseMsh(const std::string& filename)
 	}
 }
 
-void NCL::MeshGeometry::Parsefbx(const void *meshData)
+void NCL::MeshGeometry::AddSubMeshFromFBXData(const void *meshData)
 {
 	const aiMesh* mesh = static_cast<const aiMesh *>(meshData);
 	primType = Triangles;
+	int startCount = indices.size();
+
 	positions.reserve(mesh->mNumVertices);
 	for (unsigned int i = 0; i< mesh->mNumVertices; ++i)
 	{
@@ -465,7 +466,7 @@ void NCL::MeshGeometry::Parsefbx(const void *meshData)
 	
 	if (mesh->mTangents != nullptr)
 	{
-		normals.reserve(mesh->mNumVertices);
+		tangents.reserve(mesh->mNumVertices);
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
 			tangents.push_back(Vector3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z));
@@ -473,7 +474,7 @@ void NCL::MeshGeometry::Parsefbx(const void *meshData)
 	}
 	if (mesh->mTextureCoords[0] != nullptr)
 	{
-		colours.reserve(mesh->mNumVertices);
+		texCoords.reserve(mesh->mNumVertices);
 		for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 		{
 			texCoords.push_back(Vector2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
@@ -482,27 +483,28 @@ void NCL::MeshGeometry::Parsefbx(const void *meshData)
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
+		indices.reserve(face.mNumIndices);
 		for (unsigned int j = 0; j < face.mNumIndices; j++)
 		{
 			indices.push_back(face.mIndices[j]);
 		}
 	}
-	subMeshes.push_back(SubMesh(0, indices.size()));
-			//case GeometryChunkTypes::VWeightValues: ReadTextFloats(file, skinWeights, numVertices);
-			//	break;
-			//case GeometryChunkTypes::VWeightIndices: ReadTextFloats(file, skinIndices, numVertices);
-			//	break;
-			//case GeometryChunkTypes::JointNames: ReadJointNames(file);
-			//	break;
-			//case GeometryChunkTypes::JointParents: ReadJointParents(file);
-			//	break;
-			//case GeometryChunkTypes::BindPose: ReadRigPose(file, bindPose);
-			//	break;
-			//case GeometryChunkTypes::BindPoseInv: ReadRigPose(file, inverseBindPose);
-			//	break;
-			//case GeometryChunkTypes::SubMeshes: ReadSubMeshes(file, numMeshes);
-			//	break;
-			//case GeometryChunkTypes::SubMeshNames: ReadSubMeshNames(file, numMeshes);
+	subMeshes.push_back(SubMesh(startCount, indices.size()));
+	//case GeometryChunkTypes::VWeightValues: ReadTextFloats(file, skinWeights, numVertices);
+	//	break;
+	//case GeometryChunkTypes::VWeightIndices: ReadTextFloats(file, skinIndices, numVertices);
+	//	break;
+	//case GeometryChunkTypes::JointNames: ReadJointNames(file);
+	//	break;
+	//case GeometryChunkTypes::JointParents: ReadJointParents(file);
+	//	break;
+	//case GeometryChunkTypes::BindPose: ReadRigPose(file, bindPose);
+	//	break;
+	//case GeometryChunkTypes::BindPoseInv: ReadRigPose(file, inverseBindPose);
+	//	break;
+	//case GeometryChunkTypes::SubMeshes: ReadSubMeshes(file, numMeshes);
+	//	break;
+	//case GeometryChunkTypes::SubMeshNames: ReadSubMeshNames(file, numMeshes);
 }
 
 bool MeshGeometry::ValidateMeshData()

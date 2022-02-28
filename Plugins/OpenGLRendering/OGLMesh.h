@@ -23,7 +23,7 @@ namespace NCL
 			friend class OGLRenderer;
 			OGLMesh();
 			OGLMesh(const std::string& filename);
-			OGLMesh(const void* meshData, Matrix4 transform);
+			OGLMesh(Matrix4 transform);
 			~OGLMesh() override;
 
 			void RecalculateNormals();

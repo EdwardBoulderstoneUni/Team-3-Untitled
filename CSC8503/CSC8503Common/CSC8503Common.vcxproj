@@ -134,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="AABBVolume.h" />
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="AssimpHelper.h" />
     <ClInclude Include="CapsuleVolume.h" />
     <ClInclude Include="GameObjectGenerator.h" />
     <ClInclude Include="NavigationGrid.h" />
@@ -162,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="AssimpHelper.cpp" />
     <ClCompile Include="CollisionDetection.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="GameObject.cpp" />

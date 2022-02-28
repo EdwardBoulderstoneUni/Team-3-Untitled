@@ -169,11 +169,12 @@ namespace NCL
 		virtual void UploadToGPU(Rendering::RendererBase* renderer = nullptr) = 0;
 
 		static MeshGeometry* GenerateTriangle(MeshGeometry* input);
+		void AddSubMeshFromFBXData(const void* meshData);
 
 	protected:
 		MeshGeometry();
 		MeshGeometry(const std::string& filename);
-		MeshGeometry(const void* meshData, Matrix4 transform);
+		MeshGeometry(Matrix4 transform);
 
 		void ReadRigPose(std::ifstream& file, vector<Matrix4>& into);
 		void ReadJointParents(std::ifstream& file);
@@ -182,7 +183,6 @@ namespace NCL
 		void ReadSubMeshNames(std::ifstream& file, int count);
 
 		void ParseMsh(const std::string& filename);
-		void Parsefbx(const void *meshData);
 
 		bool GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsigned int& b, unsigned int& c) const;
 
