@@ -1,4 +1,0 @@
-libs/assimp/debug/assimp-vc142-mtd.lib filter=lfs diff=lfs merge=lfs -text
-libs/assimp/release/assimp-vc142-mt.lib filter=lfs diff=lfs merge=lfs -text
-libs/assimp/Release/zlibstatic.lib filter=lfs diff=lfs merge=lfs -text
-libs/assimp/Debug/zlibstaticd.lib filter=lfs diff=lfs merge=lfs -text

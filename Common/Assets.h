@@ -16,9 +16,10 @@ namespace NCL
 		const std::string shaderdir("../../Assets/Shaders/");
 		const std::string MESHDIR("../../Assets/Meshes/");
 		const std::string TEXTUREDIR("../../Assets/Textures/");
-		const std::string SOUNDSDIR("../../Assets/Sounds/");
+		const std::string SOUNDSDIR("../../Assets/Audio/");
 		const std::string FONTSSDIR("../../Assets/Fonts/");
 		const std::string DATADIR("../../Assets/Data/");
+
 		extern bool ReadTextFile(const std::string& filepath, std::string& result);
 		extern bool ReadBinaryFile(const std::string& filepath, char** into, size_t& size);
 	}
