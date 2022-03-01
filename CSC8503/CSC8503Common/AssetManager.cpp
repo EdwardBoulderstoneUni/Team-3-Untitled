@@ -8,13 +8,16 @@
 #include <experimental/filesystem>
 #include "../../Common/Assets.h"
 #include "../../Common/MeshMaterial.h"
+#include "../../Common/Matrix4.h"
+#include "AssimpHelper.h"
 
 namespace NCL
 {
 	AssetManager* AssetManager::m_Instance = nullptr;
 
 	AssetManager::AssetManager()
-	{
+	{		
+		AssimpHelper::GetInstance().Init();
 		LoadMeshes();
 		LoadTextures();
 		LoadMaterials();
@@ -27,14 +30,29 @@ namespace NCL
 			(into)->UploadToGPU();
 			return into;
 		};
-		std::string filename;
+		std::string filename;			
+
+		NCL::Rendering::OGLMesh* mesh = nullptr;
+		NCL::MeshMaterial* material = nullptr;
 		for (const auto& entry : std::experimental::filesystem::directory_iterator(Assets::MESHDIR))
 		{
-			if (entry.path().extension().generic_string().compare(".msh") == 0)
+			if (entry.path().extension().generic_string().compare(".msh") == 0)			
 			{
 				filename = entry.path().filename().generic_string();
 				NCL::Rendering::OGLMesh* mesh = loadFunc(filename.c_str());				
 				m_Meshes.insert({filename, mesh});
+			}
+			if (entry.path().extension().generic_string().compare(".fbx") == 0)
+			{
+				mesh = nullptr;
+				material = nullptr;
+				filename = entry.path().filename().generic_string();
+				
+				AssimpHelper::GetInstance().ProcessFBX(entry.path().generic_string().c_str(), mesh, material);
+				(mesh)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);
+				(mesh)->UploadToGPU();
+				m_Meshes.insert({ filename, mesh });
+				m_Materials.insert({ filename, material });
 			}
 		}
 
@@ -106,5 +124,4 @@ namespace NCL
 	{
 		return m_Materials.at(name);
 	}
-
 };
