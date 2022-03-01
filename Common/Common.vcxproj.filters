@@ -117,9 +117,6 @@
     <ClCompile Include="Keyboard.cpp">
       <Filter>Input</Filter>
     </ClCompile>
-    <ClCompile Include="InputHandler.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
     <ClCompile Include="MouseAndKeyboardInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

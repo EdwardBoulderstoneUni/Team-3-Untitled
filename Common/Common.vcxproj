@@ -196,7 +196,6 @@
     <ClCompile Include="Assets.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameTimer.cpp" />
-    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="Matrix2.cpp" />
