@@ -5,6 +5,7 @@
 #include <stack>
 #include <vector>
 #include "../../Common/Matrix4.h"
+#include "../../Common/MeshMaterial.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 
 #define GET_NCL_MATRIX4(mat)	NCL::Maths::Matrix4({ mat.a1,mat.b1,mat.c1,mat.d1,\
@@ -31,10 +32,10 @@ namespace  NCL
 	{
 		delete m_Instance;
 	}
-	void AssimpHelper::ProcessFBX(const char* filePath, Rendering::OGLMesh *&outMesh, MeshMaterial *&outMaterial)
+	void AssimpHelper::ProcessFBX(const char* filePath, Rendering::OGLMesh*& outMesh, MeshMaterial*& outMaterial)
 	{
 		const aiScene* scene = m_Importer->ReadFile(filePath, aiProcess_Triangulate | aiProcess_GenNormals);
-
+		outMaterial = new MeshMaterial();
 		std::stack<const aiNode*> nodes;
 		nodes.push(scene->mRootNode);
 		NCL::Maths::Matrix4 transform;
@@ -46,7 +47,7 @@ namespace  NCL
 
 			transform = GET_NCL_MATRIX4(node->mTransformation);
 			for (unsigned int j = 0; j < node->mNumMeshes; j++)
-			{				
+			{
 				meshes.push_back(scene->mMeshes[node->mMeshes[j]]);
 				TryLoadMaterial(scene, scene->mMeshes[node->mMeshes[j]], outMaterial);
 			}
@@ -60,18 +61,25 @@ namespace  NCL
 		for (auto& mesh : meshes)
 		{
 			outMesh->AddSubMeshFromFBXData(static_cast<void*>(mesh));
-		}		
+		}
+
+		outMaterial->LoadTextures();
 	}
 	void AssimpHelper::TryLoadMaterial(const aiScene* scene, const aiMesh* mesh, MeshMaterial*& outMaterial)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		aiString texture_file;
 		material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), texture_file);
-		if (auto texture = scene->GetEmbeddedTexture(texture_file.C_Str())) {
-			//returned pointer is not null, read texture from memory
+		const aiTexture* texture = scene->GetEmbeddedTexture(texture_file.C_Str());
+		if (texture != nullptr) //returned pointer is not null, read texture from memory
+		{
+
 		}
-		else {
-			//regular file, check if it exists and read it
+		else //regular file, check if it exists and read it
+		{
+			NCL::MeshMaterialEntry materialEntry;
+			materialEntry.AddEntry("Diffuse", texture_file.C_Str(), nullptr);
+			outMaterial->AddEntry(materialEntry);
 		}
 	}
 }
