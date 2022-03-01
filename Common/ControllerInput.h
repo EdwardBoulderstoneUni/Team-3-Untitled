@@ -1,5 +1,6 @@
 #pragma once
 #include "InputHandler.h"
+#include <stdexcept>
 
 class ControllerInput final :
     public InputHandler
