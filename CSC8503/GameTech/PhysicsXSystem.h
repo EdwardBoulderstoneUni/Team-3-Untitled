@@ -4,6 +4,55 @@
 #include "../CSC8503Common/CollisionVolume.h"
 using namespace physx;
 using namespace NCL;
+struct GeometryData
+{
+	GeometryData() :type(), data(){}
+	enum Type
+	{
+		Sphere,
+		Capsule,
+		Box,
+		ConvexMesh,
+		TriangleMesh,
+		HeightField,
+	};
+	Type type;
+	union Data
+	{
+		Data(){}
+		struct SphereData
+		{
+			SphereData(float newRadius) {
+				radius = newRadius;
+			}
+			float radius;
+		}sphereData;
+
+		struct CapsuleData
+		{
+			CapsuleData(float newRadius,float newhalfHeight) {
+				radius = newRadius;
+				halfHeight=newhalfHeight;
+			}
+			float radius;
+			float halfHeight;
+		}capsuleData;
+
+		struct BoxData
+		{
+			BoxData(Vector3 vector) {
+				halfx = vector.x;
+				halfy = vector.y;
+				halfz = vector.z;
+			}
+			float halfx;
+			float halfy;
+			float halfz;
+		}boxData;
+
+	}data;
+
+};
 class PhysicsXSystem {
 		public:
 			PhysicsXSystem(GameWorld& g);
@@ -11,10 +60,11 @@ class PhysicsXSystem {
 			void initPhysics();
 			void Update(float dt);
 			void cleanupPhysics();
-			void addActor(GameObject& actor);
-
+			void addDynamicActor(GameObject& actor);
+			void addStaticActor(GameObject& actor);
 			PxTransform& parseTransform(Transform transform);
-			PxShape& parseVolume(Vector3 volume);
+	
+			PhysicsXObject* createPhysicsXObject(Transform transform,GeometryData geoData);
 		protected:
 			void getActorsPose(PxRigidActor** actors, const PxU32 numActors);
 			void updateObjects(PxTransform pose, PxU32 count);

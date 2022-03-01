@@ -315,10 +315,12 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 
 	floor->GetPhysicsObject()->SetInverseMass(0);
 	floor->GetPhysicsObject()->InitCubeInertia();
-	floor->SetPhysicsXObject(new PhysicsXObject(physicsX->parseTransform(floor->GetTransform()),
-		physicsX->parseVolume(floorSize)));
-	physicsX->addActor(*floor);
-	floor->GetPhysicsXObject()->SetGravity(false);
+
+	GeometryData geoData;
+	geoData.type = GeometryData::Box;
+	geoData.data.boxData = GeometryData::Data::BoxData(floorSize);
+	floor->SetPhysicsXObject(physicsX->createPhysicsXObject(floor->GetTransform(), geoData));
+	physicsX->addStaticActor(*floor);
 	world->AddGameObject(floor);
 
 	return floor;
@@ -487,9 +489,13 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
-	character->SetPhysicsXObject(new PhysicsXObject(physicsX->parseTransform(character->GetTransform()),
-		physicsX->parseVolume(Vector3(0.3f, 0.85f, 0.3f))));
-	physicsX->addActor(*character);
+	
+	GeometryData geoData;
+	geoData.type = GeometryData::Box;
+	geoData.data.boxData = GeometryData::Data::BoxData(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
+	character->SetPhysicsXObject(physicsX->createPhysicsXObject(character->GetTransform(),
+		geoData));
+	physicsX->addDynamicActor(*character);
 	world->AddGameObject(character);
 
 	//lockedObject = character;

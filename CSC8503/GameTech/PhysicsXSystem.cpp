@@ -13,6 +13,8 @@ PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 
 PhysicsXSystem::~PhysicsXSystem()
 {
+	gPhysics->release();
+	gPvd->release();
 }
 
 void PhysicsXSystem::initPhysics()
@@ -103,7 +105,7 @@ void PhysicsXSystem::cleanupPhysics()
 	PX_RELEASE(gFoundation);
 }
 
-void PhysicsXSystem::addActor(GameObject& actor)
+void PhysicsXSystem::addDynamicActor(GameObject& actor)
 {
 	PhysicsXObject* phyObj = actor.GetPhysicsXObject();
 	if (phyObj == nullptr)return;
@@ -114,6 +116,18 @@ void PhysicsXSystem::addActor(GameObject& actor)
 
 	body->userData = &actor;
 	actor.GetPhysicsXObject()->SetRigidDynamic(body);
+	gScene->addActor(*body);
+}
+
+void PhysicsXSystem::addStaticActor(GameObject& actor)
+{
+	PhysicsXObject* phyObj = actor.GetPhysicsXObject();
+	if (phyObj == nullptr)return;
+	PxRigidStatic *body=gPhysics->createRigidStatic(phyObj->GetTransform());
+	body->attachShape(phyObj->GetVolume());
+
+	body->userData = &actor;
+	//actor.GetPhysicsXObject()->SetRigidDynamic(body);
 	gScene->addActor(*body);
 }
 
@@ -150,8 +164,36 @@ PxTransform& PhysicsXSystem::parseTransform(Transform transform)
 	return PxTransform(PxVec3(positon.x, positon.y, positon.z), PxQuat(quat.x, quat.y, quat.z, quat.w));
 }
 
-PxShape& PhysicsXSystem::parseVolume(Vector3 volume)
+
+PhysicsXObject* PhysicsXSystem::createPhysicsXObject(Transform transform,GeometryData geoData)
 {
-	PxShape* shape = gPhysics->createShape(PxBoxGeometry(volume.x, volume.y, volume.z), *gMaterial);
-	return *shape;
+	PxShape* shape = nullptr;
+	switch (geoData.type)
+	{
+	case GeometryData::Type::Sphere:
+	{
+		shape = gPhysics->createShape(PxSphereGeometry(geoData.data.sphereData.radius), *gMaterial);
+		break;
+	}
+
+	case GeometryData::Type::Capsule:
+	{
+		shape = gPhysics->createShape(PxCapsuleGeometry(geoData.data.sphereData.radius,
+			geoData.data.capsuleData.halfHeight), *gMaterial);
+		break;
+	}
+
+	case GeometryData::Type::Box:
+	{
+		shape = gPhysics->createShape(PxBoxGeometry(geoData.data.boxData.halfx,
+			geoData.data.boxData.halfy,
+			geoData.data.boxData.halfz), *gMaterial);
+		break;
+	}
+
+	default:
+		break;
+	}
+	if (shape == nullptr)return nullptr;
+	else return new PhysicsXObject(parseTransform(transform), *shape);
 }
