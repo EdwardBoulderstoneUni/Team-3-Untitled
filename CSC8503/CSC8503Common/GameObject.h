@@ -3,6 +3,7 @@
 #include "CollisionVolume.h"
 
 #include "PhysicsObject.h"
+#include "../GameTech/PhysicsXObject.h"
 #include "RenderObject.h"
 
 #include <vector>
@@ -50,6 +51,11 @@ namespace NCL
 				return physicsObject;
 			}
 
+			PhysicsXObject* GetPhysicsXObject() const
+			{
+				return physicsXObject;
+			}
+
 			NetworkObject* GetNetworkObject() const {
 				return networkObject;
 			}
@@ -62,6 +68,11 @@ namespace NCL
 			void SetPhysicsObject(PhysicsObject* newObject)
 			{
 				physicsObject = newObject;
+			}
+
+			void SetPhysicsXObject(PhysicsXObject* newObject)
+			{
+				physicsXObject = newObject;
 			}
 
 			void SetNetworkObject(int id);
@@ -104,6 +115,7 @@ namespace NCL
 
 			CollisionVolume* boundingVolume;
 			PhysicsObject* physicsObject;
+			PhysicsXObject* physicsXObject;
 			RenderObject* renderObject;
 			NetworkObject* networkObject;
 

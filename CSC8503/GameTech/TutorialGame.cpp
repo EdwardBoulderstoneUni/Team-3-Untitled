@@ -17,7 +17,7 @@ TutorialGame::TutorialGame()
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
 	physics = new PhysicsSystem(*world);
-
+	physicsX = new PhysicsXSystem(*world);
 	forceMagnitude = 10.0f;
 	useGravity = false;
 	inSelectionMode = false;
@@ -35,7 +35,25 @@ for this module, even in the coursework, but you can add it if you like!
 
 */
 void TutorialGame::InitialiseAssets() {
+#ifdef PhysX_DEBUG
+	auto loadFunc = [](const string& name, OGLMesh** into) {
+		*into = new OGLMesh(name);
+		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
+		(*into)->UploadToGPU();
+};
+	loadFunc("cube.msh", &cubeMesh);
+	loadFunc("sphere.msh", &sphereMesh);
+	loadFunc("Male1.msh", &charMeshA);
+	loadFunc("courier.msh", &charMeshB);
+	loadFunc("security.msh", &enemyMesh);
+	loadFunc("coin.msh", &bonusMesh);
+	loadFunc("capsule.msh", &capsuleMesh);
 
+	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
+	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
+	InitCamera();
+	InitWorld();
+#else
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
 	InitCamera();
@@ -44,7 +62,9 @@ void TutorialGame::InitialiseAssets() {
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
+#endif
 }
+	
 
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
@@ -74,7 +94,7 @@ void TutorialGame::UpdateGame(float dt)
 
 	SelectObject();
 	MoveSelectedObject();
-	//physics->Update(dt);
+	physicsX->Update(dt);
 
 	if (lockedObject != nullptr)
 	{
@@ -295,7 +315,10 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 
 	floor->GetPhysicsObject()->SetInverseMass(0);
 	floor->GetPhysicsObject()->InitCubeInertia();
-
+	floor->SetPhysicsXObject(new PhysicsXObject(physicsX->parseTransform(floor->GetTransform()),
+		physicsX->parseVolume(floorSize)));
+	physicsX->addActor(*floor);
+	floor->GetPhysicsXObject()->SetGravity(false);
 	world->AddGameObject(floor);
 
 	return floor;
@@ -464,7 +487,9 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 
 	character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	character->GetPhysicsObject()->InitSphereInertia();
-
+	character->SetPhysicsXObject(new PhysicsXObject(physicsX->parseTransform(character->GetTransform()),
+		physicsX->parseVolume(Vector3(0.3f, 0.85f, 0.3f))));
+	physicsX->addActor(*character);
 	world->AddGameObject(character);
 
 	//lockedObject = character;
