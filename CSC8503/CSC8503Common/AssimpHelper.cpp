@@ -31,7 +31,7 @@ namespace  NCL
 	{
 		delete m_Instance;
 	}
-	Rendering::OGLMesh *AssimpHelper::ProcessFBX(const char* filePath)
+	void AssimpHelper::ProcessFBX(const char* filePath, Rendering::OGLMesh *&outMesh, MeshMaterial *&outMaterial)
 	{
 		const aiScene* scene = m_Importer->ReadFile(filePath, aiProcess_Triangulate | aiProcess_GenNormals);
 
@@ -46,9 +46,9 @@ namespace  NCL
 
 			transform = GET_NCL_MATRIX4(node->mTransformation);
 			for (unsigned int j = 0; j < node->mNumMeshes; j++)
-			{
-				
-				meshes.push_back(scene->mMeshes[node->mMeshes[j]]);				
+			{				
+				meshes.push_back(scene->mMeshes[node->mMeshes[j]]);
+				TryLoadMaterial(scene, scene->mMeshes[node->mMeshes[j]], outMaterial);
 			}
 			for (unsigned int i = 0; i < node->mNumChildren; i++)
 			{
@@ -56,11 +56,22 @@ namespace  NCL
 			}
 		}
 
-		Rendering::OGLMesh* m = new Rendering::OGLMesh(transform);
+		outMesh = new Rendering::OGLMesh(transform);
 		for (auto& mesh : meshes)
 		{
-			m->AddSubMeshFromFBXData(static_cast<void*>(mesh));
+			outMesh->AddSubMeshFromFBXData(static_cast<void*>(mesh));
+		}		
+	}
+	void AssimpHelper::TryLoadMaterial(const aiScene* scene, const aiMesh* mesh, MeshMaterial*& outMaterial)
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		aiString texture_file;
+		material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), texture_file);
+		if (auto texture = scene->GetEmbeddedTexture(texture_file.C_Str())) {
+			//returned pointer is not null, read texture from memory
 		}
-		return m;
+		else {
+			//regular file, check if it exists and read it
+		}
 	}
 }
