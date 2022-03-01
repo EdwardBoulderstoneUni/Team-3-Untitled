@@ -1,23 +1,22 @@
 #pragma once
+#include "InputHandler.h"
 #include "..//Common/Vector2.h"
 using namespace NCL;
 using namespace Maths;
+struct Input;
 class UserInput
 {
 public:
-	UserInput(InputHandler inputHandler);
-	struct Input {
-		bool attack = false;
-		Vector2 moveAxis = Vector2();
-		Vector2 lookAxis = Vector2();
-	};
-	Vector2 getMoveAxis();
-	Vector2 getLookAxis();
-	bool attack_pressed();
+	explicit UserInput(bool is_keyboard = true);
+	float get_pitch() const;
+	float get_yaw() const;
+	bool attack_down() const;
+	bool attack_pressed() const;
+	void update();
 
 private:
-	void getInput();
-	InputHandler inputHandler;
-	Input userInput;
+	InputHandler input_handler_;
+	Input user_input_;
+	Input prior_user_input_;
 };
 

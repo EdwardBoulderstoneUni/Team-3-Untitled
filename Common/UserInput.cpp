@@ -1,21 +1,37 @@
 #include "UserInput.h"
+#include "ControllerInput.h"
+#include "MouseAndKeyboardInput.h"
 
-Vector2 UserInput::getMoveAxis()
+UserInput::UserInput(const bool is_keyboard)
 {
-	return userInput.moveAxis;
+	if (is_keyboard)
+		input_handler_ = MouseAndKeyboardInput();
+	else
+		input_handler_ = ControllerInput();
 }
 
-Vector2 UserInput::getLookAxis()
+float UserInput::get_pitch() const
 {
-	return userInput.lookAxis;
+	return user_input_.pitch;
 }
 
-bool UserInput::attack_pressed()
+float UserInput::get_yaw() const
 {
-	return userInput.attack;
+	return user_input_.yaw;
 }
 
-void UserInput::getInput()
+bool UserInput::attack_down() const
 {
-	userInput = inputHandler.getInputs();
+	return user_input_.attack;
+}
+
+bool UserInput::attack_pressed() const
+{
+	return user_input_.attack && !prior_user_input_.attack;
+}
+
+void UserInput::update()
+{
+	prior_user_input_ = user_input_;
+	user_input_ = input_handler_.get_inputs();
 }

@@ -196,6 +196,7 @@
     <ClCompile Include="Assets.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="Matrix2.cpp" />
@@ -205,6 +206,7 @@
     <ClCompile Include="MeshGeometry.cpp" />
     <ClCompile Include="MeshMaterial.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="MouseAndKeyboardInput.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RendererBase.cpp" />
@@ -225,7 +227,9 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Assets.h" />
+    <ClInclude Include="ControllerInput.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Matrix2.h" />
@@ -235,6 +239,7 @@
     <ClInclude Include="MeshGeometry.h" />
     <ClInclude Include="MeshMaterial.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="MouseAndKeyboardInput.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="RendererBase.h" />
