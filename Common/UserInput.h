@@ -1,8 +1,5 @@
 #pragma once
 #include "InputHandler.h"
-#include "..//Common/Vector2.h"
-using namespace NCL;
-using namespace Maths;
 struct Input;
 class UserInput
 {
