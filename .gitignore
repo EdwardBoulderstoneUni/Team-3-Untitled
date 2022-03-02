@@ -14,11 +14,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
-!libs/*.dll
-!libs/**/*.dll
-!x64/**/PhysX_64.dll
-!x64/**/PhysXFoundation_64.dll
 
 # Fortran module files
 *.mod
@@ -28,9 +23,6 @@
 *.lai
 *.la
 *.a
-*.lib
-!libs/*.lib
-!libs/**/*.lib
 
 # Executables
 *.exe
