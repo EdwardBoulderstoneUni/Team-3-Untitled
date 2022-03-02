@@ -228,7 +228,7 @@ void TutorialGame::DebugObjectMovement()
 		//Twist the selected object!
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
 		{
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(-10, 0, 0));
+			//selectionObject->GetPhysicsXObject()
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
@@ -305,16 +305,12 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 
 	auto floorSize = Vector3(100, 2, 100);
 	auto volume = new AABBVolume(floorSize);
-	floor->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	//floor->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
 	floor->GetTransform()
 	     .SetScale(floorSize * 2)
 	     .SetPosition(position);
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	floor->SetPhysicsObject(new PhysicsObject(&floor->GetTransform(), floor->GetBoundingVolume()));
-
-	floor->GetPhysicsObject()->SetInverseMass(0);
-	floor->GetPhysicsObject()->InitCubeInertia();
 
 	GeometryData geoData;
 	geoData.type = GeometryData::Box;
@@ -485,10 +481,10 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	{
 		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, basicShader));
 	}
-	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
+	//character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
-	character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	character->GetPhysicsObject()->InitSphereInertia();
+	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
+	//character->GetPhysicsObject()->InitSphereInertia();
 	
 	GeometryData geoData;
 	geoData.type = GeometryData::Box;

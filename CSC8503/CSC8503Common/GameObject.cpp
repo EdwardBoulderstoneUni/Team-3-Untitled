@@ -10,6 +10,7 @@ GameObject::GameObject(string objectName)
 	isActive = true;
 	boundingVolume = nullptr;
 	physicsObject = nullptr;
+	physicsXObject = nullptr;
 	renderObject = nullptr;
 }
 

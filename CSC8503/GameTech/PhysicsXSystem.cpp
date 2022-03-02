@@ -115,7 +115,7 @@ void PhysicsXSystem::addDynamicActor(GameObject& actor)
 	PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 
 	body->userData = &actor;
-	actor.GetPhysicsXObject()->SetRigidDynamic(body);
+	actor.GetPhysicsXObject()->SetRigidBody(body);
 	gScene->addActor(*body);
 }
 
@@ -168,6 +168,7 @@ PxTransform& PhysicsXSystem::parseTransform(Transform transform)
 PhysicsXObject* PhysicsXSystem::createPhysicsXObject(Transform transform,GeometryData geoData)
 {
 	PxShape* shape = nullptr;
+	
 	switch (geoData.type)
 	{
 	case GeometryData::Type::Sphere:

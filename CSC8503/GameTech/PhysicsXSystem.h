@@ -2,6 +2,7 @@
 #include "../CSC8503Common/GameWorld.h"
 #include "../../include/PhysX/PxPhysicsAPI.h"
 #include "../CSC8503Common/CollisionVolume.h"
+
 using namespace physx;
 using namespace NCL;
 struct GeometryData
@@ -63,8 +64,10 @@ class PhysicsXSystem {
 			void addDynamicActor(GameObject& actor);
 			void addStaticActor(GameObject& actor);
 			PxTransform& parseTransform(Transform transform);
+
 	
 			PhysicsXObject* createPhysicsXObject(Transform transform,GeometryData geoData);
+			
 		protected:
 			void getActorsPose(PxRigidActor** actors, const PxU32 numActors);
 			void updateObjects(PxTransform pose, PxU32 count);

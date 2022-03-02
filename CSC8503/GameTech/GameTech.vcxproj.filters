@@ -59,5 +59,8 @@
     <ClInclude Include="PhysicsXSystem.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="PhysXConvert.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
