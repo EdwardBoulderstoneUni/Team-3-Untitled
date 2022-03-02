@@ -118,7 +118,7 @@
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="MouseAndKeyboardInput.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,10 +209,10 @@
     <ClInclude Include="InputHandler.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="MouseAndKeyboardInput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ControllerInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseAndKeyboardInput.h">
       <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
