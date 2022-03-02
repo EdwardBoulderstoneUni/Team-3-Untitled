@@ -4,8 +4,8 @@
 
 A game created for CSC8508
 
-##Still to do on this branch
+## Still to do on this branch
 
-[] Remove all mouse / keyboard references from non-input handler classes
+:black_square_button: Remove all mouse / keyboard references from non-input handler classes
 
-[] Find out where Window get's it keyboard reference from and remove it
+:black_square_button: Find out where Window get's it keyboard reference from and remove it
