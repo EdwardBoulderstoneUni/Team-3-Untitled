@@ -17,6 +17,7 @@ namespace NCL {
 			GameUI* GetUI()const { return gameUI; };
 			bool IsFreezed()const { return freezed; };
 			void SetFreeze(bool freeze) { freezed = freeze; };
+			bool IsMainMenu()const { return InMainMenu; };
 			bool ShouldQuit()const { return quit; };
 
 			void SetSingleMode();
@@ -99,6 +100,7 @@ namespace NCL {
 
 			bool quit;
 			bool freezed;
+			bool InMainMenu;
 			PushdownMachine* pauseMachine;
 		};
 	}

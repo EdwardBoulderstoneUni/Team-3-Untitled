@@ -14,7 +14,8 @@
 #include "../GameTech/TutorialMenu.h"
 using namespace NCL;
 using namespace CSC8503;
-
+/*与PJ不同的是他没有tutorialgame.h，是否是想让我创建一个开始游戏的界面去渲染背景和开始的UI，将pushdownmachine的Update独立在Main.cpp中。
+*/
 TutorialGame::TutorialGame()
 {
 	world = new GameWorld();
@@ -25,6 +26,7 @@ TutorialGame::TutorialGame()
 	useGravity = false;
 	inSelectionMode = false;
 
+	InMainMenu = true;
 	quit = false;
 	freezed = true;
 	Debug::SetRenderer(renderer);
@@ -54,6 +56,7 @@ void TutorialGame::SetSingleMode()
 
 void TutorialGame::SetMultiMode()
 {
+
 	InitWorld();
 	InitCamera();
 }
@@ -66,7 +69,7 @@ void TutorialGame::InitialiseAssets() {
 		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
 		(*into)->UploadToGPU();
 	};
-	/* need this, or will cause exception 
+	// need this, or will cause exception 
 	loadFunc("cube.msh", &cubeMesh);
 	loadFunc("sphere.msh", &sphereMesh);
 	loadFunc("Male1.msh", &charMeshA);
@@ -77,7 +80,7 @@ void TutorialGame::InitialiseAssets() {
 
 	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
-	*/
+	
 	InitCamera();
 	InitWorld();
 	GameObjectGenerator g;
@@ -98,15 +101,20 @@ void TutorialGame::InitialiseUI()
 }
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
-
+	freezed = true;
+	//gameMode.reset();
 	delete physics;
 	delete renderer;
 	delete world;
+
+	delete pauseMachine;
+	delete gameUI;
 }
 
 void TutorialGame::UpdateGame(float dt)
 {
 	gameUI->UpdateUI();
+	InMainMenu = !pauseMachine->Update(dt);
 	quit = !pauseMachine->Update(dt);
 
 	if (freezed)
@@ -154,10 +162,10 @@ void TutorialGame::UpdateGame(float dt)
 	}
 
 	world->UpdateWorld(dt);
-	renderer->Update(dt);
+	//renderer->Update(dt);
 
 	Debug::FlushRenderables(dt);
-	renderer->Render();
+	//renderer->Render();
 }
 
 void TutorialGame::UpdateKeys()

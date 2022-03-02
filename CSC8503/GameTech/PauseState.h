@@ -3,6 +3,7 @@
 #include "../CSC8503Common/PushdownState.h"
 #include "../GameTech/PauseMenu.h"
 #include "../GameTech/GameUI.h"
+#include"../GameTech/MainMenu.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -22,6 +23,7 @@ namespace NCL {
 			TutorialGame* game;
 			bool quit = false;
 			friend class PauseState;
+			friend class MainMenuState;
 		};
 
 		class PauseState : public PushdownState
@@ -41,5 +43,24 @@ namespace NCL {
 			InGameState* gameState;
 			std::shared_ptr<PauseMenu> pauseMenu;
 		};
+
+		class MainMenuState : public PushdownState
+		{
+		public:
+			inline MainMenuState(InGameState* gs) : gameState(gs)
+			{
+				mainGameMenu.reset(new MainMenu());
+			};
+			~MainMenuState() {};
+
+			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+			void OnAwake() override;
+			void OnSleep() override;
+
+		private:
+			InGameState* gameState;
+			std::shared_ptr<MainMenu> mainGameMenu;
+		};
+
 	}
 }

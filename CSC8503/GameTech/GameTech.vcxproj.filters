@@ -39,6 +39,9 @@
     <ClCompile Include="PauseState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameTechRenderer.h">
@@ -61,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="PauseState.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

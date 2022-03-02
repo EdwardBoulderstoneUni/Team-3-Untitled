@@ -56,9 +56,9 @@ int main() {
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
 			w->SetWindowPosition(0, 0);
 		}
-
-		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 		*/
+		//w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+		
 		g->UpdateRender(dt);
 		g->UpdateGame(dt);
 	}

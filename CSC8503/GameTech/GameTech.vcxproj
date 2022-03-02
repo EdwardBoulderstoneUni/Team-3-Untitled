@@ -146,6 +146,7 @@
     <ClCompile Include="GameTechRenderer.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="PauseMenu.cpp" />
     <ClCompile Include="PauseState.cpp" />
     <ClCompile Include="TutorialGame.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="GameMenu.h" />
     <ClInclude Include="GameTechRenderer.h" />
     <ClInclude Include="GameUI.h" />
+    <ClInclude Include="MainMenu.h" />
     <ClInclude Include="PauseMenu.h" />
     <ClInclude Include="PauseState.h" />
     <ClInclude Include="TutorialGame.h" />
