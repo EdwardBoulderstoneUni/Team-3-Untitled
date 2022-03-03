@@ -70,14 +70,9 @@ bool Window::UpdateWindow()
 {
 	std::this_thread::yield();
 	timer->Tick();
-
-	if (mouse)
+	if (user_interface_)
 	{
-		mouse->UpdateFrameState(timer->GetTimeDeltaMSec());
-	}
-	if (keyboard)
-	{
-		keyboard->UpdateFrameState(timer->GetTimeDeltaMSec());
+		user_interface_->update(timer->GetTimeDeltaMSec());
 	}
 
 	return InternalUpdate();
