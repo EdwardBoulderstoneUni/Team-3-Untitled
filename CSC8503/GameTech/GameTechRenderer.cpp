@@ -312,3 +312,11 @@ Matrix4 GameTechRenderer::SetupDebugStringMatrix() const
 {
 	return Matrix4::Orthographic(-1, 1.0f, 100, 0, 0, 100);
 }
+
+void GameTechRenderer::BeginFrame() {
+	gameUI->UpdateUI();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	BindShader(nullptr);
+	BindMesh(nullptr);
+}

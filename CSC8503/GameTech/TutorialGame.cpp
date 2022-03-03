@@ -10,12 +10,12 @@
 #include "../../Common/Assets.h"
 
 #include "../GameTech/GameUI.h"
-#include "PauseState.h"
+#include "GameState.h"
 #include "../GameTech/TutorialMenu.h"
 using namespace NCL;
 using namespace CSC8503;
-/*与PJ不同的是他没有tutorialgame.h，是否是想让我创建一个开始游戏的界面去渲染背景和开始的UI，将pushdownmachine的Update独立在Main.cpp中。
-*/
+
+
 TutorialGame::TutorialGame()
 {
 	world = new GameWorld();
@@ -26,9 +26,6 @@ TutorialGame::TutorialGame()
 	useGravity = false;
 	inSelectionMode = false;
 
-	InMainMenu = true;
-	quit = false;
-	freezed = true;
 	Debug::SetRenderer(renderer);
 	InitialiseUI();
 	InitialiseAssets();
@@ -50,7 +47,7 @@ void TutorialGame::UpdateRender(float dt)
 void TutorialGame::SetSingleMode()
 {
 
-	InitWorld();
+	InitialiseAssets();
 	InitCamera();
 }
 
@@ -93,34 +90,33 @@ void TutorialGame::InitialiseUI()
 {
 	gameUI = new GameUI();
 	renderer->SetUI(gameUI);
-	gameMenu.reset(new TutorialMenu(this));
-	gameUI->PushMenu(gameMenu);
+	//gameMenu.reset(new TutorialMenu(this));
+	//gameUI->PushMenu(gameMenu);
 	//InGameState* t = new InGameState(this);
 	//pauseMachine = new PushdownMachine(t);
-	pauseMachine = new PushdownMachine(new InGameState(this));
+	//pauseMachine = new PushdownMachine(new InGameState(this));
 }
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
-	freezed = true;
+	
 	//gameMode.reset();
 	delete physics;
 	delete renderer;
 	delete world;
 
-	delete pauseMachine;
+	
 	delete gameUI;
 }
 
 void TutorialGame::UpdateGame(float dt)
 {
-	gameUI->UpdateUI();
-	InMainMenu = !pauseMachine->Update(dt);
-	quit = !pauseMachine->Update(dt);
+	//InMainMenu = !pauseMachine->Update(dt);
+	//quit = !pauseMachine->Update(dt);
 
-	if (freezed)
+	/*if (freezed)
 	{
 		return;
-	}
+	}*/
 
 	if (!inSelectionMode)
 	{
@@ -162,10 +158,12 @@ void TutorialGame::UpdateGame(float dt)
 	}
 
 	world->UpdateWorld(dt);
-	//renderer->Update(dt);
+	renderer->Update(dt);
+	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-	//renderer->Render();
+
+
 }
 
 void TutorialGame::UpdateKeys()

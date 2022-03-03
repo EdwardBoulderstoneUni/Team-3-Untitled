@@ -19,11 +19,13 @@ namespace NCL
 			void SetUI(const GameUI* ui) { gameUI = ui; };
 		protected:
 			void RenderFrame() override;
+			void BeginFrame() override;
 
 			Matrix4 SetupDebugLineMatrix() const override;
 			Matrix4 SetupDebugStringMatrix() const override;
 
 			GameWorld& game_world_;
+	
 
 			void build_object_list();
 			void render_shadow_map();

@@ -38,9 +38,10 @@ int main() {
 	w->LockMouseToWindow(true);
 
 	TutorialGame* g = new TutorialGame();
+	PushdownMachine machine(new StartState(g));
 
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !g->ShouldQuit()) {
+	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
@@ -57,10 +58,11 @@ int main() {
 			w->SetWindowPosition(0, 0);
 		}
 		*/
-		//w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+
+		machine.Update(dt);
 		
-		g->UpdateRender(dt);
-		g->UpdateGame(dt);
+		
 	}
 	delete g;
 	Window::DestroyGameWindow();

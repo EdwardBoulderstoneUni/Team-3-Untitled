@@ -4,6 +4,7 @@
 #include "../CSC8503Common/PhysicsSystem.h"
 #include "../../AudioManager/AudioManager.h"
 #include "../CSC8503Common/PushdownMachine.h"
+#include "GameState.h"
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{
@@ -15,10 +16,7 @@ namespace NCL {
 			virtual void UpdateRender(float dt);
 
 			GameUI* GetUI()const { return gameUI; };
-			bool IsFreezed()const { return freezed; };
-			void SetFreeze(bool freeze) { freezed = freeze; };
-			bool IsMainMenu()const { return InMainMenu; };
-			bool ShouldQuit()const { return quit; };
+			void StartRender()const { renderer->Render(); }
 
 			void SetSingleMode();
 			void SetMultiMode();
@@ -87,21 +85,10 @@ namespace NCL {
 				lockedObject = o;
 			}
 
-			friend class GameMode;
-			// two friend class in single mode and multi mode.
-			//friend class BallGameMode;
-			//friend class MazeGameMode;
-			//friend class MazeMap;
-
-			friend class TutorialMenu;
-			std::shared_ptr<TutorialMenu> gameMenu = nullptr;
+		
 
 			GameUI* gameUI;
 
-			bool quit;
-			bool freezed;
-			bool InMainMenu;
-			PushdownMachine* pauseMachine;
 		};
 	}
 }

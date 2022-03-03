@@ -25,29 +25,20 @@ void MainMenu::Draw()
 	//Draw menu
 	ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y - 100), ImGuiCond_Always);
 	//ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_Always);
-	ImGui::BeginChild("Debug", ImVec2(300, 70), true, ImGuiWindowFlags_NoSavedSettings);
+	ImGui::BeginChild("Enter Game", ImVec2(300, 70), true, ImGuiWindowFlags_NoSavedSettings);
 	ImGui::SetWindowFontScale(1.5);
 	float contentWidth = ImGui::GetWindowContentRegionWidth();
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1, 0.4, 0.3, 1));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2, 0.2, 0.2, 1));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4, 0.4, 0.4, 1));
-	singleMode = ImGui::Button("Debug Mode", ImVec2(contentWidth, 50));
+	EnterGame = ImGui::Button("Start Game", ImVec2(contentWidth, 50));
 	ImGui::PopStyleColor(3);
 	ImGui::EndChild();
 
+/*
+	
 
-	ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y - 30), ImGuiCond_Always);
-	ImGui::BeginChild("Enter", ImVec2(300, 70), true, ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowFontScale(1.5);
-	//float contentWidth = ImGui::GetWindowContentRegionWidth();
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.7, 0.6, 1));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2, 0.2, 0.2, 1));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4, 0.4, 0.4, 1));
-	multiMode = ImGui::Button("Enter Game", ImVec2(contentWidth, 50));
-	ImGui::PopStyleColor(3);
-	ImGui::EndChild();
-
-
+*/
 	ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y + 40), ImGuiCond_Always);
 	ImGui::BeginChild("Quit", ImVec2(300, 70), true, ImGuiWindowFlags_NoSavedSettings);
 	ImGui::SetWindowFontScale(1.5);
@@ -55,9 +46,22 @@ void MainMenu::Draw()
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.05, 0.05, 1));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6, 0.1, 0.1, 1));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9, 0.1, 0.1, 1));
-	quitGame = ImGui::Button("Quit Game", ImVec2(contentWidth, 50));
+	QuitGame = ImGui::Button("Quit Game", ImVec2(contentWidth, 50));
 	ImGui::PopStyleColor(3);
 	ImGui::EndChild();
+
+	if (PauseMode) {
+		ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y - 30), ImGuiCond_Always);
+		ImGui::BeginChild("Cancel", ImVec2(300, 70), true, ImGuiWindowFlags_NoSavedSettings);
+		ImGui::SetWindowFontScale(1.5);
+		//float contentWidth = ImGui::GetWindowContentRegionWidth();
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.7, 0.6, 1));
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2, 0.2, 0.2, 1));
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4, 0.4, 0.4, 1));
+		Cancel = ImGui::Button("Cancel", ImVec2(contentWidth, 50));
+		ImGui::PopStyleColor(3);
+		ImGui::EndChild();
+	}
 
 	
 
