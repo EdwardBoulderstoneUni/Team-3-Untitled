@@ -16,7 +16,7 @@ TutorialGame::TutorialGame()
 {
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
-	physics = new PhysicsSystem(*world);
+	//physics = new PhysicsSystem(*world);
 	physicsX = new PhysicsXSystem(*world);
 	forceMagnitude = 10.0f;
 	useGravity = false;
@@ -69,7 +69,7 @@ void TutorialGame::InitialiseAssets() {
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
 
-	delete physics;
+	delete physicsX;
 	delete renderer;
 	delete world;
 }
@@ -136,11 +136,11 @@ void TutorialGame::UpdateKeys()
 		InitCamera(); //F2 will reset the camera to a specific default place
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
-	{
-		useGravity = !useGravity; //Toggle gravity!
-		physics->UseGravity(useGravity);
-	}
+	//if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
+	//{
+	//	useGravity = !useGravity; //Toggle gravity!
+	//	physics->UseGravity(useGravity);
+	//}
 	//Running certain physics updates in a consistent order might cause some
 	//bias in the calculations - the same objects might keep 'winning' the constraint
 	//allowing the other one to stretch too much etc. Shuffling the order so that it
@@ -195,28 +195,28 @@ void TutorialGame::LockedObjectMovement()
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
 	{
-		lockedObject->GetPhysicsObject()->AddForce(-rightAxis * force);
+		lockedObject->GetPhysicsXObject()->AddForce(-rightAxis * force);
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
 	{
 		Vector3 worldPos = selectionObject->GetTransform().GetPosition();
-		lockedObject->GetPhysicsObject()->AddForce(rightAxis * force);
+		lockedObject->GetPhysicsXObject()->AddForce(rightAxis * force);
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP))
 	{
-		lockedObject->GetPhysicsObject()->AddForce(fwdAxis * force);
+		lockedObject->GetPhysicsXObject()->AddForce(fwdAxis * force);
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN))
 	{
-		lockedObject->GetPhysicsObject()->AddForce(-fwdAxis * force);
+		lockedObject->GetPhysicsXObject()->AddForce(-fwdAxis * force);
 	}
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT))
 	{
-		lockedObject->GetPhysicsObject()->AddForce(Vector3(0, -10, 0));
+		lockedObject->GetPhysicsXObject()->AddForce(Vector3(0, -10, 0));
 	}
 }
 
@@ -228,42 +228,42 @@ void TutorialGame::DebugObjectMovement()
 		//Twist the selected object!
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
 		{
-			//selectionObject->GetPhysicsXObject()
+			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(-10, 0, 0));
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
 		{
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
+			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(10, 0, 0));
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM7))
 		{
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(0, 10, 0));
+			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(0, 10, 0));
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM8))
 		{
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(0, -10, 0));
+			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(0, -10, 0));
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
 		{
-			selectionObject->GetPhysicsObject()->AddTorque(Vector3(10, 0, 0));
+			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(10, 0, 0));
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP))
 		{
-			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, -10));
+			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, 0, -10));
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN))
 		{
-			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, 0, 10));
+			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, 0, 10));
 		}
 
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM5))
 		{
-			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -10, 0));
+			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, -10, 0));
 		}
 	}
 }
@@ -281,7 +281,7 @@ void TutorialGame::InitCamera()
 void TutorialGame::InitWorld()
 {
 	world->ClearAndErase();
-	physics->Clear();
+	//physics->Clear();
 
 	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	InitGameExamples();
@@ -304,7 +304,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 	auto floor = new GameObject();
 
 	auto floorSize = Vector3(100, 2, 100);
-	auto volume = new AABBVolume(floorSize);
+	//auto volume = new AABBVolume(floorSize);
 	//floor->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
 	floor->GetTransform()
 	     .SetScale(floorSize * 2)
@@ -334,8 +334,8 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 	auto sphere = new GameObject();
 
 	auto sphereSize = Vector3(radius, radius, radius);
-	auto volume = new SphereVolume(radius);
-	sphere->SetBoundingVolume((CollisionVolume*)volume);
+	//auto volume = new SphereVolume(radius);
+	//sphere->SetBoundingVolume((CollisionVolume*)volume);
 
 	sphere->GetTransform()
 	      .SetScale(sphereSize)
@@ -356,18 +356,18 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 {
 	auto capsule = new GameObject();
 
-	auto volume = new CapsuleVolume(halfHeight, radius);
-	capsule->SetBoundingVolume(volume);
+	//auto volume = new CapsuleVolume(halfHeight, radius);
+	//capsule->SetBoundingVolume(volume);
 
 	capsule->GetTransform()
 	       .SetScale(Vector3(radius * 2, halfHeight, radius * 2))
 	       .SetPosition(position);
 
 	capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, basicTex, basicShader));
-	capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
+	//capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
 
-	capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
-	capsule->GetPhysicsObject()->InitCubeInertia();
+	//capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
+	//capsule->GetPhysicsObject()->InitCubeInertia();
 
 	world->AddGameObject(capsule);
 
@@ -378,9 +378,9 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 {
 	auto cube = new GameObject();
 
-	auto volume = new AABBVolume(dimensions);
+	//auto volume = new AABBVolume(dimensions);
 
-	cube->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	//cube->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
 
 	cube->GetTransform()
 	    .SetPosition(position)
@@ -465,9 +465,9 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 
 	auto character = new GameObject();
 
-	auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
+	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
 
-	character->SetBoundingVolume((CollisionVolume*)volume);
+	//character->SetBoundingVolume((CollisionVolume*)volume);
 
 	character->GetTransform()
 	         .SetScale(Vector3(meshSize, meshSize, meshSize))
@@ -506,18 +506,18 @@ GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position)
 
 	auto character = new GameObject();
 
-	auto volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
-	character->SetBoundingVolume((CollisionVolume*)volume);
+	//auto volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
+	//character->SetBoundingVolume((CollisionVolume*)volume);
 
 	character->GetTransform()
 	         .SetScale(Vector3(meshSize, meshSize, meshSize))
 	         .SetPosition(position);
 
 	character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, basicShader));
-	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
+	//character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
-	character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	character->GetPhysicsObject()->InitSphereInertia();
+	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
+	//character->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(character);
 
@@ -528,17 +528,17 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 {
 	auto apple = new GameObject();
 
-	auto volume = new SphereVolume(0.25f);
-	apple->SetBoundingVolume((CollisionVolume*)volume);
+	//auto volume = new SphereVolume(0.25f);
+	//apple->SetBoundingVolume((CollisionVolume*)volume);
 	apple->GetTransform()
 	     .SetScale(Vector3(0.25, 0.25, 0.25))
 	     .SetPosition(position);
 
 	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
-	apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
+	//apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
 
-	apple->GetPhysicsObject()->SetInverseMass(1.0f);
-	apple->GetPhysicsObject()->InitSphereInertia();
+	//apple->GetPhysicsObject()->SetInverseMass(1.0f);
+	//apple->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(apple);
 
