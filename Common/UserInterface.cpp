@@ -24,7 +24,7 @@ bool UserInterface::button_pressed(const Buttons button) const
 
 void UserInterface::update(const float dt)
 {
-	input_handler_->update(dt);
 	prior_user_input_ = user_input_;
 	user_input_ = input_handler_->get_inputs();
+	input_handler_->update(dt);
 }
