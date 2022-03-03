@@ -1,8 +1,8 @@
 #include "MouseAndKeyboardInput.h"
 #include "Window.h"
 
-MouseAndKeyboardInput::MouseAndKeyboardInput() : UserController(), keyboard_(NCL::Window::GetKeyboard()),
-                                                 mouse_(NCL::Window::GetMouse()) { }
+MouseAndKeyboardInput::MouseAndKeyboardInput(const NCL::Mouse* mouse, const NCL::Keyboard* keyboard) :
+UserController(), keyboard_(keyboard), mouse_(mouse) { }
 
 Input MouseAndKeyboardInput::get_inputs()
 {
