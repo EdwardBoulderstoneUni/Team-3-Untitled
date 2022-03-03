@@ -12,8 +12,8 @@ last frame (default value is for simplicities sake...)
 void Camera::UpdateCamera(float dt)
 {
 	//Update the mouse by how much
-	pitch -= (Window::GetMouse()->GetRelativePosition().y);
-	yaw -= (Window::GetMouse()->GetRelativePosition().x);
+	pitch -= Window::GetInterface()->get_pitch();
+	yaw -= Window::GetInterface()->get_yaw();
 
 	//Bounds check the pitch, to be between straight up and straight down ;)
 	pitch = std::min(pitch, 90.0f);
