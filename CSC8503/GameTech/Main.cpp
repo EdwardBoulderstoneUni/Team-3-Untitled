@@ -38,7 +38,7 @@ int main()
 	auto g = new TutorialGame();
 	//auto g = new NetworkedGame(); //This is for network game  
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
+	while (w->UpdateWindow() && !Window::GetInterface()->button_down(quit))
 	{
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f)

@@ -1,12 +1,13 @@
 #pragma once
 #include "UserController.h"
+#include "Vector2.h"
 struct Input;
 class UserInterface
 {
 public:
 	explicit UserInterface(UserController* control_device);
-	float get_pitch() const;
-	float get_yaw() const;
+	NCL::Maths::Vector2 get_movement() const;
+	NCL::Maths::Vector2 get_look_direction() const;
 	bool button_down(Buttons button) const;
 	bool button_pressed(Buttons button) const;
 	void update(float dt);

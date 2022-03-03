@@ -1,17 +1,20 @@
 #pragma once
+#include "Vector2.h"
+
 enum Buttons
 {
 	attack,
 	pause,
 	jump,
 	sprint,
+	quit,
 	max_input
 };
 
 struct Input {
 	bool buttons[max_input] = {false};
-	float pitch = 0.0f;
-	float yaw = 0.0f;
+	NCL::Maths::Vector2 look_direction = NCL::Maths::Vector2();
+	NCL::Maths::Vector2 movement_direction = NCL::Maths::Vector2();
 };
 
 class UserController

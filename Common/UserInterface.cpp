@@ -1,15 +1,14 @@
 #include "UserInterface.h"
 #include "ControllerInput.h"
 UserInterface::UserInterface(UserController* control_device) : input_handler_(control_device) {}
-
-float UserInterface::get_pitch() const
+NCL::Maths::Vector2 UserInterface::get_movement() const
 {
-	return user_input_.pitch;
+	return user_input_.movement_direction;
 }
 
-float UserInterface::get_yaw() const
+NCL::Maths::Vector2 UserInterface::get_look_direction() const
 {
-	return user_input_.yaw;
+	return user_input_.look_direction;
 }
 
 bool UserInterface::button_down(const Buttons button) const
