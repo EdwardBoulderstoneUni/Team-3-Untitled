@@ -16,17 +16,20 @@
     <Filter Include="Maths">
       <UniqueIdentifier>{04de09b2-3268-484d-99eb-bb38e96becde}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Windowing and Input">
-      <UniqueIdentifier>{2bc51177-8cb2-4a97-be15-ba366777f17b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windowing and Input\Win32">
-      <UniqueIdentifier>{6c4f3ce4-6425-4d48-bb36-05ba6e237747}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{92093c3d-690f-4bb0-9dda-1fb247f863de}</UniqueIdentifier>
     </Filter>
     <Filter Include="Asset Handling">
       <UniqueIdentifier>{1d0b54c1-f5de-4083-b62a-78e5b7ec9b10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing">
+      <UniqueIdentifier>{2bc51177-8cb2-4a97-be15-ba366777f17b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing\Win32">
+      <UniqueIdentifier>{6c4f3ce4-6425-4d48-bb36-05ba6e237747}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{1176147b-dfa1-4005-a9b6-3c64a99f456f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,19 +37,13 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameTimer.cpp">
-      <Filter>Windowing and Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Keyboard.cpp">
-      <Filter>Windowing and Input</Filter>
+      <Filter>Windowing</Filter>
     </ClCompile>
     <ClCompile Include="Matrix4.cpp">
       <Filter>Maths</Filter>
     </ClCompile>
-    <ClCompile Include="Mouse.cpp">
-      <Filter>Windowing and Input</Filter>
-    </ClCompile>
     <ClCompile Include="Window.cpp">
-      <Filter>Windowing and Input</Filter>
+      <Filter>Windowing</Filter>
     </ClCompile>
     <ClCompile Include="Matrix2.cpp">
       <Filter>Maths</Filter>
@@ -61,13 +58,13 @@
       <Filter>Maths</Filter>
     </ClCompile>
     <ClCompile Include="Win32Keyboard.cpp">
-      <Filter>Windowing and Input\Win32</Filter>
+      <Filter>Windowing\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Win32Mouse.cpp">
-      <Filter>Windowing and Input\Win32</Filter>
+      <Filter>Windowing\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Win32Window.cpp">
-      <Filter>Windowing and Input\Win32</Filter>
+      <Filter>Windowing\Win32</Filter>
     </ClCompile>
     <ClCompile Include="RendererBase.cpp">
       <Filter>Rendering</Filter>
@@ -111,13 +108,25 @@
     <ClCompile Include="MeshMaterial.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="UserInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseAndKeyboardInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
-      <Filter>Windowing and Input</Filter>
+      <Filter>Windowing</Filter>
     </ClInclude>
     <ClInclude Include="Vector3.h">
       <Filter>Maths</Filter>
@@ -128,14 +137,8 @@
     <ClInclude Include="Vector2.h">
       <Filter>Maths</Filter>
     </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>Windowing and Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Keyboard.h">
-      <Filter>Windowing and Input</Filter>
-    </ClInclude>
     <ClInclude Include="GameTimer.h">
-      <Filter>Windowing and Input</Filter>
+      <Filter>Windowing</Filter>
     </ClInclude>
     <ClInclude Include="Matrix4.h">
       <Filter>Maths</Filter>
@@ -153,13 +156,13 @@
       <Filter>Maths</Filter>
     </ClInclude>
     <ClInclude Include="Win32Window.h">
-      <Filter>Windowing and Input\Win32</Filter>
+      <Filter>Windowing\Win32</Filter>
     </ClInclude>
     <ClInclude Include="Win32Keyboard.h">
-      <Filter>Windowing and Input\Win32</Filter>
+      <Filter>Windowing\Win32</Filter>
     </ClInclude>
     <ClInclude Include="Win32Mouse.h">
-      <Filter>Windowing and Input\Win32</Filter>
+      <Filter>Windowing\Win32</Filter>
     </ClInclude>
     <ClInclude Include="Maths.h">
       <Filter>Maths</Filter>
@@ -193,6 +196,24 @@
     </ClInclude>
     <ClInclude Include="MeshMaterial.h">
       <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyboard.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ControllerInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseAndKeyboardInput.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
