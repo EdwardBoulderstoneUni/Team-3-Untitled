@@ -35,6 +35,7 @@ for this module, even in the coursework, but you can add it if you like!
 
 */
 void TutorialGame::InitialiseAssets() {
+#define PhysX_DEBUG
 #ifdef PhysX_DEBUG
 	auto loadFunc = [](const string& name, OGLMesh** into) {
 		*into = new OGLMesh(name);
@@ -58,7 +59,7 @@ void TutorialGame::InitialiseAssets() {
 	AssetManager::GetInstance()->Init();
 	InitCamera();
 	InitWorld();
-	GameObjectGenerator g;
+	GameObjectGenerator g(physicsX);
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
@@ -281,7 +282,6 @@ void TutorialGame::InitCamera()
 void TutorialGame::InitWorld()
 {
 	world->ClearAndErase();
-	//physics->Clear();
 
 	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
 	InitGameExamples();
@@ -304,19 +304,14 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 	auto floor = new GameObject();
 
 	auto floorSize = Vector3(100, 2, 100);
-	//auto volume = new AABBVolume(floorSize);
-	//floor->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	
 	floor->GetTransform()
 	     .SetScale(floorSize * 2)
 	     .SetPosition(position);
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-
-	GeometryData geoData;
-	geoData.type = GeometryData::Box;
-	geoData.data.boxData = GeometryData::Data::BoxData(floorSize);
-	floor->SetPhysicsXObject(physicsX->createPhysicsXObject(floor->GetTransform(), geoData));
-	physicsX->addStaticActor(*floor);
+	GeometryData geo = physicsX->createBoxGeo(floorSize);
+	physicsX->addStaticActor(*floor,geo);
 	world->AddGameObject(floor);
 
 	return floor;
@@ -486,14 +481,9 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	//character->GetPhysicsObject()->InitSphereInertia();
 	
-	GeometryData geoData;
-	geoData.type = GeometryData::Box;
-	geoData.data.boxData = GeometryData::Data::BoxData(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
-	character->SetPhysicsXObject(physicsX->createPhysicsXObject(character->GetTransform(),
-		geoData));
-	physicsX->addDynamicActor(*character);
+	GeometryData geo=physicsX->createBoxGeo(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
+	physicsX->addDynamicActor(*character, geo);
 	world->AddGameObject(character);
-
 	//lockedObject = character;
 
 	return character;

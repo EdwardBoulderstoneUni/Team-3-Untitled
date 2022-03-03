@@ -12,19 +12,14 @@ public:
 	PxShape& GetVolume() { return volume; }
 	PxRigidBody* GetRigidBody() { return rb; }
 
-	void SetRigidBody(PxRigidBody* actor) {
-		rb = actor;
-	}
+	void SetRigidBody(PxRigidBody* actor) {rb = actor;}
 
 	void SetGravity(bool status) {
 		if(!status)rb->setActorFlag(PxActorFlag::eDISABLE_GRAVITY,true);
 	}
 
 
-	float GetInverseMass() const
-	{
-		return rb->getInvMass();
-	}
+	float GetInverseMass() const{ return rb->getInvMass();}
 
 	//void ApplyAngularImpulse(const Vector3& force);
 	//void ApplyLinearImpulse(const Vector3& force);
@@ -38,15 +33,9 @@ public:
 	
 	//void ClearForces();
 
-	//void SetLinearVelocity(const Vector3& v)
-	//{
-	//	linearVelocity = v;
-	//}
+	void SetLinearVelocity(const Vector3& v);
 
-	//void SetAngularVelocity(const Vector3& v)
-	//{
-	//	angularVelocity = v;
-	//}
+	void SetAngularVelocity(const Vector3& v);
 
 
 protected:

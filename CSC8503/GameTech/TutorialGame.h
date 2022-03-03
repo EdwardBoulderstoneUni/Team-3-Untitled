@@ -4,7 +4,7 @@
 //#include "../CSC8503Common/PhysicsSystem.h"
 #include "../GameTech/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
-#define PhysX_DEBUG
+
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{

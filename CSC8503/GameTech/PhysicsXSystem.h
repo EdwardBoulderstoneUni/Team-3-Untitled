@@ -61,17 +61,21 @@ class PhysicsXSystem {
 			void initPhysics();
 			void Update(float dt);
 			void cleanupPhysics();
-			void addDynamicActor(GameObject& actor);
-			void addStaticActor(GameObject& actor);
+			void addDynamicActor(GameObject& actor, GeometryData geoData);
+			void addStaticActor(GameObject& actor, GeometryData geoData);
+			GeometryData createBoxGeo(const Vector3 hfExtents);
+			GeometryData createBoxGeo(float x, float y, float z);
+			GeometryData createSphereGeo(float radius);
+			GeometryData createCapsuleGeo(float radius, float hfHeight);
+		protected:
 			PxTransform& parseTransform(Transform transform);
 
 			GeometryData::Data::BoxData AABBToBoxData(const Vector3& halfDims);
 
-			PhysicsXObject* createPhysicsXObject(Transform transform,GeometryData geoData);
-			
-		protected:
+			PhysicsXObject* createPhysicsXObject(Transform transform, GeometryData geoData);
+	
 			void getActorsPose(PxRigidActor** actors, const PxU32 numActors);
-			void updateObjects(PxTransform pose, PxU32 count);
+		
 			PxDefaultAllocator		gAllocator; 
 			PxDefaultErrorCallback	gErrorCallback;
 

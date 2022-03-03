@@ -3,7 +3,7 @@
 #define PVD_HOST "127.0.0.1"
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 #define MAX_NUM_ACTOR_SHAPES 128
-#define PhysX_DEBUG
+
 using namespace physx;
 PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 {
@@ -13,46 +13,20 @@ PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 
 PhysicsXSystem::~PhysicsXSystem()
 {
-	gPhysics->release();
-	gPvd->release();
+	PX_RELEASE(gScene);
+	PX_RELEASE(gDispatcher);
+	PX_RELEASE(gPhysics);
+	if (gPvd)
+	{
+		PxPvdTransport* transport = gPvd->getTransport();
+		gPvd->release();	gPvd = NULL;
+		PX_RELEASE(transport);
+	}
+	PX_RELEASE(gFoundation);
 }
 
 void PhysicsXSystem::initPhysics()
 {
-#ifdef PhysX_DEBUG
-	bool recordMemoryAllocations = true;
-	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
-	if (!gFoundation)
-		std::cout << "PxCreateFoundation failed!" << std::endl;
-
-	gPvd = PxCreatePvd(*gFoundation);
-	if (!gPvd)
-		std::cout << "gPvd failed!" << std::endl;
-	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
-	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
-
-	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), 
-		recordMemoryAllocations, gPvd);
-	if (!gPhysics)
-		std::cout << "gPhysics failed!" << std::endl;
-
-	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	gDispatcher = PxDefaultCpuDispatcherCreate(2);
-	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	gScene = gPhysics->createScene(sceneDesc);
-	if (!gScene)
-		std::cout << "gScene failed!" << std::endl;
-	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
-	if (pvdClient)
-	{
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
-	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-#else
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 	gPvd = PxCreatePvd(*gFoundation);
 	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
@@ -63,6 +37,7 @@ void PhysicsXSystem::initPhysics()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
+	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	gScene = gPhysics->createScene(sceneDesc);
 
 	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
@@ -73,9 +48,6 @@ void PhysicsXSystem::initPhysics()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-#endif // PhysX_DEBUG
-
-	
 }
 
 void PhysicsXSystem::Update(float dt)
@@ -99,15 +71,13 @@ void PhysicsXSystem::Update(float dt)
 
 void PhysicsXSystem::cleanupPhysics()
 {
-	PX_RELEASE(gScene);
-	PX_RELEASE(gDispatcher);
-	PX_RELEASE(gPhysics);
-	PX_RELEASE(gFoundation);
+	
 }
 
-void PhysicsXSystem::addDynamicActor(GameObject& actor)
+void PhysicsXSystem::addDynamicActor(GameObject& actor, GeometryData geoData)
 {
-	PhysicsXObject* phyObj = actor.GetPhysicsXObject();
+	PhysicsXObject* phyObj = createPhysicsXObject(actor.GetTransform(), geoData);
+	actor.SetPhysicsXObject(phyObj);
 	if (phyObj == nullptr)return;
 
 	PxRigidDynamic* body = gPhysics->createRigidDynamic(phyObj->GetTransform());
@@ -115,19 +85,19 @@ void PhysicsXSystem::addDynamicActor(GameObject& actor)
 	PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 
 	body->userData = &actor;
-	actor.GetPhysicsXObject()->SetRigidBody(body);
+	phyObj->SetRigidBody(body);
 	gScene->addActor(*body);
 }
 
-void PhysicsXSystem::addStaticActor(GameObject& actor)
+void PhysicsXSystem::addStaticActor(GameObject& actor, GeometryData geoData)
 {
-	PhysicsXObject* phyObj = actor.GetPhysicsXObject();
+	PhysicsXObject* phyObj = createPhysicsXObject(actor.GetTransform(), geoData);
+	actor.SetPhysicsXObject(phyObj);
 	if (phyObj == nullptr)return;
 	PxRigidStatic *body=gPhysics->createRigidStatic(phyObj->GetTransform());
 	body->attachShape(phyObj->GetVolume());
 
 	body->userData = &actor;
-	//actor.GetPhysicsXObject()->SetRigidDynamic(body);
 	gScene->addActor(*body);
 }
 
@@ -148,15 +118,10 @@ void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
 			obj->GetTransform().SetPosition(Vector3(shapePose.p.x, shapePose.p.y, shapePose.p.z));
 			obj->GetTransform().SetOrientation(Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
 				shapePose.q.w));
-			//updateObjects(shapePose,i);
 		}
 	}
 }
 
-void PhysicsXSystem::updateObjects(PxTransform pose, PxU32 count)
-{
-	
-}
 PxTransform& PhysicsXSystem::parseTransform(Transform transform)
 {
 	Vector3 positon = transform.GetPosition();
@@ -197,6 +162,43 @@ PhysicsXObject* PhysicsXSystem::createPhysicsXObject(Transform transform,Geometr
 	}
 	if (shape == nullptr)return nullptr;
 	else return new PhysicsXObject(parseTransform(transform), *shape);
+}
+
+GeometryData PhysicsXSystem::createBoxGeo(const Vector3 hfExtents)
+{
+	GeometryData geo = GeometryData();
+	geo.type = GeometryData::Box;
+	geo.data.boxData.halfx = hfExtents.x;
+	geo.data.boxData.halfy = hfExtents.y;
+	geo.data.boxData.halfz = hfExtents.z;
+	return geo;
+}
+
+GeometryData PhysicsXSystem::createBoxGeo(float x, float y, float z)
+{
+	GeometryData geo = GeometryData();
+	geo.type = GeometryData::Box;
+	geo.data.boxData.halfx = x;
+	geo.data.boxData.halfy = y;
+	geo.data.boxData.halfz = z;
+	return geo;
+}
+
+GeometryData PhysicsXSystem::createSphereGeo(float radius)
+{
+	GeometryData geo = GeometryData();
+	geo.type = GeometryData::Sphere;
+	geo.data.sphereData.radius = radius;
+	return geo;
+}
+
+GeometryData PhysicsXSystem::createCapsuleGeo(float radius, float hfHeight)
+{
+	GeometryData geo = GeometryData();
+	geo.type = GeometryData::Capsule;
+	geo.data.capsuleData.radius = radius;
+	geo.data.capsuleData.halfHeight = hfHeight;
+	return geo;
 }
 
 GeometryData::Data::BoxData AABBToBoxData(const Vector3& halfDims)
