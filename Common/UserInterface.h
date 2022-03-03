@@ -4,7 +4,7 @@ struct Input;
 class UserInterface
 {
 public:
-	explicit UserInterface(bool is_keyboard = true);
+	explicit UserInterface(const UserController& control_device);
 	float get_pitch() const;
 	float get_yaw() const;
 	bool button_down(Buttons button) const;

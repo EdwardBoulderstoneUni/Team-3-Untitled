@@ -1,14 +1,6 @@
 #include "UserInterface.h"
 #include "ControllerInput.h"
-#include "MouseAndKeyboardInput.h"
-
-UserInterface::UserInterface(const bool is_keyboard)
-{
-	if (is_keyboard)
-		input_handler_ = static_cast<UserController>(MouseAndKeyboardInput());
-	else
-		input_handler_ = static_cast<UserController>(ControllerInput());
-}
+UserInterface::UserInterface(const UserController& control_device) : input_handler_(control_device) {}
 
 float UserInterface::get_pitch() const
 {
