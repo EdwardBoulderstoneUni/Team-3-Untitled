@@ -1,10 +1,10 @@
 #pragma once
-#include "InputHandler.h"
+#include "UserController.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 
 class MouseAndKeyboardInput final :
-    public InputHandler
+    public UserController
 {
 public:
     explicit  MouseAndKeyboardInput();
