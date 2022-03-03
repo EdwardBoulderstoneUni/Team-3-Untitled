@@ -11,6 +11,7 @@
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
 #include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
+#include "../GameTech/PhysicsXSystem.h"
 
 NCL::CSC8503::GameObjectGenerator::GameObjectGenerator()
 {
@@ -40,7 +41,9 @@ void NCL::CSC8503::GameObjectGenerator::SetTransform(GameObject* object, const r
 void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, const rapidjson::Value& value)
 {
 	NCL::Maths::Vector3 dim;
-	NCL::CollisionVolume* volume = nullptr;
+	//NCL::CollisionVolume* volume = nullptr;
+	GeometryData::Data::BoxData* box = nullptr;
+	GeometryData::Data::SphereData* sphere = nullptr;
 
 	GetVector(value, "dimensions", dim);
 	int objectType = value["objShape"].GetInt();
@@ -48,13 +51,13 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 	switch (objectType)
 	{
 	case 0:
-		volume = new NCL::SphereVolume(dim.x);		
+		sphere = new GeometryData::Data::SphereData(dim.x);
 		break;
 	case 1:
-		volume = new NCL::AABBVolume(dim);	
+		box = new GeometryData::Data::BoxData(dim);
 		break;
 	}
-	object->SetBoundingVolume(volume);
+	//object->SetBoundingVolume(volume);
 }
 
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)

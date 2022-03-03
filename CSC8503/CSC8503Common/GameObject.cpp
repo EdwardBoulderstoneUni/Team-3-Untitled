@@ -18,6 +18,7 @@ GameObject::~GameObject()
 {
 	delete boundingVolume;
 	delete physicsObject;
+	delete physicsXObject;
 	delete renderObject;
 }
 

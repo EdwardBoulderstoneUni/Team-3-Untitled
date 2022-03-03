@@ -1,7 +1,7 @@
 #pragma once
 #include "../CSC8503Common/GameWorld.h"
 #include "../../include/PhysX/PxPhysicsAPI.h"
-#include "../CSC8503Common/CollisionVolume.h"
+//#include "../CSC8503Common/CollisionVolume.h"
 
 using namespace physx;
 using namespace NCL;
@@ -65,7 +65,8 @@ class PhysicsXSystem {
 			void addStaticActor(GameObject& actor);
 			PxTransform& parseTransform(Transform transform);
 
-	
+			GeometryData::Data::BoxData AABBToBoxData(const Vector3& halfDims);
+
 			PhysicsXObject* createPhysicsXObject(Transform transform,GeometryData geoData);
 			
 		protected:

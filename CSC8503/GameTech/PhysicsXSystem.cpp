@@ -198,3 +198,9 @@ PhysicsXObject* PhysicsXSystem::createPhysicsXObject(Transform transform,Geometr
 	if (shape == nullptr)return nullptr;
 	else return new PhysicsXObject(parseTransform(transform), *shape);
 }
+
+GeometryData::Data::BoxData AABBToBoxData(const Vector3& halfDims)
+{
+	return GeometryData::Data::BoxData(halfDims);
+}
+

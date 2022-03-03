@@ -4,6 +4,7 @@
 
 #include "PhysicsObject.h"
 #include "../GameTech/PhysicsXObject.h"
+
 #include "RenderObject.h"
 
 #include <vector>
@@ -109,6 +110,8 @@ namespace NCL
 			{
 				return worldID;
 			}
+
+			
 
 		protected:
 			Transform transform;
