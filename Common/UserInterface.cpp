@@ -1,6 +1,6 @@
 #include "UserInterface.h"
 #include "ControllerInput.h"
-UserInterface::UserInterface(const UserController& control_device) : input_handler_(control_device) {}
+UserInterface::UserInterface(UserController* control_device) : input_handler_(control_device) {}
 
 float UserInterface::get_pitch() const
 {
@@ -22,8 +22,9 @@ bool UserInterface::button_pressed(const Buttons button) const
 	return button != max_input && user_input_.buttons[button] && !prior_user_input_.buttons[button];
 }
 
-void UserInterface::update()
+void UserInterface::update(const float dt)
 {
+	input_handler_->update(dt);
 	prior_user_input_ = user_input_;
-	user_input_ = input_handler_.get_inputs();
+	user_input_ = input_handler_->get_inputs();
 }

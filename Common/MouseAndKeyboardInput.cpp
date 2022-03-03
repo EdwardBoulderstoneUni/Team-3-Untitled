@@ -1,6 +1,6 @@
 #include "MouseAndKeyboardInput.h"
 
-MouseAndKeyboardInput::MouseAndKeyboardInput(const NCL::Mouse* mouse, const NCL::Keyboard* keyboard) :
+MouseAndKeyboardInput::MouseAndKeyboardInput(NCL::Mouse* mouse, NCL::Keyboard* keyboard) :
 UserController(), keyboard_(keyboard), mouse_(mouse) { }
 
 Input MouseAndKeyboardInput::get_inputs()
@@ -13,4 +13,10 @@ Input MouseAndKeyboardInput::get_inputs()
     input.buttons[pause] = keyboard_->KeyDown(NCL::KeyboardKeys::ESCAPE);
     input.buttons[sprint] = keyboard_->KeyDown(NCL::KeyboardKeys::SHIFT);
     return input;
+}
+
+void MouseAndKeyboardInput::update(const float dt)
+{
+    keyboard_->UpdateFrameState(dt);
+    mouse_->UpdateFrameState(dt);
 }

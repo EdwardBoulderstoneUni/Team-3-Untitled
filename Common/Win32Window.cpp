@@ -97,7 +97,7 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 
 	winMouse->Wake();
 	winKeyboard->Wake();
-	user_interface_ = new UserInterface(MouseAndKeyboardInput(mouse, keyboard));
+	user_interface_ = new UserInterface(new MouseAndKeyboardInput(mouse, keyboard));
 
 	LockMouseToWindow(lockMouse);
 	ShowOSPointer(showMouse);

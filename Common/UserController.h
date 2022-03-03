@@ -20,5 +20,6 @@ public:
 	UserController() = default;
 	virtual ~UserController() = default;
 	virtual Input get_inputs() { return {}; }
+	virtual void update(const float dt) {}
 };
 
