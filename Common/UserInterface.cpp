@@ -22,12 +22,12 @@ float UserInterface::get_yaw() const
 
 bool UserInterface::button_down(const Buttons button) const
 {
-	return user_input_.buttons[button];
+	return button != max_input && user_input_.buttons[button];
 }
 
 bool UserInterface::button_pressed(const Buttons button) const
 {
-	return user_input_.buttons[button] && !prior_user_input_.buttons[button];
+	return button != max_input && user_input_.buttons[button] && !prior_user_input_.buttons[button];
 }
 
 void UserInterface::update()
