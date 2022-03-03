@@ -14,14 +14,14 @@
 using namespace NCL;
 using namespace Rendering;
 
+UserInterface* Window::user_interface_ = nullptr;
 Window* Window::window = nullptr;
 Keyboard* Window::keyboard = nullptr;
 Mouse* Window::mouse = nullptr;
 GameTimer* Window::timer = nullptr;
 
-Window::Window()
+Window::Window() : renderer(nullptr), init(false)
 {
-	renderer = nullptr;
 	window = this;
 	timer = new GameTimer();
 }
