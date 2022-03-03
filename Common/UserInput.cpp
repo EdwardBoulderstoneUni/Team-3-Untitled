@@ -30,6 +30,31 @@ bool UserInput::attack_pressed() const
 	return user_input_.attack && !prior_user_input_.attack;
 }
 
+bool UserInput::pause_down() const
+{
+	return user_input_.pause;
+}
+bool UserInput::pause_pressed() const
+{
+	return user_input_.pause && !prior_user_input_.pause;
+}
+bool UserInput::jump_down() const
+{
+	return user_input_.jump;
+}
+bool UserInput::jump_pressed() const
+{
+	return user_input_.jump && !prior_user_input_.jump;
+}
+bool UserInput::sprint_down() const
+{
+	return user_input_.sprint;
+}
+bool UserInput::sprint_pressed() const
+{
+	return user_input_.sprint && !prior_user_input_.sprint;
+}
+
 void UserInput::update()
 {
 	prior_user_input_ = user_input_;

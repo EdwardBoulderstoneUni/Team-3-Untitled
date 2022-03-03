@@ -9,6 +9,12 @@ public:
 	float get_yaw() const;
 	bool attack_down() const;
 	bool attack_pressed() const;
+	bool pause_down() const;
+	bool pause_pressed() const;
+	bool jump_down() const;
+	bool jump_pressed() const;
+	bool sprint_down() const;
+	bool sprint_pressed() const;
 	void update();
 
 private:
