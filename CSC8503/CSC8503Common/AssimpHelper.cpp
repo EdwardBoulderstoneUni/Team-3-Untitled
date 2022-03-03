@@ -7,6 +7,7 @@
 #include "../../Common/Matrix4.h"
 #include "../../Common/MeshMaterial.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
+#include "../../Plugins/OpenGLRendering/OGLTexture.h"
 
 #define GET_NCL_MATRIX4(mat)	NCL::Maths::Matrix4({ mat.a1,mat.b1,mat.c1,mat.d1,\
 								mat.a2,mat.b2,mat.c2,mat.d2,\
@@ -34,7 +35,7 @@ namespace  NCL
 	}
 	void AssimpHelper::ProcessFBX(const char* filePath, Rendering::OGLMesh*& outMesh, MeshMaterial*& outMaterial)
 	{
-		const aiScene* scene = m_Importer->ReadFile(filePath, aiProcess_Triangulate | aiProcess_GenNormals);
+		const aiScene* scene = m_Importer->ReadFile(filePath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 		outMaterial = new MeshMaterial();
 		std::stack<const aiNode*> nodes;
 		nodes.push(scene->mRootNode);
@@ -67,17 +68,27 @@ namespace  NCL
 	}
 	void AssimpHelper::TryLoadMaterial(const aiScene* scene, const aiMesh* mesh, MeshMaterial*& outMaterial)
 	{
+		NCL::MeshMaterialEntry materialEntry;
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		aiString texture_file;
 		material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), texture_file);
 		const aiTexture* texture = scene->GetEmbeddedTexture(texture_file.C_Str());
 		if (texture != nullptr) //returned pointer is not null, read texture from memory
 		{
-
+			if (texture->mHeight != 0)
+			{
+				materialEntry.AddEntry("Diffuse", texture_file.C_Str(), Rendering::OGLTexture::RGBATextureFromData
+													(reinterpret_cast<char *>(texture->pcData), texture->mWidth, texture->mHeight, 4));
+			}
+			else
+			{
+				materialEntry.AddEntry("Diffuse", texture_file.C_Str(), Rendering::OGLTexture::RGBATextureFromCompressedData
+										(reinterpret_cast<char*>(texture->pcData), texture->mWidth));
+			}
+			outMaterial->AddEntry(materialEntry);
 		}
 		else //regular file, check if it exists and read it
-		{
-			NCL::MeshMaterialEntry materialEntry;
+		{			
 			materialEntry.AddEntry("Diffuse", texture_file.C_Str(), nullptr);
 			outMaterial->AddEntry(materialEntry);
 		}
