@@ -4,8 +4,7 @@
 #include "ePlayerRole.h"
 
 namespace NCL {
-	namespace CSC8503 {
-		class Ability;
+	namespace CSC8503 {		
 		class Player : GameObject {
 		public:
 			Player(PlayerRole colour, Vector3 transform);
@@ -35,7 +34,7 @@ namespace NCL {
 			bool hasAmmo = true;
 
 			PlayerRole pColour;
-			Ability *abilities[2];
+			NCL::CSC8503::Ability *abilities[2];
 		};
 	}
 }

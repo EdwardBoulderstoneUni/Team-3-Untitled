@@ -1,5 +1,5 @@
 #pragma once
-#include "Player.h"
+
 #include "ePlayerRole.h"
 #include "..//Common/Vector2.h"
 #include <fstream>
@@ -23,7 +23,7 @@ namespace NCL {
 		private:
 			float cooldown;
 			float range;
-			Vector2 size;
+			NCL::Maths::Vector2 size;
 			float startUp;
 			float endLag;
 
