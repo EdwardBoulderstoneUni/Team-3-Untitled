@@ -546,7 +546,7 @@ bool TutorialGame::SelectObject()
 	{
 		renderer->DrawString("Press Q to change to camera mode!", Vector2(5, 85));
 
-		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
+		if (Window::GetInterface()->button_down(attack))
 		{
 			if (selectionObject)
 			{

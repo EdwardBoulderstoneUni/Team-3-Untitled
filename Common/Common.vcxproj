@@ -214,7 +214,7 @@
     <ClCompile Include="TextureBase.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="TextureWriter.cpp" />
-    <ClCompile Include="UserInput.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="Vector2.cpp" />
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Vector4.cpp" />
@@ -228,7 +228,7 @@
     <ClInclude Include="Assets.h" />
     <ClInclude Include="ControllerInput.h" />
     <ClInclude Include="GameTimer.h" />
-    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="UserController.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Maths.h" />
     <ClInclude Include="Matrix2.h" />
@@ -247,7 +247,7 @@
     <ClInclude Include="TextureBase.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="TextureWriter.h" />
-    <ClInclude Include="UserInput.h" />
+    <ClInclude Include="UserInterface.h" />
     <ClInclude Include="Vector2.h" />
     <ClInclude Include="Vector3.h" />
     <ClInclude Include="Vector4.h" />
