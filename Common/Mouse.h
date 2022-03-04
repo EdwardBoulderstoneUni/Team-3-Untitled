@@ -13,6 +13,8 @@ _-_-_-_-_-_-_-""  ""
 #pragma once
 #include "Vector2.h"
 
+class MouseAndKeyboardInput;
+
 namespace NCL
 {
 	using namespace Maths;
@@ -31,6 +33,7 @@ namespace NCL
 	{
 	public:
 		friend class Window;
+		friend class ::MouseAndKeyboardInput;
 
 		bool ButtonPressed(MouseButtons button) const
 		{
