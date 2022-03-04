@@ -93,7 +93,8 @@ void TutorialGame::UpdateGame(float dt)
 		Debug::Print("(G)ravity off", Vector2(5, 95));
 	}
 
-	SelectObject();
+	//SelectObject();
+	SelectXObject();
 	MoveSelectedObject();
 	physicsX->Update(dt);
 
@@ -617,7 +618,76 @@ bool TutorialGame::SelectObject()
 
 	return false;
 }
+bool TutorialGame::SelectXObject() {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
+	{
+		inSelectionMode = !inSelectionMode;
+		if (inSelectionMode)
+		{
+			Window::GetWindow()->ShowOSPointer(true);
+			Window::GetWindow()->LockMouseToWindow(false);
+		}
+		else
+		{
+			Window::GetWindow()->ShowOSPointer(false);
+			Window::GetWindow()->LockMouseToWindow(true);
+		}
+	}
+	if (inSelectionMode)
+	{
+		renderer->DrawString("Press Q to change to camera mode!", Vector2(5, 85));
 
+		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
+		{
+			if (selectionObject)
+			{
+				//set colour to deselected;
+				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
+				selectionObject = nullptr;
+				lockedObject = nullptr;
+			}
+			PxRaycastBuffer  hit;
+			bool status = physicsX->raycastCam(*world->GetMainCamera(),1000.0f,hit);
+			if (status) {
+				selectionObject = (GameObject*)hit.block.actor->userData;
+				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
+				return true;
+			}
+			return false;
+		}
+	}
+	else
+	{
+		renderer->DrawString("Press Q to change to select mode!", Vector2(5, 85));
+	}
+
+	if (lockedObject)
+	{
+		renderer->DrawString("Press L to unlock object!", Vector2(5, 80));
+	}
+
+	else if (selectionObject)
+	{
+		renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L))
+	{
+		if (selectionObject)
+		{
+			if (lockedObject == selectionObject)
+			{
+				lockedObject = nullptr;
+			}
+			else
+			{
+				lockedObject = selectionObject;
+			}
+		}
+	}
+
+	return false;
+}
 /*
 If an object has been clicked, it can be pushed with the right mouse button, by an amount
 determined by the scroll wheel. In the first tutorial this won't do anything, as we haven't
@@ -626,4 +696,10 @@ line - after the third, they'll be able to twist under torque aswell.
 */
 void TutorialGame::MoveSelectedObject()
 {
+	if (selectionObject == nullptr)return;
+	PhysicsXObject* obj= selectionObject->GetPhysicsXObject();
+	Vector3 position=selectionObject->GetTransform().GetPosition();
+	Vector3 camPos = world->GetMainCamera()->GetPosition();
+	Vector3 dir = position - camPos;
+	obj->AddForce(dir.Normalised()*1500.0f);
 }

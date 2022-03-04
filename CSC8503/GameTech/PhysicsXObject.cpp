@@ -11,6 +11,7 @@ PhysicsXObject::PhysicsXObject(PxTransform& _transform, PxShape& _volume) :
 }
 PhysicsXObject::~PhysicsXObject()
 {
+	rb->release();
 }
 
 void PhysicsXObject::AddForce(const Vector3& force) {

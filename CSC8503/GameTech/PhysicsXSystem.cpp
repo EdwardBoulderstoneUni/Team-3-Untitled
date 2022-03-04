@@ -1,4 +1,6 @@
 #include "PhysicsXSystem.h"
+#include "PhysXConvert.h"
+#include "../../Common/Maths.h"
 #include <vector>
 #define PVD_HOST "127.0.0.1"
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
@@ -130,6 +132,80 @@ void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
 	}
 }
 
+Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
+{
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+
+	float aspect = screenSize.x / screenSize.y;
+	float fov = cam.GetFieldOfVision();
+	float nearPlane = cam.GetNearPlane();
+	float farPlane = cam.GetFarPlane();
+
+	//Create our inverted matrix! Note how that to get a correct inverse matrix,
+	//the order of matrices used to form it are inverted, too.
+	Matrix4 invVP = GenerateInverseView(cam) * GenerateInverseProjection(aspect, fov, nearPlane, farPlane);
+
+	//Our mouse position x and y values are in 0 to screen dimensions range,
+	//so we need to turn them into the -1 to 1 axis range of clip space.
+	//We can do that by dividing the mouse values by the width and height of the
+	//screen (giving us a range of 0.0 to 1.0), multiplying by 2 (0.0 to 2.0)
+	//and then subtracting 1 (-1.0 to 1.0).
+	auto clipSpace = Vector4(
+		(screenPos.x / screenSize.x) * 2.0f - 1.0f,
+		(screenPos.y / screenSize.y) * 2.0f - 1.0f,
+		(screenPos.z),
+		1.0f
+	);
+
+	//Then, we multiply our clipspace coordinate by our inverted matrix
+	Vector4 transformed = invVP * clipSpace;
+
+	//our transformed w coordinate is now the 'inverse' perspective divide, so
+	//we can reconstruct the final world space by dividing x,y,and z by w.
+	return Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
+}
+
+Matrix4 PhysicsXSystem::GenerateInverseView(const Camera& c)
+{
+	float pitch = c.GetPitch();
+	float yaw = c.GetYaw();
+	Vector3 position = c.GetPosition();
+
+	Matrix4 iview =
+		Matrix4::Translation(position) *
+		Matrix4::Rotation(yaw, Vector3(0, 1, 0)) *
+		Matrix4::Rotation(pitch, Vector3(1, 0, 0));
+
+	return iview;
+}
+
+Matrix4 PhysicsXSystem::GenerateInverseProjection(float aspect, float fov, float nearPlane, float farPlane)
+{
+	Matrix4 m;
+
+	float t = tan(fov * PI_OVER_360);
+
+	float neg_depth = nearPlane - farPlane;
+
+	const float h = 1.0f / t;
+
+	float c = (farPlane + nearPlane) / neg_depth;
+	float e = -1.0f;
+	float d = 2.0f * (nearPlane * farPlane) / neg_depth;
+
+	m.array[0] = aspect / h;
+	m.array[5] = tan(fov * PI_OVER_360);
+
+	m.array[10] = 0.0f;
+	m.array[11] = 1.0f / d;
+
+	m.array[14] = 1.0f / e;
+
+	m.array[15] = -c / (d * e);
+
+	return m;
+}
+
 PxTransform& PhysicsXSystem::parseTransform(Transform transform)
 {
 	Vector3 positon = transform.GetPosition();
@@ -207,6 +283,34 @@ GeometryData PhysicsXSystem::createCapsuleGeo(float radius, float hfHeight)
 	geo.data.capsuleData.radius = radius;
 	geo.data.capsuleData.halfHeight = hfHeight;
 	return geo;
+}
+
+bool PhysicsXSystem::raycast(Vector3 origin, Vector3 dir, float maxdis, PxRaycastBuffer& hit)
+{
+	PxVec3 pxori = PhysXConvert::Vector3ToPxVec3(origin);
+	PxVec3 pxdir = PhysXConvert::Vector3ToPxVec3(dir);
+	return gScene->raycast(pxori, pxdir, maxdis, hit);
+}
+
+bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit)
+{
+	Vector3 camPos = camera.GetPosition();
+	PxVec3 pxCamPos = PhysXConvert::Vector3ToPxVec3(camPos);
+	Vector2 screenMouse = Window::GetMouse()->GetAbsolutePosition();
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+	auto nearPos = Vector3(screenMouse.x,
+		screenSize.y - screenMouse.y,
+		-0.99999f
+	);
+	auto farPos = Vector3(screenMouse.x,
+		screenSize.y - screenMouse.y,
+		0.99999f
+	);
+	Vector3 a = Unproject(nearPos, camera);
+	Vector3 b = Unproject(farPos, camera);
+	Vector3 c = b - a;
+	c.Normalise();
+	return raycast(camera.GetPosition(), c, maxdis, hit);
 }
 
 GeometryData::Data::BoxData AABBToBoxData(const Vector3& halfDims)

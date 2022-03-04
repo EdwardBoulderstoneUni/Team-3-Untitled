@@ -3,6 +3,7 @@
 #include "../../include/PhysX/PxPhysicsAPI.h"
 //#include "../CSC8503Common/CollisionVolume.h"
 
+
 using namespace physx;
 using namespace NCL;
 struct GeometryData
@@ -67,15 +68,21 @@ class PhysicsXSystem {
 			GeometryData createBoxGeo(float x, float y, float z);
 			GeometryData createSphereGeo(float radius);
 			GeometryData createCapsuleGeo(float radius, float hfHeight);
+			bool raycast(Vector3 origin,Vector3 dir,float maxdis,PxRaycastBuffer& hit);
+			bool raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit);
 		protected:
 			PxTransform& parseTransform(Transform transform);
 
 			GeometryData::Data::BoxData AABBToBoxData(const Vector3& halfDims);
 
 			PhysicsXObject* createPhysicsXObject(Transform transform, GeometryData geoData);
-	
+			
 			void getActorsPose(PxRigidActor** actors, const PxU32 numActors);
-		
+
+			Vector3 Unproject(const Vector3& screenPos, const Camera& cam);
+			Matrix4 GenerateInverseView(const Camera& c);
+			Matrix4 GenerateInverseProjection(float aspect, float fov, float nearPlane, float farPlane);
+
 			PxDefaultAllocator		gAllocator; 
 			PxDefaultErrorCallback	gErrorCallback;
 
