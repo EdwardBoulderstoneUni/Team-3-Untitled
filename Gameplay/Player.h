@@ -5,6 +5,7 @@
 
 namespace NCL {
 	namespace CSC8503 {
+		class Ability;
 		class Player : GameObject {
 		public:
 			Player(PlayerRole colour, Vector3 transform);
@@ -34,7 +35,7 @@ namespace NCL {
 			bool hasAmmo = true;
 
 			PlayerRole pColour;
-			Ability* abilities[2];
+			Ability *abilities[2];
 		};
 	}
 }
