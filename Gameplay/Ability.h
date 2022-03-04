@@ -14,7 +14,7 @@ namespace NCL {
 			Ability(const char* colourName, int abilityNumber);
 			~Ability();
 
-			inline void GetVector(const rapidjson::Value& value, const char* attribute, NCL::Maths::Vector2& vector)
+			inline static void GetVector(const rapidjson::Value& value, const char* attribute, NCL::Maths::Vector2& vector)
 			{
 				vector.x = value[attribute]["x"].GetFloat();
 				vector.y = value[attribute]["y"].GetFloat();
