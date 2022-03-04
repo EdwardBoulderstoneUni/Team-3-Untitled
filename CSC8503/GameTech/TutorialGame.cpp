@@ -698,6 +698,7 @@ void TutorialGame::MoveSelectedObject()
 {
 	if (selectionObject == nullptr)return;
 	PhysicsXObject* obj= selectionObject->GetPhysicsXObject();
+	if (!obj->isDynamic())return;
 	Vector3 position=selectionObject->GetTransform().GetPosition();
 	Vector3 camPos = world->GetMainCamera()->GetPosition();
 	Vector3 dir = position - camPos;

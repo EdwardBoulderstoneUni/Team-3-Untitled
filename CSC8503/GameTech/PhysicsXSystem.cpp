@@ -106,7 +106,6 @@ void PhysicsXSystem::addStaticActor(GameObject& actor, GeometryData geoData)
 	if (phyObj == nullptr)return;
 	PxRigidStatic *body=gPhysics->createRigidStatic(phyObj->GetTransform());
 	body->attachShape(phyObj->GetVolume());
-
 	body->userData = &actor;
 	gScene->addActor(*body);
 }

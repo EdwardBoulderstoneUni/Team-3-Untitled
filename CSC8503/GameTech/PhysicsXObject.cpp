@@ -44,3 +44,8 @@ void PhysicsXObject::SetAngularVelocity(const Vector3& v)
 	rb->setAngularVelocity(pxV);
 }
 
+bool PhysicsXObject::isDynamic()
+{
+	return rb==nullptr ? false : true;
+}
+

@@ -37,6 +37,7 @@ public:
 
 	void SetAngularVelocity(const Vector3& v);
 
+	bool isDynamic();
 
 protected:
 	PxTransform& transform;
