@@ -37,10 +37,13 @@ namespace  NCL
 	{
 		const aiScene* scene = m_Importer->ReadFile(filePath, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 		outMaterial = new MeshMaterial();
-		std::stack<const aiNode*> nodes;
-		nodes.push(scene->mRootNode);
 		NCL::Maths::Matrix4 transform;
 		std::vector<aiMesh*> meshes;
+		
+		//traverse scene tree iteratively
+		std::stack<const aiNode*> nodes;
+		nodes.push(scene->mRootNode);
+		
 		while (!nodes.empty())
 		{
 			const aiNode* node = nodes.top();
@@ -57,40 +60,58 @@ namespace  NCL
 				nodes.push(node->mChildren[i]);
 			}
 		}
-
+		//append all meshses as submeshes to one single mesh
 		outMesh = new Rendering::OGLMesh(transform);
 		for (auto& mesh : meshes)
 		{
 			outMesh->AddSubMeshFromFBXData(static_cast<void*>(mesh));
 		}
-
+		//load materials
 		outMaterial->LoadTextures();
 	}
-	void AssimpHelper::TryLoadMaterial(const aiScene* scene, const aiMesh* mesh, MeshMaterial*& outMaterial)
+
+	void AssimpHelper::TryLoadMaterial(const aiScene* scene, const aiMesh* mesh, MeshMaterial*& outMaterial) const
 	{
-		NCL::MeshMaterialEntry materialEntry;
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		aiString texture_file;
 		material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), texture_file);
 		const aiTexture* texture = scene->GetEmbeddedTexture(texture_file.C_Str());
 		if (texture != nullptr) //returned pointer is not null, read texture from memory
 		{
-			if (texture->mHeight != 0)
-			{
-				materialEntry.AddEntry("Diffuse", texture_file.C_Str(), Rendering::OGLTexture::RGBATextureFromData
-													(reinterpret_cast<char *>(texture->pcData), texture->mWidth, texture->mHeight, 4));
-			}
-			else
-			{
-				materialEntry.AddEntry("Diffuse", texture_file.C_Str(), Rendering::OGLTexture::RGBATextureFromCompressedData
-										(reinterpret_cast<char*>(texture->pcData), texture->mWidth));
-			}
-			outMaterial->AddEntry(materialEntry);
+			LoadTextureFromMemory(texture, texture_file.C_Str(), outMaterial);
 		}
 		else //regular file, check if it exists and read it
 		{			
-			materialEntry.AddEntry("Diffuse", texture_file.C_Str(), nullptr);
-			outMaterial->AddEntry(materialEntry);
+			LoadTextureFromFile(texture, texture_file.C_Str(), outMaterial);
 		}
+	}
+
+	void AssimpHelper::LoadTextureFromMemory(const aiTexture* texture, const char *fileName, MeshMaterial*& material) const
+	{
+		NCL::MeshMaterialEntry materialEntry;
+		if (texture->mHeight != 0)
+		{
+			materialEntry.AddEntry("Diffuse", fileName, Rendering::OGLTexture::RGBATextureFromData
+			(reinterpret_cast<char*>(texture->pcData), texture->mWidth, texture->mHeight, 4));
+		}
+		else
+		{
+			materialEntry.AddEntry("Diffuse", fileName, Rendering::OGLTexture::RGBATextureFromCompressedData
+			(reinterpret_cast<char*>(texture->pcData), texture->mWidth));
+		}
+		material->AddEntry(materialEntry);
+	}
+
+	void AssimpHelper::LoadTextureFromFile(const aiTexture* texture, const char* fileName, MeshMaterial*& material) const
+	{
+		NCL::MeshMaterialEntry materialEntry;
+		string name = fileName;
+		int pathIndex = name.find_last_of('\\');
+		if (pathIndex != string::npos)
+		{
+			name = name.substr(pathIndex + 1);
+		}
+		materialEntry.AddEntry("Diffuse", name.c_str(), nullptr);
+		material->AddEntry(materialEntry);
 	}
 }

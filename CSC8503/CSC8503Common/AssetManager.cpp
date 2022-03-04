@@ -110,17 +110,17 @@ namespace NCL
 		}
 	}
 
-	NCL::Rendering::OGLMesh* AssetManager::GetMesh(const char* name)
+	NCL::Rendering::OGLMesh* AssetManager::GetMesh(const char* name) const
 	{
 		return m_Meshes.at(name);
 	}
 
-	NCL::Rendering::OGLTexture* AssetManager::GetTexture(const char* name)
+	NCL::Rendering::OGLTexture* AssetManager::GetTexture(const char* name) const
 	{
 		return m_Textures.at(name);
 	}
 
-	NCL::MeshMaterial* AssetManager::GetMaterial(const char*name)
+	NCL::MeshMaterial* AssetManager::GetMaterial(const char*name) const
 	{
 		return m_Materials.at(name);
 	}
