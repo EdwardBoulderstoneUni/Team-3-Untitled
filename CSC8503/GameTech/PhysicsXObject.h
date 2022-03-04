@@ -31,8 +31,8 @@ public:
 	void AddTorque(const Vector3& torque);
 
 	
-	//void ClearForces();
-
+	void ClearForces();
+	void ClearTorque();
 	void SetLinearVelocity(const Vector3& v);
 
 	void SetAngularVelocity(const Vector3& v);

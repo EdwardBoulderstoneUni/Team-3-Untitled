@@ -60,7 +60,7 @@ class PhysicsXSystem {
 			~PhysicsXSystem();
 			void initPhysics();
 			void Update(float dt);
-			void cleanupPhysics();
+			void cleanupPhysics(PxRigidActor** actors, const PxU32 numActors);
 			void addDynamicActor(GameObject& actor, GeometryData geoData);
 			void addStaticActor(GameObject& actor, GeometryData geoData);
 			GeometryData createBoxGeo(const Vector3 hfExtents);

@@ -66,12 +66,20 @@ void PhysicsXSystem::Update(float dt)
 		std::vector<PxRigidActor*> actors(nbActors);
 		scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
 		getActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
+		cleanupPhysics(&actors[0], static_cast<PxU32>(actors.size()));
 	}
+	
 }
 
-void PhysicsXSystem::cleanupPhysics()
+void PhysicsXSystem::cleanupPhysics(PxRigidActor** actors, const PxU32 numActors)
 {
-	
+	/*for (PxU32 i = 0; i < numActors; i++)
+	{
+		const bool sleeping = actors[i]->is<PxRigidDynamic>() ? actors[i]->is<PxRigidDynamic>()->isSleeping() : false;
+		GameObject* obj = (GameObject*)actors[i]->userData;
+		obj->GetPhysicsXObject()->ClearForces();
+
+	}*/
 }
 
 void PhysicsXSystem::addDynamicActor(GameObject& actor, GeometryData geoData)

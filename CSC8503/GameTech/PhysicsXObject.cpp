@@ -21,6 +21,16 @@ void PhysicsXObject::AddTorque(const Vector3& torque) {
 	rb->addTorque(PhysXConvert::Vector3ToPxVec3(torque));
 }
 
+void PhysicsXObject::ClearForces()
+{
+	/*rb->clearForce();*/
+}
+
+void PhysicsXObject::ClearTorque()
+{
+	/*rb->clearTorque();*/
+}
+
 void PhysicsXObject::SetLinearVelocity(const Vector3& v)
 {
 	PxVec3 pxV = PhysXConvert::Vector3ToPxVec3(v);
