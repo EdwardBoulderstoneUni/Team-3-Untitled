@@ -7,7 +7,7 @@ namespace NCL {
 	namespace CSC8503 {
 		class Player : GameObject {
 		public:
-			Player();
+			Player(PlayerRole colour, Vector3 transform);
 			~Player();
 
 			void Move();
@@ -33,9 +33,8 @@ namespace NCL {
 			bool isDead = false;
 			bool hasAmmo = true;
 
-			Ability[2] abilities;
-
 			PlayerRole pColour;
+			Ability* abilities[2];
 		};
 	}
 }
