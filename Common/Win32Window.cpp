@@ -16,12 +16,13 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 
 	this->fullScreen = fullScreen;
 
-	size = Vector2(static_cast<float>(sizeX), static_cast<float>(sizeY));
 
-	defaultSize = size;
+	defaultSize = Vector2((float)sizeX, (float)sizeY);
+	fullscreenSize = Vector2(::GetDeviceCaps(::GetWindowDC(NULL), HORZRES), ::GetDeviceCaps(::GetWindowDC(NULL), VERTRES));
+	defaultPosition = Vector2((float)offsetX, (float)offsetY);
 
-	fullScreen ? position.x = 0.0f : position.x = static_cast<float>(offsetX);
-	fullScreen ? position.y = 0.0f : position.y = static_cast<float>(offsetY);
+	fullScreen ? position = Vector2(0, 0) : position = defaultPosition;
+	fullScreen ? size = fullscreenSize : size = defaultSize;
 
 	windowInstance = GetModuleHandle(nullptr);
 
@@ -134,56 +135,79 @@ void Win32Window::UpdateTitle()
 	SetWindowText(windowHandle, windowTitle.c_str());
 }
 
-void Win32Window::SetFullScreen(bool fullScreen)
-{
+void	Win32Window::SetFullScreen(bool fullScreen) {
+	Vector2 newSize, newPos;
 	if (fullScreen)
 	{
-		DEVMODE dmScreenSettings; // Device Mode
-		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings)); // Makes Sure Memory's Cleared
-
-		DEVMODEA settings;
-		EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &settings);
-
-		size.x = static_cast<float>(settings.dmPelsWidth);
-		size.y = static_cast<float>(settings.dmPelsHeight);
-
-		dmScreenSettings.dmSize = sizeof(dmScreenSettings); // Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth = static_cast<DWORD>(size.x); // Selected Screen Width
-		dmScreenSettings.dmPelsHeight = static_cast<DWORD>(size.y); // Selected Screen Height
-		dmScreenSettings.dmBitsPerPel = 32; // Selected Bits Per Pixel
-		dmScreenSettings.dmDisplayFrequency = settings.dmDisplayFrequency;
-		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
-
-		if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-		{
-			std::cout << __FUNCTION__ << " Failed to switch to fullscreen!" << std::endl;
-		}
-		else
-		{
-			ResizeRenderer();
-		}
+		newSize = fullscreenSize;
+		newPos = Vector2(0, 0);
+		SetWindowLong(windowHandle, GWL_STYLE, WS_POPUP | WS_VISIBLE);
 	}
 	else
 	{
-		DEVMODE dmScreenSettings; // Device Mode
-		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings)); // Makes Sure Memory's Cleared
-
-		size = defaultSize;
-
-		dmScreenSettings.dmSize = sizeof(dmScreenSettings); // Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth = static_cast<DWORD>(size.x); // Selected Screen Width
-		dmScreenSettings.dmPelsHeight = static_cast<DWORD>(size.y); // Selected Screen Height
-		dmScreenSettings.dmPosition.x = static_cast<DWORD>(position.x);
-		dmScreenSettings.dmPosition.y = static_cast<DWORD>(position.y);
-		dmScreenSettings.dmBitsPerPel = 32; // Selected Bits Per Pixel
-		dmScreenSettings.dmDisplayFrequency = 60;
-		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY | DM_POSITION;
-
-		if (ChangeDisplaySettings(&dmScreenSettings, 0) != DISP_CHANGE_SUCCESSFUL)
-		{
-			std::cout << __FUNCTION__ << " Failed to switch out of fullscreen!" << std::endl;
-		}
+		newSize = defaultSize;
+		newPos = defaultPosition;
+		SetWindowLong(windowHandle, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX);
 	}
+	::SetWindowPos(windowHandle, NULL, newPos.x, newPos.y, newSize.x, newSize.y, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	{
+		RECT cRect;
+		::GetClientRect(windowHandle, &cRect);
+		size.x = cRect.right - cRect.left;
+		size.y = cRect.bottom - cRect.top;
+		position.x = cRect.left;
+		position.y = cRect.top;
+	}
+	//winMouse->UpdateWindowPosition(position);
+	//SetActiveWindow(windowHandle);
+	winMouse->SetAbsolutePositionBounds(size);
+	ResizeRenderer();
+	if (init && lockMouse) LockMouseToWindow(true);
+	return;
+
+	//if (fullScreen) {
+	//	DEVMODE dmScreenSettings;								// Device Mode
+	//	memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
+
+	//	DEVMODEA settings;
+	//	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &settings);
+
+	//	size.x = (float)settings.dmPelsWidth;
+	//	size.y = (float)settings.dmPelsHeight;
+
+	//	dmScreenSettings.dmSize				= sizeof(dmScreenSettings);			// Size Of The Devmode Structure
+	//	dmScreenSettings.dmPelsWidth		= (DWORD)size.x;		// Selected Screen Width
+	//	dmScreenSettings.dmPelsHeight		= (DWORD)size.y;		// Selected Screen Height
+	//	dmScreenSettings.dmBitsPerPel		= 32;								// Selected Bits Per Pixel
+	//	dmScreenSettings.dmDisplayFrequency = (DWORD)settings.dmDisplayFrequency;
+	//	dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+
+	//	if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+	//		std::cout << __FUNCTION__ << " Failed to switch to fullscreen!" << std::endl;
+	//	}
+	//	else {
+	//		ResizeRenderer();
+	//	}
+	//}
+	//else {
+	//	DEVMODE dmScreenSettings;								// Device Mode
+	//	memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
+
+	//	size = defaultSize;
+
+	//	dmScreenSettings.dmSize = sizeof(dmScreenSettings);	// Size Of The Devmode Structure
+	//	dmScreenSettings.dmPelsWidth  = (DWORD)size.x;		// Selected Screen Width
+	//	dmScreenSettings.dmPelsHeight = (DWORD)size.y;		// Selected Screen Height
+	//	dmScreenSettings.dmPosition.x = (DWORD)position.x;
+	//	dmScreenSettings.dmPosition.y = (DWORD)position.y;
+	//	dmScreenSettings.dmBitsPerPel = 32;					// Selected Bits Per Pixel
+	//	dmScreenSettings.dmDisplayFrequency = 60;
+	//	dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY | DM_POSITION;
+
+	//	if (ChangeDisplaySettings(&dmScreenSettings, 0) != DISP_CHANGE_SUCCESSFUL) {
+	//		std::cout << __FUNCTION__ << " Failed to switch out of fullscreen!" << std::endl;
+	//	}
+	//}
 }
 
 void Win32Window::CheckMessages(MSG& msg)
@@ -436,6 +460,11 @@ void Win32Window::ShowConsole(bool state)
 	ShowWindow(consoleWindow, state ? SW_RESTORE : SW_HIDE);
 
 	SetActiveWindow(windowHandle);
+}
+
+bool	Win32Window::IsFullScreen()
+{
+	return this->fullScreen;
 }
 
 #endif //_WIN32

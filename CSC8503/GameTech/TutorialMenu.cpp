@@ -27,7 +27,12 @@ void TutorialMenu::Draw()
 	
 	}*/
 
-
+	if (ImGui::CollapsingHeader("Configuration"))
+	{
+		static bool full_screen = Window::GetWindow()->IsFullScreen();
+		if (ImGui::Checkbox("Fullscreen", &full_screen))
+			Window::GetWindow()->SetFullScreen(full_screen);
+	}
 
 	if (ImGui::CollapsingHeader("Help"))
 	{

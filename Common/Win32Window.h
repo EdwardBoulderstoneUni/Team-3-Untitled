@@ -64,6 +64,8 @@ namespace NCL
 			void SetFullScreen(bool state) override;
 			void SetWindowPosition(int x, int y) override;
 
+			bool IsFullScreen() override;
+
 			HWND GetHandle() const { return windowHandle; }
 			HINSTANCE GetInstance() const { return windowInstance; }
 
@@ -92,6 +94,8 @@ namespace NCL
 			Win32Mouse* winMouse;
 			Win32Keyboard* winKeyboard;
 
+			Vector2 fullscreenSize;
+			Vector2 defaultPosition;
 			ExInputFunc exInputFunc = nullptr;
 		};
 	}
