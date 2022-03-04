@@ -1,7 +1,7 @@
 #pragma once
 
 enum PlayerRole {
-	Red = 0,
+	Red,
 	Green,
 	Blue
 };
