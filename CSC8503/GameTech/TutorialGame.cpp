@@ -456,18 +456,18 @@ void TutorialGame::InitGameExamples()
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 {
-	float meshSize = 3.0f;
+	const float meshSize = 3.0f;
+	const auto mesh_shape = Vector3(0.3f, 0.85f, 0.3f);
+	const auto shape_dimensions = Vector3(meshSize, meshSize, meshSize);
 	float inverseMass = 0.5f;
+	auto character = new GameObject(physicsX, VolumeType::AABB, mesh_shape, shape_dimensions, position, inverseMass);
 
-	auto character = new GameObject();
-
-	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
 
 	//character->SetBoundingVolume((CollisionVolume*)volume);
 
-	character->GetTransform()
-	         .SetScale(Vector3(meshSize, meshSize, meshSize))
-	         .SetPosition(position);
+	//character->GetTransform()
+	//         .SetScale(mesh_shape)
+	//         .SetPosition(position);
 
 	if (rand() % 2)
 	{
@@ -482,8 +482,15 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	//character->GetPhysicsObject()->InitSphereInertia();
 	
-	GeometryData geo=physicsX->createBoxGeo(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
-	physicsX->addDynamicActor(*character, geo);
+	//GeometryData geo=physicsX->createBoxGeo(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
+	//physicsX->addDynamicActor(*character, geo);
+	//
+	//GeometryData geoData;
+	//geoData.type = GeometryData::Box;
+	//geoData.data.boxData = GeometryData::Data::BoxData(mesh_shape * meshSize);
+	//character->SetPhysicsXObject(physicsX->createPhysicsXObject(character->GetTransform(),
+	//	geoData));
+	//physicsX->addDynamicActor(*character);
 	world->AddGameObject(character);
 	//lockedObject = character;
 

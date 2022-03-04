@@ -8,6 +8,7 @@
 #include "RenderObject.h"
 
 #include <vector>
+#include "../GameTech/PhysicsXSystem.h"
 
 using std::vector;
 
@@ -19,91 +20,88 @@ namespace NCL
 		class GameObject
 		{
 		public:
-			GameObject(string name = "");
-			~GameObject();
+			explicit GameObject(string name = "");
+			GameObject(PhysicsXSystem* physics_system, VolumeType volume_type, const Vector3& mesh_shape, const Vector3& shape_dimensions,
+			           const Vector3& position, float inverse_mass,
+			           const string& name = "");
+			virtual ~GameObject();
 
 			void SetBoundingVolume(CollisionVolume* vol)
 			{
-				boundingVolume = vol;
+				bounding_volume_ = vol;
 			}
 
 			const CollisionVolume* GetBoundingVolume() const
 			{
-				return boundingVolume;
+				return bounding_volume_;
 			}
 
 			bool IsActive() const
 			{
-				return isActive;
+				return is_active_;
 			}
 
 			Transform& GetTransform()
 			{
-				return transform;
+				return transform_;
 			}
 
 			RenderObject* GetRenderObject() const
 			{
-				return renderObject;
+				return render_object_;
 			}
 
 			PhysicsObject* GetPhysicsObject() const
 			{
-				return physicsObject;
+				return physics_object_;
 			}
 
 			PhysicsXObject* GetPhysicsXObject() const
 			{
-				return physicsXObject;
+				return physics_x_object_;
 			}
 
 			NetworkObject* GetNetworkObject() const {
-				return networkObject;
+				return network_object_;
 			}
 
-			void SetRenderObject(RenderObject* newObject)
+			void SetRenderObject(RenderObject* new_object)
 			{
-				renderObject = newObject;
+				render_object_ = new_object;
 			}
 
-			void SetPhysicsObject(PhysicsObject* newObject)
+			void SetPhysicsObject(PhysicsObject* new_object)
 			{
-				physicsObject = newObject;
+				physics_object_ = new_object;
 			}
 
-			void SetPhysicsXObject(PhysicsXObject* newObject)
+			void SetPhysicsXObject(PhysicsXObject* new_object)
 			{
-				physicsXObject = newObject;
+				physics_x_object_ = new_object;
 			}
 
 			void SetNetworkObject(int id);
 
 			void SetNetworkObject(NetworkObject* object) {
-				networkObject = object;
+				network_object_ = object;
 			}
 
 			const string& GetName() const
 			{
-				return name;
+				return name_;
 			}
 
-			virtual void OnCollisionBegin(GameObject* otherObject)
-			{
-				//std::cout << "OnCollisionBegin event occured!\n";
-			}
+			virtual void OnCollisionBegin(GameObject* other_object) {}
 
-			virtual void OnCollisionEnd(GameObject* otherObject)
-			{
-				//std::cout << "OnCollisionEnd event occured!\n";
-			}
+			virtual void OnCollisionEnd(GameObject* other_object) {}
 
 			bool GetBroadphaseAABB(Vector3& outsize) const;
 
 			void UpdateBroadphaseAABB();
 
-			void SetWorldID(int newID)
+			void SetWorldID(const int new_id)
 			{
-				worldID = newID;
+				worldID = new_id;
 			}
 
 			int GetWorldID() const
@@ -114,17 +112,17 @@ namespace NCL
 			
 
 		protected:
-			Transform transform;
+			Transform transform_;
 
-			CollisionVolume* boundingVolume;
-			PhysicsObject* physicsObject;
-			PhysicsXObject* physicsXObject;
-			RenderObject* renderObject;
-			NetworkObject* networkObject;
+			CollisionVolume* bounding_volume_;
+			PhysicsObject* physics_object_;
+			PhysicsXObject* physics_x_object_;
+			RenderObject* render_object_;
+			NetworkObject* network_object_;
 
-			bool isActive;
+			bool is_active_;
 			int worldID;
-			string name;
+			string name_;
 
 			Vector3 broadphaseAABB;
 		};
