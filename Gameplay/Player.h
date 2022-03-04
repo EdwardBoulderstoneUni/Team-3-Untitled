@@ -1,19 +1,20 @@
 #pragma once
 #include "../CSC8503/CSC8503Common/GameObject.h"
 #include "Ability.h"
+#include "AbilityContainer.h"
 #include "ePlayerRole.h"
 
 namespace NCL {
 	namespace CSC8503 {		
 		class Player : GameObject {
 		public:
-			Player(PlayerRole colour, Vector3 transform);
+			Player(PlayerRole colour, AbilityContainer aCont);
 			~Player();
 
 			void Move();
 			void Jump();
 			void Shoot();
-			void AssignRole();
+			void AssignRole(AbilityContainer aCont);
 
 		private:
 
@@ -22,6 +23,7 @@ namespace NCL {
 			
 			// t is short for timer (cooldowns)
 			float tDash;
+			float dashCooldown;
 			float tAbility1;
 			float tAbility2;
 			float tDeath;

@@ -124,10 +124,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Ability.cpp" />
+    <ClCompile Include="AbilityContainer.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ability.h" />
+    <ClInclude Include="AbilityContainer.h" />
     <ClInclude Include="ePlayerRole.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
