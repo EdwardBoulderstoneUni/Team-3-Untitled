@@ -68,46 +68,39 @@ void PhysicsXSystem::Update(float dt)
 		std::vector<PxRigidActor*> actors(nbActors);
 		scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
 		getActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
-		cleanupPhysics(&actors[0], static_cast<PxU32>(actors.size()));
 	}
 	
 }
 
-void PhysicsXSystem::cleanupPhysics(PxRigidActor** actors, const PxU32 numActors)
+void PhysicsXSystem::addDynamicActor(GameObject& actor)
 {
-	/*for (PxU32 i = 0; i < numActors; i++)
-	{
-		const bool sleeping = actors[i]->is<PxRigidDynamic>() ? actors[i]->is<PxRigidDynamic>()->isSleeping() : false;
-		GameObject* obj = (GameObject*)actors[i]->userData;
-		obj->GetPhysicsXObject()->ClearForces();
-
-	}*/
-}
-
-void PhysicsXSystem::addDynamicActor(GameObject& actor, GeometryData geoData)
-{
-	PhysicsXObject* phyObj = createPhysicsXObject(actor.GetTransform(), geoData);
-	actor.SetPhysicsXObject(phyObj);
-	if (phyObj == nullptr)return;
-
-	PxRigidDynamic* body = gPhysics->createRigidDynamic(phyObj->GetTransform());
-	body->attachShape(phyObj->GetVolume());
+	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
+	PxTransform localTm(actor.GetTransform().GetPosition().x,
+		actor.GetTransform().GetPosition().y, 
+		actor.GetTransform().GetPosition().z);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(localTm);
 	PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
 
-	body->userData = &actor;
-	phyObj->SetRigidBody(body);
+	body->attachShape(*shape);
 	gScene->addActor(*body);
+	body->userData = &actor;
+	actor.GetPhysicsXObject()->SetRigActor(body);
+	shape->release();
 }
 
-void PhysicsXSystem::addStaticActor(GameObject& actor, GeometryData geoData)
+void PhysicsXSystem::addStaticActor(GameObject& actor)
 {
-	PhysicsXObject* phyObj = createPhysicsXObject(actor.GetTransform(), geoData);
-	actor.SetPhysicsXObject(phyObj);
-	if (phyObj == nullptr)return;
-	PxRigidStatic *body=gPhysics->createRigidStatic(phyObj->GetTransform());
-	body->attachShape(phyObj->GetVolume());
-	body->userData = &actor;
+	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
+	PxTransform localTm(actor.GetTransform().GetPosition().x,
+		actor.GetTransform().GetPosition().y,
+		actor.GetTransform().GetPosition().z);
+	PxRigidStatic* body = gPhysics->createRigidStatic(localTm);
+
+	body->attachShape(*shape);
 	gScene->addActor(*body);
+	body->userData = &actor;
+	actor.GetPhysicsXObject()->SetRigActor(body);
+	shape->release();
 }
 
 void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
@@ -205,85 +198,6 @@ Matrix4 PhysicsXSystem::GenerateInverseProjection(float aspect, float fov, float
 	return m;
 }
 
-PxTransform& PhysicsXSystem::parseTransform(Transform transform)
-{
-	Vector3 positon = transform.GetPosition();
-	Quaternion quat = transform.GetOrientation();
-	return PxTransform(PxVec3(positon.x, positon.y, positon.z), PxQuat(quat.x, quat.y, quat.z, quat.w));
-}
-
-
-PhysicsXObject* PhysicsXSystem::createPhysicsXObject(Transform transform,GeometryData geoData)
-{
-	PxShape* shape = nullptr;
-	
-	switch (geoData.type)
-	{
-	case GeometryData::Type::Sphere:
-	{
-		shape = gPhysics->createShape(PxSphereGeometry(geoData.data.sphereData.radius), *gMaterial);
-		break;
-	}
-
-	case GeometryData::Type::Capsule:
-	{
-		shape = gPhysics->createShape(PxCapsuleGeometry(geoData.data.sphereData.radius,
-			geoData.data.capsuleData.halfHeight), *gMaterial);
-		break;
-	}
-
-	case GeometryData::Type::Box:
-	{
-		shape = gPhysics->createShape(PxBoxGeometry(geoData.data.boxData.halfx,
-			geoData.data.boxData.halfy,
-			geoData.data.boxData.halfz), *gMaterial);
-		break;
-	}
-
-	default:
-		break;
-	}
-	if (shape == nullptr)return nullptr;
-	else return new PhysicsXObject(parseTransform(transform), *shape);
-}
-
-GeometryData PhysicsXSystem::createBoxGeo(const Vector3 hfExtents)
-{
-	GeometryData geo = GeometryData();
-	geo.type = GeometryData::Box;
-	geo.data.boxData.halfx = hfExtents.x;
-	geo.data.boxData.halfy = hfExtents.y;
-	geo.data.boxData.halfz = hfExtents.z;
-	return geo;
-}
-
-GeometryData PhysicsXSystem::createBoxGeo(float x, float y, float z)
-{
-	GeometryData geo = GeometryData();
-	geo.type = GeometryData::Box;
-	geo.data.boxData.halfx = x;
-	geo.data.boxData.halfy = y;
-	geo.data.boxData.halfz = z;
-	return geo;
-}
-
-GeometryData PhysicsXSystem::createSphereGeo(float radius)
-{
-	GeometryData geo = GeometryData();
-	geo.type = GeometryData::Sphere;
-	geo.data.sphereData.radius = radius;
-	return geo;
-}
-
-GeometryData PhysicsXSystem::createCapsuleGeo(float radius, float hfHeight)
-{
-	GeometryData geo = GeometryData();
-	geo.type = GeometryData::Capsule;
-	geo.data.capsuleData.radius = radius;
-	geo.data.capsuleData.halfHeight = hfHeight;
-	return geo;
-}
-
 bool PhysicsXSystem::raycast(Vector3 origin, Vector3 dir, float maxdis, PxRaycastBuffer& hit)
 {
 	PxVec3 pxori = PhysXConvert::Vector3ToPxVec3(origin);
@@ -312,8 +226,14 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 	return raycast(camera.GetPosition(), c, maxdis, hit);
 }
 
-GeometryData::Data::BoxData AABBToBoxData(const Vector3& halfDims)
+void PhysicsXSystem::addActors(std::vector<GameObject*>& actors)
 {
-	return GeometryData::Data::BoxData(halfDims);
+	for (int i = 0; i < actors.size();i++) {
+		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
+		if (obj == nullptr)continue;
+		if (obj->isDynamic())addDynamicActor(*actors[i]);
+		else addStaticActor(*actors[i]);
+	}
 }
+
 

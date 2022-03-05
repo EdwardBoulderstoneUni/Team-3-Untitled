@@ -3,7 +3,7 @@
 #include "..//..//include/rapidjson/document.h"
 #include "../../Common/Vector3.h"
 #include "../../Common/Vector4.h"
-#include "../GameTech/PhysicsXSystem.h"
+
 namespace NCL {
 
 	namespace CSC8503 {
@@ -13,7 +13,7 @@ namespace NCL {
 		{
 
 		public:
-			GameObjectGenerator(PhysicsXSystem* _physics) { physics = _physics; };
+			GameObjectGenerator() {};
 			~GameObjectGenerator();
 			void Generate(const char* fileName, std::vector<GameObject*>& objects) ;
 			void SetTransform(GameObject*, const rapidjson::Value&);
@@ -35,7 +35,6 @@ namespace NCL {
 				vector.w = value[attribute]["w"].GetFloat();
 			}
 		private:
-			PhysicsXSystem* physics;
 		};
 	}
 }

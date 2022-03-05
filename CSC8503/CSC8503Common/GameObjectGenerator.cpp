@@ -11,11 +11,11 @@
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
 #include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
+#include "../../CSC8503/GameTech/PhysXConvert.h"
 
 
 NCL::CSC8503::GameObjectGenerator::~GameObjectGenerator()
 {
-	delete physics;
 }
 
 void NCL::CSC8503::GameObjectGenerator::SetTransform(GameObject* object, const rapidjson::Value& value) 
@@ -38,22 +38,21 @@ void NCL::CSC8503::GameObjectGenerator::SetTransform(GameObject* object, const r
 void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, const rapidjson::Value& value)
 {
 	NCL::Maths::Vector3 dim;
-	//NCL::CollisionVolume* volume = nullptr;
+	PxGeometry* volume = nullptr;
 
 	GetVector(value, "dimensions", dim);
 	int objectType = value["objShape"].GetInt();
-	GeometryData geo = GeometryData();
+
 	switch (objectType)
 	{
 	case 0:
-		geo = physics->createSphereGeo(dim.x);
+		volume = new PxSphereGeometry(dim.x);
 		break;
 	case 1:
-		geo = physics->createBoxGeo(dim);
+		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim));
 		break;
 	}
-	//object->SetBoundingVolume(volume);
-	physics->addDynamicActor(*object,geo);
+	object->SetPhysicsXObject(new PhysicsXObject(object->GetTransform(),volume));
 }
 
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)

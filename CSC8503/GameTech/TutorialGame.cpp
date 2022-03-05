@@ -35,35 +35,15 @@ for this module, even in the coursework, but you can add it if you like!
 
 */
 void TutorialGame::InitialiseAssets() {
-#define PhysX_DEBUG
-#ifdef PhysX_DEBUG
-	auto loadFunc = [](const string& name, OGLMesh** into) {
-		*into = new OGLMesh(name);
-		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
-		(*into)->UploadToGPU();
-};
-	loadFunc("cube.msh", &cubeMesh);
-	loadFunc("sphere.msh", &sphereMesh);
-	loadFunc("Male1.msh", &charMeshA);
-	loadFunc("courier.msh", &charMeshB);
-	loadFunc("security.msh", &enemyMesh);
-	loadFunc("coin.msh", &bonusMesh);
-	loadFunc("capsule.msh", &capsuleMesh);
-
-	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
-	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
-	InitCamera();
-	InitWorld();
-#else
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
 	InitCamera();
 	InitWorld();
-	GameObjectGenerator g(physicsX);
+	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
-#endif
+	physicsX->addActors(world->GetGameObjects());
 }
 	
 
@@ -311,8 +291,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 	     .SetPosition(position);
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	GeometryData geo = physicsX->createBoxGeo(floorSize);
-	physicsX->addStaticActor(*floor,geo);
+	
 	world->AddGameObject(floor);
 
 	return floor;
@@ -482,8 +461,6 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
 	//character->GetPhysicsObject()->InitSphereInertia();
 	
-	GeometryData geo=physicsX->createBoxGeo(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
-	physicsX->addDynamicActor(*character, geo);
 	world->AddGameObject(character);
 	//lockedObject = character;
 
