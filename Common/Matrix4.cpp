@@ -48,6 +48,12 @@ Matrix4::Matrix4(const Matrix3& m3)
 	array[15] = 1.0f;
 }
 
+Matrix4::Matrix4(std::initializer_list<float> list)
+{
+	ToZero();
+	std::copy(list.begin(), list.end(), array);
+}
+
 Matrix4::Matrix4(const Quaternion& quat) : Matrix4()
 {
 	float yy = quat.y * quat.y;

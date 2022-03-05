@@ -3,6 +3,8 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Matrix4.h"
+
 using std::vector;
 
 namespace NCL
@@ -48,6 +50,15 @@ namespace NCL
 	{
 		int start;
 		int count;
+		SubMesh()
+		{
+			start = count = 0;
+		}
+		SubMesh(int _start, int _count)
+		{
+			start = _start;
+			count = _count;
+		}
 	};
 
 	class MeshGeometry
@@ -83,6 +94,11 @@ namespace NCL
 		unsigned int GetSubMeshCount() const
 		{
 			return static_cast<unsigned>(subMeshes.size());
+		}
+
+		Matrix4& GetLocalTransform()
+		{
+			return localTransform;
 		}
 
 		const SubMesh* GetSubMesh(unsigned int i) const
@@ -153,16 +169,20 @@ namespace NCL
 		virtual void UploadToGPU(Rendering::RendererBase* renderer = nullptr) = 0;
 
 		static MeshGeometry* GenerateTriangle(MeshGeometry* input);
+		void AddSubMeshFromFBXData(const void* meshData);
 
 	protected:
 		MeshGeometry();
 		MeshGeometry(const std::string& filename);
+		MeshGeometry(Matrix4 transform);
 
 		void ReadRigPose(std::ifstream& file, vector<Matrix4>& into);
 		void ReadJointParents(std::ifstream& file);
 		void ReadJointNames(std::ifstream& file);
 		void ReadSubMeshes(std::ifstream& file, int count);
 		void ReadSubMeshNames(std::ifstream& file, int count);
+
+		void ParseMsh(const std::string& filename);
 
 		bool GetVertexIndicesForTri(unsigned int i, unsigned int& a, unsigned int& b, unsigned int& c) const;
 
@@ -189,5 +209,7 @@ namespace NCL
 
 		vector<Matrix4> bindPose;
 		vector<Matrix4> inverseBindPose;
+
+		Matrix4 localTransform;
 	};
 }
