@@ -104,22 +104,22 @@ void NetworkedGame::UpdateAsServer(float dt) {
 void NetworkedGame::UpdateAsClient(float dt) {
 	ClientPacket newPacket;
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT)) {
+	if (Window::GetInterface()->button_down(sprint)) {
 		newPacket.buttonstates[0] = 1;  //TODO:fire!
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
+	if (Window::GetInterface()->get_movement().y > 0){
 		newPacket.buttonstates[1] = 1;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
+	if (Window::GetInterface()->get_movement().y < 0) {
 		newPacket.buttonstates[2] = 1;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
+	if (Window::GetInterface()->get_movement().x > 0) {
 		newPacket.buttonstates[3] = 1;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
+	if (Window::GetInterface()->get_movement().x < 0) {
 		newPacket.buttonstates[4] = 1;
 	}
-	newPacket.angles[0] = Window::GetMouse()->GetRelativePosition().x;
+	newPacket.angles[0] = Window::GetInterface()->get_look_direction().x;
 	if (localLastID == -1) return;
 	newPacket.lastID = localLastID;
 	OutputDebug("localastID: %d", localLastID);

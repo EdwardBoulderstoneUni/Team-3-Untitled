@@ -63,6 +63,10 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 	{
 		material = AssetManager::GetInstance()->GetMaterial(value["materialPath"].GetString());
 	}
+	else
+	{
+		material = AssetManager::GetInstance()->GetMaterial(value["meshPath"].GetString());
+	}
 
 	switch (objectType)
 	{

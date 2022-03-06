@@ -16,7 +16,7 @@ int main()
 	w->LockMouseToWindow(true);
 	w->ShowOSPointer(false);
 
-	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
+	while (w->UpdateWindow() && !!Window::GetInterface()->button_down(quit))
 	{
 		float time = w->GetTimer()->GetTimeDeltaSeconds();
 		renderer->Update(time);

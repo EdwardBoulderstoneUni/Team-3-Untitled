@@ -55,6 +55,19 @@ bool TextureLoader::LoadTexture(const std::string& filename, char*& outData, int
 	return false;
 }
 
+bool NCL::TextureLoader::LoadTextureData(char* inData, int inDataLen, char*& outData, int  *width, int *height, int *channels)
+{
+	stbi_uc* texData = stbi_load_from_memory((stbi_uc*)inData, inDataLen, width, height, channels, 4);
+
+	if (texData)
+	{
+		outData = (char*)texData;
+		return true;
+	}
+
+	return false;
+}
+
 void TextureLoader::RegisterTextureLoadFunction(TextureLoadFunction f, const std::string& fileExtension)
 {
 	fileHandlers.insert(std::make_pair(fileExtension, f));
