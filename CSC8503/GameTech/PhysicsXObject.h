@@ -1,6 +1,6 @@
 #pragma once
 #include "../CSC8503Common/Transform.h"
-#include "PxPhysicsAPI.h"
+#include "PhysXAPI.h"
 #include "PhysXConvert.h"
 
 using namespace physx;
