@@ -59,10 +59,10 @@
     <ClInclude Include="PhysicsXSystem.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="PhysXConvert.h">
+    <ClInclude Include="PhysXAPI.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="PhysXAPI.h">
+    <ClInclude Include="PhysXConvert.h">
       <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
