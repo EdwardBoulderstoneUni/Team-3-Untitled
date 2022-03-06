@@ -75,7 +75,7 @@ void TutorialGame::UpdateGame(float dt)
 
 	//SelectObject();
 	SelectXObject();
-	//MoveSelectedObject();
+	MoveSelectedObject();
 	physicsX->Update(dt);
 
 	if (lockedObject != nullptr)
@@ -628,7 +628,6 @@ bool TutorialGame::SelectXObject() {
 			if (status) {
 				selectionObject = (GameObject*)hit.block.actor->userData;
 				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
-				MoveSelectedObject();
 				return true;
 			}
 			return false;
@@ -676,8 +675,9 @@ void TutorialGame::MoveSelectedObject()
 {
 	if (selectionObject == nullptr)return;
 	PhysicsXObject* obj= selectionObject->GetPhysicsXObject();
+	if (!obj->isDynamic())return;
 	Vector3 position=selectionObject->GetTransform().GetPosition();
 	Vector3 camPos = world->GetMainCamera()->GetPosition();
 	Vector3 dir = position - camPos;
-	obj->AddForce(dir.Normalised()*500.0f);
+	obj->AddForce(dir.Normalised()*1500.0f);
 }
