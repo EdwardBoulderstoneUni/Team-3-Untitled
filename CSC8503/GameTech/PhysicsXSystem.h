@@ -1,11 +1,6 @@
 #pragma once
 #include "../CSC8503Common/GameWorld.h"
-#include "PxQueryReport.h"
-#include "extensions/PxDefaultAllocator.h"
-#include "extensions/PxDefaultErrorCallback.h"
-#include "PxFoundation.h"
-#include "extensions/PxDefaultCpuDispatcher.h"
-#include "pvd/PxPvd.h"
+#include "PxPhysicsAPI.h"
 using namespace physx;
 using namespace NCL;
 
