@@ -11,7 +11,7 @@
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -87,7 +87,7 @@ class PxQuat
 	*/
 	PX_CUDA_CALLABLE PX_INLINE PxQuat(float angleRadians, const PxVec3& unitAxis)
 	{
-		PX_SHARED_ASSERT(PxAbs(1.0f - unitAxis.magnitude()) < 1e-3f);
+		PX_ASSERT(PxAbs(1.0f - unitAxis.magnitude()) < 1e-3f);
 		const float a = angleRadians * 0.5f;
 		const float s = PxSin(a);
 		w = PxCos(a);

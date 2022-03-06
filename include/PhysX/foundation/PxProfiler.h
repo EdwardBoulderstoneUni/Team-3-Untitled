@@ -11,7 +11,7 @@
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -23,12 +23,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
 
 #ifndef PXFOUNDATION_PXPROFILER_H
 #define PXFOUNDATION_PXPROFILER_H
 
-#include "foundation/Px.h"
+#include "foundation/PxFoundation.h"
 
 namespace physx
 {
@@ -71,7 +71,7 @@ public:
 class PxProfileScoped
 {
   public:
-	PX_FORCE_INLINE PxProfileScoped(PxProfilerCallback* callback, const char* eventName, bool detached, uint64_t contextId) : mCallback(callback), mProfilerData(NULL)
+	PX_FORCE_INLINE PxProfileScoped(const char* eventName, bool detached, uint64_t contextId) : mCallback(PxGetProfilerCallback()), mProfilerData(NULL)
 	{
 		if(mCallback)
 		{
@@ -87,7 +87,7 @@ class PxProfileScoped
 		if(mCallback)
 			mCallback->zoneEnd(mProfilerData, mEventName, mDetached, mContextId);
 	}
-	PxProfilerCallback*			mCallback;
+	physx::PxProfilerCallback*	mCallback;
 	const char*					mEventName;
 	void*						mProfilerData;
 	uint64_t					mContextId;
@@ -95,5 +95,22 @@ class PxProfileScoped
 };
 
 } // end of physx namespace
+
+#if PX_DEBUG || PX_CHECKED || PX_PROFILE
+	#define PX_PROFILE_ZONE(x, y)										\
+		physx::PxProfileScoped PX_CONCAT(_scoped, __LINE__)(x, false, y)
+	#define PX_PROFILE_START_CROSSTHREAD(x, y)							\
+		if(PxGetProfilerCallback())										\
+			PxGetProfilerCallback()->zoneStart(x, true, y)
+	#define PX_PROFILE_STOP_CROSSTHREAD(x, y)							\
+		if(PxGetProfilerCallback())										\
+			PxGetProfilerCallback()->zoneEnd(NULL, x, true, y)
+#else
+	#define PX_PROFILE_ZONE(x, y)
+	#define PX_PROFILE_START_CROSSTHREAD(x, y)
+	#define PX_PROFILE_STOP_CROSSTHREAD(x, y)
+#endif
+
+#define PX_PROFILE_POINTER_TO_U64(pointer) static_cast<uint64_t>(reinterpret_cast<size_t>(pointer))
 
 #endif // PXFOUNDATION_PXPROFILER_H
