@@ -157,6 +157,7 @@
     <ClInclude Include="NetworkPlayer.h" />
     <ClInclude Include="PhysicsXObject.h" />
     <ClInclude Include="PhysicsXSystem.h" />
+    <ClInclude Include="PhysXAPI.h" />
     <ClInclude Include="PhysXConvert.h" />
     <ClInclude Include="TutorialGame.h" />
   </ItemGroup>
