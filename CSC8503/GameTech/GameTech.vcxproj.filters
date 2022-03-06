@@ -62,8 +62,5 @@
     <ClInclude Include="PhysXConvert.h">
       <Filter>Physics</Filter>
     </ClInclude>
-    <ClInclude Include="PhysXAPI.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
