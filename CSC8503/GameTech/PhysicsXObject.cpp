@@ -1,5 +1,6 @@
 #include "PhysicsXObject.h"
 #include "../CSC8503Common/CollisionVolume.h"
+#include "PxRigidDynamic.h"
 using namespace NCL;
 using namespace CSC8503;
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}

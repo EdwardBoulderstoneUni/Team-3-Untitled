@@ -1,5 +1,7 @@
 #pragma once
-#include"../../include/PhysX/PxPhysicsAPI.h"
+#include"../../include/PhysX/foundation/PxVec3.h"
+#include"../../include/PhysX/foundation/PxVec4.h"
+#include"../../include/PhysX/foundation/PxQuat.h"
 #include"../../Common/Vector3.h"
 #include"../../Common/Vector4.h"
 #include"../../Common/Quaternion.h"

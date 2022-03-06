@@ -2,6 +2,20 @@
 #include "PhysXConvert.h"
 #include "../../Common/Maths.h"
 #include <vector>
+#include "PxScene.h"
+#include "PxPhysicsVersion.h"
+#include "PxPhysics.h"
+
+#include "common/PxTolerancesScale.h"
+#include "pvd/PxPvdSceneClient.h"
+#include "pvd/PxPvdTransport.h"
+
+#include "extensions/PxRigidBodyExt.h"
+#include "extensions/PxShapeExt.h"
+#include "extensions/PxDefaultSimulationFilterShader.h"
+#include "PxRigidDynamic.h"
+#include "PxRigidStatic.h"
+
 #define PVD_HOST "127.0.0.1"
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 #define MAX_NUM_ACTOR_SHAPES 128
@@ -79,8 +93,7 @@ void PhysicsXSystem::addDynamicActor(GameObject& actor)
 		actor.GetTransform().GetPosition().y, 
 		actor.GetTransform().GetPosition().z);
 	PxRigidDynamic* body = gPhysics->createRigidDynamic(localTm);
-	PxRigidBodyExt::updateMassAndInertia(*body, 10.0f);
-
+	PxRigidBodyExt::updateMassAndInertia(*body,10.0f);
 	body->attachShape(*shape);
 	gScene->addActor(*body);
 	body->userData = &actor;
