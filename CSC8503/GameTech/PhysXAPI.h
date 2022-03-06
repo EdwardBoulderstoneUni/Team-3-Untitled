@@ -43,7 +43,7 @@ Alternatively, one can instead directly #include a subset of the below files.
 */
 
 // Foundation SDK 
-#include "../../include/PhysX/foundation/Px.h"
+#include "foundation/Px.h"
 #include "../../include/PhysX/foundation/PxAllocatorCallback.h"
 #include "../../include/PhysX/foundation/PxAssert.h"
 #include "../../include/PhysX/foundation/PxBitAndData.h"
