@@ -11,7 +11,7 @@
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -23,49 +23,24 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-#ifndef PX_FOUNDATION_DELAY_LOAD_HOOK
-#define PX_FOUNDATION_DELAY_LOAD_HOOK
-
-#include "foundation/PxPreprocessor.h"
+#ifndef PXFOUNDATION_PXASSERT_H
+#define PXFOUNDATION_PXASSERT_H
 
 /** \addtogroup foundation
-@{
-*/
+@{ */
 
-#if !PX_DOXYGEN
-namespace physx
-{
-#endif
-	/**
- 	\brief PxFoundationDelayLoadHook
+#include "foundation/Px.h"
 
-	This is a helper class for delay loading the PxFoundation dll. 
-	If a PxFoundation dll with a non-default file name needs to be loaded, 
-	PxFoundationDelayLoadHook can be sub-classed to provide the custom file names.
+#if !PX_ENABLE_ASSERTS
+	#define PX_SHARED_ASSERT(exp) ((void)0)
+#else
+	#include <assert.h>
+	#define PX_SHARED_ASSERT(exp) assert(exp);
+#endif // !PX_ENABLE_ASSERTS
 
-	Once the names are set, the instance must be set for use by the loading dll. 
- 	*/
-	class PxFoundationDelayLoadHook
-	{
-	public:
-		PxFoundationDelayLoadHook() {}
-		virtual ~PxFoundationDelayLoadHook() {}
-
-		virtual const char* getPxFoundationDEBUGDllName() const = 0;
-		virtual const char* getPxFoundationCHECKEDDllName() const = 0;
-		virtual const char* getPxFoundationPROFILEDllName() const = 0;
-		virtual const char* getPxFoundationDllName() const = 0;
-
-	protected:
-	private:
-	};
-
-#if !PX_DOXYGEN
-} // namespace physx
-#endif
 /** @} */
-#endif
+#endif // #ifndef PXFOUNDATION_PXASSERT_H

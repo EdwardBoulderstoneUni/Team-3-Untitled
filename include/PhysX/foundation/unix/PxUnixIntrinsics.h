@@ -27,26 +27,31 @@
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-#ifndef PXFOUNDATION_PXWINDOWSINTRINSICS_H
-#define PXFOUNDATION_PXWINDOWSINTRINSICS_H
+#ifndef PXFOUNDATION_PXUNIXINTRINSICS_H
+#define PXFOUNDATION_PXUNIXINTRINSICS_H
 
 #include "foundation/Px.h"
 #include "foundation/PxSharedAssert.h"
 
-#if !PX_WINDOWS_FAMILY
-#error "This file should only be included by Windows builds!!"
+#if !(PX_LINUX || PX_ANDROID || PX_PS4 || PX_APPLE_FAMILY)
+#error "This file should only be included by Unix builds!!"
+#endif
+
+#if (PX_LINUX || PX_ANDROID) && !defined(__CUDACC__) && !PX_EMSCRIPTEN
+    // Linux/android and CUDA compilation does not work with std::isfnite, as it is not marked as CUDA callable
+    #include <cmath>
+    #ifndef isfinite
+        using std::isfinite;
+    #endif
 #endif
 
 #include <math.h>
 #include <float.h>
 
-#if !PX_DOXYGEN
 namespace physx
 {
 namespace intrinsics
 {
-#endif
-
 //! \brief platform-specific absolute value
 PX_CUDA_CALLABLE PX_FORCE_INLINE float abs(float a)
 {
@@ -89,7 +94,6 @@ PX_CUDA_CALLABLE PX_FORCE_INLINE float recipSqrt(float a)
 	return 1.0f / ::sqrtf(a);
 }
 
-//! \brief platform-specific reciprocal square root estimate
 PX_CUDA_CALLABLE PX_FORCE_INLINE float recipSqrtFast(float a)
 {
 	return 1.0f / ::sqrtf(a);
@@ -122,21 +126,16 @@ PX_CUDA_CALLABLE PX_FORCE_INLINE float selectMax(float a, float b)
 //! \brief platform-specific finiteness check (not INF or NAN)
 PX_CUDA_CALLABLE PX_FORCE_INLINE bool isFinite(float a)
 {
-#ifdef __CUDACC__
-	return !!isfinite(a);
-#else
-	return (0 == ((_FPCLASS_SNAN | _FPCLASS_QNAN | _FPCLASS_NINF | _FPCLASS_PINF) & _fpclass(a)));
-#endif
+	//std::isfinite not recommended as of Feb 2017, since it doesn't work with g++/clang's floating point optimization.
+    union localU { PxU32 i; float f; } floatUnion;
+    floatUnion.f = a;
+    return !((floatUnion.i & 0x7fffffff) >= 0x7f800000);
 }
 
 //! \brief platform-specific finiteness check (not INF or NAN)
 PX_CUDA_CALLABLE PX_FORCE_INLINE bool isFinite(double a)
 {
-#ifdef __CUDACC__
 	return !!isfinite(a);
-#else
-	return (0 == ((_FPCLASS_SNAN | _FPCLASS_QNAN | _FPCLASS_NINF | _FPCLASS_PINF) & _fpclass(a)));
-#endif
 }
 
 /*!
@@ -180,9 +179,7 @@ PX_FORCE_INLINE void memZero128(void* dest, uint32_t offset = 0)
 	memSet(reinterpret_cast<char*>(dest) + offset, 0, 128);
 }
 
-#if !PX_DOXYGEN
 } // namespace intrinsics
 } // namespace physx
-#endif
 
-#endif // #ifndef PXFOUNDATION_PXWINDOWSINTRINSICS_H
+#endif // #ifndef PXFOUNDATION_PXUNIXINTRINSICS_H

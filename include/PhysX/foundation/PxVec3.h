@@ -11,7 +11,7 @@
 //    contributors may be used to endorse or promote products derived
 //    from this software without specific prior written permission.
 //
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 // IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 // PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
@@ -23,7 +23,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Copyright (c) 2008-2018 NVIDIA Corporation. All rights reserved.
+// Copyright (c) 2008-2021 NVIDIA Corporation. All rights reserved.
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
@@ -109,9 +109,9 @@ class PxVec3
 	/**
 	\brief element access
 	*/
-	PX_DEPRECATED PX_CUDA_CALLABLE PX_FORCE_INLINE float& operator[](unsigned int index)
+	PX_CUDA_CALLABLE PX_FORCE_INLINE float& operator[](unsigned int index)
 	{
-		PX_ASSERT(index <= 2);
+		PX_SHARED_ASSERT(index <= 2);
 
 		return reinterpret_cast<float*>(this)[index];
 	}
@@ -119,12 +119,13 @@ class PxVec3
 	/**
 	\brief element access
 	*/
-	PX_DEPRECATED PX_CUDA_CALLABLE PX_FORCE_INLINE const float& operator[](unsigned int index) const
+	PX_CUDA_CALLABLE PX_FORCE_INLINE const float& operator[](unsigned int index) const
 	{
-		PX_ASSERT(index <= 2);
+		PX_SHARED_ASSERT(index <= 2);
 
 		return reinterpret_cast<const float*>(this)[index];
 	}
+
 	/**
 	\brief returns true if the two vectors are exactly equal.
 	*/
@@ -324,7 +325,7 @@ class PxVec3
 	PX_CUDA_CALLABLE PX_FORCE_INLINE float normalizeFast()
 	{
 		const float mag = magnitude();
-		PX_ASSERT(mag >= PX_NORMALIZATION_EPSILON);
+		PX_SHARED_ASSERT(mag >= PX_NORMALIZATION_EPSILON);
 		*this *= 1.0f / mag;
 		return mag;
 	}
