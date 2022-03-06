@@ -27,61 +27,20 @@
 // Copyright (c) 2004-2008 AGEIA Technologies, Inc. All rights reserved.
 // Copyright (c) 2001-2004 NovodeX AG. All rights reserved.
 
-#ifndef PXFOUNDATION_PXBITANDDATA_H
-#define PXFOUNDATION_PXBITANDDATA_H
+#ifndef PXFOUNDATION_PXASSERT_H
+#define PXFOUNDATION_PXASSERT_H
+
+/** \addtogroup foundation
+@{ */
 
 #include "foundation/Px.h"
 
-/** \addtogroup foundation
-  @{
-*/
-#if !PX_DOXYGEN
-namespace physx
-{
-#endif
-
-template <typename storageType, storageType bitMask>
-class PxBitAndDataT
-{
-  public:
-	PX_FORCE_INLINE PxBitAndDataT(const PxEMPTY)
-	{
-	}
-	PX_FORCE_INLINE PxBitAndDataT() : mData(0)
-	{
-	}
-	PX_FORCE_INLINE PxBitAndDataT(storageType data, bool bit = false)
-	{
-		mData = bit ? storageType(data | bitMask) : data;
-	}
-
-	PX_CUDA_CALLABLE PX_FORCE_INLINE operator storageType() const
-	{
-		return storageType(mData & ~bitMask);
-	}
-	PX_CUDA_CALLABLE PX_FORCE_INLINE void setBit()
-	{
-		mData |= bitMask;
-	}
-	PX_CUDA_CALLABLE PX_FORCE_INLINE void clearBit()
-	{
-		mData &= ~bitMask;
-	}
-	PX_CUDA_CALLABLE PX_FORCE_INLINE storageType isBitSet() const
-	{
-		return storageType(mData & bitMask);
-	}
-
-  protected:
-	storageType mData;
-};
-typedef PxBitAndDataT<unsigned char, 0x80> PxBitAndByte;
-typedef PxBitAndDataT<unsigned short, 0x8000> PxBitAndWord;
-typedef PxBitAndDataT<unsigned int, 0x80000000> PxBitAndDword;
-
-#if !PX_DOXYGEN
-} // namespace physx
-#endif
+#if !PX_ENABLE_ASSERTS
+	#define PX_SHARED_ASSERT(exp) ((void)0)
+#else
+	#include <assert.h>
+	#define PX_SHARED_ASSERT(exp) assert(exp);
+#endif // !PX_ENABLE_ASSERTS
 
 /** @} */
-#endif // PXFOUNDATION_PXBITANDDATA_H
+#endif // #ifndef PXFOUNDATION_PXASSERT_H
