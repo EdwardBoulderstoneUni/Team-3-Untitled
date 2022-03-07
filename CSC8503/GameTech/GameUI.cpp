@@ -1,4 +1,4 @@
-#include "../GameTech/GameUI.h"
+#include "GameUI.h"
 #include "../../Common/Win32Window.h"
 #include "../../Common/Window.h"
 #include "../../imgui/imgui.h"

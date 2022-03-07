@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "../GameTech/GameMenu.h"
+#include "GameMenu.h"
 
 struct ExInputResult;
 
