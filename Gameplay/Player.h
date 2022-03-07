@@ -6,7 +6,7 @@
 
 namespace NCL {
 	namespace CSC8503 {		
-		class Player : GameObject {
+		class Player : public GameObject {
 		public:
 			Player(PlayerRole colour, AbilityContainer aCont);
 			~Player();

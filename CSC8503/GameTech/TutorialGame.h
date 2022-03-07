@@ -3,8 +3,16 @@
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsSystem.h"
 #include "../../AudioManager/AudioManager.h"
+#include "../../Gameplay/Player.h"
+
 namespace NCL {
 	namespace CSC8503 {
+		enum CameraMode {
+			LockedObject,
+			DebugObject,
+			PlayerLock
+		};
+
 		class TutorialGame		{
 		public:
 			TutorialGame();
@@ -15,7 +23,9 @@ namespace NCL {
 		protected:
 			void InitialiseAssets();
 
+			void InitAbilityContainer();
 			void InitCamera();
+			void InitPlayer();
 			void UpdateKeys();
 
 			void InitWorld();
@@ -48,9 +58,12 @@ namespace NCL {
 			GameTechRenderer*	renderer;
 			PhysicsSystem*		physics;
 			GameWorld*			world;
+			Player*				player;
+			AbilityContainer*	abilityContainer;
 	
 			bool useGravity;
 			bool inSelectionMode;
+			bool camFollowPlayer;
 
 			float forceMagnitude;
 

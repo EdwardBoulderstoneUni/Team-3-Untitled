@@ -8,6 +8,7 @@
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
+#include "..//..//Gameplay/ePlayerRole.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -38,7 +39,8 @@ void TutorialGame::InitialiseAssets() {
 
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
-	InitCamera();
+	InitAbilityContainer();
+	InitPlayer();
 	InitWorld();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
@@ -52,6 +54,8 @@ TutorialGame::~TutorialGame()	{
 	delete physics;
 	delete renderer;
 	delete world;
+	delete player;
+	delete abilityContainer;
 }
 
 void TutorialGame::UpdateGame(float dt)
@@ -142,6 +146,13 @@ void TutorialGame::UpdateKeys()
 	{
 		world->ShuffleObjects(false);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F6))
+	{
+		camFollowPlayer = !camFollowPlayer;
+	}
+
+	if (camFollowPlayer)
+		lockedObject = player;
 
 	if (lockedObject)
 	{
@@ -151,6 +162,7 @@ void TutorialGame::UpdateKeys()
 	{
 		DebugObjectMovement();
 	}
+
 }
 
 void TutorialGame::LockedObjectMovement()
@@ -248,14 +260,49 @@ void TutorialGame::DebugObjectMovement()
 	}
 }
 
+void TutorialGame::InitAbilityContainer() {
+	abilityContainer = new AbilityContainer();
+}
+
 void TutorialGame::InitCamera()
 {
 	world->GetMainCamera()->SetNearPlane(0.1f);
 	world->GetMainCamera()->SetFarPlane(500.0f);
 	world->GetMainCamera()->SetPitch(-15.0f);
 	world->GetMainCamera()->SetYaw(315.0f);
-	world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
+	world->GetMainCamera()->SetPosition(player->GetTransform().GetPosition());
 	lockedObject = nullptr;
+}
+
+void TutorialGame::InitPlayer()
+{
+	player = new Player(PlayerRole::Blue, *abilityContainer);
+	camFollowPlayer = true;
+
+	Vector3 position = Vector3(0, 0, 0);
+	float	radius = 0.2f;
+	float	halfHeight = 0.5f;
+	float	inverseMass = 0.1f;
+
+	auto volume = new CapsuleVolume(0.5f, radius);
+	player->SetBoundingVolume(volume);
+
+	player->GetTransform()
+		.SetScale(Vector3(radius * 2, halfHeight, radius * 2))
+		.SetPosition(position);
+
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), capsuleMesh, basicTex, basicShader));
+	player->SetPhysicsObject(new PhysicsObject(&player->GetTransform(), player->GetBoundingVolume()));
+
+	player->GetPhysicsObject()->SetInverseMass(inverseMass);
+	player->GetPhysicsObject()->InitCubeInertia();
+
+	world->AddGameObject(player);
+
+	return player;
+
+
+	InitCamera();
 }
 
 void TutorialGame::InitWorld()
