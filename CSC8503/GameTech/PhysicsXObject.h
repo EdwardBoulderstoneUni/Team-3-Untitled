@@ -18,6 +18,7 @@ public:
 		if(!status)rb->setActorFlag(PxActorFlag::eDISABLE_GRAVITY,true);
 	}
 
+	void setGlobalPose(const Transform& pos);
 
 	float GetInverseMass() const{}
 	PxGeometry* GetVolume() const{ return volume; }
@@ -33,6 +34,7 @@ public:
 	void SetAngularVelocity(const Vector3& v);
 
 	bool isDynamic();
+	bool isInScene();
 	
 protected:
 	bool dynamic;

@@ -7,6 +7,32 @@
 #define MAX_NUM_ACTOR_SHAPES 128
 
 using namespace physx;
+
+PxDefaultAllocator		gAllocator;
+PxDefaultErrorCallback	gErrorCallback;
+
+PxFoundation* gFoundation = NULL;
+PxPhysics* gPhysics = NULL;
+PxDefaultCpuDispatcher* gDispatcher = NULL;
+PxScene* gScene = NULL;
+PxMaterial* gMaterial = NULL;
+PxPvd* gPvd = NULL;
+
+
+class ContackCallback :public PxSimulationEventCallback {
+	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
+	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
+	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) {}
+	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+	{
+		PX_UNUSED((pairHeader));
+		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
+		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
+		a->OnCollisionBegin(b);
+	}
+};
 PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 {
 	dTOffset = 0.0f;
@@ -26,22 +52,41 @@ PhysicsXSystem::~PhysicsXSystem()
 	}
 	PX_RELEASE(gFoundation);
 }
+PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(filterData0);
+	PX_UNUSED(filterData1);
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
 
+	// all initial and persisting reports for everything, with per-point data
+	pairFlags = PxPairFlag::eSOLVE_CONTACT | PxPairFlag::eDETECT_DISCRETE_CONTACT
+		| PxPairFlag::eNOTIFY_TOUCH_FOUND
+		| PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+		| PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	return PxFilterFlag::eDEFAULT;
+}
 void PhysicsXSystem::initPhysics()
 {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 	gPvd = PxCreatePvd(*gFoundation);
 	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate(PVD_HOST, 5425, 10);
 	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
-
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = contactReportFilterShader;
+	ContackCallback* callback = new ContackCallback;
+	sceneDesc.simulationEventCallback = callback;
 	gScene = gPhysics->createScene(sceneDesc);
-
+	
 	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
 	if (pvdClient)
 	{
@@ -54,6 +99,7 @@ void PhysicsXSystem::initPhysics()
 
 void PhysicsXSystem::Update(float dt)
 {
+	SyncGameObjs();
 	float mStepSize = 1.0f / 60.0f;
 	dTOffset += dt;
 	if (dTOffset < mStepSize)return;
@@ -69,7 +115,6 @@ void PhysicsXSystem::Update(float dt)
 		scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
 		getActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
 	}
-	
 }
 
 void PhysicsXSystem::addDynamicActor(GameObject& actor)
@@ -225,11 +270,13 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 	return raycast(camera.GetPosition(), c, maxdis, hit);
 }
 
-void PhysicsXSystem::addActors(std::vector<GameObject*>& actors)
+void PhysicsXSystem::SyncGameObjs()
 {
+	std::vector<GameObject*>& actors=gameWorld.GetGameObjects();
 	for (int i = 0; i < actors.size();i++) {
 		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
 		if (obj == nullptr)continue;
+		if (obj->isInScene())continue;
 		if (obj->isDynamic())addDynamicActor(*actors[i]);
 		else addStaticActor(*actors[i]);
 	}

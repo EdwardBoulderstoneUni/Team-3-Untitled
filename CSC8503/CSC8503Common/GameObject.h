@@ -89,7 +89,8 @@ namespace NCL
 
 			virtual void OnCollisionBegin(GameObject* otherObject)
 			{
-				//std::cout << "OnCollisionBegin event occured!\n";
+				std::cout << "OnCollisionBegin event occured!\n";
+				//Also note that API writes during a callback function are not permitted
 			}
 
 			virtual void OnCollisionEnd(GameObject* otherObject)

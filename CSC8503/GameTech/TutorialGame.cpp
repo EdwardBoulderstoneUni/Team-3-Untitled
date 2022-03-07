@@ -43,7 +43,9 @@ void TutorialGame::InitialiseAssets() {
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
-	physicsX->addActors(world->GetGameObjects());
+
+	physicsX->SyncGameObjs();
+	world->GetGameObjects().at(0)->GetPhysicsXObject()->SetGravity(false);
 }
 	
 

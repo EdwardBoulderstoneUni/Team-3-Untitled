@@ -17,6 +17,14 @@ PhysicsXObject::~PhysicsXObject()
 	PX_RELEASE(rb);
 }
 
+void PhysicsXObject::setGlobalPose(const Transform& pos)
+{
+	PxTransform transform;
+	transform.p = PhysXConvert::Vector3ToPxVec3(pos.GetPosition());
+	transform.q = PhysXConvert::QuatToPxQuat(pos.GetOrientation());
+	rb->setGlobalPose(transform);
+}
+
 void PhysicsXObject::AddForce(const Vector3& force) {
 	if(!isDynamic())return;
 	rb->is < PxRigidDynamic >()->addForce(PhysXConvert::Vector3ToPxVec3(force));
@@ -54,5 +62,10 @@ void PhysicsXObject::SetAngularVelocity(const Vector3& v)
 bool PhysicsXObject::isDynamic()
 {
 	return dynamic;
+}
+
+bool PhysicsXObject::isInScene()
+{
+	return rb == nullptr ? false: true;
 }
 
