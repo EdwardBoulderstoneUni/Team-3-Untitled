@@ -277,19 +277,14 @@ void TutorialGame::InitPlayer()
 	float	halfHeight = 0.5f;
 	float	inverseMass = 0.1f;
 
-	auto volume = new CapsuleVolume(0.5f, radius);
-	player->SetBoundingVolume(volume);
+	
 
 	player->GetTransform()
 		.SetScale(Vector3(radius * 2, halfHeight, radius * 2))
 		.SetPosition(position);
 
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), capsuleMesh, basicTex, basicShader));
-	player->SetPhysicsObject(new PhysicsObject(&player->GetTransform(), player->GetBoundingVolume()));
-
-	player->GetPhysicsObject()->SetInverseMass(inverseMass);
-	player->GetPhysicsObject()->InitCubeInertia();
-
+	
 	world->AddGameObject(player);
 
 	

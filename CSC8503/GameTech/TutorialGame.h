@@ -1,7 +1,7 @@
 #pragma once
 #include "GameTechRenderer.h"
 #include "OGLTexture.h"
-#include "PhysicsXSystem.h"
+#include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
 #include "../../Gameplay/Player.h"
 
