@@ -17,13 +17,19 @@ PhysicsXObject::~PhysicsXObject()
 {
 	PX_RELEASE(rb);
 }
-
-void PhysicsXObject::setGlobalPose(const Transform& pos)
-{
-	PxTransform transform;
+void PhysicsXObject::SetTransform(const Transform& pos) {
 	transform.p = PhysXConvert::Vector3ToPxVec3(pos.GetPosition());
 	transform.q = PhysXConvert::QuatToPxQuat(pos.GetOrientation());
-	rb->setGlobalPose(transform);
+}
+
+void PhysicsXObject::setVolume(PxGeometry* _volume)
+{
+	volume = _volume;
+}
+
+void PhysicsXObject::setDynaimc(const bool _dynamic)
+{
+	dynamic = _dynamic;
 }
 
 void PhysicsXObject::AddForce(const Vector3& force) {

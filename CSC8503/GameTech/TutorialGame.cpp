@@ -9,6 +9,7 @@
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
 #include "..//..//Gameplay/ePlayerRole.h"
+#include "../../Gameplay/GameObjects.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -36,16 +37,43 @@ for this module, even in the coursework, but you can add it if you like!
 
 */
 void TutorialGame::InitialiseAssets() {
+	auto loadFunc = [](const string& name, OGLMesh** into) {
+		*into = new OGLMesh(name);
+		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
+		(*into)->UploadToGPU();
+	};
+	loadFunc("cube.msh", &cubeMesh);
+	loadFunc("sphere.msh", &sphereMesh);
+	loadFunc("Male1.msh", &charMeshA);
+	loadFunc("courier.msh", &charMeshB);
+	loadFunc("security.msh", &enemyMesh);
+	loadFunc("coin.msh", &bonusMesh);
+	loadFunc("capsule.msh", &capsuleMesh);
+
+	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
+	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
+
+
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
 	InitAbilityContainer();
-	InitPlayer();
-	InitWorld();
+	
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
 
+
+
+	world->GetMainCamera()->SetNearPlane(0.1f);
+	world->GetMainCamera()->SetFarPlane(500.0f);
+	world->GetMainCamera()->SetPitch(-15.0f);
+	world->GetMainCamera()->SetYaw(315.0f);
+	world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
+
+
+	InitWorld();
+	InitPlayer();
 	physicsX->SyncGameObjs();
 	world->GetGameObjects().at(0)->GetPhysicsXObject()->SetGravity(false);
 }
@@ -68,7 +96,7 @@ void TutorialGame::UpdateGame(float dt)
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
 
-	UpdateKeys();
+	
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 	if (useGravity) {
@@ -79,7 +107,7 @@ void TutorialGame::UpdateGame(float dt)
 		Debug::Print("(G)ravity off", Vector2(5, 95));
 	}
 
-
+	player->Update();
 	physicsX->Update(dt);
 
 	if (lockedObject != nullptr)
@@ -272,9 +300,9 @@ void TutorialGame::InitPlayer()
 	player = new Player(PlayerRole::Blue, abilityContainer);
 	camFollowPlayer = true;
 
-	Vector3 position = Vector3(0, 0, 0);
-	float	radius = 0.2f;
-	float	halfHeight = 0.5f;
+	Vector3 position = Vector3(0, 5, 0);
+	float	radius = 0.5f;
+	float	halfHeight = 0.2f;
 	float	inverseMass = 0.1f;
 
 	
@@ -283,22 +311,19 @@ void TutorialGame::InitPlayer()
 		.SetScale(Vector3(radius * 2, halfHeight, radius * 2))
 		.SetPosition(position);
 
+	player->InitAllComponet();
+
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), capsuleMesh, basicTex, basicShader));
 	
 	world->AddGameObject(player);
-
-	
-
-
 
 }
 
 void TutorialGame::InitWorld()
 {
-	world->ClearAndErase();
 
-	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
-	InitGameExamples();
+	InitMixedGridWorld(5, 5, 5.0f, 5.0f);
+	//InitGameExamples();
 	InitDefaultFloor();
 	AudioManager::Startup();
 	//AudioManager::GetInstance().Play_Sound();
@@ -315,13 +340,15 @@ A single function to add a large immoveable cube to the bottom of our world
 */
 GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 {
-	auto floor = new GameObject();
+	auto floor = new Floor();
 
 	auto floorSize = Vector3(100, 2, 100);
 	
 	floor->GetTransform()
 	     .SetScale(floorSize * 2)
 	     .SetPosition(position);
+
+	floor->InitAllComponet();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 	
@@ -339,21 +366,16 @@ physics worlds. You'll probably need another function for the creation of OBB cu
 */
 GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass)
 {
-	auto sphere = new GameObject();
+	auto sphere = new Sphere();
 
 	auto sphereSize = Vector3(radius, radius, radius);
-	//auto volume = new SphereVolume(radius);
-	//sphere->SetBoundingVolume((CollisionVolume*)volume);
+
 
 	sphere->GetTransform()
 	      .SetScale(sphereSize)
 	      .SetPosition(position);
-
+	sphere->InitAllComponet();
 	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
-	/*sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
-
-	sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
-	sphere->GetPhysicsObject()->InitSphereInertia();*/
 
 	world->AddGameObject(sphere);
 
@@ -384,22 +406,14 @@ GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfH
 
 GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass)
 {
-	auto cube = new GameObject();
-
-	//auto volume = new AABBVolume(dimensions);
-
-	//cube->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
+	auto cube = new Cube();
 
 	cube->GetTransform()
 	    .SetPosition(position)
 	    .SetScale(dimensions * 2);
-
+	cube->InitAllComponet();
 	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
-	/*cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
-
-	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	cube->GetPhysicsObject()->InitCubeInertia();*/
-
+	
 	world->AddGameObject(cube);
 
 	return cube;
@@ -471,7 +485,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	float meshSize = 3.0f;
 	float inverseMass = 0.5f;
 
-	auto character = new GameObject();
+	auto character = new Player(PlayerRole::Blue, abilityContainer);
 
 	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
 
@@ -480,6 +494,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	character->GetTransform()
 	         .SetScale(Vector3(meshSize, meshSize, meshSize))
 	         .SetPosition(position);
+	character->InitAllComponet();
 
 	if (rand() % 2)
 	{
@@ -489,13 +504,9 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	{
 		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, basicShader));
 	}
-	//character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
-	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//character->GetPhysicsObject()->InitSphereInertia();
+	
 	
 	world->AddGameObject(character);
-	//lockedObject = character;
 
 	return character;
 }

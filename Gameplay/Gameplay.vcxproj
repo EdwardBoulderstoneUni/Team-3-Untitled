@@ -134,7 +134,11 @@
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentInput.cpp" />
     <ClCompile Include="ComponentPhysics.cpp" />
+    <ClCompile Include="ComponetGameObject.cpp" />
+    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ability.h" />
@@ -143,8 +147,13 @@
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentInput.h" />
     <ClInclude Include="ComponentPhysics.h" />
+    <ClInclude Include="ComponetGameObject.h" />
+    <ClInclude Include="Cube.h" />
     <ClInclude Include="ePlayerRole.h" />
+    <ClInclude Include="Floor.h" />
+    <ClInclude Include="GameObjects.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Ability.json" />

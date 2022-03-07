@@ -1,8 +1,6 @@
 #pragma once
 #include "Transform.h"
-#include "CollisionVolume.h"
 
-#include "PhysicsObject.h"
 #include "PhysicsXObject.h"
 
 #include "RenderObject.h"
@@ -89,8 +87,6 @@ namespace NCL
 		protected:
 			Transform transform;
 
-			CollisionVolume* boundingVolume;
-			PhysicsObject* physicsObject;
 			PhysicsXObject* physicsXObject;
 			RenderObject* renderObject;
 			NetworkObject* networkObject;

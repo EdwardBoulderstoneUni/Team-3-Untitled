@@ -278,7 +278,7 @@ void PhysicsXSystem::SyncGameObjs()
 	std::vector<GameObject*>& actors=gameWorld.GetGameObjects();
 	for (int i = 0; i < actors.size();i++) {
 		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
-		if (obj == nullptr)continue;
+		if (obj->GetVolume() == nullptr)continue;
 		if (obj->isInScene())continue;
 		if (obj->isDynamic())addDynamicActor(*actors[i]);
 		else addStaticActor(*actors[i]);

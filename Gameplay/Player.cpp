@@ -10,31 +10,26 @@ namespace NCL {
 			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
 			pColour = colour;
 			AssignRole(aCont);
-			InitComponents();
 		}
 
 		Player::~Player() {
 			for (auto i : abilities)
 				delete i;
-
-			for (auto i : components)
-				delete i;
 		}
+		void Player::SetUp()
+		{
+			
+			auto physics = new ComponentPhysics();
+			physics->motionType = ComponentPhysics::Dynamic;
+			physics->center = this->GetTransform().GetPosition();
+			physics->orientation = this->GetTransform().GetOrientation();
+			physics->size = this->GetTransform().GetScale();
+			physics->shapeType = ComponentPhysics::Capsule;
+			physics->mass = 10.0f;
+			physics->phyObj = GetPhysicsXObject();
 
-		void Player::InitComponents() {
-			for (auto i : components)
-				i->Init();
+			PushComponet(physics);
 		}
-
-		void Player::Update() {
-			UpdateComponents();
-		}
-
-		void Player::UpdateComponents() {
-			for (auto i : components)
-				i->Update();
-		}
-
 		void Player::Move() {
 			// Move forward
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::W)) {
@@ -74,20 +69,7 @@ namespace NCL {
 			}
 		}
 
-		ComponentCamera* Player::GetComponentCamera()
-		{
-			return nullptr;
-		}
-
-		ComponentInput* Player::GetComponentInput()
-		{
-			return nullptr;
-		}
-
-		ComponentPhysics* Player::GetComponentPhysics()
-		{
-			return nullptr;
-		}
+		
 
 		void Player::Shoot() {
 

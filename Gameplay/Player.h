@@ -1,36 +1,27 @@
 #pragma once
-#include "../CSC8503/CSC8503Common/GameObject.h"
+#include "ComponetGameObject.h"
 #include "Ability.h"
 #include "AbilityContainer.h"
-#include "ComponentCamera.h"
-#include "ComponentInput.h"
-#include "ComponentPhysics.h"
+
 #include "ePlayerRole.h"
 
 namespace NCL {
 	namespace CSC8503 {		
-		class Player : public GameObject {
+		class Player : public ComponetGameObject {
 		public:
 			Player(PlayerRole colour, AbilityContainer* aCont);
 			~Player();
+			void SetUp() override;
 
-			void Update();
-			
+
 			void Move();
 			void Jump();
 			void Shoot();
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
-
-
-			ComponentCamera* GetComponentCamera();
-			ComponentInput* GetComponentInput();
-			ComponentPhysics* GetComponentPhysics();
+			
 
 		private:
-			void UpdateComponents();
-			void InitComponents();
-
 			float health = 100.0f;
 			float speed = 5.0f;
 			
@@ -50,8 +41,6 @@ namespace NCL {
 
 			PlayerRole pColour;
 			NCL::CSC8503::Ability *abilities[2];
-
-			std::vector<Component*> components;
 
 			Vector3 forward;
 			Vector3 right;
