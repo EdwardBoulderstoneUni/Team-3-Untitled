@@ -24,6 +24,7 @@ namespace NCL {
 				GetPhysicsXObject()->AddForce(Vector3(0.0f, 15.0f, 0.0f));
 				jumpcount++;
 			}
+			//Press SPACE to double jump if player is jumping and not on the ground yet
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE) && !isGrounded && jumpcount==1) {
 				GetPhysicsXObject()->AddForce(Vector3(0.0f, 15.0f, 0.0f));
 				jumpcount = 0;
@@ -32,8 +33,9 @@ namespace NCL {
 		}
 
 		void Player::Dash() {
+			PxVec3 forward = PhysXConvert::Vector3ToPxVec3(Quaternion(transform.GetOrientation())* Vector3(0, 0, 1));
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT)) {
-				GetPhysicsXObject()->AddForce(Vector3(0.0f, 0.0f, 5.0f));
+				GetPhysicsXObject()->AddForce(PhysXConvert::PxVec3ToVector3(forward * 5.0f));
 			}
 		}
 
