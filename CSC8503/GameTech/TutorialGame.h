@@ -1,7 +1,7 @@
 #pragma once
 #include "GameTechRenderer.h"
 #include "OGLTexture.h"
-#include "../CSC8503Common/PhysicsSystem.h"
+#include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
 #include "../../Gameplay/Player.h"
 
@@ -24,7 +24,6 @@ namespace NCL {
 			void InitialiseAssets();
 
 			void InitAbilityContainer();
-			void InitCamera();
 			void InitPlayer();
 			void UpdateKeys();
 
@@ -56,7 +55,7 @@ namespace NCL {
 			GameObject* AddBonusToWorld(const Vector3& position);
 
 			GameTechRenderer*	renderer;
-			PhysicsSystem*		physics;
+			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
 			Player*				player;
 			AbilityContainer*	abilityContainer;

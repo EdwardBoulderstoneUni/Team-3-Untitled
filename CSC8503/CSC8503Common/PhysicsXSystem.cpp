@@ -2,6 +2,9 @@
 #include "PhysXConvert.h"
 #include "../../Common/Maths.h"
 #include <vector>
+#include "../../include/PhysX/PxPhysicsAPI.h"
+
+
 #define PVD_HOST "127.0.0.1"
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
 #define MAX_NUM_ACTOR_SHAPES 128
