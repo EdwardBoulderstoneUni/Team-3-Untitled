@@ -50,7 +50,7 @@ namespace NCL {
 			PlayerRole pColour;
 			NCL::CSC8503::Ability *abilities[2];
 
-			PxVec3 forward;
+			Vector3 forward;
 		};
 	}
 }

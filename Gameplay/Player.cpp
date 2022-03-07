@@ -33,9 +33,9 @@ namespace NCL {
 		}
 
 		void Player::Dash() {
-			PxVec3 forward = PhysXConvert::Vector3ToPxVec3(Quaternion(transform.GetOrientation())* Vector3(0, 0, 1));
+			forward = Quaternion(transform.GetOrientation())* Vector3(0, 0, 1);
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT)) {
-				GetPhysicsXObject()->AddForce(PhysXConvert::PxVec3ToVector3(forward * 5.0f));
+				GetPhysicsXObject()->AddForce(forward * 5.0f);
 			}
 		}
 
