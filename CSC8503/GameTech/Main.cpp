@@ -7,7 +7,6 @@
 #include "../CSC8503Common/NavigationGrid.h"
 
 #include "TutorialGame.h"
-#include "GameUI.h"
 #include "PauseMenu.h"
 
 using namespace NCL;

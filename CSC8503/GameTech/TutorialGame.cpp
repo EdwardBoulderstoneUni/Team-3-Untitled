@@ -8,9 +8,6 @@
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
-
-#include "../GameTech/GameUI.h"
-#include "GameState.h"
 #include "../GameTech/TutorialMenu.h"
 using namespace NCL;
 using namespace CSC8503;

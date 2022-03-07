@@ -5,7 +5,6 @@
 #include "../../Common/Camera.h"
 #include "../../Common/Vector3.h"
 #include "../../Common/TextureLoader.h"
-#include "../GameTech/GameUI.h"
 using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
