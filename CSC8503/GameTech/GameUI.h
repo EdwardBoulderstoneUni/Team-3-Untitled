@@ -1,6 +1,9 @@
 #pragma once
 #include <vector>
 #include "GameMenu.h"
+#include "../../Common/Win32Window.h"
+#include "../../imgui/backends/imgui_impl_win32.h"
+#include "../../imgui/backends/imgui_impl_opengl3.h"
 
 struct ExInputResult;
 
