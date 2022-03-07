@@ -6,6 +6,8 @@ namespace NCL {
 	namespace CSC8503 {
 		Player::Player(PlayerRole colour, AbilityContainer* aCont)
 		{
+			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
+			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
 			pColour = colour;
 			AssignRole(aCont);
 			InitComponents();
@@ -34,7 +36,22 @@ namespace NCL {
 		}
 
 		void Player::Move() {
-
+			// Move forward
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::W)) {
+				GetPhysicsXObject()->AddForce(forward * 5.0f);
+			}
+			// Move backward
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::S)) {
+				GetPhysicsXObject()->AddForce(-forward * 5.0f);
+			}
+			// Move left
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::A)) {
+				GetPhysicsXObject()->AddForce(-right * 5.0f);
+			}
+			// Move right
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::D)) {
+				GetPhysicsXObject()->AddForce(right * 5.0f);
+			}
 		}
 
 		void Player::Jump() {
@@ -52,9 +69,8 @@ namespace NCL {
 		}
 
 		void Player::Dash() {
-			forward = Quaternion(transform.GetOrientation())* Vector3(0, 0, 1);
 			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT)) {
-				GetPhysicsXObject()->AddForce(forward * 5.0f);
+				GetPhysicsXObject()->AddForce(forward * 15.0f);
 			}
 		}
 

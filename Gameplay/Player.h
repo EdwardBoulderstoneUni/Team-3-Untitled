@@ -54,6 +54,7 @@ namespace NCL {
 			std::vector<Component*> components;
 
 			Vector3 forward;
+			Vector3 right;
 		};
 	}
 }
