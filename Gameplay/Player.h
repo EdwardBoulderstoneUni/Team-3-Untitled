@@ -13,9 +13,21 @@ namespace NCL {
 
 			void Move();
 			void Jump();
+			void Dash();
 			void Shoot();
 			void AssignRole(AbilityContainer aCont);
 
+			void OnCollisionBegin(GameObject* otherObject) override{
+				if (otherObject->GetName() == "floor") {
+					isGrounded = true;
+				}
+			}
+
+			void OnCollisionEnd(GameObject* otherObject) override{
+				if (otherObject->GetName() == "floor") {
+					isGrounded = false;
+				}
+			}
 		private:
 
 			float health = 100.0f;

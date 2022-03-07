@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "../Common/Keyboard.h"
+#include "../Common/Window.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -17,12 +19,28 @@ namespace NCL {
 		}
 
 		void Player::Jump() {
+			int jumpcount = 0;
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE) && isGrounded) {
+				GetPhysicsXObject()->AddForce(Vector3(0.0f, 15.0f, 0.0f));
+				jumpcount++;
+			}
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE) && !isGrounded && jumpcount==1) {
+				GetPhysicsXObject()->AddForce(Vector3(0.0f, 15.0f, 0.0f));
+				jumpcount = 0;
+			}
+			
+		}
 
+		void Player::Dash() {
+			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT)) {
+				GetPhysicsXObject()->AddForce(Vector3(0.0f, 0.0f, 5.0f));
+			}
 		}
 
 		void Player::Shoot() {
 
 		}
+
 
 		void Player::AssignRole(AbilityContainer aCont) {
 			std::string colour;
