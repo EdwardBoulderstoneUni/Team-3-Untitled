@@ -11,18 +11,16 @@ namespace NCL {
 	namespace CSC8503 {		
 		class Player : public GameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer aCont);
+			Player(PlayerRole colour, AbilityContainer* aCont);
 			~Player();
 
 			void Update();
-			void UpdateComponents();
-			void InitComponents();
-
-
+			
 			void Move();
 			void Jump();
 			void Shoot();
-			void AssignRole(AbilityContainer aCont);
+			void AssignRole(AbilityContainer* aCont);
+			void Dash();
 
 
 			ComponentCamera* GetComponentCamera();
@@ -30,6 +28,8 @@ namespace NCL {
 			ComponentPhysics* GetComponentPhysics();
 
 		private:
+			void UpdateComponents();
+			void InitComponents();
 
 			float health = 100.0f;
 			float speed = 5.0f;
@@ -40,7 +40,7 @@ namespace NCL {
 			float tAbility1;
 			float tAbility2;
 			float tDeath;
-
+		
 			int ammo = 20;
 
 			bool isGrounded = true;
@@ -52,6 +52,8 @@ namespace NCL {
 			NCL::CSC8503::Ability *abilities[2];
 
 			std::vector<Component*> components;
+
+			Vector3 forward;
 		};
 	}
 }

@@ -133,6 +133,7 @@
     <ClCompile Include="AbilityContainer.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentInput.cpp" />
+    <ClCompile Include="ComponentPhysics.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>

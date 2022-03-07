@@ -1,7 +1,7 @@
 #include "ComponentCamera.h"
 
 void ComponentCamera::Init() {
-	camera 
+	
 }
 
 void ComponentCamera::Update() {
@@ -10,5 +10,5 @@ void ComponentCamera::Update() {
 
 void ComponentCamera::ThirdPersonCamera() {
 
-	}
+	
 }

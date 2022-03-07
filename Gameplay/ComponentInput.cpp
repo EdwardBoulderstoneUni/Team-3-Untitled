@@ -1,9 +1,9 @@
-#include "ComponentCamera.h"
+#include "ComponentInput.h"
 
 void ComponentInput::Init() {
-	camera
+
 }
 
 void ComponentInput::Update() {
-	ThirdPersonCamera();
+	
 }

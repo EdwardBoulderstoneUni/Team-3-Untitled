@@ -119,7 +119,7 @@ void TutorialGame::UpdateKeys()
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2))
 	{
-		InitCamera(); //F2 will reset the camera to a specific default place
+		//InitCamera(); //F2 will reset the camera to a specific default place
 	}
 
 	//if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
@@ -266,15 +266,6 @@ void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::InitCamera()
-{
-	world->GetMainCamera()->SetNearPlane(0.1f);
-	world->GetMainCamera()->SetFarPlane(500.0f);
-	world->GetMainCamera()->SetPitch(-15.0f);
-	world->GetMainCamera()->SetYaw(315.0f);
-	world->GetMainCamera()->SetPosition(player->GetTransform().GetPosition());
-	lockedObject = nullptr;
-}
 
 void TutorialGame::InitPlayer()
 {
@@ -304,7 +295,7 @@ void TutorialGame::InitPlayer()
 	
 
 
-	InitCamera();
+
 }
 
 void TutorialGame::InitWorld()
