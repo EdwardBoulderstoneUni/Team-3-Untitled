@@ -1,6 +1,7 @@
 #pragma once
 #include "Matrix4.h"
 #include "Vector3.h"
+#include "../CSC8503/CSC8503Common/GameObject.h"
 
 namespace NCL
 {
@@ -97,6 +98,8 @@ namespace NCL
 		                                     float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top,
 		                               float bottom, float near, float far);
+
+		void ThirdPersonCamera(NCL::CSC8503::GameObject* object);
 	protected:
 		CameraType camType;
 
@@ -110,6 +113,8 @@ namespace NCL
 		float fov;
 		float yaw;
 		float pitch;
+		float distanceFromObject;
+		float angleAroundObject;
 		Vector3 position;
 	};
 }

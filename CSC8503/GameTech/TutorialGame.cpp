@@ -115,11 +115,6 @@ void TutorialGame::UpdateKeys()
 		lockedObject = nullptr;
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2))
-	{
-		InitCamera(); //F2 will reset the camera to a specific default place
-	}
-
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
 	{
 		useGravity = !useGravity; //Toggle gravity!
@@ -146,22 +141,8 @@ void TutorialGame::UpdateKeys()
 	{
 		world->ShuffleObjects(false);
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F6))
-	{
-		camFollowPlayer = !camFollowPlayer;
-	}
 
-	if (camFollowPlayer)
-		lockedObject = player;
 
-	if (lockedObject)
-	{
-		LockedObjectMovement();
-	}
-	else
-	{
-		DebugObjectMovement();
-	}
 
 }
 
@@ -264,16 +245,6 @@ void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::InitCamera()
-{
-	world->GetMainCamera()->SetNearPlane(0.1f);
-	world->GetMainCamera()->SetFarPlane(500.0f);
-	world->GetMainCamera()->SetPitch(-15.0f);
-	world->GetMainCamera()->SetYaw(315.0f);
-	world->GetMainCamera()->SetPosition(player->GetTransform().GetPosition());
-	lockedObject = nullptr;
-}
-
 void TutorialGame::InitPlayer()
 {
 	player = new Player(PlayerRole::Blue, *abilityContainer);
@@ -298,11 +269,7 @@ void TutorialGame::InitPlayer()
 	player->GetPhysicsObject()->InitCubeInertia();
 
 	world->AddGameObject(player);
-
-	return player;
-
-
-	InitCamera();
+	world->SetMainCamera(player.getCameraComponent().GetCamera())
 }
 
 void TutorialGame::InitWorld()

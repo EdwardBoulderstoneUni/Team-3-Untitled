@@ -24,7 +24,6 @@ namespace NCL {
 			void InitialiseAssets();
 
 			void InitAbilityContainer();
-			void InitCamera();
 			void InitPlayer();
 			void UpdateKeys();
 

@@ -2,6 +2,9 @@
 #include "../CSC8503/CSC8503Common/GameObject.h"
 #include "Ability.h"
 #include "AbilityContainer.h"
+#include "ComponentCamera.h"
+#include "ComponentInput.h"
+#include "ComponentPhysics.h"
 #include "ePlayerRole.h"
 
 namespace NCL {
@@ -11,10 +14,20 @@ namespace NCL {
 			Player(PlayerRole colour, AbilityContainer aCont);
 			~Player();
 
+			void Update();
+			void UpdateComponents();
+			void InitComponents();
+
+
 			void Move();
 			void Jump();
 			void Shoot();
 			void AssignRole(AbilityContainer aCont);
+
+
+			ComponentCamera* GetComponentCamera();
+			ComponentInput* GetComponentInput();
+			ComponentPhysics* GetComponentPhysics();
 
 		private:
 
@@ -37,6 +50,8 @@ namespace NCL {
 
 			PlayerRole pColour;
 			NCL::CSC8503::Ability *abilities[2];
+
+			std::vector<Component*> components;
 		};
 	}
 }

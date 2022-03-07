@@ -5,11 +5,29 @@ namespace NCL {
 		Player::Player(PlayerRole colour, AbilityContainer aCont) {
 			pColour = colour;
 			AssignRole(aCont);
+			InitComponents();
 		}
 
 		Player::~Player() {
 			for (auto i : abilities)
 				delete i;
+
+			for (auto i : components)
+				delete i;
+		}
+
+		void Player::InitComponents() {
+			for (auto i : components)
+				i->Init();
+		}
+
+		void Player::Update() {
+			UpdateComponents();
+		}
+
+		void Player::UpdateComponents() {
+			for (auto i : components)
+				i->Update();
 		}
 
 		void Player::Move() {
