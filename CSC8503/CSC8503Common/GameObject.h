@@ -87,17 +87,10 @@ namespace NCL
 				return name;
 			}
 
-			virtual void OnCollisionBegin(GameObject* otherObject)
-			{
-				std::cout << "OnCollisionBegin event occured!\n";
-				//Also note that API writes during a callback function are not permitted
-			}
+			virtual void OnCollisionBegin(GameObject* otherObject) {}
 
-			virtual void OnCollisionEnd(GameObject* otherObject)
-			{
-				//std::cout << "OnCollisionEnd event occured!\n";
-			}
-
+			virtual void OnCollisionEnd(GameObject* otherObject) {}
+			
 			bool GetBroadphaseAABB(Vector3& outsize) const;
 
 			void UpdateBroadphaseAABB();
