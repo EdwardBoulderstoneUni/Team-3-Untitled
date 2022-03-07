@@ -79,9 +79,7 @@ void TutorialGame::UpdateGame(float dt)
 		Debug::Print("(G)ravity off", Vector2(5, 95));
 	}
 
-	//SelectObject();
-	SelectXObject();
-	MoveSelectedObject();
+
 	physicsX->Update(dt);
 
 	if (lockedObject != nullptr)
@@ -280,7 +278,7 @@ void TutorialGame::InitCamera()
 
 void TutorialGame::InitPlayer()
 {
-	player = new Player(PlayerRole::Blue, *abilityContainer);
+	player = new Player(PlayerRole::Blue, abilityContainer);
 	camFollowPlayer = true;
 
 	Vector3 position = Vector3(0, 0, 0);
@@ -303,7 +301,7 @@ void TutorialGame::InitPlayer()
 
 	world->AddGameObject(player);
 
-	return player;
+	
 
 
 	InitCamera();
@@ -644,82 +642,7 @@ bool TutorialGame::SelectObject()
 
 	return false;
 }
-bool TutorialGame::SelectXObject() {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
-	{
-		inSelectionMode = !inSelectionMode;
-		if (inSelectionMode)
-		{
-			Window::GetWindow()->ShowOSPointer(true);
-			Window::GetWindow()->LockMouseToWindow(false);
-		}
-		else
-		{
-			Window::GetWindow()->ShowOSPointer(false);
-			Window::GetWindow()->LockMouseToWindow(true);
-		}
-	}
-	if (inSelectionMode)
-	{
-		renderer->DrawString("Press Q to change to camera mode!", Vector2(5, 85));
 
-		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
-		{
-			if (selectionObject)
-			{
-				//set colour to deselected;
-				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-				selectionObject = nullptr;
-				lockedObject = nullptr;
-			}
-			PxRaycastBuffer  hit;
-			bool status = physicsX->raycastCam(*world->GetMainCamera(),1000.0f,hit);
-			if (status) {
-				selectionObject = (GameObject*)hit.block.actor->userData;
-				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
-				return true;
-			}
-			return false;
-		}
-	}
-	else
-	{
-		renderer->DrawString("Press Q to change to select mode!", Vector2(5, 85));
-	}
-
-	if (lockedObject)
-	{
-		renderer->DrawString("Press L to unlock object!", Vector2(5, 80));
-	}
-
-	else if (selectionObject)
-	{
-		renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L))
-	{
-		if (selectionObject)
-		{
-			if (lockedObject == selectionObject)
-			{
-				lockedObject = nullptr;
-			}
-			else
-			{
-				lockedObject = selectionObject;
-			}
-		}
-	}
-
-	return false;
-}
-/*
-If an object has been clicked, it can be pushed with the right mouse button, by an amount
-determined by the scroll wheel. In the first tutorial this won't do anything, as we haven't
-added linear motion into our physics system. After the second tutorial, objects will move in a straight
-line - after the third, they'll be able to twist under torque aswell.
-*/
 void TutorialGame::MoveSelectedObject()
 {
 	if (selectionObject == nullptr)return;

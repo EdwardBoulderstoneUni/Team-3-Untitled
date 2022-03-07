@@ -8,14 +8,14 @@ namespace NCL {
 	namespace CSC8503 {		
 		class Player : public GameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer aCont);
+			Player(PlayerRole colour, AbilityContainer *aCont);
 			~Player();
 
 			void Move();
 			void Jump();
 			void Dash();
 			void Shoot();
-			void AssignRole(AbilityContainer aCont);
+			void AssignRole(AbilityContainer* aCont);
 
 			void OnCollisionBegin(GameObject* otherObject) override{
 				if (otherObject->GetName() == "floor") {
