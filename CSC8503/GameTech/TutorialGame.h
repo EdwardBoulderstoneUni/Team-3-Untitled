@@ -1,8 +1,7 @@
 #pragma once
 #include "GameTechRenderer.h"
 #include "OGLTexture.h"
-//#include "../CSC8503Common/PhysicsSystem.h"
-#include "../GameTech/PhysicsXSystem.h"
+#include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
 
 namespace NCL {
@@ -50,7 +49,6 @@ namespace NCL {
 			GameObject* AddBonusToWorld(const Vector3& position);
 
 			GameTechRenderer*	renderer;
-			//PhysicsSystem*		physics;
 			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
 	

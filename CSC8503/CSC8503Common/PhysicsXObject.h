@@ -1,6 +1,7 @@
 #pragma once
 #include "../CSC8503Common/Transform.h"
-#include "PhysXAPI.h"
+#include "../../include/PhysX/geometry/PxGeometry.h"
+#include "../../include/PhysX/PxRigidActor.h"
 #include "PhysXConvert.h"
 
 using namespace physx;
