@@ -173,10 +173,6 @@ GameObject* NetworkedGame::SpawnPlayer(Vector3 position) {
 
 	GameObject* character = new GameObject();
 
-	AABBVolume* volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
-
-	character->SetBoundingVolume((CollisionVolume*)volume);
-
 	character->GetTransform()
 		.SetScale(Vector3(meshSize, meshSize, meshSize))
 		.SetPosition(position);
@@ -184,10 +180,6 @@ GameObject* NetworkedGame::SpawnPlayer(Vector3 position) {
 
 	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
 
-	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
-	character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	character->GetPhysicsObject()->InitSphereInertia();
 	world->AddGameObject(character);
 
 	return character;

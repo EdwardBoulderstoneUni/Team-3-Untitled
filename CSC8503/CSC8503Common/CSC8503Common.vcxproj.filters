@@ -24,6 +24,8 @@
     <ClCompile Include="StateTransition.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="AssimpHelper.cpp" />
+    <ClCompile Include="PhysicsXObject.cpp" />
+    <ClCompile Include="PhysicsXSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABBVolume.h" />
@@ -59,5 +61,8 @@
     <ClInclude Include="StateTransition.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="AssimpHelper.h" />
+    <ClInclude Include="PhysicsXObject.h" />
+    <ClInclude Include="PhysicsXSystem.h" />
+    <ClInclude Include="PhysXConvert.h" />
   </ItemGroup>
 </Project>

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Physics">
-      <UniqueIdentifier>{97f4a896-0e91-43e1-8efe-95ec8bcd2ec9}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -33,12 +30,6 @@
     <ClCompile Include="NetworkPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsXObject.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsXSystem.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameTechRenderer.h">
@@ -52,18 +43,6 @@
     </ClInclude>
     <ClInclude Include="NetworkPlayer.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsXObject.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsXSystem.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysXAPI.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysXConvert.h">
-      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
