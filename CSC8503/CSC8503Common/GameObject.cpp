@@ -10,6 +10,7 @@ GameObject::GameObject(string objectName)
 	isActive = true;
 	boundingVolume = nullptr;
 	physicsObject = nullptr;
+	physicsXObject = nullptr;
 	renderObject = nullptr;
 }
 
@@ -17,6 +18,7 @@ GameObject::~GameObject()
 {
 	delete boundingVolume;
 	delete physicsObject;
+	delete physicsXObject;
 	delete renderObject;
 }
 
