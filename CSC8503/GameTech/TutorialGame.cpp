@@ -73,7 +73,7 @@ void TutorialGame::InitialiseAssets() {
 
 	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
-	
+
 	InitCamera();
 	InitWorld();
 	GameObjectGenerator g;
@@ -84,7 +84,6 @@ void TutorialGame::InitialiseAssets() {
 	world->GetGameObjects().at(0)->GetPhysicsXObject()->SetGravity(false);
 }
 
-}
 void TutorialGame::InitialiseUI()
 {
 	gameUI = new GameUI();

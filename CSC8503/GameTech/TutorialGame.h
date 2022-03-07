@@ -16,7 +16,7 @@ namespace NCL {
 			virtual void UpdateGame(float dt);
 			virtual void UpdateRender(float dt);
 
-			GameUI* GetUI()const { return gameUI; };
+			GameUI* GetUI()const { return gameUI; }
 			void StartRender()const { renderer->Render(); }
 
 			void SetSingleMode();
