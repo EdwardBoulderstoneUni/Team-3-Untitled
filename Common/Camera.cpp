@@ -12,8 +12,8 @@ last frame (default value is for simplicities sake...)
 void Camera::UpdateCamera(float dt)
 {
 	//Update the mouse by how much
-	pitch -= (Window::GetMouse()->GetRelativePosition().y);
-	yaw -= (Window::GetMouse()->GetRelativePosition().x);
+	pitch -= Window::GetInterface()->get_look_direction().y;
+	yaw -= Window::GetInterface()->get_look_direction().x;
 
 	//Bounds check the pitch, to be between straight up and straight down ;)
 	pitch = std::min(pitch, 90.0f);
@@ -30,29 +30,29 @@ void Camera::UpdateCamera(float dt)
 
 	float frameSpeed = 100 * dt;
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
+	if (Window::GetInterface()->get_movement().y > 0)
 	{
 		position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
+	if (Window::GetInterface()->get_movement().y < 0)
 	{
 		position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * frameSpeed;
 	}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
+	if (Window::GetInterface()->get_movement().x > 0)
 	{
 		position += Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
+	if (Window::GetInterface()->get_movement().x < 0)
 	{
 		position -= Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * frameSpeed;
 	}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT))
+	if (Window::GetInterface()->button_down(sprint))
 	{
 		position.y += frameSpeed;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE))
+	if (Window::GetInterface()->button_down(jump))
 	{
 		position.y -= frameSpeed;
 	}

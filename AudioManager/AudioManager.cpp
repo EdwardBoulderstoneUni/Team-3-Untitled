@@ -1,5 +1,6 @@
 #include "AudioManager.h"
 #include "fmod.hpp"
+#include "..//Common/Assets.h"
 
 #define ERRCHECK(_result) 
 FMOD_RESULT m_Result;
@@ -70,8 +71,9 @@ AudioManager::AudioManager()
 
 
 	//temp
-	m_Result = m_System->createSound(
-		"C:\\Program Files (x86)\\FMOD SoundSystem\\FMOD Studio API Windows\\api\\core\\examples\\media\\drumloop.wav",
+	std::string testSoundFilePath = NCL::Assets::SOUNDSDIR;
+	testSoundFilePath.append("drumloop.wav");
+	m_Result = m_System->createSound(testSoundFilePath.c_str(),
 		FMOD_2D, nullptr, &m_Sound);
 	ERRCHECK(m_Result);
 

@@ -82,10 +82,10 @@
     <IncludePath>$(SolutionDir)\Plugins\Networking-ENet\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\Plugins\Networking-ENet\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Plugins\Networking-ENet\include;$(SolutionDir)\include\PhysX;$(SolutionDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\Plugins\Networking-ENet\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Plugins\Networking-ENet\include;$(SolutionDir)\include\PhysX;$(SolutionDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -101,6 +101,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,6 +126,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -134,12 +136,18 @@
   <ItemGroup>
     <ClInclude Include="AABBVolume.h" />
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="AssimpHelper.h" />
     <ClInclude Include="CapsuleVolume.h" />
+    <ClInclude Include="GameClient.h" />
     <ClInclude Include="GameObjectGenerator.h" />
+    <ClInclude Include="GameServer.h" />
     <ClInclude Include="NavigationGrid.h" />
     <ClInclude Include="NavigationMap.h" />
     <ClInclude Include="NavigationMesh.h" />
     <ClInclude Include="NavigationPath.h" />
+    <ClInclude Include="NetworkBase.h" />
+    <ClInclude Include="NetworkObject.h" />
+    <ClInclude Include="NetworkState.h" />
     <ClInclude Include="OBBVolume.h" />
     <ClInclude Include="SphereVolume.h" />
     <ClInclude Include="CollisionVolume.h" />
@@ -162,13 +170,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="AssimpHelper.cpp" />
     <ClCompile Include="CollisionDetection.cpp" />
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="GameClient.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameObjectGenerator.cpp" />
+    <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="GameWorld.cpp" />
     <ClCompile Include="NavigationGrid.cpp" />
     <ClCompile Include="NavigationMesh.cpp" />
+    <ClCompile Include="NetworkBase.cpp" />
+    <ClCompile Include="NetworkObject.cpp" />
+    <ClCompile Include="NetworkState.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PushdownMachine.cpp" />

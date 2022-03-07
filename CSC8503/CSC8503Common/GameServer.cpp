@@ -5,25 +5,25 @@
 using namespace NCL;
 using namespace CSC8503;
 
-GameServer::GameServer(int onPort, int maxClients)	{
-	port		= onPort;
-	clientMax	= maxClients;
+GameServer::GameServer(int onPort, int maxClients) {
+	port = onPort;
+	clientMax = maxClients;
 	clientCount = 0;
-	netHandle	= nullptr;
-	//threadAlive = false;
+	netHandle = nullptr;
+	threadAlive = false;
 
 	Initialise();
 }
 
-GameServer::~GameServer()	{
+GameServer::~GameServer() {
 	Shutdown();
 }
 
 void GameServer::Shutdown() {
 	SendGlobalPacket(BasicNetworkMessages::Shutdown);
 
-	//threadAlive = false;
-	//updateThread.join();
+	threadAlive = false;
+	updateThread.join();
 
 	enet_host_destroy(netHandle);
 	netHandle = nullptr;
@@ -40,8 +40,8 @@ bool GameServer::Initialise() {
 		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
 		return false;
 	}
-	//threadAlive		= true;
-	//updateThread	= std::thread(&GameServer::ThreadedUpdate, this);
+	threadAlive = true;
+	updateThread = std::thread(&GameServer::ThreadedUpdate, this);
 
 	return true;
 }
@@ -65,14 +65,15 @@ void GameServer::UpdateServer() {
 	}
 
 	ENetEvent event;
-	while (enet_host_service(netHandle, &event, 0) > 0)	{
-		int type	= event.type;
+	while (enet_host_service(netHandle, &event, 0) > 0) {
+		int type = event.type;
 		ENetPeer* p = event.peer;
 
 		int peer = p->incomingPeerID;
 
 		if (type == ENetEventType::ENET_EVENT_TYPE_CONNECT) {
 			std::cout << "Server: New client connected" << std::endl;
+			clientPeerPointers.insert(std::pair<int, ENetPeer*>(peer, p));
 			NewPlayerPacket player(peer);
 			SendGlobalPacket(player);
 		}
@@ -89,14 +90,26 @@ void GameServer::UpdateServer() {
 	}
 }
 
-//void GameServer::ThreadedUpdate() {
-//	while (threadAlive) {
-//		UpdateServer();
-//	}
-//}
+void GameServer::ThreadedUpdate() {
+	while (threadAlive) {
+		UpdateServer();
+	}
+}
 
 //Second networking tutorial stuff
 
-void GameServer::SetGameWorld(GameWorld &g) {
+void GameServer::SetGameWorld(GameWorld& g) {
 	gameWorld = &g;
+}
+
+ENetPeer* GameServer::GetClientPeerPointer(int source) {
+	std::map<int, ENetPeer*>::iterator it;
+	it = clientPeerPointers.find(source);
+	return it != clientPeerPointers.end() ? it->second : nullptr;
+}
+
+bool GameServer::SendPacketToPeer(GamePacket& packet, int source) {
+	ENetPacket* dataPacket = enet_packet_create(&packet, packet.GetTotalSize(), 0);
+	ENetPeer* netPeer = GetClientPeerPointer(source);
+	return enet_peer_send(netPeer, 0, dataPacket);
 }

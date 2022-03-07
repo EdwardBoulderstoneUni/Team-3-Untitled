@@ -14,14 +14,14 @@
 using namespace NCL;
 using namespace Rendering;
 
+UserInterface* Window::user_interface_ = nullptr;
 Window* Window::window = nullptr;
 Keyboard* Window::keyboard = nullptr;
 Mouse* Window::mouse = nullptr;
 GameTimer* Window::timer = nullptr;
 
-Window::Window()
+Window::Window() : renderer(nullptr), init(false)
 {
-	renderer = nullptr;
 	window = this;
 	timer = new GameTimer();
 }
@@ -70,14 +70,9 @@ bool Window::UpdateWindow()
 {
 	std::this_thread::yield();
 	timer->Tick();
-
-	if (mouse)
+	if (user_interface_)
 	{
-		mouse->UpdateFrameState(timer->GetTimeDeltaMSec());
-	}
-	if (keyboard)
-	{
-		keyboard->UpdateFrameState(timer->GetTimeDeltaMSec());
+		user_interface_->update(timer->GetTimeDeltaMSec());
 	}
 
 	return InternalUpdate();

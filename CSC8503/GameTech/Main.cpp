@@ -8,7 +8,7 @@
 
 #include "TutorialGame.h"
 #include "PauseMenu.h"
-
+#include "NetworkedGame.h"
 using namespace NCL;
 using namespace CSC8503;
 
@@ -18,10 +18,10 @@ The main function should look pretty familar to you!
 We make a window, and then go into a while loop that repeatedly
 runs our 'game' until we press escape. Instead of making a 'renderer'
 and updating it, we instead make a whole game, and repeatedly update that,
-instead. 
+instead.
 
 This time, we've added some extra functionality to the window class - we can
-hide or show the 
+hide or show the
 
 */
 int main() {
@@ -36,11 +36,11 @@ int main() {
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
 
-	TutorialGame* g = new TutorialGame();
+	auto g = new TutorialGame();
 	PushdownMachine machine(new StartState(g));
 
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow()) {
+	while (w->UpdateWindow() && !Window::GetInterface()->button_down(quit)) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;

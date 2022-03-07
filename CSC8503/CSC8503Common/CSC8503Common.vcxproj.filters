@@ -1,30 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="CollisionDetection">
-      <UniqueIdentifier>{7c45a941-5f3a-4dc9-b113-df0c37be8dd0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Physics">
-      <UniqueIdentifier>{9aee0dfe-4d09-49bb-903b-0c7f2a8a6134}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI">
-      <UniqueIdentifier>{ed419283-b2e2-421f-a417-ff0c62260d42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Pathfinding">
-      <UniqueIdentifier>{84f869c2-c73b-4eb0-ace4-ff4d685ef4ee}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="CollisionDetection.cpp" />
+    <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="GameClient.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameObjectGenerator.cpp" />
+    <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="GameWorld.cpp" />
+    <ClCompile Include="NavigationGrid.cpp" />
+    <ClCompile Include="NavigationMesh.cpp" />
+    <ClCompile Include="NetworkBase.cpp" />
+    <ClCompile Include="NetworkObject.cpp" />
+    <ClCompile Include="NetworkState.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
+    <ClCompile Include="PhysicsSystem.cpp" />
+    <ClCompile Include="PushdownMachine.cpp" />
+    <ClCompile Include="PushdownState.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
+    <ClCompile Include="RenderObject.cpp" />
+    <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="StateTransition.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="AssimpHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameWorld.h">
@@ -158,5 +157,38 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClInclude Include="AABBVolume.h" />
+    <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="CapsuleVolume.h" />
+    <ClInclude Include="GameClient.h" />
+    <ClInclude Include="GameObjectGenerator.h" />
+    <ClInclude Include="GameServer.h" />
+    <ClInclude Include="NavigationGrid.h" />
+    <ClInclude Include="NavigationMap.h" />
+    <ClInclude Include="NavigationMesh.h" />
+    <ClInclude Include="NavigationPath.h" />
+    <ClInclude Include="NetworkBase.h" />
+    <ClInclude Include="NetworkObject.h" />
+    <ClInclude Include="NetworkState.h" />
+    <ClInclude Include="OBBVolume.h" />
+    <ClInclude Include="SphereVolume.h" />
+    <ClInclude Include="CollisionVolume.h" />
+    <ClInclude Include="CollisionDetection.h" />
+    <ClInclude Include="Constraint.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameWorld.h" />
+    <ClInclude Include="PhysicsObject.h" />
+    <ClInclude Include="PhysicsSystem.h" />
+    <ClInclude Include="PushdownMachine.h" />
+    <ClInclude Include="PushdownState.h" />
+    <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="StateTransition.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="AssimpHelper.h" />
   </ItemGroup>
 </Project>

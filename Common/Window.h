@@ -20,6 +20,8 @@ _-_-_-_-_-_-_-""  ""
 
 #include <string>
 
+#include "UserInterface.h"
+
 namespace NCL
 {
 	namespace Rendering
@@ -81,10 +83,11 @@ namespace NCL
 		{
 		};
 
+    static const UserInterface* GetInterface() { return user_interface_; }
 		static const	 Keyboard* GetKeyboard()	{ return keyboard; }
 		static const	Mouse* GetMouse()			{ return mouse; }
 		static const	GameTimer* GetTimer()		{ return timer; }
-		virtual bool	IsFullScreen()				{ return false; }
+		virtual bool	IsFullScreen()				{ return true; }
 
 		static Window* const GetWindow()			{ return window; }
 	protected:
@@ -112,5 +115,6 @@ namespace NCL
 		static Keyboard* keyboard;
 		static Mouse* mouse;
 		static GameTimer* timer;
+		static UserInterface* user_interface_;
 	};
 }

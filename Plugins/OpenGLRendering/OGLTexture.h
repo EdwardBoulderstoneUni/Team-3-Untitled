@@ -28,6 +28,8 @@ namespace NCL
 
 			static TextureBase* RGBATextureFromFilename(const std::string& name);
 
+			static TextureBase* RGBATextureFromCompressedData(char* data, int dataLength);
+
 			GLuint GetObjectID() const
 			{
 				return texID;

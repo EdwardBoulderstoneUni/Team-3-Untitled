@@ -34,6 +34,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioManager", "AudioManage
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui", "imgui\imgui.vcxproj", "{ECC384B9-90C8-4CDF-AF72-56EED028E6C0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gameplay", "Gameplay\Gameplay.vcxproj", "{E01D4478-7B03-4F39-892C-462C38856EA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ORBIS = Debug|ORBIS
@@ -103,6 +105,12 @@ Global
 		{ECC384B9-90C8-4CDF-AF72-56EED028E6C0}.Release|ORBIS.ActiveCfg = Release|Win32
 		{ECC384B9-90C8-4CDF-AF72-56EED028E6C0}.Release|x64.ActiveCfg = Release|x64
 		{ECC384B9-90C8-4CDF-AF72-56EED028E6C0}.Release|x64.Build.0 = Release|x64
+		{E01D4478-7B03-4F39-892C-462C38856EA3}.Debug|ORBIS.ActiveCfg = Debug|Win32
+		{E01D4478-7B03-4F39-892C-462C38856EA3}.Debug|x64.ActiveCfg = Debug|x64
+		{E01D4478-7B03-4F39-892C-462C38856EA3}.Debug|x64.Build.0 = Debug|x64
+		{E01D4478-7B03-4F39-892C-462C38856EA3}.Release|ORBIS.ActiveCfg = Release|Win32
+		{E01D4478-7B03-4F39-892C-462C38856EA3}.Release|x64.ActiveCfg = Release|x64
+		{E01D4478-7B03-4F39-892C-462C38856EA3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

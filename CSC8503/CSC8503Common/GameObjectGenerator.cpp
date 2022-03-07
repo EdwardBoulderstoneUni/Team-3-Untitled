@@ -11,10 +11,8 @@
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
 #include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
+#include "../../CSC8503/GameTech/PhysXConvert.h"
 
-NCL::CSC8503::GameObjectGenerator::GameObjectGenerator()
-{
-}
 
 NCL::CSC8503::GameObjectGenerator::~GameObjectGenerator()
 {
@@ -40,21 +38,21 @@ void NCL::CSC8503::GameObjectGenerator::SetTransform(GameObject* object, const r
 void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, const rapidjson::Value& value)
 {
 	NCL::Maths::Vector3 dim;
-	NCL::CollisionVolume* volume = nullptr;
+	PxGeometry* volume = nullptr;
 
 	GetVector(value, "dimensions", dim);
 	int objectType = value["objShape"].GetInt();
-	
+
 	switch (objectType)
 	{
 	case 0:
-		volume = new NCL::SphereVolume(dim.x);		
+		volume = new PxSphereGeometry(dim.x);
 		break;
 	case 1:
-		volume = new NCL::AABBVolume(dim);	
+		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim));
 		break;
 	}
-	object->SetBoundingVolume(volume);
+	object->SetPhysicsXObject(new PhysicsXObject(object->GetTransform(),volume));
 }
 
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)
@@ -64,6 +62,10 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 	if (value.HasMember("materialPath"))
 	{
 		material = AssetManager::GetInstance()->GetMaterial(value["materialPath"].GetString());
+	}
+	else
+	{
+		material = AssetManager::GetInstance()->GetMaterial(value["meshPath"].GetString());
 	}
 
 	switch (objectType)
@@ -108,6 +110,7 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, std::vect
 			SetRenderObject(object, objects[i]);
 			
 			outobjects.push_back(object);
+			
 		}
 	}
 }

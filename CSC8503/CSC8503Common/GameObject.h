@@ -3,6 +3,8 @@
 #include "CollisionVolume.h"
 
 #include "PhysicsObject.h"
+#include "../GameTech/PhysicsXObject.h"
+
 #include "RenderObject.h"
 
 #include <vector>
@@ -13,6 +15,7 @@ namespace NCL
 {
 	namespace CSC8503
 	{
+		class NetworkObject;
 		class GameObject
 		{
 		public:
@@ -49,6 +52,15 @@ namespace NCL
 				return physicsObject;
 			}
 
+			PhysicsXObject* GetPhysicsXObject() const
+			{
+				return physicsXObject;
+			}
+
+			NetworkObject* GetNetworkObject() const {
+				return networkObject;
+			}
+
 			void SetRenderObject(RenderObject* newObject)
 			{
 				renderObject = newObject;
@@ -59,21 +71,26 @@ namespace NCL
 				physicsObject = newObject;
 			}
 
+			void SetPhysicsXObject(PhysicsXObject* newObject)
+			{
+				physicsXObject = newObject;
+			}
+
+			void SetNetworkObject(int id);
+
+			void SetNetworkObject(NetworkObject* object) {
+				networkObject = object;
+			}
+
 			const string& GetName() const
 			{
 				return name;
 			}
 
-			virtual void OnCollisionBegin(GameObject* otherObject)
-			{
-				//std::cout << "OnCollisionBegin event occured!\n";
-			}
+			virtual void OnCollisionBegin(GameObject* otherObject) {}
 
-			virtual void OnCollisionEnd(GameObject* otherObject)
-			{
-				//std::cout << "OnCollisionEnd event occured!\n";
-			}
-
+			virtual void OnCollisionEnd(GameObject* otherObject) {}
+			
 			bool GetBroadphaseAABB(Vector3& outsize) const;
 
 			void UpdateBroadphaseAABB();
@@ -88,12 +105,16 @@ namespace NCL
 				return worldID;
 			}
 
+			
+
 		protected:
 			Transform transform;
 
 			CollisionVolume* boundingVolume;
 			PhysicsObject* physicsObject;
+			PhysicsXObject* physicsXObject;
 			RenderObject* renderObject;
+			NetworkObject* networkObject;
 
 			bool isActive;
 			int worldID;

@@ -39,6 +39,18 @@ OGLMesh::OGLMesh(const std::string& filename) : MeshGeometry(filename)
 	indexBuffer = 0;
 }
 
+NCL::Rendering::OGLMesh::OGLMesh(Matrix4 transform) : MeshGeometry(transform)
+{
+	vao = 0;
+	subCount = 1;
+
+	for (int i = 0; i < MAX_ATTRIBUTES; ++i)
+	{
+		attributeBuffers[i] = 0;
+	}
+	indexBuffer = 0;
+}
+
 OGLMesh::~OGLMesh()
 {
 	glDeleteVertexArrays(1, &vao); //Delete our VAO
