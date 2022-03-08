@@ -101,12 +101,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
     <OutDir>$(SolutionDir)$(Platform)_$(Configuration)\</OutDir>
+    <IncludePath>./../include/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>./../include/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)\include;$(IncludePath)</IncludePath>
@@ -132,6 +134,7 @@
       <PreprocessorDefinitions>_DEBUG;_ORBIS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppLanguageStd>Cpp17</CppLanguageStd>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <CppExceptions>true</CppExceptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -171,6 +174,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_ORBIS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CppExceptions>true</CppExceptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -221,7 +225,10 @@
     <ClCompile Include="Win32Keyboard.cpp" />
     <ClCompile Include="Win32Mouse.cpp" />
     <ClCompile Include="Win32Window.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="Window.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -254,7 +261,10 @@
     <ClInclude Include="Win32Keyboard.h" />
     <ClInclude Include="Win32Mouse.h" />
     <ClInclude Include="Win32Window.h" />
-    <ClInclude Include="Window.h" />
+    <ClInclude Include="Window.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

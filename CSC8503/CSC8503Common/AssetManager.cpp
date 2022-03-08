@@ -5,7 +5,9 @@
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Common/MeshGeometry.h"
 #include "../../Common/TextureLoader.h"
+#ifndef PLATFORM_ORBIS
 #include <experimental/filesystem>
+#endif
 #include "../../Common/Assets.h"
 #include "../../Common/MeshMaterial.h"
 #include "../../Common/Matrix4.h"
@@ -34,6 +36,7 @@ namespace NCL
 
 		NCL::Rendering::OGLMesh* mesh = nullptr;
 		NCL::MeshMaterial* material = nullptr;
+#ifndef PLATFORM_ORBIS
 		for (const auto& entry : std::experimental::filesystem::directory_iterator(Assets::MESHDIR))
 		{
 			if (entry.path().extension().generic_string().compare(".msh") == 0)			
@@ -55,7 +58,7 @@ namespace NCL
 				m_Materials.insert({ filename, material });
 			}
 		}
-
+#endif
 	}
 	void AssetManager::LoadTextures()
 	{
@@ -65,6 +68,7 @@ namespace NCL
 	}
 	void AssetManager::LoadMaterials()
 	{
+#ifndef PLATFORM_ORBIS
 		std::string filename;
 		for (const auto& entry : std::experimental::filesystem::directory_iterator(Assets::MESHDIR))
 		{
@@ -76,6 +80,7 @@ namespace NCL
 				m_Materials.insert({filename, material});
 			}
 		}
+#endif
 	}
 	AssetManager* AssetManager::GetInstance()
 	{

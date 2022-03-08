@@ -21,7 +21,7 @@ public:
 
 	void setGlobalPose(const Transform& pos);
 
-	float GetInverseMass() const{}
+	//float GetInverseMass() const{}
 	PxGeometry* GetVolume() const{ return volume; }
 	void AddForce(const Vector3& force);
 
