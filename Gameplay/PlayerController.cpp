@@ -11,6 +11,8 @@ Input PlayerController::get_inputs()
     }
     input.look_direction = look_direction;
     input.movement_direction = movement_direction;
+
+    look_direction = NCL::Maths::Vector2();
     return input;
 }
 
@@ -20,4 +22,6 @@ void PlayerController::update(const float dt)
         buttons[jump] = true;
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT))
         buttons[dash] = true;
+
+
 }

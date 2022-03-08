@@ -37,8 +37,8 @@ namespace NCL {
 			input->Callback[dash] = [this]() {
 				this->Dash();
 			};
-			input->Callback[move] = [this]() {
-				this->Move();
+			input->Move = [this](Vector2 movement) {
+				this->Move(movement);
 			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);

@@ -16,11 +16,10 @@ namespace NCL {
 			void Update(float dt);
 			void InitAllComponet();
 			void PushComponet(Component* newCom);
-			std::vector<Component*> GetComponets();
 		private:
 			void UpdateComponents(float dt);
 			void InitComponents();
-			std::vector<Component*> components;
+			Component* components[Component::MAX_COM_TYPE];
 		};
 	}
 }

@@ -17,6 +17,7 @@ public:
 		Static,
 		Dynamic
 	};
+	ComponentPhysics() { type = ComponentType::Physics; }
 	void Init() override;
 	void Update(float dt) override;
 	float mass;
