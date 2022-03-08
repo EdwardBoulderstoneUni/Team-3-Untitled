@@ -55,7 +55,7 @@ namespace NCL {
 
 			PushComponet(camera);
 		}
-		void Player::Move() {
+		void Player::Move(Vector2 dir) {
 			// Move forward
 			if (GetComponentInput()->userInterface->get_movement().y > 0) {
 				GetPhysicsXObject()->AddForce(forward * 5.0f);
