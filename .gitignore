@@ -24,6 +24,7 @@
 *.lai
 *.la
 *.a
+*.lib
 
 # Executables
 *.exe
@@ -50,11 +51,12 @@
 mono_crash.*
 
 # Build results
-
+[Dd]ebug/
 [Dd]ebugPublic/
-
-
-
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
 [Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
@@ -123,7 +125,8 @@ StyleCopReport.xml
 *_wpftmp.csproj
 *.log
 *.tlog
-
+*.vspscc
+*.vssscc
 .builds
 *.pidb
 *.svclog
