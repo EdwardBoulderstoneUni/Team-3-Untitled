@@ -3,8 +3,8 @@
 #include "../Common/Camera.h"
 class ComponentCamera : public Component {
 public:
-	void Init();
-	void Update();
+	void Init() override;
+	void Update(float dt) override;
 
 	void ThirdPersonCamera();
 private:

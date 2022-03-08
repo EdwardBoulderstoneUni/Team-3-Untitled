@@ -18,7 +18,7 @@ public:
 		Dynamic
 	};
 	void Init() override;
-	void Update() override;
+	void Update(float dt) override;
 	float mass;
 	bool useGravity=true;
 	Vector3 center;

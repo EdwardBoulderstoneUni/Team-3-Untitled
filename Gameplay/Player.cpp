@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "../Common/Keyboard.h"
 #include "../Common/Window.h"
-
+#include "PlayerController.h"
 namespace NCL {
 	namespace CSC8503 {
 		Player::Player(PlayerRole colour, AbilityContainer* aCont)
@@ -18,17 +18,27 @@ namespace NCL {
 		}
 		void Player::SetUp()
 		{
-			
 			auto physics = new ComponentPhysics();
 			physics->motionType = ComponentPhysics::Dynamic;
 			physics->center = this->GetTransform().GetPosition();
 			physics->orientation = this->GetTransform().GetOrientation();
 			physics->size = this->GetTransform().GetScale();
-			physics->shapeType = ComponentPhysics::Capsule;
-			physics->mass = 10.0f;
+			physics->shapeType = ComponentPhysics::Box;
+			physics->mass = 20.0f;
 			physics->phyObj = GetPhysicsXObject();
 
 			PushComponet(physics);
+
+			auto input = new ComponentInput();
+			input->Callback[jump] = [this]() {
+				this->Jump();
+			};
+			input->Callback[dash] = [this]() {
+				this->Dash();
+			};
+			auto* controller = new PlayerController();
+			input->userInterface = new UserInterface(controller);
+			PushComponet(input);
 		}
 		void Player::Move() {
 			// Move forward
@@ -50,26 +60,12 @@ namespace NCL {
 		}
 
 		void Player::Jump() {
-			int jumpcount = 0;
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE) && isGrounded) {
-				GetPhysicsXObject()->AddForce(Vector3(0.0f, 15.0f, 0.0f));
-				jumpcount++;
-			}
-			//Press SPACE to double jump if player is jumping and not on the ground yet
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE) && !isGrounded && jumpcount==1) {
-				GetPhysicsXObject()->AddForce(Vector3(0.0f, 15.0f, 0.0f));
-				jumpcount = 0;
-			}
-			
+			GetPhysicsXObject()->SetLinearVelocity(Vector3(0.0f,10.0f, 0.0f));	
 		}
 
 		void Player::Dash() {
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT)) {
-				GetPhysicsXObject()->AddForce(forward * 15.0f);
-			}
+			GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
 		}
-
-		
 
 		void Player::Shoot() {
 

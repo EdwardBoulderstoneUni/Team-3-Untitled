@@ -18,13 +18,14 @@ public:
 	void SetGravity(bool status) {
 		
 	}
+	void SetMass(float _Mass) {Mass = _Mass; }
 	void SetTransform(const Transform& pos);
 	void setVolume(PxGeometry* _volume);
 	void setDynaimc(const bool _dynamic);
 	void SetLinearVelocity(const Vector3& v);
 	void SetAngularVelocity(const Vector3& v);
 
-	float GetInverseMass() const{}
+	float GetMass() const { return Mass; }
 	PxGeometry* GetVolume() const{ return volume; }
 
 	void AddForce(const Vector3& force);
@@ -38,6 +39,7 @@ public:
 	
 protected:
 	bool dynamic;
+	float Mass;
 	PxTransform transform;
 	PxGeometry* volume;
 	PxRigidActor* rb;

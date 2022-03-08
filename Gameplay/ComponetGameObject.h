@@ -13,12 +13,12 @@ namespace NCL {
 			ComponentInput* GetComponentInput();
 			ComponentPhysics* GetComponentPhysics();
 			virtual void SetUp() = 0;
-			void Update();
+			void Update(float dt);
 			void InitAllComponet();
 			void PushComponet(Component* newCom);
 			std::vector<Component*> GetComponets();
 		private:
-			void UpdateComponents();
+			void UpdateComponents(float dt);
 			void InitComponents();
 			std::vector<Component*> components;
 		};

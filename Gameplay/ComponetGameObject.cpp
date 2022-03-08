@@ -18,17 +18,17 @@ ComponentCamera* NCL::CSC8503::ComponetGameObject::GetComponentCamera()
 
 ComponentInput* NCL::CSC8503::ComponetGameObject::GetComponentInput()
 {
-	return nullptr;
+	return (ComponentInput* )(components.at(1));
 }
 
 ComponentPhysics* NCL::CSC8503::ComponetGameObject::GetComponentPhysics()
 {
-	return nullptr;
+	return (ComponentPhysics*)(components.at(0));
 }
 
-void NCL::CSC8503::ComponetGameObject::Update()
+void NCL::CSC8503::ComponetGameObject::Update(float dt)
 {
-	UpdateComponents();
+	UpdateComponents(dt);
 }
 
 void NCL::CSC8503::ComponetGameObject::InitAllComponet()
@@ -47,10 +47,10 @@ std::vector<Component*> NCL::CSC8503::ComponetGameObject::GetComponets()
 	return components;
 }
 
-void NCL::CSC8503::ComponetGameObject::UpdateComponents()
+void NCL::CSC8503::ComponetGameObject::UpdateComponents(float dt)
 {
 	for (auto i : components)
-		i->Update();
+		i->Update(dt);
 }
 
 void NCL::CSC8503::ComponetGameObject::InitComponents()

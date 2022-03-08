@@ -7,6 +7,7 @@ void ComponentPhysics::Init()
 	trans.SetOrientation(orientation);
 	phyObj->SetTransform(trans);
 	phyObj->SetGravity(useGravity);
+	phyObj->SetMass(mass);
 	switch (motionType)
 	{
 	case ComponentPhysics::Static:
@@ -40,6 +41,6 @@ void ComponentPhysics::Init()
 	}
 }
 
-void ComponentPhysics::Update()
+void ComponentPhysics::Update(float dt)
 {
 }

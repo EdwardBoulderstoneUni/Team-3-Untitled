@@ -93,7 +93,7 @@ void TutorialGame::UpdateGame(float dt)
 {
 	if (!inSelectionMode)
 	{
-		world->GetMainCamera()->UpdateCamera(dt);
+		//world->GetMainCamera()->UpdateCamera(dt);
 	}
 
 	
@@ -107,7 +107,7 @@ void TutorialGame::UpdateGame(float dt)
 		Debug::Print("(G)ravity off", Vector2(5, 95));
 	}
 
-	player->Update();
+	player->Update(dt);
 	physicsX->Update(dt);
 
 	if (lockedObject != nullptr)
@@ -300,20 +300,15 @@ void TutorialGame::InitPlayer()
 	player = new Player(PlayerRole::Blue, abilityContainer);
 	camFollowPlayer = true;
 
-	Vector3 position = Vector3(0, 5, 0);
-	float	radius = 0.5f;
-	float	halfHeight = 0.2f;
-	float	inverseMass = 0.1f;
-
-	
+	Vector3 position = Vector3(-20, 5 , 0);
 
 	player->GetTransform()
-		.SetScale(Vector3(radius * 2, halfHeight, radius * 2))
+		.SetScale(Vector3(5,5,5))
 		.SetPosition(position);
 
 	player->InitAllComponet();
 
-	player->SetRenderObject(new RenderObject(&player->GetTransform(), capsuleMesh, basicTex, basicShader));
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), cubeMesh, basicTex, basicShader));
 	
 	world->AddGameObject(player);
 

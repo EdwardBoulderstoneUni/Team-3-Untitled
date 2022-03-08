@@ -11,15 +11,14 @@ namespace NCL {
 		public:
 			Player(PlayerRole colour, AbilityContainer* aCont);
 			~Player();
-			void SetUp() override;
 
+			void SetUp() override;
 
 			void Move();
 			void Jump();
 			void Shoot();
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
-			
 
 		private:
 			float health = 100.0f;

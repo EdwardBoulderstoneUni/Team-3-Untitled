@@ -118,6 +118,7 @@ void PhysicsXSystem::Update(float dt)
 		scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
 		getActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
 	}
+	//clearPhysics();
 }
 
 void PhysicsXSystem::addDynamicActor(GameObject& actor)
@@ -127,7 +128,7 @@ void PhysicsXSystem::addDynamicActor(GameObject& actor)
 		actor.GetTransform().GetPosition().y, 
 		actor.GetTransform().GetPosition().z);
 	PxRigidDynamic* body = gPhysics->createRigidDynamic(localTm);
-	PxRigidBodyExt::updateMassAndInertia(*body,10.0f);
+	body->setMass(actor.GetPhysicsXObject()->GetMass());
 	body->attachShape(*shape);
 	gScene->addActor(*body);
 	body->userData = &actor;
@@ -148,6 +149,18 @@ void PhysicsXSystem::addStaticActor(GameObject& actor)
 	body->userData = &actor;
 	actor.GetPhysicsXObject()->SetRigActor(body);
 	shape->release();
+}
+
+void PhysicsXSystem::clearPhysics()
+{
+	std::vector<GameObject*>& actors = gameWorld.GetGameObjects();
+	for (int i = 0; i < actors.size(); i++) {
+		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
+		if (obj->GetVolume() == nullptr)continue;
+		if (!obj->isInScene())continue;
+		obj->ClearForces();
+		obj->ClearTorque();
+	}
 }
 
 void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)

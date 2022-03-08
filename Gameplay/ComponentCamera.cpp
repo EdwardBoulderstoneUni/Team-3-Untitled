@@ -4,7 +4,7 @@ void ComponentCamera::Init() {
 	
 }
 
-void ComponentCamera::Update() {
+void ComponentCamera::Update(float dt) {
 	ThirdPersonCamera();
 }
 

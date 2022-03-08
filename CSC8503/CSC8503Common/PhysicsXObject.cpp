@@ -44,12 +44,14 @@ void PhysicsXObject::AddTorque(const Vector3& torque) {
 
 void PhysicsXObject::ClearForces()
 {
-	/*rb->clearForce();*/
+	/*if (!isDynamic())return;
+	rb->is < PxRigidDynamic >()->clearForce();*/
 }
 
 void PhysicsXObject::ClearTorque()
 {
-	/*rb->clearTorque();*/
+	/*if (!isDynamic())return;
+	rb->is < PxRigidDynamic >()->clearTorque();*/
 }
 
 void PhysicsXObject::SetLinearVelocity(const Vector3& v)
