@@ -36,27 +36,15 @@ namespace NCL {
 			input->Callback[dash] = [this]() {
 				this->Dash();
 			};
+			input->Move = [this](Vector2 movement) {
+				this->Move(movement);
+			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);
 			PushComponet(input);
 		}
-		void Player::Move() {
-			// Move forward
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::W)) {
-				GetPhysicsXObject()->AddForce(forward * 5.0f);
-			}
-			// Move backward
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::S)) {
-				GetPhysicsXObject()->AddForce(-forward * 5.0f);
-			}
-			// Move left
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::A)) {
-				GetPhysicsXObject()->AddForce(-right * 5.0f);
-			}
-			// Move right
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::D)) {
-				GetPhysicsXObject()->AddForce(right * 5.0f);
-			}
+		void Player::Move(Vector2 dir) {
+			
 		}
 
 		void Player::Jump() {

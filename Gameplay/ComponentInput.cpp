@@ -9,5 +9,6 @@ void ComponentInput::Update(float dt) {
 		Callback[jump]();
 	if (userInterface->button_down(dash))
 		Callback[dash]();
+	Move(userInterface->get_movement());
 	userInterface->update(dt);
 }
