@@ -16,6 +16,7 @@ namespace NCL {
 			for (auto i : abilities)
 				delete i;
 		}
+
 		void Player::SetUp()
 		{
 			auto physics = new ComponentPhysics();
@@ -36,25 +37,39 @@ namespace NCL {
 			input->Callback[dash] = [this]() {
 				this->Dash();
 			};
+			input->Callback[move] = [this]() {
+				this->Move();
+			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);
 			PushComponet(input);
+
+			auto camera = new ComponentCamera();
+			camera->gO = this;
+
+			camera->camera = new Camera();
+			camera->camera->SetNearPlane(0.1f);
+			camera->camera->SetFarPlane(500.0f);
+			camera->camera->SetPitch(-15.0f);
+			camera->camera->SetYaw(180);
+
+			PushComponet(camera);
 		}
 		void Player::Move() {
 			// Move forward
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::W)) {
+			if (GetComponentInput()->userInterface->get_movement().y > 0) {
 				GetPhysicsXObject()->AddForce(forward * 5.0f);
 			}
 			// Move backward
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::S)) {
+			if (GetComponentInput()->userInterface->get_movement().y < 0) {
 				GetPhysicsXObject()->AddForce(-forward * 5.0f);
 			}
 			// Move left
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::A)) {
+			if (GetComponentInput()->userInterface->get_movement().x < 0) {
 				GetPhysicsXObject()->AddForce(-right * 5.0f);
 			}
 			// Move right
-			if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::D)) {
+			if (GetComponentInput()->userInterface->get_movement().x > 0) {
 				GetPhysicsXObject()->AddForce(right * 5.0f);
 			}
 		}

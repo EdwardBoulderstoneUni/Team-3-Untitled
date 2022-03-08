@@ -13,7 +13,7 @@ NCL::CSC8503::ComponetGameObject::~ComponetGameObject()
 
 ComponentCamera* NCL::CSC8503::ComponetGameObject::GetComponentCamera()
 {
-	return nullptr;
+	return (ComponentCamera*)(components.at(2));
 }
 
 ComponentInput* NCL::CSC8503::ComponetGameObject::GetComponentInput()

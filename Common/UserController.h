@@ -9,6 +9,7 @@ enum Buttons
 	sprint,
 	quit,
 	dash,
+	move,
 	max_input
 };
 

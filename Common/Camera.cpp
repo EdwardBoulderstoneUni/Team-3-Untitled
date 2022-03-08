@@ -121,18 +121,18 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 
 void Camera::ThirdPersonCamera(NCL::CSC8503::GameObject* object) {
 	//in this way of control we use left mouse to change pitch and right mouse to change the angle of camera
-	if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::LEFT)) {
-		pitch -= (Window::GetMouse()->GetRelativePosition().y);
-	}
-	if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::RIGHT)) {
-		float angleChange = Window::GetMouse()->GetRelativePosition().x;
-		angleAroundObject += angleChange;
-	}
+	//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::LEFT)) {
+	//	pitch -= (Window::GetMouse()->GetRelativePosition().y);
+	//}
+	//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::RIGHT)) {
+	//	float angleChange = Window::GetMouse()->GetRelativePosition().x;
+	//	angleAroundObject += angleChange;
+	//}
 
 	//in this way we can just move the mouse to change the view
-	//pitch -= (Window::GetMouse()->GetRelativePosition().y);
-	//float angleChange = Window::GetMouse()->GetRelativePosition().x;
-	//angleAroundObject += angleChange;
+	pitch -= (NCL::Window::GetMouse()->GetRelativePosition().y);
+	float anglechange = NCL::Window::GetMouse()->GetRelativePosition().x;
+	angleAroundObject += anglechange;
 
 	pitch = std::min(pitch, 90.0f);
 	pitch = std::max(pitch, -90.0f);

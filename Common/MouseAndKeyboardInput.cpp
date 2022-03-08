@@ -15,6 +15,7 @@ Input MouseAndKeyboardInput::get_inputs()
     const float movement_x = keyboard_->KeyDown(NCL::KeyboardKeys::A) ? 1.0f : 0 + (keyboard_->KeyDown(NCL::KeyboardKeys::D) ? -1.0f : 0);
     input.movement_direction = NCL::Vector2(movement_x, movement_y);
     input.look_direction = mouse_->GetRelativePosition();
+
     return input;
 }
 

@@ -65,11 +65,11 @@ void TutorialGame::InitialiseAssets() {
 
 
 
-	world->GetMainCamera()->SetNearPlane(0.1f);
-	world->GetMainCamera()->SetFarPlane(500.0f);
-	world->GetMainCamera()->SetPitch(-15.0f);
-	world->GetMainCamera()->SetYaw(315.0f);
-	world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
+	//world->GetMainCamera()->SetNearPlane(0.1f);
+	//world->GetMainCamera()->SetFarPlane(500.0f);
+	//world->GetMainCamera()->SetPitch(-15.0f);
+	//world->GetMainCamera()->SetYaw(315.0f);
+	//world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
 
 
 	InitWorld();
@@ -309,6 +309,8 @@ void TutorialGame::InitPlayer()
 	player->InitAllComponet();
 
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), cubeMesh, basicTex, basicShader));
+
+	world->SetMainCamera(player->GetComponentCamera()->camera);
 	
 	world->AddGameObject(player);
 

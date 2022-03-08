@@ -6,8 +6,7 @@ public:
 	void Init() override;
 	void Update(float dt) override;
 
-	void ThirdPersonCamera();
-private:
 	NCL::Camera* camera;
-
+	GameObject* gO;
+private:
 };

@@ -41,6 +41,8 @@ namespace NCL {
 			PlayerRole pColour;
 			NCL::CSC8503::Ability *abilities[2];
 
+			std::vector<Component> components;
+
 			Vector3 forward;
 			Vector3 right;
 		};

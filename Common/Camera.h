@@ -42,6 +42,8 @@ namespace NCL
 			this->fov = 45.0f;
 			this->nearPlane = 1.0f;
 			this->farPlane = 100.0f;
+			this->distanceFromObject = 5;
+			this->angleAroundObject = 0;
 
 			this->camType = CameraType::Perspective;
 		}
@@ -71,6 +73,17 @@ namespace NCL
 		void SetFarPlane(float val)
 		{
 			farPlane = val;
+		}
+
+		void SetDistanceFromObject(float val)
+		{
+			distanceFromObject = val;
+		}
+
+
+		void SetAngleAroundObject(float val)
+		{
+			angleAroundObject = val;
 		}
 
 		//Builds a view matrix for the current camera variables, suitable for sending straight
