@@ -1,7 +1,7 @@
 #include "ComponentInput.h"
 #include "Player.h"
 void ComponentInput::Init() {
-
+	
 }
 
 void ComponentInput::Update(float dt) {

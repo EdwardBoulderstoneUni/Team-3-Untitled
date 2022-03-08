@@ -4,6 +4,7 @@
 #include <functional>
 class ComponentInput: public Component {
 public:
+	ComponentInput() { type = ComponentType::Input; }
 	void Init() override;
 	void Update(float dt) override;
 	UserInterface* userInterface;
