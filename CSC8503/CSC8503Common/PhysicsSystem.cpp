@@ -278,12 +278,12 @@ ones in the next 'game' frame.
 */
 void PhysicsSystem::ClearForces()
 {
-	gameWorld.OperateOnContents(
+	/*gameWorld.OperateOnContents(
 		[](GameObject* o)
 		{
 			o->GetPhysicsObject()->ClearForces();
 		}
-	);
+	);*/
 }
 
 

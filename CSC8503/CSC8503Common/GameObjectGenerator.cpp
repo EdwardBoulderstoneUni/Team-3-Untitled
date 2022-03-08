@@ -11,7 +11,7 @@
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
 #include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
-#include "../../CSC8503/GameTech/PhysXConvert.h"
+#include "PhysXConvert.h"
 
 
 NCL::CSC8503::GameObjectGenerator::~GameObjectGenerator()

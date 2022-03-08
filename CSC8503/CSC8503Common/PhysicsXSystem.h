@@ -1,6 +1,7 @@
 #pragma once
 #include "../CSC8503Common/GameWorld.h"
-#include "PhysXAPI.h"
+#include "../../include/PhysX/PxRigidActor.h"
+#include "../../include/PhysX/PxQueryReport.h"
 using namespace physx;
 using namespace NCL;
 
