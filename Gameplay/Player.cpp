@@ -2,6 +2,7 @@
 #include "../Common/Keyboard.h"
 #include "../Common/Window.h"
 #include "PlayerController.h"
+#include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 namespace NCL {
 	namespace CSC8503 {
 		Player::Player(PlayerRole colour, AbilityContainer* aCont)
@@ -42,6 +43,10 @@ namespace NCL {
 			};
 			input->Callback[move] = [this]() {
 				this->Move();
+			};
+			auto input = new ComponentInput();
+			input->Callback[attack] = [this]() {
+				this->Shoot();
 			};
 			input->Callback[idle] = [this]() {
 				if (!physicsXObject->controller)return;
@@ -105,7 +110,19 @@ namespace NCL {
 		}
 
 		void Player::Shoot() {
+			auto physics = new ComponentPhysics();
+			physics->phyObj = GetPhysicsXObject();
+			PxVec3 vel = physicsXObject->properties.transform.rotate(PhysXConvert::Vector3ToPxVec3(Vector3(0, 0, -1) * 200));
+			PxTransform t = physicsXObject->properties.transform;
+			PhyProperties properties = PhyProperties();
+			properties.type = PhyProperties::Dynamic;
+			properties.transform = t;
+			properties.Mass = 3.0f;
+			Vector3 scale = GetTransform().GetScale();
+			properties.volume = new PxSphereGeometry(scale.x);
+			physics->phyObj->SetLinearVelocity(PhysXConvert::PxVec3ToVector3(vel));
 
+			physics->phyObj->properties = properties;
 		}
 
 		void Player::AssignRole(AbilityContainer* aCont)
