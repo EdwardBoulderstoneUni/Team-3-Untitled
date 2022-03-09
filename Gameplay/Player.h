@@ -45,6 +45,7 @@ namespace NCL {
 
 			Vector3 forward;
 			Vector3 right;
+			PxTransform camOri;
 		};
 	}
 }
