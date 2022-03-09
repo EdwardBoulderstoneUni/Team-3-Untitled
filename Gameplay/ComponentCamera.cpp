@@ -8,6 +8,6 @@ void ComponentCamera::Init() {
 
 void ComponentCamera::Update(float dt) {
 	camera->ThirdPersonCamera(gO);
-	
+	std::cout << camera->GetYaw() << std::endl;
 	//camera->SetPosition(gO->GetTransform().GetPosition() - Vector3(0, -10, 30));
 }

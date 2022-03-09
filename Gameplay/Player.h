@@ -14,7 +14,7 @@ namespace NCL {
 
 			void SetUp() override;
 
-			void Move(Vector2 dir);
+			void Move();
 			void Jump();
 			void Shoot();
 			void AssignRole(AbilityContainer* aCont);

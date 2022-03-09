@@ -20,7 +20,26 @@ PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 PxMaterial* gMaterial = NULL;
 PxPvd* gPvd = NULL;
+PxControllerManager* gManager = NULL;
 
+PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags & pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(filterData0);
+	PX_UNUSED(filterData1);
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
+
+	// all initial and persisting reports for everything, with per-point data
+	pairFlags = PxPairFlag::eSOLVE_CONTACT | PxPairFlag::eDETECT_DISCRETE_CONTACT
+		| PxPairFlag::eNOTIFY_TOUCH_FOUND
+		| PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+		| PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	return PxFilterFlag::eDEFAULT;
+}
 
 class ContackCallback :public PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
@@ -47,32 +66,16 @@ PhysicsXSystem::~PhysicsXSystem()
 	PX_RELEASE(gScene);
 	PX_RELEASE(gDispatcher);
 	PX_RELEASE(gPhysics);
+	PX_RELEASE(gFoundation);
+
 	if (gPvd)
 	{
 		PxPvdTransport* transport = gPvd->getTransport();
 		gPvd->release();	gPvd = NULL;
 		PX_RELEASE(transport);
 	}
-	PX_RELEASE(gFoundation);
 }
-PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
-	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
-{
-	PX_UNUSED(attributes0);
-	PX_UNUSED(attributes1);
-	PX_UNUSED(filterData0);
-	PX_UNUSED(filterData1);
-	PX_UNUSED(constantBlockSize);
-	PX_UNUSED(constantBlock);
 
-	// all initial and persisting reports for everything, with per-point data
-	pairFlags = PxPairFlag::eSOLVE_CONTACT | PxPairFlag::eDETECT_DISCRETE_CONTACT
-		| PxPairFlag::eNOTIFY_TOUCH_FOUND
-		| PxPairFlag::eNOTIFY_TOUCH_PERSISTS
-		| PxPairFlag::eNOTIFY_CONTACT_POINTS;
-	return PxFilterFlag::eDEFAULT;
-}
 void PhysicsXSystem::initPhysics()
 {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
@@ -98,6 +101,7 @@ void PhysicsXSystem::initPhysics()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	gManager = PxCreateControllerManager(*gScene);
 }
 
 void PhysicsXSystem::Update(float dt)
@@ -116,54 +120,73 @@ void PhysicsXSystem::Update(float dt)
 	{
 		std::vector<PxRigidActor*> actors(nbActors);
 		scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
-		getActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
-	}
-	//clearPhysics();
-}
-
-void PhysicsXSystem::addDynamicActor(GameObject& actor)
-{
-	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
-	PxTransform localTm(actor.GetTransform().GetPosition().x,
-		actor.GetTransform().GetPosition().y, 
-		actor.GetTransform().GetPosition().z);
-	PxRigidDynamic* body = gPhysics->createRigidDynamic(localTm);
-	body->setMass(actor.GetPhysicsXObject()->GetMass());
-	body->attachShape(*shape);
-	gScene->addActor(*body);
-	body->userData = &actor;
-	actor.GetPhysicsXObject()->SetRigActor(body);
-	shape->release();
-}
-
-void PhysicsXSystem::addStaticActor(GameObject& actor)
-{
-	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
-	PxTransform localTm(actor.GetTransform().GetPosition().x,
-		actor.GetTransform().GetPosition().y,
-		actor.GetTransform().GetPosition().z);
-	PxRigidStatic* body = gPhysics->createRigidStatic(localTm);
-
-	body->attachShape(*shape);
-	gScene->addActor(*body);
-	body->userData = &actor;
-	actor.GetPhysicsXObject()->SetRigActor(body);
-	shape->release();
-}
-
-void PhysicsXSystem::clearPhysics()
-{
-	std::vector<GameObject*>& actors = gameWorld.GetGameObjects();
-	for (int i = 0; i < actors.size(); i++) {
-		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
-		if (obj->GetVolume() == nullptr)continue;
-		if (!obj->isInScene())continue;
-		obj->ClearForces();
-		obj->ClearTorque();
+		SynActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
 	}
 }
 
-void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
+void PhysicsXSystem::addActor(GameObject& actor)
+{
+	PhysicsXObject* phyObj = actor.GetPhysicsXObject();
+	PhyProperties properties = phyObj->properties;
+	PxTransform trans = PxTransform();
+	PxRigidDynamic* dynaBody = nullptr;
+	PxRigidStatic* statBody = nullptr;
+	PxShape* shape = nullptr;
+
+	PxBoxControllerDesc* desc=nullptr;
+	PxBoxGeometry* geo = nullptr;
+	switch (properties.type)
+	{
+	case PhyProperties::Dynamic:
+		dynaBody = gPhysics->createRigidDynamic(properties.transform);
+
+		shape = gPhysics->createShape(*properties.volume, *gMaterial);
+		dynaBody->attachShape(*shape);
+		dynaBody->setMass(properties.Mass);
+
+		gScene->addActor(*dynaBody);
+
+		dynaBody->userData = &actor;
+		phyObj->rb = dynaBody;
+		shape->release();
+		break;
+	case PhyProperties::Static:
+		statBody = gPhysics->createRigidStatic(properties.transform);
+
+		shape = gPhysics->createShape(*properties.volume, *gMaterial);
+		statBody->attachShape(*shape);
+
+		gScene->addActor(*statBody);
+
+		statBody->userData = &actor;
+		phyObj->rb = statBody;
+
+		shape->release();
+		break;
+	case PhyProperties::Character:
+		
+		geo = (PxBoxGeometry*)properties.volume;
+		trans = properties.transform;
+		desc = new PxBoxControllerDesc();
+		desc->halfHeight = geo->halfExtents.x;
+		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
+		desc->material = gMaterial;
+		desc->density = 10;
+
+		phyObj->controller = gManager->createController(*desc);
+		phyObj->controller->getActor()->userData = &actor;
+		phyObj->rb = phyObj->controller->getActor();
+		break;
+	default:
+		break;
+	}
+	
+
+	
+	
+}
+
+void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 {
 	PxShape* shapes[MAX_NUM_ACTOR_SHAPES];
 	for (PxU32 i = 0; i < numActors; i++)
@@ -178,6 +201,7 @@ void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
 			const PxGeometryHolder h = shapes[j]->getGeometry();
 			GameObject* obj=(GameObject*)actors[i]->userData;
 			obj->GetTransform().SetPosition(Vector3(shapePose.p.x, shapePose.p.y, shapePose.p.z));
+			if (obj->GetPhysicsXObject()->controller)continue;
 			obj->GetTransform().SetOrientation(Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
 				shapePose.q.w));
 		}
@@ -289,12 +313,11 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 void PhysicsXSystem::SyncGameObjs()
 {
 	std::vector<GameObject*>& actors=gameWorld.GetGameObjects();
-	for (int i = 0; i < actors.size();i++) {
-		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
-		if (obj->GetVolume() == nullptr)continue;
-		if (obj->isInScene())continue;
-		if (obj->isDynamic())addDynamicActor(*actors[i]);
-		else addStaticActor(*actors[i]);
+	for (auto actor:actors)
+	{
+		PhysicsXObject* obj = actor->GetPhysicsXObject();
+		if (obj->rb)continue;
+		addActor(*actor);
 	}
 }
 

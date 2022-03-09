@@ -11,13 +11,15 @@ NCL::CSC8503::Sphere::~Sphere()
 void NCL::CSC8503::Sphere::SetUp()
 {
 	auto physics = new ComponentPhysics();
-	physics->motionType = ComponentPhysics::Dynamic;
-	physics->center = this->GetTransform().GetPosition();
-	physics->orientation = this->GetTransform().GetOrientation();
-	physics->size = this->GetTransform().GetScale();
-	physics->shapeType = ComponentPhysics::Sphere;
-	physics->mass = 10.0f;
 	physics->phyObj = GetPhysicsXObject();
 
+	PhyProperties properties = PhyProperties();
+	properties.type = PhyProperties::Dynamic;
+	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
+	properties.Mass = 10.0f;
+	Vector3 scale = GetTransform().GetScale();
+	properties.volume = new PxSphereGeometry(scale.x);
+
+	physics->phyObj->properties = properties;
 	PushComponet(physics);
 }

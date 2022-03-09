@@ -20,14 +20,17 @@ namespace NCL {
 		void Player::SetUp()
 		{
 			auto physics = new ComponentPhysics();
-			physics->motionType = ComponentPhysics::Dynamic;
-			physics->center = this->GetTransform().GetPosition();
-			physics->orientation = this->GetTransform().GetOrientation();
-			physics->size = this->GetTransform().GetScale();
-			physics->shapeType = ComponentPhysics::Box;
-			physics->mass = 20.0f;
 			physics->phyObj = GetPhysicsXObject();
 
+			PhyProperties properties = PhyProperties();
+			properties.type = PhyProperties::Character;
+			properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
+			properties.Mass = 10.0f;
+
+			Vector3 scale = GetTransform().GetScale();
+			properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
+
+			physics->phyObj->properties = properties;
 			PushComponet(physics);
 
 			auto input = new ComponentInput();
@@ -37,8 +40,13 @@ namespace NCL {
 			input->Callback[dash] = [this]() {
 				this->Dash();
 			};
-			input->Move = [this](Vector2 movement) {
-				this->Move(movement);
+			input->Callback[move] = [this]() {
+				this->Move();
+			};
+			input->Callback[idle] = [this]() {
+				if (!physicsXObject->controller)return;
+				physicsXObject->controller->move(PxVec3(0.0f, -9.81f, 0.0f) * 0.05f, 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
 			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);
@@ -55,31 +63,45 @@ namespace NCL {
 
 			PushComponet(camera);
 		}
-		void Player::Move(Vector2 dir) {
+		void Player::Move() {
 			// Move forward
 			if (GetComponentInput()->userInterface->get_movement().y > 0) {
-				GetPhysicsXObject()->AddForce(forward * 5.0f);
+				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward), 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
 			}
 			// Move backward
 			if (GetComponentInput()->userInterface->get_movement().y < 0) {
-				GetPhysicsXObject()->AddForce(-forward * 5.0f);
+				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward)*(-1), 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
 			}
 			// Move left
 			if (GetComponentInput()->userInterface->get_movement().x < 0) {
-				GetPhysicsXObject()->AddForce(-right * 5.0f);
-			}
+				//update right
+				float angle = 2.0f;
+	
+				Quaternion quat=transform.GetOrientation();
+				Vector3 euler= quat.ToEuler();
+				quat = Quaternion::EulerAnglesToQuaternion(euler.x,euler.y-angle,euler.z);
+				transform.SetOrientation(quat);
+				forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
+			};
 			// Move right
 			if (GetComponentInput()->userInterface->get_movement().x > 0) {
-				GetPhysicsXObject()->AddForce(right * 5.0f);
+				PxVec3 temp = PhysXConvert::Vector3ToPxVec3(forward);
+				PxQuat yRot = PxQuat(-0.1f, PxVec3(0, 1, 0));
+				temp = yRot.rotate(temp);
+
+				forward = PhysXConvert::PxVec3ToVector3(temp);
 			}
-		}
+		}//TODO just need dir     rewrite later!!
 
 		void Player::Jump() {
-			GetPhysicsXObject()->SetLinearVelocity(Vector3(0.0f,10.0f, 0.0f));	
+			physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
+				PxControllerFilters(), NULL);
 		}
 
 		void Player::Dash() {
-			GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
+		
 		}
 
 		void Player::Shoot() {

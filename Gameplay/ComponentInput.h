@@ -9,6 +9,5 @@ public:
 	void Update(float dt) override;
 	UserInterface* userInterface;
 	std::function<void()> Callback[max_input];
-	std::function<void(NCL::Maths::Vector2)> Move;
 private:
 };

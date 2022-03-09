@@ -4,29 +4,7 @@
 #include "../CSC8503/CSC8503Common/PhysicsXObject.h"
 class ComponentPhysics : public Component {
 public:
-	enum ShapeType
-	{
-		Box,
-		Capsule,
-		Sphere,
-		Cylinder,
-		Plane,
-		Mesh
-	};
-	enum MotionType {
-		Static,
-		Dynamic
-	};
-	ComponentPhysics() { type = ComponentType::Physics; }
 	void Init() override;
 	void Update(float dt) override;
-	float mass;
-	bool useGravity=true;
-	Vector3 center;
-	Quaternion orientation;
-	ShapeType shapeType;
-	Vector3 size;
-	MotionType motionType;
 	PhysicsXObject* phyObj;
-private:
 };

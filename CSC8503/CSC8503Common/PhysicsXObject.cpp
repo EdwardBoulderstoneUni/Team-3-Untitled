@@ -1,80 +1,26 @@
 #include "PhysicsXObject.h"
-#include "../CSC8503Common/CollisionVolume.h"
 #include "../../include/PhysX/PxRigidDynamic.h"
+#include "../CSC8503Common/PhysXConvert.h"
 using namespace NCL;
 using namespace CSC8503;
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
-
-PhysicsXObject::PhysicsXObject(Transform _trans, PxGeometry* _volume, bool isDynamic)
+PhysicsXObject::PhysicsXObject()
 {
-	transform.p = PhysXConvert::Vector3ToPxVec3(_trans.GetPosition());
-	transform.q = PhysXConvert::QuatToPxQuat(_trans.GetOrientation());
-	volume = _volume;
-	dynamic = isDynamic;
+	properties = PhyProperties();
+	rb = nullptr;
+	controller = nullptr;
 }
 
 PhysicsXObject::~PhysicsXObject()
 {
 	PX_RELEASE(rb);
+	PX_RELEASE(controller);
 }
-void PhysicsXObject::SetTransform(const Transform& pos) {
-	transform.p = PhysXConvert::Vector3ToPxVec3(pos.GetPosition());
-	transform.q = PhysXConvert::QuatToPxQuat(pos.GetOrientation());
-}
-
-void PhysicsXObject::setVolume(PxGeometry* _volume)
-{
-	volume = _volume;
+void PhysicsXObject::SetLinearVelocity(Vector3 v) {
+	PxRigidDynamic* actor = rb->is<PxRigidDynamic>();
+	if (!actor)return;
+	actor->setLinearVelocity(PhysXConvert::Vector3ToPxVec3(v));
 }
 
-void PhysicsXObject::setDynaimc(const bool _dynamic)
-{
-	dynamic = _dynamic;
-}
 
-void PhysicsXObject::AddForce(const Vector3& force) {
-	if(!isDynamic())return;
-	rb->is < PxRigidDynamic >()->addForce(PhysXConvert::Vector3ToPxVec3(force));
-}
-
-void PhysicsXObject::AddTorque(const Vector3& torque) {
-	if (!isDynamic())return;
-	rb->is < PxRigidDynamic >()->addTorque(PhysXConvert::Vector3ToPxVec3(torque));
-}
-
-void PhysicsXObject::ClearForces()
-{
-	/*if (!isDynamic())return;
-	rb->is < PxRigidDynamic >()->clearForce();*/
-}
-
-void PhysicsXObject::ClearTorque()
-{
-	/*if (!isDynamic())return;
-	rb->is < PxRigidDynamic >()->clearTorque();*/
-}
-
-void PhysicsXObject::SetLinearVelocity(const Vector3& v)
-{
-	if (!isDynamic())return;
-	PxVec3 pxV = PhysXConvert::Vector3ToPxVec3(v);
-	rb->is < PxRigidDynamic >()->setLinearVelocity(pxV);
-}
-
-void PhysicsXObject::SetAngularVelocity(const Vector3& v)
-{
-	if (!isDynamic())return;
-	PxVec3 pxV = PhysXConvert::Vector3ToPxVec3(v);
-	rb->is < PxRigidDynamic >()->setAngularVelocity(pxV);
-}
-
-bool PhysicsXObject::isDynamic()
-{
-	return dynamic;
-}
-
-bool PhysicsXObject::isInScene()
-{
-	return rb == nullptr ? false: true;
-}
 

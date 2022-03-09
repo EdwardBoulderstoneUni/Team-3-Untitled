@@ -74,8 +74,6 @@ void TutorialGame::InitialiseAssets() {
 
 	InitWorld();
 	InitPlayer();
-	physicsX->SyncGameObjs();
-	world->GetGameObjects().at(0)->GetPhysicsXObject()->SetGravity(false);
 }
 	
 
@@ -183,111 +181,6 @@ void TutorialGame::UpdateKeys()
 
 	if (camFollowPlayer)
 		lockedObject = player;
-
-	if (lockedObject)
-	{
-		LockedObjectMovement();
-	}
-	else
-	{
-		DebugObjectMovement();
-	}
-
-}
-
-void TutorialGame::LockedObjectMovement()
-{
-	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
-	Matrix4 camWorld = view.Inverse();
-
-	auto rightAxis = Vector3(camWorld.GetColumn(0)); //view is inverse of model!
-
-	//forward is more tricky -  camera forward is 'into' the screen...
-	//so we can take a guess, and use the cross of straight up, and
-	//the right axis, to hopefully get a vector that's good enough!
-
-	Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
-	fwdAxis.y = 0.0f;
-	fwdAxis.Normalise();
-
-	Vector3 charForward = lockedObject->GetTransform().GetOrientation() * Vector3(0, 0, 1);
-	Vector3 charForward2 = lockedObject->GetTransform().GetOrientation() * Vector3(0, 0, 1);
-
-	float force = 100.0f;
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(-rightAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
-	{
-		Vector3 worldPos = selectionObject->GetTransform().GetPosition();
-		lockedObject->GetPhysicsXObject()->AddForce(rightAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(fwdAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(-fwdAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(Vector3(0, -10, 0));
-	}
-}
-
-void TutorialGame::DebugObjectMovement()
-{
-	//If we've selected an object, we can manipulate it with some key presses
-	if (inSelectionMode && selectionObject)
-	{
-		//Twist the selected object!
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(-10, 0, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(10, 0, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM7))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(0, 10, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM8))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(0, -10, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(10, 0, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP))
-		{
-			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, 0, -10));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN))
-		{
-			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, 0, 10));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM5))
-		{
-			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, -10, 0));
-		}
-	}
 }
 
 void TutorialGame::InitAbilityContainer() {
@@ -637,13 +530,3 @@ bool TutorialGame::SelectObject()
 	return false;
 }
 
-void TutorialGame::MoveSelectedObject()
-{
-	if (selectionObject == nullptr)return;
-	PhysicsXObject* obj= selectionObject->GetPhysicsXObject();
-	if (!obj->isDynamic())return;
-	Vector3 position=selectionObject->GetTransform().GetPosition();
-	Vector3 camPos = world->GetMainCamera()->GetPosition();
-	Vector3 dir = position - camPos;
-	obj->AddForce(dir.Normalised()*1500.0f);
-}

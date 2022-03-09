@@ -8,11 +8,8 @@ void ComponentInput::Update(float dt) {
 		Callback[jump]();
 	if (userInterface->button_down(dash))
 		Callback[dash]();
-
 	if (userInterface->get_movement() != Vector2(0,0))
 		Callback[move]();
-
+	Callback[idle]();
 	userInterface->update(dt);
-
-
 }

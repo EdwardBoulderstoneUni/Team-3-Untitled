@@ -3,6 +3,7 @@
 #include "ComponentCamera.h"
 #include "ComponentInput.h"
 #include "ComponentPhysics.h"
+#include "../CSC8503/CSC8503Common/PhysXConvert.h"
 namespace NCL {
 	namespace CSC8503 {
 		class ComponetGameObject : public GameObject {
