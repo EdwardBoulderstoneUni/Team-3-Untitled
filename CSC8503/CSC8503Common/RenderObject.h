@@ -61,6 +61,9 @@ namespace NCL
 				return material;
 			}
 
+			const Maths::Matrix4& GetLocalTransform() const;
+			void	SetLocalTransform(const Maths::Matrix4& mat);
+
 		protected:
 			MeshGeometry*	mesh;
 			TextureBase*	texture;
@@ -68,6 +71,7 @@ namespace NCL
 			Transform*		transform;
 			Vector4			colour;
 			MeshMaterial*	material;
+			Maths::Matrix4	localTransform;
 		};
 	}
 }

@@ -11,9 +11,14 @@ RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, Textu
 	this->shader	= shader;
 	this->colour	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	this->material = mat;
-
+	this->localTransform = Matrix4();
 }
 
 RenderObject::~RenderObject()
 {
+}
+
+void NCL::CSC8503::RenderObject::SetLocalTransform(const Maths::Matrix4& mat)
+{
+	localTransform = mat;
 }
