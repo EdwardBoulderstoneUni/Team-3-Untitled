@@ -190,7 +190,7 @@ void TutorialGame::InitAbilityContainer() {
 
 void TutorialGame::InitPlayer()
 {
-	player = new Player(PlayerRole::Blue, abilityContainer);
+	player = new Player(PlayerRole::PlayerRole_blue, abilityContainer);
 	camFollowPlayer = true;
 
 	Vector3 position = Vector3(-20, 5 , 0);
@@ -375,7 +375,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	float meshSize = 3.0f;
 	float inverseMass = 0.5f;
 
-	auto character = new Player(PlayerRole::Blue, abilityContainer);
+	auto character = new Player(PlayerRole::PlayerRole_blue, abilityContainer);
 
 	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
 

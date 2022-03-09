@@ -150,6 +150,7 @@
     <ClInclude Include="ComponentPhysics.h" />
     <ClInclude Include="ComponetGameObject.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="eGameObjectType.h" />
     <ClInclude Include="ePlayerRole.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="GameObjects.h" />

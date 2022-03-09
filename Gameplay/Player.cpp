@@ -136,17 +136,17 @@ namespace NCL {
 			std::string colour;
 
 			switch (pColour) {
-			case Red:
+			case PlayerRole_red:
 				colour = "Red";
 				abilities[0] = aCont->allAbilities[0];
 				abilities[1] = aCont->allAbilities[1];
 				break;
-			case Green:
+			case PlayerRole_green:
 				colour = "Green";
 				abilities[0] = aCont->allAbilities[2];
 				abilities[1] = aCont->allAbilities[3];
 				break;
-			case Blue:
+			case PlayerRole_blue:
 				colour = "Blue";
 				abilities[0] = aCont->allAbilities[4];
 				abilities[1] = aCont->allAbilities[5];

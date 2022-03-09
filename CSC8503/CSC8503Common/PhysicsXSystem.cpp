@@ -345,15 +345,15 @@ void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
 	if (a->type == GameObjectType::GameObjectType_team2Bullet && b->type == GameObjectType::GameObjectType_team1 ||
 		a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_team2) {
 		Player* player = dynamic_cast<Player*>(b);
-		if (player != nullptr){}
-			// TODO: player->TakeDamage(5);
+		if (player != nullptr)
+			player->TakeDamage(5);
 	}
 
 	if (b->type == GameObjectType::GameObjectType_team2Bullet && a->type == GameObjectType::GameObjectType_team1 ||
 		b->type == GameObjectType::GameObjectType_team1Bullet && a->type == GameObjectType::GameObjectType_team2) {
 		Player* player = dynamic_cast<Player*>(a);
-		if (player != nullptr) {}
-		// TODO: player->TakeDamage(5);
+		if (player != nullptr)
+			player->TakeDamage(5);
 	}
 
 }
