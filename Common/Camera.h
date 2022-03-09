@@ -113,7 +113,7 @@ namespace NCL
 
 		Quaternion GetThirdPersonOrientation() {
 			Quaternion orientation;
-			orientation = orientation.EulerAnglesToQuaternion(-pitch, yaw - 180, 0.0f);
+			orientation = orientation.EulerAnglesToQuaternion(0.0f, yaw - 180, 0.0f);
 			return orientation;
 		}
 

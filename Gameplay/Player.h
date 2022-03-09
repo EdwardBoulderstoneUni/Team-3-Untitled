@@ -20,6 +20,8 @@ namespace NCL {
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
 
+			bool isGrounded = false;
+
 		private:
 			float health = 100.0f;
 			float speed = 5.0f;
@@ -33,7 +35,6 @@ namespace NCL {
 		
 			int ammo = 20;
 
-			bool isGrounded = true;
 			bool isDashing = false;
 			bool isDead = false;
 			bool hasAmmo = true;

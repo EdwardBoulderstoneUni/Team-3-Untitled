@@ -1,6 +1,6 @@
 #pragma once
 #include "Transform.h"
-
+#include "..//../Gameplay/eGameObjectType.h"
 #include "PhysicsXObject.h"
 
 #include "RenderObject.h"
@@ -82,7 +82,7 @@ namespace NCL
 				return worldID;
 			}
 
-			
+			GameObjectType type;
 
 		protected:
 			Transform transform;

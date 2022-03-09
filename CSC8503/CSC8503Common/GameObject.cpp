@@ -10,6 +10,7 @@ GameObject::GameObject(string objectName)
 	isActive = true;
 	physicsXObject = new PhysicsXObject();
 	renderObject = nullptr;
+	type = GameObjectType::GameObjectType_null;
 }
 
 GameObject::~GameObject()

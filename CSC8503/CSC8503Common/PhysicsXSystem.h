@@ -10,14 +10,11 @@ class PhysicsXSystem {
 			PhysicsXSystem(GameWorld& g);
 			~PhysicsXSystem();
 			void initPhysics();
-
 			void Update(float dt);
-
 			void addActor(GameObject& actor);
-
 			bool raycast(Vector3 origin,Vector3 dir,float maxdis,PxRaycastBuffer& hit);
-
 			bool raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit);
+			static void FlagCheck(GameObject* a, GameObject* b);
 			
 		protected:
 			void SynActorsPose(PxRigidActor** actors, const PxU32 numActors);
