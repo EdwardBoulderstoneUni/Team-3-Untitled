@@ -43,9 +43,6 @@ namespace NCL {
 			input->Callback[move] = [this]() {
 				this->Move();
 			};
-			input->Callback[attack] = [this]() {
-				this->Shoot();
-			};
 			input->Callback[idle] = [this]() {
 				if (!physicsXObject->controller)return;
 				physicsXObject->controller->move(PxVec3(0.0f, -9.81f, 0.0f) * 0.05f, 0.0001f, 0.2,
@@ -98,24 +95,40 @@ namespace NCL {
 		}
 
 		void Player::Dash() {
+
 		
 		}
 
-		void Player::Shoot() {
-			auto bullet = new ComponentPhysics();
-			bullet->phyObj = GetPhysicsXObject();
-			PxVec3 vel = physicsXObject->properties.transform.rotate(PhysXConvert::Vector3ToPxVec3(Vector3(0, 0, -1) * 200));
-			PxTransform t = physicsXObject->properties.transform;
-			PhyProperties properties = PhyProperties();
-			properties.type = PhyProperties::Dynamic;
-			properties.transform = t;
-			properties.Mass = 3.0f;
-			Vector3 scale = GetTransform().GetScale();
-			properties.volume = new PxSphereGeometry(scale.x);
-			bullet->phyObj->SetLinearVelocity(PhysXConvert::PxVec3ToVector3(vel));
 
-			bullet->phyObj->properties = properties;
-			PushComponet(bullet);
+		float Player::TakeDamage(float dmg) {
+			health = health - dmg < 0 ? 0 : health - dmg;
+			return health;
+		}
+
+		bool Player::IsDead() {
+			return health == 0 ? true : false;
+		}
+
+		// Give damage to palyer a
+		void Player::GiveDamage(float dmg, Player* a) {
+			ammo = ammo - 1;
+			a->TakeDamage(dmg);
+			if (IsDead() == true) {
+				teamKill++;
+			}
+		}
+
+
+		void Player::Reload() {
+			isReloading = false;
+			if (ammo >= 0 && ammo < maxAmmo) {
+				if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::R)) {
+					isReloading = true;
+					ammo = maxAmmo;
+				}
+				// Finish reload
+				isReloading = false;
+			}
 		}
 
 		void Player::AssignRole(AbilityContainer* aCont)
