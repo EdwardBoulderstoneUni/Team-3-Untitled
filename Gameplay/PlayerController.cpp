@@ -23,13 +23,15 @@ void PlayerController::update(const float dt)
         buttons[jump] = true;
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT))
         buttons[dash] = true;
-      if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
-          movement_direction = NCL::Maths::Vector2(0, 1);
+
+	  movement_direction = NCL::Maths::Vector2(0, 0);
+	  if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
+		  movement_direction.y += 1;
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
-          movement_direction = NCL::Maths::Vector2(0, -1);
+		  movement_direction.y -= 1;
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
-          movement_direction = NCL::Maths::Vector2(-1, 0);
+		  movement_direction.x += 1;
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
-          movement_direction = NCL::Maths::Vector2(1, 0);
+		  movement_direction.x -= 1;
 
 }
