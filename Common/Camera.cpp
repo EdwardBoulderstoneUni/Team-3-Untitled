@@ -150,7 +150,7 @@ void Camera::ThirdPersonCamera(NCL::CSC8503::GameObject* object) {
 	float horizontalDistance = distanceFromObject * cos(DegreesToRadians(pitch));
 	float verticalDistance = distanceFromObject * sin(DegreesToRadians(pitch));
 
-	yaw = 180.0f - (object->GetTransform().GetOrientation().ToEuler().y + angleAroundObject);
+	yaw = 180.0f - (angleAroundObject);
 
 	if (yaw < 0) {
 		yaw += 360.0f;
@@ -159,7 +159,7 @@ void Camera::ThirdPersonCamera(NCL::CSC8503::GameObject* object) {
 		yaw -= 360.0f;
 	}
 
-	float theta = object->GetTransform().GetOrientation().ToEuler().y + angleAroundObject;
+	float theta = angleAroundObject;
 	float offsetX = horizontalDistance * sin(DegreesToRadians(theta));
 	float offsetZ = horizontalDistance * cos(DegreesToRadians(theta));
 

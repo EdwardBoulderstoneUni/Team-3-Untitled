@@ -67,6 +67,9 @@ namespace NCL {
 			PushComponet(camera);
 		}
 		void Player::Move() {
+			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
+			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
+
 			// Move forward
 			if (GetComponentInput()->userInterface->get_movement().y > 0) {
 				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward), 0.0001f, 0.2,
@@ -79,26 +82,13 @@ namespace NCL {
 			}
 			// Move left
 			if (GetComponentInput()->userInterface->get_movement().x < 0) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right)*(-1), 0.0001f, 0.2,
+				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(-right) * (-1), 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
-				//update right
-				//float angle = 2.0f;
-	
-				//Quaternion quat=transform.GetOrientation();
-				//Vector3 euler= quat.ToEuler();
-				//quat = Quaternion::EulerAnglesToQuaternion(euler.x,euler.y-angle,euler.z);
-				//transform.SetOrientation(quat);
-				//forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 			};
 			// Move right
 			if (GetComponentInput()->userInterface->get_movement().x > 0) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right) , 0.0001f, 0.2,
+				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right) * (-1), 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
-				/*PxVec3 temp = PhysXConvert::Vector3ToPxVec3(forward);
-				PxQuat yRot = PxQuat(-0.1f, PxVec3(0, 1, 0));
-				temp = yRot.rotate(temp);
-
-				forward = PhysXConvert::PxVec3ToVector3(temp);*/
 			}
 		}//TODO just need dir     rewrite later!!
 

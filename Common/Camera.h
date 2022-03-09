@@ -80,6 +80,10 @@ namespace NCL
 			distanceFromObject = val;
 		}
 
+		float GetAngleAroundObject() const
+		{
+			return angleAroundObject;
+		}
 
 		void SetAngleAroundObject(float val)
 		{
@@ -106,6 +110,12 @@ namespace NCL
 		float GetPitch() const { return pitch; }
 		//Sets pitch, in degrees
 		void SetPitch(float p) { pitch = p; }
+
+		Quaternion GetThirdPersonOrientation() {
+			Quaternion orientation;
+			orientation = orientation.EulerAnglesToQuaternion(-pitch, yaw - 180, 0.0f);
+			return orientation;
+		}
 
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near,
 		                                     float far);
