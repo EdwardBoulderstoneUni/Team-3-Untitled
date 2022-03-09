@@ -58,6 +58,10 @@ void Camera::UpdateCamera(float dt)
 	{
 		position.y -= frameSpeed;
 	}
+	if (Window::GetInterface()->button_down(attack))
+	{
+		position.y -= frameSpeed;
+	}
 }
 
 /*

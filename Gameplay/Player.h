@@ -16,7 +16,10 @@ namespace NCL {
 
 			void Move();
 			void Jump();
-			void Shoot();
+			void GiveDamage(float dmg, Player* a);
+			bool IsDead();
+			float TakeDamage(float dmg);
+			void Reload();
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
 
@@ -32,12 +35,15 @@ namespace NCL {
 			float tAbility1;
 			float tAbility2;
 			float tDeath;
+			float damage;
 		
+			int maxAmmo = 20;
 			int ammo = 20;
+			int teamKill = 0;
 
 			bool isDashing = false;
-			bool isDead = false;
 			bool hasAmmo = true;
+			bool isReloading = false;
 
 			PlayerRole pColour;
 			NCL::CSC8503::Ability *abilities[2];
@@ -46,6 +52,7 @@ namespace NCL {
 
 			Vector3 forward;
 			Vector3 right;
+			PxTransform camOri;
 		};
 	}
 }

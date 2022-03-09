@@ -2,6 +2,7 @@
 #include "../Common/Keyboard.h"
 #include "../Common/Window.h"
 #include "PlayerController.h"
+#include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 namespace NCL {
 	namespace CSC8503 {
 		Player::Player(PlayerRole colour, AbilityContainer* aCont)
@@ -21,7 +22,6 @@ namespace NCL {
 		{
 			auto physics = new ComponentPhysics();
 			physics->phyObj = GetPhysicsXObject();
-
 			PhyProperties properties = PhyProperties();
 			properties.type = PhyProperties::Character;
 			properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
@@ -95,11 +95,40 @@ namespace NCL {
 		}
 
 		void Player::Dash() {
+
 		
 		}
 
-		void Player::Shoot() {
 
+		float Player::TakeDamage(float dmg) {
+			health = health - dmg < 0 ? 0 : health - dmg;
+			return health;
+		}
+
+		bool Player::IsDead() {
+			return health == 0 ? true : false;
+		}
+
+		// Give damage to palyer a
+		void Player::GiveDamage(float dmg, Player* a) {
+			ammo = ammo - 1;
+			a->TakeDamage(dmg);
+			if (IsDead() == true) {
+				teamKill++;
+			}
+		}
+
+
+		void Player::Reload() {
+			isReloading = false;
+			if (ammo >= 0 && ammo < maxAmmo) {
+				if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::R)) {
+					isReloading = true;
+					ammo = maxAmmo;
+				}
+				// Finish reload
+				isReloading = false;
+			}
 		}
 
 		void Player::AssignRole(AbilityContainer* aCont)

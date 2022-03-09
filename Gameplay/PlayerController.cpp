@@ -20,7 +20,7 @@ Input PlayerController::get_inputs()
 void PlayerController::update(const float dt)
 {
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE))
-        buttons[jump] = true;
+          buttons[jump] = true;
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SHIFT))
         buttons[dash] = true;
 
@@ -32,6 +32,8 @@ void PlayerController::update(const float dt)
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A))
 		  movement_direction.x += 1;
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
-		  movement_direction.x -= 1;
+          movement_direction = NCL::Maths::Vector2(1, 0);
+      if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
+          buttons[attack]=true;
 
 }
