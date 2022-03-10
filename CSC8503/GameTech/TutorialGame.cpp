@@ -8,9 +8,10 @@
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
-
+#include "../GameTech/TutorialMenu.h"
 using namespace NCL;
 using namespace CSC8503;
+
 
 TutorialGame::TutorialGame()
 {
@@ -23,7 +24,7 @@ TutorialGame::TutorialGame()
 	inSelectionMode = false;
 
 	Debug::SetRenderer(renderer);
-
+	InitialiseUI();
 	InitialiseAssets();
 }
 
@@ -34,31 +35,85 @@ and the same texture and shader. There's no need to ever load in anything else
 for this module, even in the coursework, but you can add it if you like!
 
 */
+void TutorialGame::UpdateRender(float dt)
+{
+	Debug::FlushRenderables(dt);
+	renderer->Update(dt);
+	renderer->Render();
+}
+void TutorialGame::SetSingleMode()
+{
+
+	InitialiseAssets();
+	InitCamera();
+}
+
+void TutorialGame::SetMultiMode()
+{
+
+	InitWorld();
+	InitCamera();
+}
 void TutorialGame::InitialiseAssets() {
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
+	auto loadFunc = [](const string& name, OGLMesh** into) {
+		*into = new OGLMesh(name);
+		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
+		(*into)->UploadToGPU();
+	};
+	// need this, or will cause exception 
+	loadFunc("cube.msh", &cubeMesh);
+	loadFunc("sphere.msh", &sphereMesh);
+	loadFunc("Male1.msh", &charMeshA);
+	loadFunc("courier.msh", &charMeshB);
+	loadFunc("security.msh", &enemyMesh);
+	loadFunc("coin.msh", &bonusMesh);
+	loadFunc("capsule.msh", &capsuleMesh);
+
+	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
+	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
+
 	InitCamera();
 	InitWorld();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
-
 	physicsX->SyncGameObjs();
 	world->GetGameObjects().at(0)->GetPhysicsXObject()->SetGravity(false);
 }
-	
 
+void TutorialGame::InitialiseUI()
+{
+	gameUI = new GameUI();
+	renderer->SetUI(gameUI);
+	//gameMenu.reset(new TutorialMenu(this));
+	//gameUI->PushMenu(gameMenu);
+	//InGameState* t = new InGameState(this);
+	//pauseMachine = new PushdownMachine(t);
+	//pauseMachine = new PushdownMachine(new InGameState(this));
+}
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
-
 	delete physicsX;
 	delete renderer;
 	delete world;
+
+	
+	delete gameUI;
 }
 
 void TutorialGame::UpdateGame(float dt)
 {
+	//InMainMenu = !pauseMachine->Update(dt);
+	//quit = !pauseMachine->Update(dt);
+
+	/*if (freezed)
+	{
+		return;
+	}*/
+
 	if (!inSelectionMode)
 	{
 		world->GetMainCamera()->UpdateCamera(dt);
@@ -101,9 +156,11 @@ void TutorialGame::UpdateGame(float dt)
 
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
+	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-	renderer->Render();
+
+
 }
 
 void TutorialGame::UpdateKeys()
@@ -525,6 +582,7 @@ letting you move the camera around.
 */
 bool TutorialGame::SelectObject()
 {
+
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
 	{
 		inSelectionMode = !inSelectionMode;

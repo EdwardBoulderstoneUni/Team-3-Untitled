@@ -3,6 +3,8 @@
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
+#include "../CSC8503Common/PushdownMachine.h"
+#include "GameState.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -12,10 +14,16 @@ namespace NCL {
 			~TutorialGame();
 
 			virtual void UpdateGame(float dt);
+			virtual void UpdateRender(float dt);
 
+			GameUI* GetUI()const { return gameUI; }
+			void StartRender()const { renderer->Render(); }
+
+			void SetSingleMode();
+			void SetMultiMode();
 		protected:
 			void InitialiseAssets();
-
+			void InitialiseUI();
 			void InitCamera();
 			void UpdateKeys();
 
@@ -79,6 +87,11 @@ namespace NCL {
 			{
 				lockedObject = o;
 			}
+
+		
+
+			GameUI* gameUI;
+
 		};
 	}
 }
