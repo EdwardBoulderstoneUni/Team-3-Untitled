@@ -22,6 +22,9 @@ namespace NCL {
 			void Reload();
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
+			int GetAmmo() {
+				return ammo;
+			}
 
 			Bullet* GetBullet() {
 				return bullet;
@@ -64,6 +67,7 @@ namespace NCL {
 			PxTransform camOri;
 
 			Bullet* bullet;
+
 		};
 	}
 }

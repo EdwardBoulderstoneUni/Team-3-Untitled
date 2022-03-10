@@ -118,7 +118,7 @@ void TutorialGame::UpdateGame(float dt)
 
 		//Debug::DrawAxisLines(lockedObject->GetTransform().GetMatrix(), 2.0f);
 	}
-
+	AmmoLeft();
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 
@@ -409,3 +409,10 @@ void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerDa
 	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*100.0f);
 }
 
+void TutorialGame::AmmoLeft() {
+	Player* player = TutorialGame::getMe()->player;
+	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 80));
+	if (player->GetAmmo() == 0) {
+		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
+	}
+}
