@@ -105,7 +105,9 @@ namespace NCL {
 		}
 
 		void Player::Dash() {
-
+			physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 5.0f, 0.0001f, 0.2,
+				PxControllerFilters(), NULL);
+			YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
 		
 		}
 
