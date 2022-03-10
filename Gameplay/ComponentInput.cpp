@@ -8,6 +8,8 @@ void ComponentInput::Update(float dt) {
 		Callback[jump]();
 	if (userInterface->button_down(dash))
 		Callback[dash]();
+	if (userInterface->button_down(reload))
+		Callback[reload]();
 	if (userInterface->get_movement() != Vector2(0,0))
 		MovCallback(userInterface->get_movement());
 	if (userInterface->button_down(attack))

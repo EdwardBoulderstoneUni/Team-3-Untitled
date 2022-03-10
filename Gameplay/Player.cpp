@@ -53,6 +53,9 @@ namespace NCL {
 			input->MovCallback = [this](Vector2 dir) {
 				this->Move(dir);
 			};
+			input->Callback[reload] = [this]() {
+				this->Reload();
+			};
 			
 			input->Callback[idle] = [this]() {
 				if (!physicsXObject->controller)return;
@@ -101,26 +104,31 @@ namespace NCL {
 		}
 
 		void Player::Jump() {
-			if (isGrounded == true) {
-				isJumping = false;
-				jumpNo = 0;
-				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
+			physicsXObject->controller->move(PxVec3(0.0f, 5.0f, 0.0f), 0.0001f, 0.2,
+				PxControllerFilters(), NULL);
 			//	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-				jumpNo++;
-				isJumping = true;
-				isGrounded = false;
-				std::cout << jumpNo << std::endl;
-			}
-			if (isJumping = true && jumpNo == 1) {
-				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-			//	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-				jumpNo++;
-				isGrounded = false;
-				std::cout << jumpNo << std::endl;
-			}
-			isGrounded = true;
+
+
+			//if (isGrounded == true) {
+			//	isJumping = false;
+			//	jumpNo = 0;
+			//	physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
+			//		PxControllerFilters(), NULL);
+			////	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+			//	jumpNo++;
+			//	isJumping = true;
+			//	isGrounded = false;
+			//	std::cout << jumpNo << std::endl;
+			//}
+			//if (isJumping = true && jumpNo == 1) {
+			//	physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
+			//		PxControllerFilters(), NULL);
+			////	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+			//	jumpNo++;
+			//	isGrounded = false;
+			//	std::cout << jumpNo << std::endl;
+			//}
+			//isGrounded = true;
 		}
 
 
@@ -153,24 +161,19 @@ namespace NCL {
 
 		// Give damage to palyer a
 		void Player::GiveDamage(float dmg, Player* a) {
-			ammo = ammo - 1;
 			a->TakeDamage(dmg);
 			if (a->IsDead() == true) {
 				teamKill++;
 			}
 		}
 
-		bool Player::CanShoot() {
-			return isReloading == false ? true : false;
-		}
+
 
 		void Player::Reload() {
 			isReloading = false;
-			if (ammo >= 0 && ammo < maxAmmo) {
-				if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::R)) {
-					isReloading = true;
-					ammo = maxAmmo;
-				}
+			if (ammo >= 0 && ammo < maxAmmo) {				
+				isReloading = true;
+				ammo = maxAmmo;
 				// Finish reload
 				isReloading = false;
 			}

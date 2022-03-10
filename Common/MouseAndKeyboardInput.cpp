@@ -11,6 +11,7 @@ Input MouseAndKeyboardInput::get_inputs()
     input.buttons[pause] = keyboard_->KeyDown(NCL::KeyboardKeys::ESCAPE);
     input.buttons[sprint] = keyboard_->KeyDown(NCL::KeyboardKeys::SHIFT);
     input.buttons[quit] = keyboard_->KeyDown(NCL::KeyboardKeys::ESCAPE);
+    input.buttons[reload] = keyboard_->KeyDown(NCL::KeyboardKeys::R);
     const float movement_y = keyboard_->KeyDown(NCL::KeyboardKeys::W) ? 1.0f : 0 + (keyboard_->KeyDown(NCL::KeyboardKeys::S) ? -1.0f : 0);
     const float movement_x = keyboard_->KeyDown(NCL::KeyboardKeys::A) ? 1.0f : 0 + (keyboard_->KeyDown(NCL::KeyboardKeys::D) ? -1.0f : 0);
     input.movement_direction = NCL::Vector2(movement_x, movement_y);

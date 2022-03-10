@@ -18,7 +18,6 @@ namespace NCL {
 			void Jump();
 			void GiveDamage(float dmg, Player* a);
 			bool IsDead();
-			bool CanShoot();
 			float TakeDamage(float dmg);
 			void Reload();
 			void AssignRole(AbilityContainer* aCont);
