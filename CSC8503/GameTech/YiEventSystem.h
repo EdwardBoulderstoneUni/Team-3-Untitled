@@ -2,7 +2,7 @@
 #include "EventSystem.h"
 
 enum GAME_EVENT_ID {
-	GAME_PLAY_KILL
+	PLAYER_OPEN_FIRE,
 };
 class YiEventSystem:public EventSystem 
 {

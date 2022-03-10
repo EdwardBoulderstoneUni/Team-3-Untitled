@@ -22,7 +22,8 @@ namespace NCL {
 			void Reload();
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
-
+			void Openfire();
+			Vector3 getForward() { return forward; }
 			bool isGrounded = false;
 
 		private:

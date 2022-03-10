@@ -26,7 +26,6 @@ TutorialGame::TutorialGame()
 	inSelectionMode = false;
 	eventSystem = new YiEventSystem();
 	Debug::SetRenderer(renderer);
-	RigisterEventHandles();
 	InitialiseAssets();
 }
 
@@ -75,6 +74,7 @@ void TutorialGame::InitialiseAssets() {
 
 	InitWorld();
 	InitPlayer();
+	RigisterEventHandles();
 }
 	
 
@@ -91,14 +91,12 @@ TutorialGame::~TutorialGame()	{
 void TutorialGame::UpdateGame(float dt)
 {
 	
-	eventSystem->ProcessAllEvent();
-
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 
 	player->Update(dt);
 	physicsX->Update(dt);
-
+	eventSystem->ProcessAllEvent();
 	if (lockedObject != nullptr)
 	{
 		Vector3 objPos = lockedObject->GetTransform().GetPosition();
@@ -304,7 +302,7 @@ void TutorialGame::InitDefaultFloor()
 
 void NCL::CSC8503::TutorialGame::RigisterEventHandles()
 {
-	eventSystem->RegisterEventHandle("PLAY_KILL", _testhandle);
+	eventSystem->RegisterEventHandle("OPEN_FIRE", _testhandle);
 }
 
 void TutorialGame::InitGameExamples()
@@ -393,6 +391,11 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 
 void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerData)
 {
-	TutorialGame::getMe()->AddSphereToWorld(Vector3(0, 10, 0), 1.0f);
+	Player* player = TutorialGame::getMe()->player;
+	Vector3 positon = player->GetTransform().GetPosition();
+	Vector3 forward = player->getForward();
+	GameObject* bullet=TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f);
+	TutorialGame::getMe()->physicsX->addActor(*bullet);
+	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*100.0f);
 }
 

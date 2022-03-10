@@ -46,7 +46,7 @@ namespace NCL {
 				this->Dash();
 			};
 			input->Callback[attack] = [this]() {
-				//this->Shoot();
+				this->Openfire();
 			};
 			input->MovCallback = [this](Vector2 dir) {
 				this->Move(dir);
@@ -101,17 +101,17 @@ namespace NCL {
 		void Player::Jump() {
 			physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
 				PxControllerFilters(), NULL);
-			YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+			
 		}
 
 		void Player::Dash() {
 			physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 5.0f, 0.0001f, 0.2,
 				PxControllerFilters(), NULL);
-			YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
 		
 		}
-
-
+		void Player::Openfire() {
+			YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE);
+		}
 		float Player::TakeDamage(float dmg) {
 			health = health - dmg < 0 ? 0 : health - dmg;
 			return health;
