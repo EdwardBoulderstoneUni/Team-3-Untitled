@@ -54,9 +54,21 @@ class ContackCallback :public PxSimulationEventCallback {
 		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
 		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
 		PhysicsXSystem::FlagCheck(a, b);
-		a->OnCollisionBegin(b);
 	}
 };
+class CharacterCallback :public PxUserControllerHitReport {
+	void onShapeHit(const PxControllerShapeHit& hit) {
+		PX_UNUSED((hit));
+		GameObject* a = (GameObject*)hit.actor->userData;
+	}
+	void onControllerHit(const PxControllersHit& hit) {}
+	void onObstacleHit(const PxControllerObstacleHit& hit){}
+};
+
+ContackCallback* callback = new ContackCallback;
+CharacterCallback* characterCallback = new CharacterCallback;
+
+
 PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 {
 	dTOffset = 0.0f;
@@ -91,7 +103,6 @@ void PhysicsXSystem::initPhysics()
 	sceneDesc.cpuDispatcher = gDispatcher;
 	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	sceneDesc.filterShader = contactReportFilterShader;
-	ContackCallback* callback = new ContackCallback;
 	sceneDesc.simulationEventCallback = callback;
 	gScene = gPhysics->createScene(sceneDesc);
 	
@@ -174,7 +185,7 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
 		desc->material = gMaterial;
 		desc->density = 10;
-		
+		desc->reportCallback = characterCallback;
 
 		phyObj->controller = gManager->createController(*desc);
 		phyObj->controller->getActor()->userData = &actor;

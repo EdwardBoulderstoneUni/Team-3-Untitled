@@ -64,7 +64,7 @@ namespace NCL
 				return name;
 			}
 
-			virtual void OnCollisionBegin(GameObject* otherObject) { std::cout << "11" << std::endl; }
+			virtual void OnCollisionBegin(GameObject* otherObject) {}
 
 			virtual void OnCollisionEnd(GameObject* otherObject) {}
 			
