@@ -2,7 +2,7 @@
 #include "../../Common/GameTimer.h"
 YiEventSystem* YiEventSystem::p_self = NULL;
 EVENT_DEFINE g_GlobalEvent[] = {
-	{GAME_PLAY_KILL,"PLAY_KILL",true},
+	{GAME_PLAY_KILL,"PLAY_KILL"},
 };
 YiEventSystem::YiEventSystem()
 {

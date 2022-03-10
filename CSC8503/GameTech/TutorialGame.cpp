@@ -14,18 +14,19 @@
 using namespace NCL;
 using namespace CSC8503;
 
+TutorialGame* TutorialGame::p_self = NULL;
+
 TutorialGame::TutorialGame()
 {
+	p_self = this;
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
-	//physics = new PhysicsSystem(*world);
 	physicsX = new PhysicsXSystem(*world);
 	forceMagnitude = 10.0f;
-	useGravity = false;
 	inSelectionMode = false;
 	eventSystem = new YiEventSystem();
 	Debug::SetRenderer(renderer);
-
+	RigisterEventHandles();
 	InitialiseAssets();
 }
 
@@ -89,22 +90,11 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt)
 {
-	if (!inSelectionMode)
-	{
-		//world->GetMainCamera()->UpdateCamera(dt);
-	}
-
+	
 	eventSystem->ProcessAllEvent();
 
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
-	if (useGravity) {
-		Debug::Print("(G)ravity on", Vector2(5, 95));
-	}
-	else
-	{
-		Debug::Print("(G)ravity off", Vector2(5, 95));
-	}
 
 	player->Update(dt);
 	physicsX->Update(dt);
@@ -135,54 +125,6 @@ void TutorialGame::UpdateGame(float dt)
 	renderer->Render();
 }
 
-void TutorialGame::UpdateKeys()
-{
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1))
-	{
-		InitWorld(); //We can reset the simulation at any time with F1
-		selectionObject = nullptr;
-		lockedObject = nullptr;
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2))
-	{
-		//InitCamera(); //F2 will reset the camera to a specific default place
-	}
-
-	//if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
-	//{
-	//	useGravity = !useGravity; //Toggle gravity!
-	//	physics->UseGravity(useGravity);
-	//}
-	//Running certain physics updates in a consistent order might cause some
-	//bias in the calculations - the same objects might keep 'winning' the constraint
-	//allowing the other one to stretch too much etc. Shuffling the order so that it
-	//is random every frame can help reduce such bias.
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9))
-	{
-		world->ShuffleConstraints(true);
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10))
-	{
-		world->ShuffleConstraints(false);
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F7))
-	{
-		world->ShuffleObjects(true);
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8))
-	{
-		world->ShuffleObjects(false);
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F6))
-	{
-		camFollowPlayer = !camFollowPlayer;
-	}
-
-	if (camFollowPlayer)
-		lockedObject = player;
-}
 
 void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
@@ -218,10 +160,6 @@ void TutorialGame::InitWorld()
 	InitDefaultFloor();
 	AudioManager::Startup();
 	//AudioManager::GetInstance().Play_Sound();
-}
-
-void TutorialGame::BridgeConstraintTest()
-{
 }
 
 /*
@@ -364,6 +302,11 @@ void TutorialGame::InitDefaultFloor()
 	AddFloorToWorld(Vector3(0, -2, 0));
 }
 
+void NCL::CSC8503::TutorialGame::RigisterEventHandles()
+{
+	eventSystem->RegisterEventHandle("PLAY_KILL", _testhandle);
+}
+
 void TutorialGame::InitGameExamples()
 {
 	AddPlayerToWorld(Vector3(0, 5, 0));
@@ -448,86 +391,8 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 	return apple;
 }
 
-/*
-
-Every frame, this code will let you perform a raycast, to see if there's an object
-underneath the cursor, and if so 'select it' into a pointer, so that it can be 
-manipulated later. Pressing Q will let you toggle between this behaviour and instead
-letting you move the camera around. 
-
-*/
-bool TutorialGame::SelectObject()
+void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerData)
 {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
-	{
-		inSelectionMode = !inSelectionMode;
-		if (inSelectionMode)
-		{
-			Window::GetWindow()->ShowOSPointer(true);
-			Window::GetWindow()->LockMouseToWindow(false);
-		}
-		else
-		{
-			Window::GetWindow()->ShowOSPointer(false);
-			Window::GetWindow()->LockMouseToWindow(true);
-		}
-	}
-	if (inSelectionMode)
-	{
-		renderer->DrawString("Press Q to change to camera mode!", Vector2(5, 85));
-
-		if (Window::GetInterface()->button_down(attack))
-		{
-			if (selectionObject)
-			{
-				//set colour to deselected;
-				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-				selectionObject = nullptr;
-				lockedObject = nullptr;
-			}
-
-			Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
-
-			RayCollision closestCollision;
-			if (world->Raycast(ray, closestCollision, true))
-			{
-				selectionObject = static_cast<GameObject*>(closestCollision.node);
-				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
-				return true;
-			}
-			return false;
-		}
-	}
-	else
-	{
-		renderer->DrawString("Press Q to change to select mode!", Vector2(5, 85));
-	}
-
-	if (lockedObject)
-	{
-		renderer->DrawString("Press L to unlock object!", Vector2(5, 80));
-	}
-
-	else if (selectionObject)
-	{
-		renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L))
-	{
-		if (selectionObject)
-		{
-			if (lockedObject == selectionObject)
-			{
-				lockedObject = nullptr;
-			}
-			else
-			{
-				lockedObject = selectionObject;
-			}
-		}
-	}
-
-	return false;
+	TutorialGame::getMe()->AddSphereToWorld(Vector3(0, 10, 0), 1.0f);
 }
 

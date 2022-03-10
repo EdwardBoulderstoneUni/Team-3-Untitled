@@ -25,8 +25,7 @@ namespace NCL {
 
 			void InitAbilityContainer();
 			void InitPlayer();
-			void UpdateKeys();
-
+		
 			void InitWorld();
 
 			void InitGameExamples();
@@ -36,10 +35,7 @@ namespace NCL {
 			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing,
 			                       const Vector3& cubeDims);
 			void InitDefaultFloor();
-			void BridgeConstraintTest();
-
-			bool SelectObject();
-	
+			void RigisterEventHandles();
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -58,7 +54,6 @@ namespace NCL {
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 	
-			bool useGravity;
 			bool inSelectionMode;
 			bool camFollowPlayer;
 
@@ -86,6 +81,12 @@ namespace NCL {
 			{
 				lockedObject = o;
 			}
+
+
+		protected:
+			static void _testhandle(const EVENT* pEvent, UINT dwOwnerData);
+			static TutorialGame* p_self;
+			static TutorialGame* getMe() { return p_self; }
 		};
 	}
 }

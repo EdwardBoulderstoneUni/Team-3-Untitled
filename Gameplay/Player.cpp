@@ -15,7 +15,7 @@ namespace NCL {
 			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
 			pColour = colour;
 			AssignRole(aCont);
-			YiEventSystem::GetMe()->RegisterEventHandle("Shoot", _OnShootEvent);
+			
 		}
 
 		Player::~Player() {
