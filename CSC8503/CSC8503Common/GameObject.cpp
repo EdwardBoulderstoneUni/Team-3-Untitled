@@ -11,6 +11,7 @@ GameObject::GameObject(string objectName)
 	physicsXObject = new PhysicsXObject();
 	renderObject = nullptr;
 	type = GameObjectType::GameObjectType_null;
+	m_CollisionFunction = nullptr;
 }
 
 GameObject::~GameObject()

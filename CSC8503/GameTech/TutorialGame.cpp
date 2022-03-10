@@ -152,7 +152,6 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 
 void TutorialGame::InitWorld()
 {
-
 	//InitMixedGridWorld(5, 5, 5.0f, 5.0f);
 	//InitGameExamples();
 	InitDefaultFloor();
@@ -378,6 +377,21 @@ GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position)
 	return character;
 }
 
+GameObject* NCL::CSC8503::TutorialGame::AddPaint(const Vector3& position)
+{
+	GameObject* disc = new GameObject();
+
+	disc->GetTransform()
+		.SetScale(Vector3(4, 0.01f, 4))
+		.SetPosition(position);
+
+	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), AssetManager::GetInstance()->GetMesh("Cylinder.msh"), nullptr, basicShader));
+	disc->GetRenderObject()->SetColour(Vector4(1, 0, 0, 1));
+
+	world->AddGameObject(disc);
+	return disc;
+}
+
 GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 {
 	auto apple = new GameObject();
@@ -405,6 +419,9 @@ void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerDa
 	Vector3 positon = player->GetTransform().GetPosition();
 	Vector3 forward = player->getForward();
 	GameObject* bullet=TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f);
+
+	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*100.0f);
 }
