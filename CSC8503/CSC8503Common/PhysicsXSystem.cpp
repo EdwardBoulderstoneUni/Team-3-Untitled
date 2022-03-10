@@ -335,7 +335,7 @@ void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
 	}
 
 	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_floor) {
-		a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+		a->OnCollisionBegin(b, a->GetTransform().GetPosition()-a->GetTransform().GetScale());
 	}
 }
 
