@@ -30,6 +30,7 @@ namespace NCL {
 
 			void Openfire();
 			Vector3 getForward() { return forward; }
+			void setForward(Vector3 newF) { forward = newF; }
 			bool isGrounded = false;
 
 		private:

@@ -75,6 +75,7 @@ void TutorialGame::InitialiseAssets() {
 	InitWorld();
 	InitPlayer(Vector3(20, 2, 0), GameObjectType_team2);
 	InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
+	RegisterEventHandles();
 }
 	
 
@@ -298,7 +299,7 @@ void TutorialGame::InitDefaultFloor()
 	AddFloorToWorld(Vector3(0, -2, 0));
 }
 
-void NCL::CSC8503::TutorialGame::RigisterEventHandles()
+void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 {
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _testhandle);
 }

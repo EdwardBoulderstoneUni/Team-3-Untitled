@@ -58,6 +58,8 @@ namespace NCL {
 				if (!physicsXObject->controller)return;
 				physicsXObject->controller->move(PxVec3(0.0f, -9.81f, 0.0f) * 0.05f, 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
+				forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
+				right = Vector3::Cross(Vector3(0, 1, 0), -forward);
 			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);
@@ -75,9 +77,7 @@ namespace NCL {
 			PushComponet(camera);
 		}
 		void Player::Move(Vector2 dir) {
-			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
-			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
-
+			
 			// Move forward
 			if (dir.y>0) {
 				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward), 0.0001f, 0.2,
@@ -106,7 +106,7 @@ namespace NCL {
 				jumpNo = 0;
 				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
-				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+			//	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
 				jumpNo++;
 				isJumping = true;
 				isGrounded = false;
@@ -115,7 +115,7 @@ namespace NCL {
 			if (isJumping = true && jumpNo == 1) {
 				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
-				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+			//	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
 				jumpNo++;
 				isGrounded = false;
 				std::cout << jumpNo << std::endl;
@@ -130,7 +130,7 @@ namespace NCL {
 			if (isDashing == false) {
 				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 25.0f, 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
-				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+		//		YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
 				isDashing = true;
 			}
 			// Add CoolDown Time
