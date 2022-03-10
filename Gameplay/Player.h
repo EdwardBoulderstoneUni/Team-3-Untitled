@@ -17,6 +17,7 @@ namespace NCL {
 			void Jump();
 			void GiveDamage(float dmg, Player* a);
 			bool IsDead();
+			bool CanShoot();
 			float TakeDamage(float dmg);
 			void Reload();
 			void AssignRole(AbilityContainer* aCont);
@@ -43,7 +44,7 @@ namespace NCL {
 			bool isDashing = false;
 			bool hasAmmo = true;
 			bool isReloading = false;
-
+			
 			PlayerRole pColour;
 			NCL::CSC8503::Ability *abilities[2];
 

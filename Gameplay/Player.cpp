@@ -123,11 +123,14 @@ namespace NCL {
 		void Player::GiveDamage(float dmg, Player* a) {
 			ammo = ammo - 1;
 			a->TakeDamage(dmg);
-			if (IsDead() == true) {
+			if (a->IsDead() == true) {
 				teamKill++;
 			}
 		}
 
+		bool Player::CanShoot() {
+			return isReloading = false ? true : false;
+		}
 
 		void Player::Reload() {
 			isReloading = false;
