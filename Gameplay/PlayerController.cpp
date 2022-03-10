@@ -35,6 +35,9 @@ void PlayerController::update(const float dt)
 		  movement_direction = NCL::Maths::Vector2(-1, 0);
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
           movement_direction = NCL::Maths::Vector2(1, 0);
-      if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
-          buttons[attack]=true;
+      if (dt < 1.0f/60.0f) {
+          if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
+              buttons[attack] = true;
+      }
+      
 }
