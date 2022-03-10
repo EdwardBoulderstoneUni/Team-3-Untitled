@@ -123,11 +123,7 @@ namespace NCL {
 			isGrounded = true;
 		}
 
-		void Player::DoubleJump() {
-			if (jumpNo == 1) {
 
-			}
-		}
 
 		void Player::Dash() {
 

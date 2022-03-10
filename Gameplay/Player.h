@@ -16,7 +16,6 @@ namespace NCL {
 
 			void Move(Vector2 dir);
 			void Jump();
-			void DoubleJump();
 			void GiveDamage(float dmg, Player* a);
 			bool IsDead();
 			bool CanShoot();
