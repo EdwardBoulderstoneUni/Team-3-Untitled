@@ -106,7 +106,7 @@
       <PreprocessorDefinitions>_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>AudioManager.lib;CSC8503Common.lib;Common.lib;OpenGLRendering.lib;Networking-ENet.lib;ws2_32.lib;Winmm.lib;User32.lib;Gdi32.lib;fmodL_vc.lib;assimp-vc142-mtd.lib;zlibstaticd.lib;advapi32.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXExtensions_static_64.lib;PhysXFoundation_64.lib;PhysXPvdSDK_static_64.lib;imgui.lib</AdditionalDependencies>
+      <AdditionalDependencies>AudioManager.lib;CSC8503Common.lib;Common.lib;OpenGLRendering.lib;Networking-ENet.lib;ws2_32.lib;Winmm.lib;User32.lib;Gdi32.lib;fmodL_vc.lib;assimp-vc142-mtd.lib;zlibstaticd.lib;advapi32.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXExtensions_static_64.lib;PhysXFoundation_64.lib;PhysXPvdSDK_static_64.lib;PhysXCharacterKinematic_static_64.lib;imgui.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>./../../libs/audio/fmod;./../../libs/assimp/Debug;./../../libs/PhysX/debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -138,7 +138,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>AudioManager.lib;CSC8503Common.lib;Common.lib;OpenGLRendering.lib;Networking-ENet.lib;ws2_32.lib;Winmm.lib;User32.lib;Gdi32.lib;fmod_vc.lib;assimp-vc142-mt.lib;zlibstatic.lib;advapi32.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXExtensions_static_64.lib;PhysXFoundation_64.lib;PhysXPvdSDK_static_64.lib;imgui.lib</AdditionalDependencies>
+      <AdditionalDependencies>AudioManager.lib;CSC8503Common.lib;Common.lib;OpenGLRendering.lib;Networking-ENet.lib;ws2_32.lib;Winmm.lib;User32.lib;Gdi32.lib;fmod_vc.lib;assimp-vc142-mt.lib;zlibstatic.lib;advapi32.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXExtensions_static_64.lib;PhysXFoundation_64.lib;PhysXPvdSDK_static_64.lib;PhysXCharacterKinematic_static_64.lib;imgui.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>./../../libs/audio/fmod;./../../libs/assimp/Release;./../../libs/PhysX/release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -150,8 +150,6 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="NetworkedGame.cpp" />
     <ClCompile Include="NetworkPlayer.cpp" />
-    <ClCompile Include="PhysicsXObject.cpp" />
-    <ClCompile Include="PhysicsXSystem.cpp" />
     <ClCompile Include="TutorialGame.cpp" />
     <ClCompile Include="TutorialMenu.cpp" />
   </ItemGroup>
@@ -163,10 +161,6 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="NetworkedGame.h" />
     <ClInclude Include="NetworkPlayer.h" />
-    <ClInclude Include="PhysicsXObject.h" />
-    <ClInclude Include="PhysicsXSystem.h" />
-    <ClInclude Include="PhysXAPI.h" />
-    <ClInclude Include="PhysXConvert.h" />
     <ClInclude Include="TutorialGame.h" />
     <ClInclude Include="TutorialMenu.h" />
   </ItemGroup>

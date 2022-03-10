@@ -48,12 +48,6 @@
     <ClCompile Include="NetworkPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsXObject.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysicsXSystem.cpp">
-      <Filter>Physics</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameTechRenderer.h">
@@ -82,18 +76,6 @@
     </ClInclude>
     <ClInclude Include="NetworkPlayer.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsXObject.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsXSystem.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysXAPI.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysXConvert.h">
-      <Filter>Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

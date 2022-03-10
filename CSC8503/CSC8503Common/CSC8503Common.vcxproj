@@ -149,6 +149,9 @@
     <ClInclude Include="NetworkObject.h" />
     <ClInclude Include="NetworkState.h" />
     <ClInclude Include="OBBVolume.h" />
+    <ClInclude Include="PhysicsXObject.h" />
+    <ClInclude Include="PhysicsXSystem.h" />
+    <ClInclude Include="PhysXConvert.h" />
     <ClInclude Include="SphereVolume.h" />
     <ClInclude Include="CollisionVolume.h" />
     <ClInclude Include="CollisionDetection.h" />
@@ -185,6 +188,8 @@
     <ClCompile Include="NetworkState.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
+    <ClCompile Include="PhysicsXObject.cpp" />
+    <ClCompile Include="PhysicsXSystem.cpp" />
     <ClCompile Include="PushdownMachine.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="RenderObject.cpp" />

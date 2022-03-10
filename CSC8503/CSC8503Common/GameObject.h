@@ -3,7 +3,7 @@
 #include "CollisionVolume.h"
 
 #include "PhysicsObject.h"
-#include "../GameTech/PhysicsXObject.h"
+#include "PhysicsXObject.h"
 
 #include "RenderObject.h"
 
@@ -21,17 +21,6 @@ namespace NCL
 		public:
 			GameObject(string name = "");
 			~GameObject();
-
-			void SetBoundingVolume(CollisionVolume* vol)
-			{
-				boundingVolume = vol;
-			}
-
-			const CollisionVolume* GetBoundingVolume() const
-			{
-				return boundingVolume;
-			}
-
 			bool IsActive() const
 			{
 				return isActive;
@@ -47,11 +36,6 @@ namespace NCL
 				return renderObject;
 			}
 
-			PhysicsObject* GetPhysicsObject() const
-			{
-				return physicsObject;
-			}
-
 			PhysicsXObject* GetPhysicsXObject() const
 			{
 				return physicsXObject;
@@ -64,11 +48,6 @@ namespace NCL
 			void SetRenderObject(RenderObject* newObject)
 			{
 				renderObject = newObject;
-			}
-
-			void SetPhysicsObject(PhysicsObject* newObject)
-			{
-				physicsObject = newObject;
 			}
 
 			void SetPhysicsXObject(PhysicsXObject* newObject)
