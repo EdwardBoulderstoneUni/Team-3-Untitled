@@ -21,6 +21,7 @@ TutorialGame::TutorialGame()
 	forceMagnitude = 10.0f;
 	useGravity = false;
 	inSelectionMode = false;
+	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
 
@@ -71,6 +72,9 @@ void TutorialGame::UpdateGame(float dt)
 	{
 		Debug::Print("(G)ravity off", Vector2(5, 95));
 	}
+	if (DebugMode) {
+		CalculateFrameRate(dt);
+	}
 
 	SelectObject();
 	MoveSelectedObject();
@@ -120,6 +124,10 @@ void TutorialGame::UpdateKeys()
 	{
 		useGravity = !useGravity; //Toggle gravity!
 		physics->UseGravity(useGravity);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::O)) {
+		DebugMode = !DebugMode;
 	}
 	//Running certain physics updates in a consistent order might cause some
 	//bias in the calculations - the same objects might keep 'winning' the constraint
@@ -609,4 +617,9 @@ line - after the third, they'll be able to twist under torque aswell.
 */
 void TutorialGame::MoveSelectedObject()
 {
+}
+
+void TutorialGame::CalculateFrameRate(float dt) {
+	framesPerSecond = 1.0f / dt;
+	renderer->DrawString(std::to_string(framesPerSecond), Vector2(20, 80));
 }
