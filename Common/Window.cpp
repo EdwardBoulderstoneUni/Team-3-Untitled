@@ -82,6 +82,6 @@ void Window::ResizeRenderer()
 {
 	if (renderer)
 	{
-		renderer->OnWindowResize((int)size.x, (int)size.y);
+		renderer->OnWindowResize(static_cast<int>(size.x), static_cast<int>(size.y));
 	}
 }
