@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Ability.cpp" />
     <ClCompile Include="AbilityContainer.cpp" />
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="ComponentCamera.cpp" />
     <ClCompile Include="ComponentInput.cpp" />
     <ClCompile Include="ComponentPhysics.cpp" />
@@ -144,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="Ability.h" />
     <ClInclude Include="AbilityContainer.h" />
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentCamera.h" />
     <ClInclude Include="ComponentInput.h" />
