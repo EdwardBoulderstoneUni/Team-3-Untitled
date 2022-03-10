@@ -19,7 +19,7 @@ void NCL::CSC8503::Floor::SetUp()
 	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
 	properties.Mass = 10.0f;
 	Vector3 scale = GetTransform().GetScale();
-	properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
+	properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale/2.0f));
 
 	type = GameObjectType_floor;
 

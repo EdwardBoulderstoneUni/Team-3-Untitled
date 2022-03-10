@@ -54,7 +54,7 @@ class ContackCallback :public PxSimulationEventCallback {
 		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
 		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
 		PhysicsXSystem::FlagCheck(a, b);
-		a->OnCollisionBegin(b);
+		
 
 	}
 };
@@ -171,7 +171,9 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		geo = (PxBoxGeometry*)properties.volume;
 		trans = properties.transform;
 		desc = new PxBoxControllerDesc();
-		desc->halfHeight = geo->halfExtents.x;
+		desc->halfSideExtent = geo->halfExtents.x/2;
+		desc->halfHeight = geo->halfExtents.y/2;
+		desc->halfForwardExtent = geo->halfExtents.z/2;
 		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
 		desc->material = gMaterial;
 		desc->density = 10;
@@ -327,33 +329,13 @@ void PhysicsXSystem::SyncGameObjs()
 void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
 
 	// FLOOR CHECK
-	if (a->type == GameObjectType::GameObjectType_floor && b->type == GameObjectType::GameObjectType_team1 ||
-		a->type == GameObjectType::GameObjectType_floor && b->type == GameObjectType::GameObjectType_team2) {
-		Player* player = dynamic_cast<Player*>(b);
-		if (player != nullptr)
-			player->isGrounded = true;
-	}
-		
-
-	if (b->type == GameObjectType::GameObjectType_floor && a->type == GameObjectType::GameObjectType_team1 ||
-		b->type == GameObjectType::GameObjectType_floor && a->type == GameObjectType::GameObjectType_team2) {
-		Player* player = dynamic_cast<Player*>(a);
-		if (player != nullptr)
-			player->isGrounded = true;
+	
+	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_team2) {
+		a->OnCollisionBegin(b,a->GetTransform().GetPosition());
 	}
 
-	if (a->type == GameObjectType::GameObjectType_team2Bullet && b->type == GameObjectType::GameObjectType_team1 ||
-		a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_team2) {
-		Player* player = dynamic_cast<Player*>(b);
-		if (player != nullptr)
-			player->TakeDamage(5);
-	}
-
-	if (b->type == GameObjectType::GameObjectType_team2Bullet && a->type == GameObjectType::GameObjectType_team1 ||
-		b->type == GameObjectType::GameObjectType_team1Bullet && a->type == GameObjectType::GameObjectType_team2) {
-		Player* player = dynamic_cast<Player*>(a);
-		if (player != nullptr)
-			player->TakeDamage(5);
+	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_floor) {
+		a->OnCollisionBegin(b, a->GetTransform().GetPosition());
 	}
 }
 

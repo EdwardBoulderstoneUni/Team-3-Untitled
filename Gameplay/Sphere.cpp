@@ -16,7 +16,7 @@ void NCL::CSC8503::Sphere::SetUp()
 	PhyProperties properties = PhyProperties();
 	properties.type = PhyProperties::Dynamic;
 	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
-	properties.Mass = 10.0f;
+	properties.Mass = 500.0f;
 	Vector3 scale = GetTransform().GetScale();
 	properties.volume = new PxSphereGeometry(scale.x);
 

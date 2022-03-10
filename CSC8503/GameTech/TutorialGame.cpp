@@ -155,6 +155,7 @@ void TutorialGame::InitWorld()
 	//InitMixedGridWorld(5, 5, 5.0f, 5.0f);
 	//InitGameExamples();
 	InitDefaultFloor();
+	
 	AudioManager::Startup();
 	//AudioManager::GetInstance().Play_Sound();
 }
@@ -302,9 +303,8 @@ void TutorialGame::InitDefaultFloor()
 		.SetScale(Vector3(50, 1, 50))
 		.SetPosition(Vector3(0,0,0));
 
-	floor->InitAllComponet();
-
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
+	floor->InitAllComponet();
 
 	world->AddGameObject(floor);
 }
@@ -419,7 +419,8 @@ void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerDa
 	Vector3 positon = player->GetTransform().GetPosition();
 	Vector3 forward = player->getForward();
 	GameObject* bullet=TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f);
-
+	bullet = (Bullet*)bullet;
+	bullet->type = GameObjectType_team1Bullet;
 	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
 	bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
