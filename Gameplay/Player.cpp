@@ -9,18 +9,20 @@ void _OnShootEvent(const EVENT* pEvent, UINT dwOwnerData)
 }
 namespace NCL {
 	namespace CSC8503 {
-		Player::Player(PlayerRole colour, AbilityContainer* aCont)
+		Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 		{
 			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
 			pColour = colour;
 			AssignRole(aCont);
-			
+			this->type = type;
 		}
 
 		Player::~Player() {
 			for (auto i : abilities)
 				delete i;
+
+			delete bullet;
 		}
 
 		void Player::SetUp()
@@ -183,16 +185,19 @@ namespace NCL {
 				colour = "Red";
 				abilities[0] = aCont->allAbilities[0];
 				abilities[1] = aCont->allAbilities[1];
+				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_red);
 				break;
 			case PlayerRole_green:
 				colour = "Green";
 				abilities[0] = aCont->allAbilities[2];
 				abilities[1] = aCont->allAbilities[3];
+				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_green);
 				break;
 			case PlayerRole_blue:
 				colour = "Blue";
 				abilities[0] = aCont->allAbilities[4];
 				abilities[1] = aCont->allAbilities[5];
+				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_blue);
 				break;
 			}
 		}

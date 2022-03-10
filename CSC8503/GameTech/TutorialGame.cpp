@@ -74,7 +74,8 @@ void TutorialGame::InitialiseAssets() {
 
 
 	InitWorld();
-	InitPlayer();
+	InitPlayer(Vector3(20, 2, 0), GameObjectType_team2);
+	InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
 }
 	
 
@@ -131,16 +132,14 @@ void TutorialGame::InitAbilityContainer() {
 }
 
 
-void TutorialGame::InitPlayer()
+void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 {
-	player = new Player(PlayerRole::PlayerRole_blue, abilityContainer);
+	player = new Player(PlayerRole_blue, abilityContainer, team);
 	camFollowPlayer = true;
-
-	Vector3 position = Vector3(-20, 5 , 0);
 
 	player->GetTransform()
 		.SetScale(Vector3(5,5,5))
-		.SetPosition(position);
+		.SetPosition(pos);
 
 	player->InitAllComponet();
 
@@ -319,7 +318,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	float meshSize = 3.0f;
 	float inverseMass = 0.5f;
 
-	auto character = new Player(PlayerRole::PlayerRole_blue, abilityContainer);
+	auto character = new Player(PlayerRole::PlayerRole_blue, abilityContainer, GameObjectType_team1);
 
 	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
 

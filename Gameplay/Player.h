@@ -4,11 +4,12 @@
 #include "AbilityContainer.h"
 #include "../CSC8503/GameTech/YiEventSystem.h"
 #include "ePlayerRole.h"
+#include "Bullet.h"
 namespace NCL {
 	namespace CSC8503 {		
 		class Player : public ComponetGameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer* aCont);
+			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
 			~Player();
 
 			void SetUp() override;
@@ -24,7 +25,11 @@ namespace NCL {
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
 
-			bool isGrounded = true;
+			Bullet* GetBullet() {
+				return bullet;
+			}
+
+			bool isGrounded = false;
 
 		private:
 			float health = 100.0f;
@@ -56,6 +61,8 @@ namespace NCL {
 			Vector3 forward;
 			Vector3 right;
 			PxTransform camOri;
+
+			Bullet* bullet;
 		};
 	}
 }
