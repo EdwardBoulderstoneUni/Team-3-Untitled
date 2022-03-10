@@ -55,7 +55,6 @@ class ContackCallback :public PxSimulationEventCallback {
 		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
 		PhysicsXSystem::FlagCheck(a, b);
 		a->OnCollisionBegin(b);
-
 	}
 };
 PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
@@ -175,6 +174,7 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
 		desc->material = gMaterial;
 		desc->density = 10;
+		
 
 		phyObj->controller = gManager->createController(*desc);
 		phyObj->controller->getActor()->userData = &actor;

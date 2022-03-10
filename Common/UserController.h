@@ -4,6 +4,7 @@
 enum Buttons
 {
 	attack,
+	reload,
 	pause,
 	jump,
 	sprint,

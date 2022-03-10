@@ -127,17 +127,20 @@ namespace NCL {
 
 		void Player::Dash() {
 
-			if (isDashing == false) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 25.0f, 0.0001f, 0.2,
+	
+				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 5.0f, 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
 		//		YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
 				isDashing = true;
-			}
+			
 			// Add CoolDown Time
 		
 		}
 		void Player::Openfire() {
-			YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE);
+			if (ammo > 0) {
+				YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE);
+				ammo--;
+			}
 		}
 		float Player::TakeDamage(float dmg) {
 			health = health - dmg < 0 ? 0 : health - dmg;
