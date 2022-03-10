@@ -45,8 +45,10 @@ namespace NCL {
 			int maxAmmo = 20;
 			int ammo = 20;
 			int teamKill = 0;
+			int jumpNo = 0;
 
 			bool isDashing = false;
+			bool isJumping = false;
 			bool hasAmmo = true;
 			bool isReloading = false;
 			

@@ -101,13 +101,39 @@ namespace NCL {
 		}
 
 		void Player::Jump() {
-			physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-				PxControllerFilters(), NULL);
-			YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+			if (isGrounded == true) {
+				isJumping = false;
+				jumpNo = 0;
+				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
+				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+				jumpNo++;
+				isJumping = true;
+				isGrounded = false;
+				std::cout << jumpNo << std::endl;
+			}
+			if (isJumping = true && jumpNo == 1) {
+				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
+				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+				jumpNo++;
+				isGrounded = false;
+				std::cout << jumpNo << std::endl;
+			}
+			isGrounded = true;
 		}
+
+
 
 		void Player::Dash() {
 
+			if (isDashing == false) {
+				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 25.0f, 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
+				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+				isDashing = true;
+			}
+			// Add CoolDown Time
 		
 		}
 
@@ -131,7 +157,7 @@ namespace NCL {
 		}
 
 		bool Player::CanShoot() {
-			return isReloading = false ? true : false;
+			return isReloading == false ? true : false;
 		}
 
 		void Player::Reload() {
