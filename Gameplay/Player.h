@@ -15,6 +15,7 @@ namespace NCL {
 
 			void Move(Vector2 dir);
 			void Jump();
+			void DoubleJump();
 			void GiveDamage(float dmg, Player* a);
 			bool IsDead();
 			bool CanShoot();
@@ -23,7 +24,7 @@ namespace NCL {
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
 
-			bool isGrounded = false;
+			bool isGrounded = true;
 
 		private:
 			float health = 100.0f;
@@ -40,8 +41,10 @@ namespace NCL {
 			int maxAmmo = 20;
 			int ammo = 20;
 			int teamKill = 0;
+			int jumpNo = 0;
 
 			bool isDashing = false;
+			bool isJumping = false;
 			bool hasAmmo = true;
 			bool isReloading = false;
 			
