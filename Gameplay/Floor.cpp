@@ -21,6 +21,8 @@ void NCL::CSC8503::Floor::SetUp()
 	Vector3 scale = GetTransform().GetScale();
 	properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
 
+	type = GameObjectType_floor;
+
 	physics->phyObj->properties = properties;
 	PushComponet(physics);
 }

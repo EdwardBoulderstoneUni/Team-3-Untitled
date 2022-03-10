@@ -9,18 +9,20 @@ void _OnShootEvent(const EVENT* pEvent, UINT dwOwnerData)
 }
 namespace NCL {
 	namespace CSC8503 {
-		Player::Player(PlayerRole colour, AbilityContainer* aCont)
+		Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 		{
 			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
 			pColour = colour;
 			AssignRole(aCont);
-			
+			this->type = type;
 		}
 
 		Player::~Player() {
 			for (auto i : abilities)
 				delete i;
+
+			delete bullet;
 		}
 
 		void Player::SetUp()
@@ -99,14 +101,39 @@ namespace NCL {
 		}
 
 		void Player::Jump() {
-			physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-				PxControllerFilters(), NULL);
-			
+			if (isGrounded == true) {
+				isJumping = false;
+				jumpNo = 0;
+				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
+				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+				jumpNo++;
+				isJumping = true;
+				isGrounded = false;
+				std::cout << jumpNo << std::endl;
+			}
+			if (isJumping = true && jumpNo == 1) {
+				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
+				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+				jumpNo++;
+				isGrounded = false;
+				std::cout << jumpNo << std::endl;
+			}
+			isGrounded = true;
 		}
 
+
+
 		void Player::Dash() {
-			physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 5.0f, 0.0001f, 0.2,
-				PxControllerFilters(), NULL);
+
+			if (isDashing == false) {
+				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 25.0f, 0.0001f, 0.2,
+					PxControllerFilters(), NULL);
+				YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
+				isDashing = true;
+			}
+			// Add CoolDown Time
 		
 		}
 		void Player::Openfire() {
@@ -131,7 +158,7 @@ namespace NCL {
 		}
 
 		bool Player::CanShoot() {
-			return isReloading = false ? true : false;
+			return isReloading == false ? true : false;
 		}
 
 		void Player::Reload() {
@@ -155,16 +182,19 @@ namespace NCL {
 				colour = "Red";
 				abilities[0] = aCont->allAbilities[0];
 				abilities[1] = aCont->allAbilities[1];
+				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_red);
 				break;
 			case PlayerRole_green:
 				colour = "Green";
 				abilities[0] = aCont->allAbilities[2];
 				abilities[1] = aCont->allAbilities[3];
+				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_green);
 				break;
 			case PlayerRole_blue:
 				colour = "Blue";
 				abilities[0] = aCont->allAbilities[4];
 				abilities[1] = aCont->allAbilities[5];
+				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_blue);
 				break;
 			}
 		}
