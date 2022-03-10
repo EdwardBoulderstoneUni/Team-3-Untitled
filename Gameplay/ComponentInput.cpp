@@ -9,7 +9,7 @@ void ComponentInput::Update(float dt) {
 	if (userInterface->button_down(dash))
 		Callback[dash]();
 	if (userInterface->get_movement() != Vector2(0,0))
-		Callback[move]();
+		MovCallback(userInterface->get_movement());
 	if (userInterface->button_down(attack))
 		Callback[attack]();
 	Callback[idle]();

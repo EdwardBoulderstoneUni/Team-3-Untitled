@@ -14,7 +14,5 @@ void ComponentCamera::Update(float dt) {
 	//Vector3 vec = gO->GetTransform().GetOrientation().ToEuler();
 	//vec.y = camera->GetYaw();
 	//orien = orien.EulerAnglesToQuaternion(vec.x, vec.y - 180, vec.z);
-
 	gO->GetTransform().SetOrientation(camera->GetThirdPersonOrientation());
-	std::cout << camera->GetYaw() << std::endl;
 }

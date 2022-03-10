@@ -148,12 +148,15 @@
     <ClCompile Include="NetworkedGame.cpp" />
     <ClCompile Include="NetworkPlayer.cpp" />
     <ClCompile Include="TutorialGame.cpp" />
+    <ClCompile Include="YiEventSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EventSystem.h" />
     <ClInclude Include="GameTechRenderer.h" />
     <ClInclude Include="NetworkedGame.h" />
     <ClInclude Include="NetworkPlayer.h" />
     <ClInclude Include="TutorialGame.h" />
+    <ClInclude Include="YiEventSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

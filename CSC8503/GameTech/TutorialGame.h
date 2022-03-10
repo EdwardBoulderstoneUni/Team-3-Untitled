@@ -3,8 +3,8 @@
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
+#include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
-
 namespace NCL {
 	namespace CSC8503 {
 		enum CameraMode {
@@ -56,6 +56,7 @@ namespace NCL {
 			GameWorld*			world;
 			Player*				player;
 			AbilityContainer*	abilityContainer;
+			YiEventSystem* eventSystem;
 	
 			bool useGravity;
 			bool inSelectionMode;

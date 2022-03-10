@@ -23,7 +23,7 @@ TutorialGame::TutorialGame()
 	forceMagnitude = 10.0f;
 	useGravity = false;
 	inSelectionMode = false;
-
+	eventSystem = new YiEventSystem();
 	Debug::SetRenderer(renderer);
 
 	InitialiseAssets();
@@ -94,7 +94,8 @@ void TutorialGame::UpdateGame(float dt)
 		//world->GetMainCamera()->UpdateCamera(dt);
 	}
 
-	
+	eventSystem->ProcessAllEvent();
+
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 	if (useGravity) {
