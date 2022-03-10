@@ -76,6 +76,8 @@ void TutorialGame::InitialiseAssets() {
 	InitPlayer(Vector3(20, 2, 0), GameObjectType_team2);
 	InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
 	RegisterEventHandles();
+	InitPlayer(Vector3(20, 20, 0), GameObjectType_team2);
+	//InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
 }
 	
 
@@ -146,13 +148,12 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 	world->SetMainCamera(player->GetComponentCamera()->camera);
 	
 	world->AddGameObject(player);
-
 }
 
 void TutorialGame::InitWorld()
 {
 
-	InitMixedGridWorld(5, 5, 5.0f, 5.0f);
+	//InitMixedGridWorld(5, 5, 5.0f, 5.0f);
 	//InitGameExamples();
 	InitDefaultFloor();
 	AudioManager::Startup();
@@ -296,7 +297,17 @@ void TutorialGame::InitCubeGridWorld(int numRows, int numCols, float rowSpacing,
 
 void TutorialGame::InitDefaultFloor()
 {
-	AddFloorToWorld(Vector3(0, -2, 0));
+	Floor* floor = new Floor();
+
+	floor->GetTransform()
+		.SetScale(Vector3(50, 1, 50))
+		.SetPosition(Vector3(0,0,0));
+
+	floor->InitAllComponet();
+
+	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
+
+	world->AddGameObject(floor);
 }
 
 void NCL::CSC8503::TutorialGame::RegisterEventHandles()

@@ -355,7 +355,6 @@ void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
 		if (player != nullptr)
 			player->TakeDamage(5);
 	}
-
 }
 
 
