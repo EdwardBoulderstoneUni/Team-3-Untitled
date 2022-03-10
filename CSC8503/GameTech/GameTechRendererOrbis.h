@@ -19,7 +19,7 @@ namespace NCL {
 		protected:
 			void	RenderFrame()	override;
 
-			void DrawRenderObject(RenderObject* o);
+			void DrawRenderObject(NCL::CSC8503::RenderObject* o);
 
 			float rotation;
 			float translation;

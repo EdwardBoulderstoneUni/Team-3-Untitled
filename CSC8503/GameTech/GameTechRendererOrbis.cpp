@@ -22,8 +22,8 @@ GameTechRendererOrbis::GameTechRendererOrbis(PS4Window* window) : PS4RendererBas
 	defaultMesh->UploadToGPU(this);
 	defaultTexture = PS4Texture::LoadTextureFromFile("/app0/Assets/Textures/doge.gnf");
 
-	defaultObject[0] = new NCL::CSC8503::RenderObject((MeshGeometry*)defaultMesh, (TextureBase*)defaultTexture, (ShaderBase*)defaultShader);
-	defaultObject[1] = new NCL::CSC8503::RenderObject((MeshGeometry*)defaultMesh, (TextureBase*)defaultTexture, (ShaderBase*)defaultShader);
+	defaultObject[0] = new NCL::CSC8503::RenderObject(nullptr, (MeshGeometry*)defaultMesh, (TextureBase*)defaultTexture, (ShaderBase*)defaultShader);
+	defaultObject[1] = new NCL::CSC8503::RenderObject(nullptr, (MeshGeometry*)defaultMesh, (TextureBase*)defaultTexture, (ShaderBase*)defaultShader);
 
 	viewProjMat = (Matrix4*)onionAllocator->allocate(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
 	*viewProjMat = Matrix4();
@@ -92,7 +92,7 @@ void GameTechRendererOrbis::RenderFrame() {
 }
 
 
-void GameTechRendererOrbis::DrawRenderObject(RenderObject* o) {
+void GameTechRendererOrbis::DrawRenderObject(NCL::CSC8503::RenderObject* o) {
 	Matrix4* modelMat = (Matrix4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
 	*modelMat = o->GetLocalTransform();
 
@@ -101,7 +101,7 @@ void GameTechRendererOrbis::DrawRenderObject(RenderObject* o) {
 	constantBuffer.setResourceMemoryType(Gnm::kResourceMemoryTypeRO); // it's a constant buffer, so read-only is OK
 
 	PS4Shader* realShader = (PS4Shader*)o->GetShader();
-	PS4Mesh* realMesh = (PS4Mesh*)o->mesh;
+	PS4Mesh* realMesh = (PS4Mesh*)o->GetMesh();
 
 	int objIndex = realShader->GetConstantBufferIndex("RenderObjectData");
 	int camIndex = realShader->GetConstantBufferIndex("CameraData");
