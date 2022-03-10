@@ -73,11 +73,9 @@ void TutorialGame::InitialiseAssets() {
 
 
 	InitWorld();
-	InitPlayer(Vector3(20, 2, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
+	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
+	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1);
 	RegisterEventHandles();
-	InitPlayer(Vector3(20, 20, 0), GameObjectType_team2);
-	//InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
 }
 	
 

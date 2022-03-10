@@ -181,7 +181,9 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		geo = (PxBoxGeometry*)properties.volume;
 		trans = properties.transform;
 		desc = new PxBoxControllerDesc();
-		desc->halfHeight = geo->halfExtents.x;
+		desc->halfSideExtent = geo->halfExtents.x;
+		desc->halfForwardExtent = geo->halfExtents.z;
+		desc->halfHeight = geo->halfExtents.y;
 		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
 		desc->material = gMaterial;
 		desc->density = 10;
