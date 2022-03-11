@@ -13,6 +13,7 @@ namespace NCL {
 		{
 			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 			right = Vector3::Cross(Vector3(0, 1, 0), forward);
+			shootDir = forward;
 			pColour = colour;
 			AssignRole(aCont);
 			this->type = type;

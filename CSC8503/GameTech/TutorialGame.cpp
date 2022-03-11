@@ -423,7 +423,7 @@ void NCL::CSC8503::TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwne
 {
 	Player* player = TutorialGame::getMe()->player;
 	Vector3 positon = player->GetTransform().GetPosition();
-	Vector3 forward = player->getForward();
+	Vector3 forward = player->GetForward();
 
 	GameObject* bullet=TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f);
 	bullet = (Bullet*)bullet;
@@ -431,7 +431,7 @@ void NCL::CSC8503::TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwne
 	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
 	bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
-	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*100.0f);
+	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*50.0f);
 }
 
 void TutorialGame::AmmoLeft() {
@@ -448,8 +448,6 @@ void TutorialGame::TimeLeft(float dt) {
 	int m = tLeft / 60;
 	int s = int(tLeft) % 60;
 	renderer->DrawString("Time Remaining: "+std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
-
-
 }
 
 void TutorialGame::CalculateFrameRate(float dt) {

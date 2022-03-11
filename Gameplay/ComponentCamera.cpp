@@ -1,4 +1,5 @@
 #include "ComponentCamera.h"
+#include "Player.h"
 
 void ComponentCamera::Init() {
 	camera->SetDistanceFromObject(30);
@@ -11,8 +12,17 @@ void ComponentCamera::Update(float dt) {
 	camera->ThirdPersonCamera(gO);
 
 	//Quaternion orien = gO->GetTransform().GetOrientation();
-	//Vector3 vec = gO->GetTransform().GetOrientation().ToEuler();
 	//vec.y = camera->GetYaw();
 	//orien = orien.EulerAnglesToQuaternion(vec.x, vec.y - 180, vec.z);
-	gO->GetTransform().SetOrientation(camera->GetThirdPersonOrientation());
+	Quaternion orien = camera->GetThirdPersonOrientation();
+
+	gO->GetTransform().SetOrientation(orien);
+
+	Vector3 vec = gO->GetTransform().GetOrientation().ToEuler();
+	vec.x = camera->GetPitch();
+
+	Player* player = dynamic_cast<Player*>(gO);
+	if (player) {
+		player->SetShootDirection(vec);
+	}
 }

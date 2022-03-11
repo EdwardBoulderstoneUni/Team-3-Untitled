@@ -34,8 +34,11 @@ namespace NCL {
 			}
 
 			void Openfire();
-			Vector3 getForward() { return forward; }
-			void setForward(Vector3 newF) { forward = newF; }
+			Vector3 GetForward() { return forward; }
+			void SetForward(Vector3 val) { forward = val; }
+			Vector3 GetShootDiretion() { return shootDir; }
+			void SetShootDirection(Vector3 val) { shootDir = val; }
+
 			bool isGrounded = false;
 
 		private:
@@ -67,6 +70,7 @@ namespace NCL {
 
 			Vector3 forward;
 			Vector3 right;
+			Vector3 shootDir;
 			PxTransform camOri;
 
 			Bullet* bullet;
