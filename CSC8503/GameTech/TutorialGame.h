@@ -22,13 +22,6 @@ namespace NCL {
 			void SetSingleMode();
 			void SetMultiMode();
 		protected:
-			float FPS = 0.0f;
-			float framesPerSecond = 0.0f;   
-			float lastTime = 0.0f;
-			float previousSecond;
-			float currentSecond;
-
-
 			void InitialiseAssets();
 			void InitialiseUI();
 			void InitCamera();
@@ -51,7 +44,6 @@ namespace NCL {
 			void MoveSelectedObject();
 			void DebugObjectMovement();
 			void LockedObjectMovement();
-			void CalculateFrameRate(float dt);
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
@@ -70,7 +62,6 @@ namespace NCL {
 	
 			bool useGravity;
 			bool inSelectionMode;
-			bool DebugMode;
 
 			float forceMagnitude;
 
