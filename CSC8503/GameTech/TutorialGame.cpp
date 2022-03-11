@@ -620,6 +620,13 @@ void TutorialGame::MoveSelectedObject()
 }
 
 void TutorialGame::CalculateFrameRate(float dt) {
-	framesPerSecond = 1.0f / dt;
-	renderer->DrawString(std::to_string(framesPerSecond), Vector2(20, 80));
+	float currentTime = GetTickCount64() * 0.001f;
+	++framesPerSecond;
+	if (currentTime - lastTime > 1.0f)
+	{
+		lastTime = currentTime;
+		FPS = framesPerSecond;
+		framesPerSecond = 0;
+	}
+	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
 }

@@ -13,6 +13,7 @@ namespace NCL {
 			virtual void UpdateGame(float dt);
 
 		protected:
+			float FPS = 0.0f;
 			float framesPerSecond = 0.0f;   
 			float lastTime = 0.0f;
 			float previousSecond;
