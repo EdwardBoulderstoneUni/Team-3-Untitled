@@ -300,7 +300,7 @@ void TutorialGame::InitDefaultFloor()
 	Floor* floor = new Floor();
 
 	floor->GetTransform()
-		.SetScale(Vector3(50, 1, 50))
+		.SetScale(Vector3(150, 1, 150))
 		.SetPosition(Vector3(0,0,0));
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
