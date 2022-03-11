@@ -124,12 +124,6 @@ void TutorialGame::UpdateKeys()
 		InitCamera(); //F2 will reset the camera to a specific default place
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
-	{
-		useGravity = !useGravity; //Toggle gravity!
-		physics->UseGravity(useGravity);
-	}
-
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::O)) {
 		DebugMode = !DebugMode;
 	}
