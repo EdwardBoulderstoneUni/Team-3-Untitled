@@ -6,10 +6,10 @@
 #include "../CSC8503/CSC8503Common/PhysXConvert.h"
 namespace NCL {
 	namespace CSC8503 {
-		class ComponetGameObject : public GameObject {
+		class ComponentGameObject : public GameObject {
 		public:
-			ComponetGameObject();
-			~ComponetGameObject();
+			ComponentGameObject();
+			~ComponentGameObject();
 			ComponentCamera* GetComponentCamera();
 			ComponentInput* GetComponentInput();
 			ComponentPhysics* GetComponentPhysics();
