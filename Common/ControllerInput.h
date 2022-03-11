@@ -1,9 +1,9 @@
 #pragma once
-#include "InputHandler.h"
+#include "UserController.h"
 #include <stdexcept>
 
 class ControllerInput final :
-    public InputHandler
+    public UserController
 {
 public:
     explicit ControllerInput() = default;

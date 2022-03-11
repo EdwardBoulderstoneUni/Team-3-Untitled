@@ -80,3 +80,19 @@ TextureBase* OGLTexture::RGBATextureFromFilename(const std::string& name)
 
 	return glTex;
 }
+
+TextureBase* NCL::Rendering::OGLTexture::RGBATextureFromCompressedData(char* data, int dataLength)
+{
+	char* texData = nullptr;
+	int width = 0;
+	int height = 0;
+	int channels = 0;
+	int flags = 0;
+	TextureLoader::LoadTextureData(data, dataLength, texData, &width, &height, &channels);
+
+	TextureBase* glTex = RGBATextureFromData(texData, width, height, channels);
+
+	free(texData);
+
+	return glTex;
+}

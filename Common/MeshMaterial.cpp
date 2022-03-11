@@ -75,6 +75,18 @@ const MeshMaterialEntry* MeshMaterial::GetMaterialForLayer(int i) const
 	return meshLayers[i];
 }
 
+void MeshMaterial::AddEntry(MeshMaterialEntry entry)
+{	
+	materialLayers.push_back(entry);
+	
+	//not very optimal, have to do this because the elements of materialLayers move after reallocation of vector
+	meshLayers.clear();
+	for (unsigned int i = 0; i < materialLayers.size(); ++i) 
+	{
+		meshLayers.push_back(&materialLayers[i]);
+	}
+}
+
 void MeshMaterial::LoadTextures()
 {
 	for (auto& i : meshLayers)

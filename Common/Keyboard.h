@@ -11,7 +11,7 @@ _-_-_-_-_-_-_-""  ""
 
 */ /////////////////////////////////////////////////////////////////////////////
 #pragma once
-
+class MouseAndKeyboardInput;;
 namespace NCL
 {
 	//http://msdn.microsoft.com/en-us/library/ms645540(VS.85).aspx
@@ -310,6 +310,7 @@ namespace NCL
 	{
 	public:
 		friend class Window;
+		friend class ::MouseAndKeyboardInput;
 
 		//Is this key currently pressed down?
 		bool KeyDown(KeyboardKeys key) const

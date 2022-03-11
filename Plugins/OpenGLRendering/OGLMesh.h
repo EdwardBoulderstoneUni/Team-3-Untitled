@@ -9,6 +9,7 @@ https://research.ncl.ac.uk/game/
 #pragma once
 #include "../../Common/MeshGeometry.h"
 #include "glad/glad.h"
+#include "..//..//Common/Matrix4.h"
 
 #include <string>
 
@@ -22,6 +23,7 @@ namespace NCL
 			friend class OGLRenderer;
 			OGLMesh();
 			OGLMesh(const std::string& filename);
+			OGLMesh(Matrix4 transform);
 			~OGLMesh() override;
 
 			void RecalculateNormals();

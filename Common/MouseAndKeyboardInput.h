@@ -1,17 +1,17 @@
 #pragma once
-#include "InputHandler.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "UserController.h"
 
-class MouseAndKeyboardInput final :
-    public InputHandler
+class MouseAndKeyboardInput final : public UserController
 {
 public:
-    explicit  MouseAndKeyboardInput();
+    MouseAndKeyboardInput(NCL::Mouse* mouse, NCL::Keyboard* keyboard);
     Input get_inputs() override;
+    void update(float dt) override;
 
 protected:
-    const NCL::Keyboard* keyboard_;
-    const NCL::Mouse* mouse_;
+    NCL::Keyboard* keyboard_;
+    NCL::Mouse* mouse_;
 };
 

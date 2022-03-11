@@ -1,8 +1,9 @@
 #pragma once
 #include "GameTechRenderer.h"
 #include "OGLTexture.h"
-#include "../CSC8503Common/PhysicsSystem.h"
+#include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{
@@ -37,6 +38,8 @@ namespace NCL {
 			void BridgeConstraintTest();
 
 			bool SelectObject();
+			bool SelectXObject();
+
 			void MoveSelectedObject();
 			void DebugObjectMovement();
 			void LockedObjectMovement();
@@ -54,7 +57,7 @@ namespace NCL {
 			GameObject* AddBonusToWorld(const Vector3& position);
 
 			GameTechRenderer*	renderer;
-			PhysicsSystem*		physics;
+			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
 	
 			bool useGravity;
