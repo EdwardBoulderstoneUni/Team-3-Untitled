@@ -12,7 +12,7 @@ namespace NCL {
 		Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 		{
 			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
-			right = Vector3::Cross(Vector3(0, 1, 0), -forward);
+			right = Vector3::Cross(Vector3(0, 1, 0), forward);
 			pColour = colour;
 			AssignRole(aCont);
 			this->type = type;
@@ -63,7 +63,7 @@ namespace NCL {
 					PxControllerFilters(), NULL);
 
 				forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
-				right = Vector3::Cross(Vector3(0, 1, 0), -forward);
+				right = Vector3::Cross(Vector3(0, 1, 0), forward);
 
 				dashCooldown -= dt;
 			};
@@ -113,7 +113,7 @@ namespace NCL {
 		}
 		void Player::Dash() {
 				if (dashCooldown <= 0.0f) {
-					physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 10.0f, 0.0001f, 0.2,
+					physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 20.0f, 0.0001f, 0.2,
 						PxControllerFilters(), NULL);
 					dashCooldown = 2.0f;
 				}

@@ -117,6 +117,9 @@ void TutorialGame::UpdateGame(float dt)
 		//Debug::DrawAxisLines(lockedObject->GetTransform().GetMatrix(), 2.0f);
 	}
 	AmmoLeft();
+	TimeLeft(dt);
+	
+
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 
@@ -433,4 +436,13 @@ void TutorialGame::AmmoLeft() {
 	if (player->GetAmmo() == 0) {
 		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
 	}
+}
+
+void TutorialGame::TimeLeft(float dt) {
+	tLeft -= dt;
+	int t = tLeft;
+	int m = tLeft / 60;
+	int s = int(tLeft) % 60;
+	renderer->DrawString("Time Remaining: "+std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
+
 }

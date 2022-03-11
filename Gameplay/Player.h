@@ -25,6 +25,9 @@ namespace NCL {
 			int GetAmmo() {
 				return ammo;
 			}
+			int GetTime() {
+				return time;
+			}
 
 			Bullet* GetBullet() {
 				return bullet;
@@ -51,6 +54,7 @@ namespace NCL {
 			int ammo = 20;
 			int teamKill = 0;
 			int jumpNo = 0;
+			int time = 0;
 
 			bool isJumping = false;
 			bool hasAmmo = true;
