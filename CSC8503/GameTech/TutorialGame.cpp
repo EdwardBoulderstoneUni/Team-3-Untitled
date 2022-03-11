@@ -304,7 +304,6 @@ void TutorialGame::InitDefaultFloor()
 	floor->InitAllComponent();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	floor->InitAllComponet();
 
 	world->AddGameObject(floor);
 }
