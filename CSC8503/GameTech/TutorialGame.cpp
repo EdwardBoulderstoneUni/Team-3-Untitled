@@ -195,6 +195,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 
 	auto sphereSize = Vector3(radius, radius, radius);
 
+
 	sphere->GetTransform()
 	      .SetScale(sphereSize)
 	      .SetPosition(position);
@@ -297,7 +298,7 @@ void TutorialGame::InitDefaultFloor()
 	Floor* floor = new Floor();
 
 	floor->GetTransform()
-		.SetScale(Vector3(150, 1, 150))
+		.SetScale(Vector3(50, 1, 50))
 		.SetPosition(Vector3(0,0,0));
 
 	floor->InitAllComponet();
