@@ -139,7 +139,7 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 		.SetScale(Vector3(5,5,5))
 		.SetPosition(pos);
 
-	player->InitAllComponet();
+	player->InitAllComponent();
 
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), cubeMesh, basicTex, basicShader));
 
@@ -173,7 +173,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 	     .SetScale(floorSize * 2)
 	     .SetPosition(position);
 
-	floor->InitAllComponet();
+	floor->InitAllComponent();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 	
@@ -199,7 +199,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 	sphere->GetTransform()
 	      .SetScale(sphereSize)
 	      .SetPosition(position);
-	sphere->InitAllComponet();
+	sphere->InitAllComponent();
 	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
 
 	world->AddGameObject(sphere);
@@ -236,7 +236,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	cube->GetTransform()
 	    .SetPosition(position)
 	    .SetScale(dimensions * 2);
-	cube->InitAllComponet();
+	cube->InitAllComponent();
 	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
 	
 	world->AddGameObject(cube);
@@ -301,7 +301,7 @@ void TutorialGame::InitDefaultFloor()
 		.SetScale(Vector3(50, 1, 50))
 		.SetPosition(Vector3(0,0,0));
 
-	floor->InitAllComponet();
+	floor->InitAllComponent();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 
@@ -334,7 +334,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	character->GetTransform()
 	         .SetScale(Vector3(meshSize, meshSize, meshSize))
 	         .SetPosition(position);
-	character->InitAllComponet();
+	character->InitAllComponent();
 
 	if (rand() % 2)
 	{

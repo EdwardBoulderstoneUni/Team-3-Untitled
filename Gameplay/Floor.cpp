@@ -24,5 +24,5 @@ void NCL::CSC8503::Floor::SetUp()
 	type = GameObjectType_floor;
 
 	physics->phyObj->properties = properties;
-	PushComponet(physics);
+	PushComponent(physics);
 }

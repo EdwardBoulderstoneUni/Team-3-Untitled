@@ -1,11 +1,11 @@
-#include "ComponetGameObject.h"
+#include "ComponentGameObject.h"
 
-NCL::CSC8503::ComponetGameObject::ComponetGameObject()
+NCL::CSC8503::ComponentGameObject::ComponentGameObject()
 {
 
 }
 
-NCL::CSC8503::ComponetGameObject::~ComponetGameObject()
+NCL::CSC8503::ComponentGameObject::~ComponentGameObject()
 {
 	for (auto i : components) {
 		if (i == nullptr)continue;
@@ -14,33 +14,33 @@ NCL::CSC8503::ComponetGameObject::~ComponetGameObject()
 		
 }
 
-ComponentCamera* NCL::CSC8503::ComponetGameObject::GetComponentCamera()
+ComponentCamera* NCL::CSC8503::ComponentGameObject::GetComponentCamera()
 {
 	return (ComponentCamera*)components[Component::Camera];
 }
 
-ComponentInput* NCL::CSC8503::ComponetGameObject::GetComponentInput()
+ComponentInput* NCL::CSC8503::ComponentGameObject::GetComponentInput()
 {
 	return (ComponentInput* )components[Component::Input];
 }
 
-ComponentPhysics* NCL::CSC8503::ComponetGameObject::GetComponentPhysics()
+ComponentPhysics* NCL::CSC8503::ComponentGameObject::GetComponentPhysics()
 {
 	return (ComponentPhysics*)components[Component::Physics];
 }
 
-void NCL::CSC8503::ComponetGameObject::Update(float dt)
+void NCL::CSC8503::ComponentGameObject::Update(float dt)
 {
 	UpdateComponents(dt);
 }
 
-void NCL::CSC8503::ComponetGameObject::InitAllComponet()
+void NCL::CSC8503::ComponentGameObject::InitAllComponent()
 {
 	SetUp();
 	InitComponents();
 }
 
-void NCL::CSC8503::ComponetGameObject::PushComponet(Component* newCom)
+void NCL::CSC8503::ComponentGameObject::PushComponent(Component* newCom)
 {
 	switch (newCom->type)
 	{
@@ -58,7 +58,7 @@ void NCL::CSC8503::ComponetGameObject::PushComponet(Component* newCom)
 	}
 }
 
-void NCL::CSC8503::ComponetGameObject::UpdateComponents(float dt)
+void NCL::CSC8503::ComponentGameObject::UpdateComponents(float dt)
 {
 	for (auto i : components) {
 		if (i == nullptr)continue;
@@ -67,7 +67,7 @@ void NCL::CSC8503::ComponetGameObject::UpdateComponents(float dt)
 		
 }
 
-void NCL::CSC8503::ComponetGameObject::InitComponents()
+void NCL::CSC8503::ComponentGameObject::InitComponents()
 {
 	for (auto i : components) {
 		if (i == nullptr)continue;

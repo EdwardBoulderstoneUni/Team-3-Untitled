@@ -38,7 +38,7 @@ namespace NCL {
 			properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
 
 			physics->phyObj->properties = properties;
-			PushComponet(physics);
+			PushComponent(physics);
 
 			auto input = new ComponentInput();
 			input->ButtonCallback[jump] = [this]() {
@@ -69,7 +69,7 @@ namespace NCL {
 			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);
-			PushComponet(input);
+			PushComponent(input);
 
 			auto camera = new ComponentCamera();
 			camera->gO = this;
@@ -80,7 +80,7 @@ namespace NCL {
 			camera->camera->SetPitch(-15.0f);
 			camera->camera->SetYaw(180);
 
-			PushComponet(camera);
+			PushComponent(camera);
 		}
 		void Player::Move(Vector2 dir) {
 			
