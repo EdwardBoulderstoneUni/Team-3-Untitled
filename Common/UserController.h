@@ -4,10 +4,12 @@
 enum Buttons
 {
 	attack,
+	reload,
 	pause,
 	jump,
 	sprint,
 	quit,
+	dash,
 	max_input
 };
 

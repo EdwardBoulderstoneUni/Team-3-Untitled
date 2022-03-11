@@ -13,7 +13,7 @@ NetworkPlayer::~NetworkPlayer() {
 
 }
 
-void NetworkPlayer::OnCollisionBegin(GameObject* otherObject) {
+void NetworkPlayer::OnCollisionBegin(GameObject* otherObject, Vector3 position) {
 	if (game) {
 		if (dynamic_cast<NetworkPlayer*>(otherObject))
 		{

@@ -1,6 +1,8 @@
 #include "Camera.h"
+#include "Maths.h"
 #include "Window.h"
 #include <algorithm>
+#include <iostream>
 
 using namespace NCL;
 
@@ -53,6 +55,10 @@ void Camera::UpdateCamera(float dt)
 		position.y += frameSpeed;
 	}
 	if (Window::GetInterface()->button_down(jump))
+	{
+		position.y -= frameSpeed;
+	}
+	if (Window::GetInterface()->button_down(attack))
 	{
 		position.y -= frameSpeed;
 	}
@@ -115,4 +121,53 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 	c.bottom = bottom;
 
 	return c;
+}
+
+void Camera::ThirdPersonCamera(NCL::CSC8503::GameObject* object) {
+	//in this way of control we use left mouse to change pitch and right mouse to change the angle of camera
+	//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::LEFT)) {
+	//	pitch -= (Window::GetMouse()->GetRelativePosition().y);
+	//}
+	//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::RIGHT)) {
+	//	float angleChange = Window::GetMouse()->GetRelativePosition().x;
+	//	angleAroundObject += angleChange;
+	//}
+
+	//in this way we can just move the mouse to change the view
+	pitch -= (NCL::Window::GetMouse()->GetRelativePosition().y);
+	float anglechange = NCL::Window::GetMouse()->GetRelativePosition().x;
+	angleAroundObject += anglechange;
+
+	pitch = std::min(pitch, 90.0f);
+	pitch = std::max(pitch, -90.0f);
+
+	//we can just reset the value of angleAroundObject and pitch to reset the view
+				//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::MIDDLE)) {
+	//	angleAroundObject = 0;
+	//	pitch = -15;
+	//}
+
+	float horizontalDistance = distanceFromObject * cos(DegreesToRadians(pitch));
+	float verticalDistance = distanceFromObject * sin(DegreesToRadians(pitch));
+
+	yaw = 180.0f - (angleAroundObject);
+
+	if (yaw < 0) {
+		yaw += 360.0f;
+	}
+	if (yaw > 360.0f) {
+		yaw -= 360.0f;
+	}
+
+	float theta = angleAroundObject;
+	float offsetX = horizontalDistance * sin(DegreesToRadians(theta));
+	float offsetZ = horizontalDistance * cos(DegreesToRadians(theta));
+
+	float cameraX = object->GetTransform().GetPosition().x + offsetX;
+	float cameraZ = object->GetTransform().GetPosition().z - offsetZ;
+	float cameraY = object->GetTransform().GetPosition().y - verticalDistance;
+
+	SetPosition(Vector3(cameraX, cameraY, cameraZ));
+	SetPitch(pitch);
+	SetYaw(yaw);
 }

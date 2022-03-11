@@ -52,7 +52,13 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim));
 		break;
 	}
-	object->SetPhysicsXObject(new PhysicsXObject(object->GetTransform(),volume));
+	PxTransform trans = PhysXConvert::TransformToPxTransform(object->GetTransform());
+	PhysicsXObject* phyObj = new PhysicsXObject();
+	phyObj->properties.type = PhyProperties::Dynamic;
+	phyObj->properties.transform = trans;
+	phyObj->properties.volume = volume;
+	phyObj->properties.Mass = 10.0f;
+	object->SetPhysicsXObject(phyObj);
 }
 
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)
