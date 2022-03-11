@@ -3,7 +3,6 @@
 #include "../../Common/Maths.h"
 #include <vector>
 #include "../../include/PhysX/PxPhysicsAPI.h"
-#include "../../Gameplay/Player.h"
 
 
 #define PVD_HOST "127.0.0.1"
@@ -21,11 +20,44 @@ PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 PxMaterial* gMaterial = NULL;
 PxPvd* gPvd = NULL;
-PxControllerManager* gManager = NULL;
 
+
+class ContackCallback :public PxSimulationEventCallback {
+	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
+	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
+	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) {}
+	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+	{
+		PX_UNUSED((pairHeader));
+		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
+		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
+		a->OnCollisionBegin(b);
+	}
+};
+PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
+{
+	dTOffset = 0.0f;
+	initPhysics();
+}
+
+PhysicsXSystem::~PhysicsXSystem()
+{
+	PX_RELEASE(gScene);
+	PX_RELEASE(gDispatcher);
+	PX_RELEASE(gPhysics);
+	if (gPvd)
+	{
+		PxPvdTransport* transport = gPvd->getTransport();
+		gPvd->release();	gPvd = NULL;
+		PX_RELEASE(transport);
+	}
+	PX_RELEASE(gFoundation);
+}
 PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
 	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-	PxPairFlags & pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
 {
 	PX_UNUSED(attributes0);
 	PX_UNUSED(attributes1);
@@ -41,112 +73,6 @@ PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, Px
 		| PxPairFlag::eNOTIFY_CONTACT_POINTS;
 	return PxFilterFlag::eDEFAULT;
 }
-
-PxFilterFlags customizeFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
-	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
-{
-	
-	PX_UNUSED(attributes0);
-	PX_UNUSED(attributes1);
-	PX_UNUSED(filterData0);
-	PX_UNUSED(filterData1);
-	PX_UNUSED(constantBlockSize);
-	PX_UNUSED(constantBlock);
-
-
-	//// 默认对所有为过滤的碰撞产生默认回调
-	//pairFlags = PxPairFlag::eCONTACT_DEFAULT;
-
-	//// 如果两个物体的filterData均包含对方的ID，则需要触发eNOTIFY_TOUCH_FOUND回调
-	//if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
-	//{
-	//	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
-	//}
-
-	//// 如果某个物体可以吸收(Drain)粒子，那么只允许它跟粒子有碰撞，忽略它与其他物体的碰撞
-	//if (isDrainGroup(filterData0) || isDrainGroup(filterData1))
-	//{
-	//	PxFilterData filterDataOther = isDrainGroup(filterData0) ? filterData1 : filterData0;
-	//	if (!isParticleGroup(filterDataOther))
-	//		return PxFilterFlag::eKILL;
-	//}
-
-	//// 属于force0组的物体，只与smoke碰撞
-	//if (isForce0Group(filterData0) || isForce0Group(filterData1))
-	//{
-	//	PxFilterData filterDataOther = isForce0Group(filterData0) ? filterData1 : filterData0;
-	//	if (filterDataOther != collisionGroupSmoke)
-	//		return PxFilterFlag::eKILL;
-	//}
-
-	//// 属于force1组的物体，只与waterfall碰撞
-	//if (isForce1Group(filterData0) || isForce1Group(filterData1))
-	//{
-	//	PxFilterData filterDataOther = isForce1Group(filterData0) ? filterData1 : filterData0;
-	//	if (filterDataOther != collisionGroupWaterfall)
-	//		return PxFilterFlag::eKILL;
-
-	return PxFilterFlag::eDEFAULT;
-}
-
-class ContackCallback :public PxSimulationEventCallback {
-	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
-	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
-	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
-	void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
-	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) {}
-	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
-	{
-		PX_UNUSED((pairHeader));
-		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
-		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
-		PhysicsXSystem::FlagCheck(a, b);
-	}
-};
-class CharacterCallback :public PxUserControllerHitReport,public PxControllerBehaviorCallback {
-	void onShapeHit(const PxControllerShapeHit& hit) {
-		PX_UNUSED((hit));
-		GameObject* a = (GameObject*)hit.actor->userData;
-		GameObject* b = (GameObject*)hit.controller->getActor()->userData;
-		PhysicsXSystem::FlagCheck(a, b);
-	}
-	void onControllerHit(const PxControllersHit& hit) {}
-	void onObstacleHit(const PxControllerObstacleHit& hit){}
-
-	PxControllerBehaviorFlags		getBehaviorFlags(const PxShape& shape, const PxActor& actor) { 
-		//GameObject* a = (GameObject*)actor.userData;
-		return PxControllerBehaviorFlags(0); 
-	}
-	PxControllerBehaviorFlags		getBehaviorFlags(const PxController& controller) { return PxControllerBehaviorFlags(0); }
-	PxControllerBehaviorFlags		getBehaviorFlags(const PxObstacle& obstacle) { return PxControllerBehaviorFlags(0); }
-};
-
-ContackCallback* callback = new ContackCallback;
-CharacterCallback* characterCallback = new CharacterCallback;
-
-
-PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
-{
-	dTOffset = 0.0f;
-	initPhysics();
-}
-
-PhysicsXSystem::~PhysicsXSystem()
-{
-	PX_RELEASE(gScene);
-	PX_RELEASE(gDispatcher);
-	PX_RELEASE(gPhysics);
-	PX_RELEASE(gFoundation);
-
-	if (gPvd)
-	{
-		PxPvdTransport* transport = gPvd->getTransport();
-		gPvd->release();	gPvd = NULL;
-		PX_RELEASE(transport);
-	}
-}
-
 void PhysicsXSystem::initPhysics()
 {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
@@ -158,9 +84,12 @@ void PhysicsXSystem::initPhysics()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
+	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	sceneDesc.filterShader = contactReportFilterShader;
+	ContackCallback* callback = new ContackCallback;
 	sceneDesc.simulationEventCallback = callback;
 	gScene = gPhysics->createScene(sceneDesc);
+	
 	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
 	if (pvdClient)
 	{
@@ -169,7 +98,6 @@ void PhysicsXSystem::initPhysics()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-	gManager = PxCreateControllerManager(*gScene);
 }
 
 void PhysicsXSystem::Update(float dt)
@@ -188,73 +116,41 @@ void PhysicsXSystem::Update(float dt)
 	{
 		std::vector<PxRigidActor*> actors(nbActors);
 		scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
-		SynActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
+		getActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
 	}
 }
 
-void PhysicsXSystem::addActor(GameObject& actor)
+void PhysicsXSystem::addDynamicActor(GameObject& actor)
 {
-	PhysicsXObject* phyObj = actor.GetPhysicsXObject();
-	PhyProperties properties = phyObj->properties;
-	PxTransform trans = PxTransform();
-	PxRigidDynamic* dynaBody = nullptr;
-	PxRigidStatic* statBody = nullptr;
-	PxShape* shape = nullptr;
-
-	PxBoxControllerDesc* desc=nullptr;
-	PxBoxGeometry* geo = nullptr;
-	switch (properties.type)
-	{
-	case PhyProperties::Dynamic:
-		dynaBody = gPhysics->createRigidDynamic(properties.transform);
-
-		shape = gPhysics->createShape(*properties.volume, *gMaterial);
-		dynaBody->attachShape(*shape);
-		dynaBody->setMass(properties.Mass);
-
-		gScene->addActor(*dynaBody);
-
-		dynaBody->userData = &actor;
-		phyObj->rb = dynaBody;
-		shape->release();
-		break;
-	case PhyProperties::Static:
-		statBody = gPhysics->createRigidStatic(properties.transform);
-
-		shape = gPhysics->createShape(*properties.volume, *gMaterial);
-		statBody->attachShape(*shape);
-
-		gScene->addActor(*statBody);
-
-		statBody->userData = &actor;
-		phyObj->rb = statBody;
-
-		shape->release();
-		break;
-	case PhyProperties::Character:
-		
-		geo = (PxBoxGeometry*)properties.volume;
-		trans = properties.transform;
-		desc = new PxBoxControllerDesc();
-		desc->halfSideExtent = geo->halfExtents.x;
-		desc->halfForwardExtent = geo->halfExtents.z;
-		desc->halfHeight = geo->halfExtents.y;
-		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
-		desc->material = gMaterial;
-		desc->density = 10;
-		desc->reportCallback = characterCallback;
-		desc->behaviorCallback = characterCallback;
-
-		phyObj->controller = gManager->createController(*desc);
-		phyObj->controller->getActor()->userData = &actor;
-		phyObj->rb = phyObj->controller->getActor();
-		break;
-	default:
-		break;
-	}
+	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
+	PxTransform localTm(actor.GetTransform().GetPosition().x,
+		actor.GetTransform().GetPosition().y, 
+		actor.GetTransform().GetPosition().z);
+	PxRigidDynamic* body = gPhysics->createRigidDynamic(localTm);
+	PxRigidBodyExt::updateMassAndInertia(*body,10.0f);
+	body->attachShape(*shape);
+	gScene->addActor(*body);
+	body->userData = &actor;
+	actor.GetPhysicsXObject()->SetRigActor(body);
+	shape->release();
 }
 
-void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
+void PhysicsXSystem::addStaticActor(GameObject& actor)
+{
+	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
+	PxTransform localTm(actor.GetTransform().GetPosition().x,
+		actor.GetTransform().GetPosition().y,
+		actor.GetTransform().GetPosition().z);
+	PxRigidStatic* body = gPhysics->createRigidStatic(localTm);
+
+	body->attachShape(*shape);
+	gScene->addActor(*body);
+	body->userData = &actor;
+	actor.GetPhysicsXObject()->SetRigActor(body);
+	shape->release();
+}
+
+void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
 {
 	PxShape* shapes[MAX_NUM_ACTOR_SHAPES];
 	for (PxU32 i = 0; i < numActors; i++)
@@ -269,7 +165,6 @@ void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 			const PxGeometryHolder h = shapes[j]->getGeometry();
 			GameObject* obj=(GameObject*)actors[i]->userData;
 			obj->GetTransform().SetPosition(Vector3(shapePose.p.x, shapePose.p.y, shapePose.p.z));
-			if (obj->GetPhysicsXObject()->controller)continue;
 			obj->GetTransform().SetOrientation(Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
 				shapePose.q.w));
 		}
@@ -285,9 +180,15 @@ Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
 	float nearPlane = cam.GetNearPlane();
 	float farPlane = cam.GetFarPlane();
 
-
+	//Create our inverted matrix! Note how that to get a correct inverse matrix,
+	//the order of matrices used to form it are inverted, too.
 	Matrix4 invVP = GenerateInverseView(cam) * GenerateInverseProjection(aspect, fov, nearPlane, farPlane);
 
+	//Our mouse position x and y values are in 0 to screen dimensions range,
+	//so we need to turn them into the -1 to 1 axis range of clip space.
+	//We can do that by dividing the mouse values by the width and height of the
+	//screen (giving us a range of 0.0 to 1.0), multiplying by 2 (0.0 to 2.0)
+	//and then subtracting 1 (-1.0 to 1.0).
 	auto clipSpace = Vector4(
 		(screenPos.x / screenSize.x) * 2.0f - 1.0f,
 		(screenPos.y / screenSize.y) * 2.0f - 1.0f,
@@ -295,8 +196,11 @@ Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
 		1.0f
 	);
 
+	//Then, we multiply our clipspace coordinate by our inverted matrix
 	Vector4 transformed = invVP * clipSpace;
 
+	//our transformed w coordinate is now the 'inverse' perspective divide, so
+	//we can reconstruct the final world space by dividing x,y,and z by w.
 	return Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
 }
 
@@ -372,32 +276,13 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 void PhysicsXSystem::SyncGameObjs()
 {
 	std::vector<GameObject*>& actors=gameWorld.GetGameObjects();
-	for (auto actor:actors)
-	{
-		PhysicsXObject* obj = actor->GetPhysicsXObject();
-		if (obj->rb)continue;
-		addActor(*actor);
+	for (int i = 0; i < actors.size();i++) {
+		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
+		if (obj == nullptr)continue;
+		if (obj->isInScene())continue;
+		if (obj->isDynamic())addDynamicActor(*actors[i]);
+		else addStaticActor(*actors[i]);
 	}
-}
-
-void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
-
-	// FLOOR CHECK
-	
-	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_team2) {
-		a->OnCollisionBegin(b,a->GetTransform().GetPosition());
-	}
-
-	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_floor) {
-		a->OnCollisionBegin(b, a->GetTransform().GetPosition()-a->GetTransform().GetScale());
-	}
-	//here bullet和player之间的关系需要重新调整
-	if (a->type == GameObjectType_floor and
-		b->type == GameObjectType_team1) {
-		Player* player = (Player*)b;
-		player->isGrounded = true;
-	}
-		
 }
 
 

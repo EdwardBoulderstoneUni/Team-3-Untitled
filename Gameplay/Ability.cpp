@@ -24,7 +24,5 @@ namespace NCL {
 				endLag = objects[abilityNumber]["cooldown"].GetFloat();
 			}
 		}
-
-		Ability::~Ability() {}
 	}
 }

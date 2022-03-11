@@ -131,34 +131,13 @@
   <ItemGroup>
     <ClCompile Include="Ability.cpp" />
     <ClCompile Include="AbilityContainer.cpp" />
-    <ClCompile Include="Bullet.cpp" />
-    <ClCompile Include="ComponentCamera.cpp" />
-    <ClCompile Include="ComponentInput.cpp" />
-    <ClCompile Include="ComponentPhysics.cpp" />
-    <ClCompile Include="ComponentGameObject.cpp" />
-    <ClCompile Include="Cube.cpp" />
-    <ClCompile Include="Floor.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerController.cpp" />
-    <ClCompile Include="Sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ability.h" />
     <ClInclude Include="AbilityContainer.h" />
-    <ClInclude Include="Bullet.h" />
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="ComponentCamera.h" />
-    <ClInclude Include="ComponentInput.h" />
-    <ClInclude Include="ComponentPhysics.h" />
-    <ClInclude Include="ComponentGameObject.h" />
-    <ClInclude Include="Cube.h" />
-    <ClInclude Include="eGameObjectType.h" />
     <ClInclude Include="ePlayerRole.h" />
-    <ClInclude Include="Floor.h" />
-    <ClInclude Include="GameObjects.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerController.h" />
-    <ClInclude Include="Sphere.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Ability.json" />
