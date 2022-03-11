@@ -25,6 +25,8 @@ TutorialGame::TutorialGame()
 	forceMagnitude = 10.0f;
 	inSelectionMode = false;
 	eventSystem = new YiEventSystem();
+	DebugMode = false;
+
 	Debug::SetRenderer(renderer);
 	InitialiseAssets();
 }
@@ -95,6 +97,10 @@ void TutorialGame::UpdateGame(float dt)
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 
+	if (DebugMode) {
+		CalculateFrameRate(dt);
+	}
+
 	player->Update(dt);
 	physicsX->Update(dt);
 	eventSystem->ProcessAllEvent();
@@ -127,11 +133,9 @@ void TutorialGame::UpdateGame(float dt)
 	renderer->Render();
 }
 
-
 void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
-
 
 void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 {
@@ -445,4 +449,33 @@ void TutorialGame::TimeLeft(float dt) {
 	int s = int(tLeft) % 60;
 	renderer->DrawString("Time Remaining: "+std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
 
+
+}
+/*
+If an object has been clicked, it can be pushed with the right mouse button, by an amount
+determined by the scroll wheel. In the first tutorial this won't do anything, as we haven't
+added linear motion into our physics system. After the second tutorial, objects will move in a straight
+line - after the third, they'll be able to twist under torque aswell.
+*/
+void TutorialGame::MoveSelectedObject()
+{
+	if (selectionObject == nullptr)return;
+	PhysicsXObject* obj= selectionObject->GetPhysicsXObject();
+	if (!obj->isDynamic())return;
+	Vector3 position=selectionObject->GetTransform().GetPosition();
+	Vector3 camPos = world->GetMainCamera()->GetPosition();
+	Vector3 dir = position - camPos;
+	obj->AddForce(dir.Normalised()*1500.0f);
+}
+
+void TutorialGame::CalculateFrameRate(float dt) {
+	float currentTime = GetTickCount64() * 0.001f;
+	++framesPerSecond;
+	if (currentTime - lastTime > 1.0f)
+	{
+		lastTime = currentTime;
+		FPS = framesPerSecond;
+		framesPerSecond = 0;
+	}
+	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
 }

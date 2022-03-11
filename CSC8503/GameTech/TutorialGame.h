@@ -38,6 +38,9 @@ namespace NCL {
 			void RegisterEventHandles();
 			void AmmoLeft();
 			void TimeLeft(float dt);
+
+			void CalculateFrameRate(float dt);
+
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -59,6 +62,7 @@ namespace NCL {
 	
 			bool inSelectionMode;
 			bool camFollowPlayer;
+			bool DebugMode;
 
 			float forceMagnitude;
 			float tLeft = 60;
@@ -80,6 +84,12 @@ namespace NCL {
 			//Coursework Additional functionality	
 			GameObject* lockedObject = nullptr;
 			Vector3 lockedOffset = Vector3(0, 14, 20);
+
+			float FPS = 0.0f;
+			float framesPerSecond = 0.0f;
+			float lastTime = 0.0f;
+			float previousSecond;
+			float currentSecond;
 
 			void LockCameraToObject(GameObject* o)
 			{
