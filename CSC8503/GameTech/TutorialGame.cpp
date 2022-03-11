@@ -73,11 +73,9 @@ void TutorialGame::InitialiseAssets() {
 
 
 	InitWorld();
-	InitPlayer(Vector3(20, 2, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
+	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
+	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1);
 	RegisterEventHandles();
-	InitPlayer(Vector3(20, 20, 0), GameObjectType_team2);
-	//InitPlayer(Vector3(20, 2, -20), GameObjectType_team1);
 }
 	
 
@@ -118,7 +116,7 @@ void TutorialGame::UpdateGame(float dt)
 
 		//Debug::DrawAxisLines(lockedObject->GetTransform().GetMatrix(), 2.0f);
 	}
-
+	AmmoLeft();
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 
@@ -141,7 +139,7 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 		.SetScale(Vector3(5,5,5))
 		.SetPosition(pos);
 
-	player->InitAllComponet();
+	player->InitAllComponent();
 
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), cubeMesh, basicTex, basicShader));
 
@@ -175,7 +173,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 	     .SetScale(floorSize * 2)
 	     .SetPosition(position);
 
-	floor->InitAllComponet();
+	floor->InitAllComponent();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 	
@@ -201,7 +199,7 @@ GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius
 	sphere->GetTransform()
 	      .SetScale(sphereSize)
 	      .SetPosition(position);
-	sphere->InitAllComponet();
+	sphere->InitAllComponent();
 	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
 
 	world->AddGameObject(sphere);
@@ -238,7 +236,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	cube->GetTransform()
 	    .SetPosition(position)
 	    .SetScale(dimensions * 2);
-	cube->InitAllComponet();
+	cube->InitAllComponent();
 	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
 	
 	world->AddGameObject(cube);
@@ -303,6 +301,8 @@ void TutorialGame::InitDefaultFloor()
 		.SetScale(Vector3(150, 1, 150))
 		.SetPosition(Vector3(0,0,0));
 
+	floor->InitAllComponent();
+
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
 	floor->InitAllComponet();
 
@@ -311,7 +311,7 @@ void TutorialGame::InitDefaultFloor()
 
 void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 {
-	eventSystem->RegisterEventHandle("OPEN_FIRE", _testhandle);
+	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle);
 }
 
 void TutorialGame::InitGameExamples()
@@ -335,7 +335,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 	character->GetTransform()
 	         .SetScale(Vector3(meshSize, meshSize, meshSize))
 	         .SetPosition(position);
-	character->InitAllComponet();
+	character->InitAllComponent();
 
 	if (rand() % 2)
 	{
@@ -413,11 +413,12 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 	return apple;
 }
 
-void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerData)
+void NCL::CSC8503::TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 {
 	Player* player = TutorialGame::getMe()->player;
 	Vector3 positon = player->GetTransform().GetPosition();
 	Vector3 forward = player->getForward();
+
 	GameObject* bullet=TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f);
 	bullet = (Bullet*)bullet;
 	bullet->type = GameObjectType_team1Bullet;
@@ -427,3 +428,10 @@ void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerDa
 	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*100.0f);
 }
 
+void TutorialGame::AmmoLeft() {
+	Player* player = TutorialGame::getMe()->player;
+	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 80));
+	if (player->GetAmmo() == 0) {
+		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
+	}
+}

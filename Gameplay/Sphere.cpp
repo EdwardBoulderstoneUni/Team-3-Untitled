@@ -21,5 +21,5 @@ void NCL::CSC8503::Sphere::SetUp()
 	properties.volume = new PxSphereGeometry(scale.x);
 
 	physics->phyObj->properties = properties;
-	PushComponet(physics);
+	PushComponent(physics);
 }

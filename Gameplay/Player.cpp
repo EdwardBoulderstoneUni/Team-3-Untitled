@@ -34,36 +34,42 @@ namespace NCL {
 			properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
 			properties.Mass = 10.0f;
 
-			Vector3 scale = GetTransform().GetScale();
+			Vector3 scale = GetTransform().GetScale()/2.0f;
 			properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
 
 			physics->phyObj->properties = properties;
-			PushComponet(physics);
+			PushComponent(physics);
 
 			auto input = new ComponentInput();
-			input->Callback[jump] = [this]() {
+			input->ButtonCallback[jump] = [this]() {
 				this->Jump();
 			};
-			input->Callback[dash] = [this]() {
+			input->ButtonCallback[dash] = [this]() {
 				this->Dash();
 			};
-			input->Callback[attack] = [this]() {
+			input->ButtonCallback[attack] = [this]() {
 				this->Openfire();
 			};
 			input->MovCallback = [this](Vector2 dir) {
 				this->Move(dir);
 			};
+			input->ButtonCallback[reload] = [this]() {
+				this->Reload();
+			};
 			
-			input->Callback[idle] = [this]() {
+			input->UpdateCallback = [this](float dt) {
 				if (!physicsXObject->controller)return;
 				physicsXObject->controller->move(PxVec3(0.0f, -9.81f, 0.0f) * 0.05f, 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
+
 				forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 				right = Vector3::Cross(Vector3(0, 1, 0), -forward);
+
+				dashCooldown -= dt;
 			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);
-			PushComponet(input);
+			PushComponent(input);
 
 			auto camera = new ComponentCamera();
 			camera->gO = this;
@@ -74,7 +80,7 @@ namespace NCL {
 			camera->camera->SetPitch(-15.0f);
 			camera->camera->SetYaw(180);
 
-			PushComponet(camera);
+			PushComponent(camera);
 		}
 		void Player::Move(Vector2 dir) {
 			
@@ -101,43 +107,22 @@ namespace NCL {
 		}
 
 		void Player::Jump() {
-			if (isGrounded == true) {
-				isJumping = false;
-				jumpNo = 0;
-				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-			//	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-				jumpNo++;
-				isJumping = true;
-				isGrounded = false;
-				std::cout << jumpNo << std::endl;
-			}
-			if (isJumping = true && jumpNo == 1) {
-				physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-			//	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-				jumpNo++;
-				isGrounded = false;
-				std::cout << jumpNo << std::endl;
-			}
-			isGrounded = true;
+			if (not isGrounded)return;
+			physicsXObject->controller->move(PxVec3(0.0f, 50.0f, 0.0f), 0.0001f, 0.2, PxControllerFilters(), NULL);
+			isGrounded = false;
 		}
-
-
-
 		void Player::Dash() {
-
-			if (isDashing == false) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 25.0f, 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-		//		YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-				isDashing = true;
-			}
-			// Add CoolDown Time
-		
+				if (dashCooldown <= 0.0f) {
+					physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 10.0f, 0.0001f, 0.2,
+						PxControllerFilters(), NULL);
+					dashCooldown = 2.0f;
+				}
 		}
 		void Player::Openfire() {
-			YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE);
+			if (ammo > 0) {
+				YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE);
+				ammo--;
+			}
 		}
 		float Player::TakeDamage(float dmg) {
 			health = health - dmg < 0 ? 0 : health - dmg;
@@ -150,24 +135,19 @@ namespace NCL {
 
 		// Give damage to palyer a
 		void Player::GiveDamage(float dmg, Player* a) {
-			ammo = ammo - 1;
 			a->TakeDamage(dmg);
 			if (a->IsDead() == true) {
 				teamKill++;
 			}
 		}
 
-		bool Player::CanShoot() {
-			return isReloading == false ? true : false;
-		}
+
 
 		void Player::Reload() {
 			isReloading = false;
-			if (ammo >= 0 && ammo < maxAmmo) {
-				if (Window::GetKeyboard()->KeyDown(NCL::KeyboardKeys::R)) {
-					isReloading = true;
-					ammo = maxAmmo;
-				}
+			if (ammo >= 0 && ammo < maxAmmo) {				
+				isReloading = true;
+				ammo = maxAmmo;
 				// Finish reload
 				isReloading = false;
 			}

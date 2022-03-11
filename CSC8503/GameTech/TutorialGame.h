@@ -36,6 +36,7 @@ namespace NCL {
 			                       const Vector3& cubeDims);
 			void InitDefaultFloor();
 			void RegisterEventHandles();
+			void AmmoLeft();
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -85,7 +86,7 @@ namespace NCL {
 
 
 		protected:
-			static void _testhandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static TutorialGame* p_self;
 			static TutorialGame* getMe() { return p_self; }
 		};

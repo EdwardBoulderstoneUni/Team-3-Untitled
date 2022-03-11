@@ -42,6 +42,54 @@ PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, Px
 	return PxFilterFlag::eDEFAULT;
 }
 
+PxFilterFlags customizeFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+	
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(filterData0);
+	PX_UNUSED(filterData1);
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
+
+
+	//// 默认对所有为过滤的碰撞产生默认回调
+	//pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	//// 如果两个物体的filterData均包含对方的ID，则需要触发eNOTIFY_TOUCH_FOUND回调
+	//if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+	//{
+	//	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+	//}
+
+	//// 如果某个物体可以吸收(Drain)粒子，那么只允许它跟粒子有碰撞，忽略它与其他物体的碰撞
+	//if (isDrainGroup(filterData0) || isDrainGroup(filterData1))
+	//{
+	//	PxFilterData filterDataOther = isDrainGroup(filterData0) ? filterData1 : filterData0;
+	//	if (!isParticleGroup(filterDataOther))
+	//		return PxFilterFlag::eKILL;
+	//}
+
+	//// 属于force0组的物体，只与smoke碰撞
+	//if (isForce0Group(filterData0) || isForce0Group(filterData1))
+	//{
+	//	PxFilterData filterDataOther = isForce0Group(filterData0) ? filterData1 : filterData0;
+	//	if (filterDataOther != collisionGroupSmoke)
+	//		return PxFilterFlag::eKILL;
+	//}
+
+	//// 属于force1组的物体，只与waterfall碰撞
+	//if (isForce1Group(filterData0) || isForce1Group(filterData1))
+	//{
+	//	PxFilterData filterDataOther = isForce1Group(filterData0) ? filterData1 : filterData0;
+	//	if (filterDataOther != collisionGroupWaterfall)
+	//		return PxFilterFlag::eKILL;
+
+	return PxFilterFlag::eDEFAULT;
+}
+
 class ContackCallback :public PxSimulationEventCallback {
 	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
 	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
@@ -54,10 +102,30 @@ class ContackCallback :public PxSimulationEventCallback {
 		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
 		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
 		PhysicsXSystem::FlagCheck(a, b);
-		
-
 	}
 };
+class CharacterCallback :public PxUserControllerHitReport,public PxControllerBehaviorCallback {
+	void onShapeHit(const PxControllerShapeHit& hit) {
+		PX_UNUSED((hit));
+		GameObject* a = (GameObject*)hit.actor->userData;
+		GameObject* b = (GameObject*)hit.controller->getActor()->userData;
+		PhysicsXSystem::FlagCheck(a, b);
+	}
+	void onControllerHit(const PxControllersHit& hit) {}
+	void onObstacleHit(const PxControllerObstacleHit& hit){}
+
+	PxControllerBehaviorFlags		getBehaviorFlags(const PxShape& shape, const PxActor& actor) { 
+		//GameObject* a = (GameObject*)actor.userData;
+		return PxControllerBehaviorFlags(0); 
+	}
+	PxControllerBehaviorFlags		getBehaviorFlags(const PxController& controller) { return PxControllerBehaviorFlags(0); }
+	PxControllerBehaviorFlags		getBehaviorFlags(const PxObstacle& obstacle) { return PxControllerBehaviorFlags(0); }
+};
+
+ContackCallback* callback = new ContackCallback;
+CharacterCallback* characterCallback = new CharacterCallback;
+
+
 PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 {
 	dTOffset = 0.0f;
@@ -90,12 +158,9 @@ void PhysicsXSystem::initPhysics()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
-	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	sceneDesc.filterShader = contactReportFilterShader;
-	ContackCallback* callback = new ContackCallback;
 	sceneDesc.simulationEventCallback = callback;
 	gScene = gPhysics->createScene(sceneDesc);
-	
 	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
 	if (pvdClient)
 	{
@@ -171,12 +236,14 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		geo = (PxBoxGeometry*)properties.volume;
 		trans = properties.transform;
 		desc = new PxBoxControllerDesc();
-		desc->halfSideExtent = geo->halfExtents.x/2;
-		desc->halfHeight = geo->halfExtents.y/2;
-		desc->halfForwardExtent = geo->halfExtents.z/2;
+		desc->halfSideExtent = geo->halfExtents.x;
+		desc->halfForwardExtent = geo->halfExtents.z;
+		desc->halfHeight = geo->halfExtents.y;
 		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
 		desc->material = gMaterial;
 		desc->density = 10;
+		desc->reportCallback = characterCallback;
+		desc->behaviorCallback = characterCallback;
 
 		phyObj->controller = gManager->createController(*desc);
 		phyObj->controller->getActor()->userData = &actor;
@@ -185,10 +252,6 @@ void PhysicsXSystem::addActor(GameObject& actor)
 	default:
 		break;
 	}
-	
-
-	
-	
 }
 
 void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
@@ -222,15 +285,9 @@ Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
 	float nearPlane = cam.GetNearPlane();
 	float farPlane = cam.GetFarPlane();
 
-	//Create our inverted matrix! Note how that to get a correct inverse matrix,
-	//the order of matrices used to form it are inverted, too.
+
 	Matrix4 invVP = GenerateInverseView(cam) * GenerateInverseProjection(aspect, fov, nearPlane, farPlane);
 
-	//Our mouse position x and y values are in 0 to screen dimensions range,
-	//so we need to turn them into the -1 to 1 axis range of clip space.
-	//We can do that by dividing the mouse values by the width and height of the
-	//screen (giving us a range of 0.0 to 1.0), multiplying by 2 (0.0 to 2.0)
-	//and then subtracting 1 (-1.0 to 1.0).
 	auto clipSpace = Vector4(
 		(screenPos.x / screenSize.x) * 2.0f - 1.0f,
 		(screenPos.y / screenSize.y) * 2.0f - 1.0f,
@@ -238,11 +295,8 @@ Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
 		1.0f
 	);
 
-	//Then, we multiply our clipspace coordinate by our inverted matrix
 	Vector4 transformed = invVP * clipSpace;
 
-	//our transformed w coordinate is now the 'inverse' perspective divide, so
-	//we can reconstruct the final world space by dividing x,y,and z by w.
 	return Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
 }
 
@@ -337,6 +391,13 @@ void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
 	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_floor) {
 		a->OnCollisionBegin(b, a->GetTransform().GetPosition()-a->GetTransform().GetScale());
 	}
+	//here bullet和player之间的关系需要重新调整
+	if (a->type == GameObjectType_floor and
+		b->type == GameObjectType_team1) {
+		Player* player = (Player*)b;
+		player->isGrounded = true;
+	}
+		
 }
 
 

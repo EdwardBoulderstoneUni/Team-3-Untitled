@@ -1,5 +1,5 @@
 #pragma once
-#include "ComponetGameObject.h"
+#include "ComponentGameObject.h"
 #include "Ability.h"
 #include "AbilityContainer.h"
 #include "../CSC8503/GameTech/YiEventSystem.h"
@@ -7,7 +7,7 @@
 #include "Bullet.h"
 namespace NCL {
 	namespace CSC8503 {		
-		class Player : public ComponetGameObject {
+		class Player : public ComponentGameObject {
 		public:
 			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
 			~Player();
@@ -18,11 +18,13 @@ namespace NCL {
 			void Jump();
 			void GiveDamage(float dmg, Player* a);
 			bool IsDead();
-			bool CanShoot();
 			float TakeDamage(float dmg);
 			void Reload();
 			void AssignRole(AbilityContainer* aCont);
 			void Dash();
+			int GetAmmo() {
+				return ammo;
+			}
 
 			Bullet* GetBullet() {
 				return bullet;
@@ -39,7 +41,7 @@ namespace NCL {
 			
 			// t is short for timer (cooldowns)
 			float tDash;
-			float dashCooldown;
+			float dashCooldown=0.0f;
 			float tAbility1;
 			float tAbility2;
 			float tDeath;
@@ -50,7 +52,6 @@ namespace NCL {
 			int teamKill = 0;
 			int jumpNo = 0;
 
-			bool isDashing = false;
 			bool isJumping = false;
 			bool hasAmmo = true;
 			bool isReloading = false;
@@ -65,6 +66,7 @@ namespace NCL {
 			PxTransform camOri;
 
 			Bullet* bullet;
+
 		};
 	}
 }

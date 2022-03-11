@@ -21,5 +21,5 @@ void NCL::CSC8503::Cube::SetUp()
 	properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale/2));
 	
 	physics->phyObj->properties = properties;
-	PushComponet(physics);
+	PushComponent(physics);
 }
