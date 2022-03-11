@@ -28,6 +28,137 @@
     <ClCompile Include="PhysicsXSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDetection.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsObject.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="StateTransition.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="PushdownState.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="PushdownMachine.h">
+      <Filter>AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constraint.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsSystem.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="SphereVolume.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="OBBVolume.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="AABBVolume.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionVolume.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationPath.h">
+      <Filter>Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationGrid.h">
+      <Filter>Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMesh.h">
+      <Filter>Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationMap.h">
+      <Filter>Pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadTree.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleVolume.h">
+      <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObjectGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GameWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDetection.cpp">
+      <Filter>CollisionDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="StateTransition.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="PushdownMachine.cpp">
+      <Filter>AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsSystem.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationGrid.cpp">
+      <Filter>Pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationMesh.cpp">
+      <Filter>Pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadTree.cpp">
+      <Filter>CollisionDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObjectGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClInclude Include="AABBVolume.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="CapsuleVolume.h" />
