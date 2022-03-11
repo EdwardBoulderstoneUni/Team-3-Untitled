@@ -1,4 +1,8 @@
 #include "ComponentInput.h"
+#include "Player.h"
+void ComponentInput::Init() {
+}
+
 void ComponentInput::Update(float dt) {
 	if (userInterface->button_down(jump))
 		ButtonCallback[jump]();
@@ -6,7 +10,7 @@ void ComponentInput::Update(float dt) {
 		ButtonCallback[dash]();
 	if (userInterface->button_down(reload))
 		ButtonCallback[reload]();
-	if (userInterface->get_movement() != NCL::Maths::Vector2(0,0))
+	if (userInterface->get_movement() != Vector2(0,0))
 		MovCallback(userInterface->get_movement());
 	if (userInterface->button_down(attack))
 		ButtonCallback[attack]();
