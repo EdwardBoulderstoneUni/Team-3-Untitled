@@ -22,6 +22,7 @@ TutorialGame::TutorialGame()
 	forceMagnitude = 10.0f;
 	useGravity = false;
 	inSelectionMode = false;
+	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
 	InitialiseUI();
@@ -129,6 +130,9 @@ void TutorialGame::UpdateGame(float dt)
 	{
 		Debug::Print("(G)ravity off", Vector2(5, 95));
 	}
+	if (DebugMode) {
+		CalculateFrameRate(dt);
+	}
 
 	//SelectObject();
 	SelectXObject();
@@ -202,6 +206,9 @@ void TutorialGame::UpdateKeys()
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8))
 	{
 		world->ShuffleObjects(false);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::O)) {
+		DebugMode = !DebugMode;
 	}
 
 	if (lockedObject)
@@ -740,4 +747,16 @@ void TutorialGame::MoveSelectedObject()
 	Vector3 camPos = world->GetMainCamera()->GetPosition();
 	Vector3 dir = position - camPos;
 	obj->AddForce(dir.Normalised()*1500.0f);
+}
+
+void TutorialGame::CalculateFrameRate(float dt) {
+	float currentTime = GetTickCount64() * 0.001f;
+	++framesPerSecond;
+	if (currentTime - lastTime > 1.0f)
+	{
+		lastTime = currentTime;
+		FPS = framesPerSecond;
+		framesPerSecond = 0;
+	}
+	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
 }
