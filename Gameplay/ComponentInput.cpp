@@ -5,15 +5,15 @@ void ComponentInput::Init() {
 
 void ComponentInput::Update(float dt) {
 	if (userInterface->button_down(jump))
-		Callback[jump]();
+		ButtonCallback[jump]();
 	if (userInterface->button_down(dash))
-		Callback[dash]();
+		ButtonCallback[dash]();
 	if (userInterface->button_down(reload))
-		Callback[reload]();
+		ButtonCallback[reload]();
 	if (userInterface->get_movement() != Vector2(0,0))
 		MovCallback(userInterface->get_movement());
 	if (userInterface->button_down(attack))
-		Callback[attack]();
-	Callback[idle]();
+		ButtonCallback[attack]();
+	UpdateCallback(dt);
 	userInterface->update(dt);
 }

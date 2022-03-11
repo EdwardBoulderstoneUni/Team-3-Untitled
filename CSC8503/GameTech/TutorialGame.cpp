@@ -310,7 +310,7 @@ void TutorialGame::InitDefaultFloor()
 
 void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 {
-	eventSystem->RegisterEventHandle("OPEN_FIRE", _testhandle);
+	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle);
 }
 
 void TutorialGame::InitGameExamples()
@@ -397,11 +397,12 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 	return apple;
 }
 
-void NCL::CSC8503::TutorialGame::_testhandle(const EVENT* pEvent, UINT dwOwnerData)
+void NCL::CSC8503::TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 {
 	Player* player = TutorialGame::getMe()->player;
 	Vector3 positon = player->GetTransform().GetPosition();
 	Vector3 forward = player->getForward();
+
 	GameObject* bullet=TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*100.0f);

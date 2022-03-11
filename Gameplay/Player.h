@@ -41,7 +41,7 @@ namespace NCL {
 			
 			// t is short for timer (cooldowns)
 			float tDash;
-			float dashCooldown;
+			float dashCooldown=0.0f;
 			float tAbility1;
 			float tAbility2;
 			float tDeath;
@@ -52,7 +52,6 @@ namespace NCL {
 			int teamKill = 0;
 			int jumpNo = 0;
 
-			bool isDashing = false;
 			bool isJumping = false;
 			bool hasAmmo = true;
 			bool isReloading = false;

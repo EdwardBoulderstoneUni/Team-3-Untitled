@@ -41,28 +41,31 @@ namespace NCL {
 			PushComponet(physics);
 
 			auto input = new ComponentInput();
-			input->Callback[jump] = [this]() {
+			input->ButtonCallback[jump] = [this]() {
 				this->Jump();
 			};
-			input->Callback[dash] = [this]() {
+			input->ButtonCallback[dash] = [this]() {
 				this->Dash();
 			};
-			input->Callback[attack] = [this]() {
+			input->ButtonCallback[attack] = [this]() {
 				this->Openfire();
 			};
 			input->MovCallback = [this](Vector2 dir) {
 				this->Move(dir);
 			};
-			input->Callback[reload] = [this]() {
+			input->ButtonCallback[reload] = [this]() {
 				this->Reload();
 			};
 			
-			input->Callback[idle] = [this]() {
+			input->UpdateCallback = [this](float dt) {
 				if (!physicsXObject->controller)return;
 				physicsXObject->controller->move(PxVec3(0.0f, -9.81f, 0.0f) * 0.05f, 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
+
 				forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 				right = Vector3::Cross(Vector3(0, 1, 0), -forward);
+
+				dashCooldown -= dt;
 			};
 			auto* controller = new PlayerController();
 			input->userInterface = new UserInterface(controller);
@@ -104,45 +107,16 @@ namespace NCL {
 		}
 
 		void Player::Jump() {
-			physicsXObject->controller->move(PxVec3(0.0f, 5.0f, 0.0f), 0.0001f, 0.2,
-				PxControllerFilters(), NULL);
-			//	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-
-
-			//if (isGrounded == true) {
-			//	isJumping = false;
-			//	jumpNo = 0;
-			//	physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-			//		PxControllerFilters(), NULL);
-			////	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-			//	jumpNo++;
-			//	isJumping = true;
-			//	isGrounded = false;
-			//	std::cout << jumpNo << std::endl;
-			//}
-			//if (isJumping = true && jumpNo == 1) {
-			//	physicsXObject->controller->move(PxVec3(0.0f, 1.0f, 0.0f), 0.0001f, 0.2,
-			//		PxControllerFilters(), NULL);
-			////	YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-			//	jumpNo++;
-			//	isGrounded = false;
-			//	std::cout << jumpNo << std::endl;
-			//}
-			//isGrounded = true;
+			if (not isGrounded)return;
+			physicsXObject->controller->move(PxVec3(0.0f, 50.0f, 0.0f), 0.0001f, 0.2, PxControllerFilters(), NULL);
+			isGrounded = false;
 		}
-
-
-
 		void Player::Dash() {
-
-	
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 5.0f, 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-		//		YiEventSystem::GetMe()->PushEvent(GAME_PLAY_KILL);
-				isDashing = true;
-			
-			// Add CoolDown Time
-		
+				if (dashCooldown <= 0.0f) {
+					physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 10.0f, 0.0001f, 0.2,
+						PxControllerFilters(), NULL);
+					dashCooldown = 2.0f;
+				}
 		}
 		void Player::Openfire() {
 			if (ammo > 0) {

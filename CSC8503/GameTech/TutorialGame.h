@@ -85,7 +85,7 @@ namespace NCL {
 
 
 		protected:
-			static void _testhandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static TutorialGame* p_self;
 			static TutorialGame* getMe() { return p_self; }
 		};

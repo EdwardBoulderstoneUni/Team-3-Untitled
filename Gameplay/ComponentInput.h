@@ -12,7 +12,8 @@ public:
 	void Init() override;
 	void Update(float dt) override;
 	UserInterface* userInterface;
-	std::function<void()> Callback[max_input];
+	std::function<void()> ButtonCallback[max_input];
 	std::function<void(NCL::Maths::Vector2 dir)> MovCallback;
+	std::function<void(float dt)> UpdateCallback;
 private:
 };
