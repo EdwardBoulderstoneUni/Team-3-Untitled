@@ -3,6 +3,8 @@
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
+#include "../CSC8503Common/PushdownMachine.h"
+#include "GameState.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -12,17 +14,16 @@ namespace NCL {
 			~TutorialGame();
 
 			virtual void UpdateGame(float dt);
+			virtual void UpdateRender(float dt);
 
+			GameUI* GetUI()const { return gameUI; }
+			void StartRender()const { renderer->Render(); }
+
+			void SetSingleMode();
+			void SetMultiMode();
 		protected:
-			float FPS = 0.0f;
-			float framesPerSecond = 0.0f;   
-			float lastTime = 0.0f;
-			float previousSecond;
-			float currentSecond;
-
-
 			void InitialiseAssets();
-
+			void InitialiseUI();
 			void InitCamera();
 			void UpdateKeys();
 
@@ -43,7 +44,6 @@ namespace NCL {
 			void MoveSelectedObject();
 			void DebugObjectMovement();
 			void LockedObjectMovement();
-			void CalculateFrameRate(float dt);
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
@@ -62,7 +62,6 @@ namespace NCL {
 	
 			bool useGravity;
 			bool inSelectionMode;
-			bool DebugMode;
 
 			float forceMagnitude;
 
@@ -88,6 +87,11 @@ namespace NCL {
 			{
 				lockedObject = o;
 			}
+
+		
+
+			GameUI* gameUI;
+
 		};
 	}
 }
