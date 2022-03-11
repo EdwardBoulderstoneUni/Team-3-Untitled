@@ -451,22 +451,6 @@ void TutorialGame::TimeLeft(float dt) {
 
 
 }
-/*
-If an object has been clicked, it can be pushed with the right mouse button, by an amount
-determined by the scroll wheel. In the first tutorial this won't do anything, as we haven't
-added linear motion into our physics system. After the second tutorial, objects will move in a straight
-line - after the third, they'll be able to twist under torque aswell.
-*/
-void TutorialGame::MoveSelectedObject()
-{
-	if (selectionObject == nullptr)return;
-	PhysicsXObject* obj= selectionObject->GetPhysicsXObject();
-	if (!obj->isDynamic())return;
-	Vector3 position=selectionObject->GetTransform().GetPosition();
-	Vector3 camPos = world->GetMainCamera()->GetPosition();
-	Vector3 dir = position - camPos;
-	obj->AddForce(dir.Normalised()*1500.0f);
-}
 
 void TutorialGame::CalculateFrameRate(float dt) {
 	float currentTime = GetTickCount64() * 0.001f;
