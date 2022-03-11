@@ -9,7 +9,7 @@ public:
 		Render,
 		MAX_COM_TYPE
 	};
-	virtual void Init() = 0;
-	virtual void Update(float dt) = 0;
+	virtual void Init() {}
+	virtual void Update(float dt) {}
 	ComponentType type;
 };
