@@ -9,10 +9,5 @@ void ComponentCamera::Init() {
 
 void ComponentCamera::Update(float dt) {
 	camera->ThirdPersonCamera(gO);
-
-	//Quaternion orien = gO->GetTransform().GetOrientation();
-	//Vector3 vec = gO->GetTransform().GetOrientation().ToEuler();
-	//vec.y = camera->GetYaw();
-	//orien = orien.EulerAnglesToQuaternion(vec.x, vec.y - 180, vec.z);
 	gO->GetTransform().SetOrientation(camera->GetThirdPersonOrientation());
 }
