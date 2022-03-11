@@ -1,8 +1,8 @@
 #pragma once
-#include "ComponentGameObject.h"
+#include "ComponetGameObject.h"
 namespace NCL {
 	namespace CSC8503 {
-		class Cube : public ComponentGameObject
+		class Cube : public ComponetGameObject
 		{
 		public:
 			Cube();

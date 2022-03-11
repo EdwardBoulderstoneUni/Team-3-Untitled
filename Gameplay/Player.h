@@ -1,5 +1,5 @@
 #pragma once
-#include "ComponentGameObject.h"
+#include "ComponetGameObject.h"
 #include "Ability.h"
 #include "AbilityContainer.h"
 #include "../CSC8503/GameTech/YiEventSystem.h"
@@ -7,7 +7,7 @@
 #include "Bullet.h"
 namespace NCL {
 	namespace CSC8503 {		
-		class Player : public ComponentGameObject {
+		class Player : public ComponetGameObject {
 		public:
 			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
 			~Player();
