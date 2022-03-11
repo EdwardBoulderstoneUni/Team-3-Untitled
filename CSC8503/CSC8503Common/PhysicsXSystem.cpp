@@ -382,6 +382,15 @@ void PhysicsXSystem::SyncGameObjs()
 
 void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
 
+	// FLOOR CHECK
+	
+	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_team2) {
+		a->OnCollisionBegin(b,a->GetTransform().GetPosition());
+	}
+
+	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_floor) {
+		a->OnCollisionBegin(b, a->GetTransform().GetPosition()-a->GetTransform().GetScale());
+	}
 	//here bullet和player之间的关系需要重新调整
 	if (a->type == GameObjectType_floor and
 		b->type == GameObjectType_team1) {
