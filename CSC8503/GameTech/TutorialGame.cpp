@@ -21,6 +21,7 @@ TutorialGame::TutorialGame()
 	forceMagnitude = 10.0f;
 	useGravity = false;
 	inSelectionMode = false;
+	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
 
@@ -74,6 +75,9 @@ void TutorialGame::UpdateGame(float dt)
 	{
 		Debug::Print("(G)ravity off", Vector2(5, 95));
 	}
+	if (DebugMode) {
+		CalculateFrameRate(dt);
+	}
 
 	//SelectObject();
 	SelectXObject();
@@ -120,11 +124,10 @@ void TutorialGame::UpdateKeys()
 		InitCamera(); //F2 will reset the camera to a specific default place
 	}
 
-	//if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
-	//{
-	//	useGravity = !useGravity; //Toggle gravity!
-	//	physics->UseGravity(useGravity);
-	//}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::O)) {
+		DebugMode = !DebugMode;
+	}
+
 	//Running certain physics updates in a consistent order might cause some
 	//bias in the calculations - the same objects might keep 'winning' the constraint
 	//allowing the other one to stretch too much etc. Shuffling the order so that it
@@ -682,4 +685,16 @@ void TutorialGame::MoveSelectedObject()
 	Vector3 camPos = world->GetMainCamera()->GetPosition();
 	Vector3 dir = position - camPos;
 	obj->AddForce(dir.Normalised()*1500.0f);
+}
+
+void TutorialGame::CalculateFrameRate(float dt) {
+	float currentTime = GetTickCount64() * 0.001f;
+	++framesPerSecond;
+	if (currentTime - lastTime > 1.0f)
+	{
+		lastTime = currentTime;
+		FPS = framesPerSecond;
+		framesPerSecond = 0;
+	}
+	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
 }
