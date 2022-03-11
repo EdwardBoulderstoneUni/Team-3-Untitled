@@ -40,24 +40,24 @@ namespace NCL {
 			physics->phyObj->properties = properties;
 			PushComponent(physics);
 
-			auto input = new ComponentInput();
-			input->ButtonCallback[jump] = [this]() {
+			const auto input = new ComponentInput();
+			input->button_callback[jump] = [this]() {
 				this->Jump();
 			};
-			input->ButtonCallback[dash] = [this]() {
+			input->button_callback[dash] = [this]() {
 				this->Dash();
 			};
-			input->ButtonCallback[attack] = [this]() {
+			input->button_callback[attack] = [this]() {
 				this->Openfire();
 			};
-			input->MovCallback = [this](Vector2 dir) {
+			input->mov_callback = [this](Vector2 dir) {
 				this->Move(dir);
 			};
-			input->ButtonCallback[reload] = [this]() {
+			input->button_callback[reload] = [this]() {
 				this->Reload();
 			};
 			
-			input->UpdateCallback = [this](float dt) {
+			input->update_callback = [this](float dt) {
 				if (!physicsXObject->controller)return;
 				physicsXObject->controller->move(PxVec3(0.0f, -9.81f, 0.0f) * 0.05f, 0.0001f, 0.2,
 					PxControllerFilters(), NULL);
@@ -68,7 +68,7 @@ namespace NCL {
 				dashCooldown -= dt;
 			};
 			auto* controller = new PlayerController();
-			input->userInterface = new UserInterface(controller);
+			input->user_interface = Window::GetInterface();
 			PushComponent(input);
 
 			auto camera = new ComponentCamera();
