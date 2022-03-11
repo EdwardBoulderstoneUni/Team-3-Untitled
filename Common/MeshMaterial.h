@@ -39,6 +39,10 @@ namespace NCL
 			return i->second.second;
 		}
 
+		void AddEntry(const string entry, const string fileName, Rendering::TextureBase* texture)
+		{
+			entries.insert({ entry, {fileName, texture} });
+		}
 		void LoadTextures();
 
 	protected:
@@ -53,10 +57,12 @@ namespace NCL
 	public:
 		MeshMaterial(const std::string& filename);
 
+		MeshMaterial() = default;
 		~MeshMaterial()
 		{
 		}
 
+		void AddEntry(MeshMaterialEntry entry);
 		const MeshMaterialEntry* GetMaterialForLayer(int i) const;
 		void LoadTextures();
 	};

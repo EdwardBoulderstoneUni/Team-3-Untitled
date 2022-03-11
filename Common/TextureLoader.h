@@ -27,6 +27,8 @@ namespace NCL
 		static bool LoadTexture(const std::string& filename, char*& outData, int& width, int& height, int& channels,
 		                        int& flags);
 
+		static bool LoadTextureData(char* inData, int inDataLen, char*& outData, int *width, int *height, int *channels);
+
 		static void RegisterTextureLoadFunction(TextureLoadFunction f, const std::string& fileExtension);
 
 		static void RegisterAPILoadFunction(APILoadFunction f);

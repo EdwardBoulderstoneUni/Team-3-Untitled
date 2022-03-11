@@ -13,7 +13,7 @@ namespace NCL {
 		{
 
 		public:
-			GameObjectGenerator();
+			GameObjectGenerator() = default;
 			~GameObjectGenerator();
 			void Generate(const char* fileName, std::vector<GameObject*>& objects) ;
 			void SetTransform(GameObject*, const rapidjson::Value&);

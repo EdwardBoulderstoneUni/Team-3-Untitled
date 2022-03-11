@@ -108,7 +108,7 @@
     <ClCompile Include="MeshMaterial.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="UserInput.cpp">
+    <ClCompile Include="UserInterface.cpp">
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="Mouse.cpp">
@@ -197,7 +197,7 @@
     <ClInclude Include="MeshMaterial.h">
       <Filter>Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="UserInput.h">
+    <ClInclude Include="UserInterface.h">
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="Keyboard.h">
@@ -206,7 +206,7 @@
     <ClInclude Include="Mouse.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="InputHandler.h">
+    <ClInclude Include="UserController.h">
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="ControllerInput.h">

@@ -262,6 +262,7 @@ void GameTechRenderer::render_camera()
 		}
 
 		Matrix4 model_matrix = object->GetTransform()->GetMatrix();
+		model_matrix = model_matrix * object->GetMesh()->GetLocalTransform();
 		glUniformMatrix4fv(model_location, 1, false, reinterpret_cast<float*>(&model_matrix));
 
 		Matrix4 full_shadow_mat = shadow_matrix_ * model_matrix;
