@@ -147,3 +147,12 @@ void GameWorld::GetConstraintIterators(
 	first = constraints.begin();
 	last = constraints.end();
 }
+GameObject* GameWorld::FindObjectbyID(int id) {
+
+	std::vector<GameObject*> gameObjs = GetGameObjects();
+	for (auto i : gameObjs) {
+		if (i->GetWorldID() == id)
+			return i;
+	}
+	return nullptr;
+}

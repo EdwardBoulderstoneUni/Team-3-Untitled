@@ -121,7 +121,7 @@ namespace NCL {
 		}
 		void Player::Openfire() {
 			if (ammo > 0) {
-				YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE);
+				YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE,GetWorldID());
 				ammo--;
 			}
 		}

@@ -66,6 +66,8 @@ namespace NCL
 				std::vector<Constraint*>::const_iterator& last) const;
 
 			std::vector<GameObject*>& GetGameObjects() { return gameObjects; }
+
+			GameObject* FindObjectbyID(int id);
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;

@@ -421,12 +421,13 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 
 void NCL::CSC8503::TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 {
-	Player* player = TutorialGame::getMe()->player;
+	string worldID=pEvent->vArg[0];
+	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
 	Vector3 positon = player->GetTransform().GetPosition();
 	Vector3 forward = player->GetForward();
+	
+	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f));
 
-	GameObject* bullet=TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f);
-	bullet = (Bullet*)bullet;
 	bullet->type = GameObjectType_team1Bullet;
 	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
 	bullet->SetCollisionFunction(func);
