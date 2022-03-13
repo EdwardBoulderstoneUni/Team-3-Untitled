@@ -32,6 +32,7 @@ public:
 	PhysicsXObject();
 	~PhysicsXObject();
 	void SetLinearVelocity(Vector3 v);
+	void CMove(PxVec3 disp);
 	PhyProperties properties;
 	PxRigidActor* rb;
 	PxController* controller;

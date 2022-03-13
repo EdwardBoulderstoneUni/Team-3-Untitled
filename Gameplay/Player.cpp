@@ -1,185 +1,224 @@
 #include "Player.h"
-#include "../Common/Keyboard.h"
-#include "../Common/Window.h"
 #include "PlayerController.h"
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
-void _OnShootEvent(const EVENT* pEvent, UINT dwOwnerData)
+#include "../CSC8503/CSC8503Common/State.h"
+#include "../CSC8503/CSC8503Common/StateTransition.h"
+Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 {
-
+	forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
+	right = Vector3::Cross(Vector3(0, 1, 0), forward);
+	shootDir = forward;
+	pColour = colour;
+	AssignRole(aCont);
+	this->type = type;
+	SetupStateMachine();
 }
-namespace NCL {
-	namespace CSC8503 {
-		Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
-		{
-			forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
-			right = Vector3::Cross(Vector3(0, 1, 0), forward);
-			shootDir = forward;
-			pColour = colour;
-			AssignRole(aCont);
-			this->type = type;
-		}
 
-		Player::~Player() {
-			for (auto i : abilities)
-				delete i;
+Player::~Player() {
+	for (auto i : abilities)
+		delete i;
 
-			delete bullet;
-		}
+	delete bullet;
+}
 
-		void Player::SetUp()
-		{
-			auto physics = new ComponentPhysics();
-			physics->phyObj = GetPhysicsXObject();
-			PhyProperties properties = PhyProperties();
-			properties.type = PhyProperties::Character;
-			properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
-			properties.Mass = 10.0f;
+void Player::SetUp()
+{
+	auto physics = new ComponentPhysics();
+	physics->phyObj = GetPhysicsXObject();
+	PhyProperties properties = PhyProperties();
+	properties.type = PhyProperties::Character;
+	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
+	properties.Mass = 10.0f;
 
-			Vector3 scale = GetTransform().GetScale()/2.0f;
-			properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
+	Vector3 scale = GetTransform().GetScale() / 2.0f;
+	properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
 
-			physics->phyObj->properties = properties;
-			PushComponent(physics);
+	physics->phyObj->properties = properties;
+	PushComponent(physics);
 
-			const auto input = new ComponentInput();
-			input->button_callback[jump] = [this]() {
-				this->Jump();
-			};
-			input->button_callback[dash] = [this]() {
-				this->Dash();
-			};
-			input->button_callback[attack] = [this]() {
-				this->Openfire();
-			};
-			input->mov_callback = [this](Vector2 dir) {
-				this->Move(dir);
-			};
-			input->button_callback[reload] = [this]() {
-				this->Reload();
-			};
-			
-			input->update_callback = [this](float dt) {
-				if (!physicsXObject->controller)return;
-				physicsXObject->controller->move(PxVec3(0.0f, -9.81f, 0.0f) * 0.05f, 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
+	const auto input = new ComponentInput();
+	input->user_interface = new PlayerController();
+	input->updateCallback = [this](float dt) {
+		forward = transform.GetOrientation() * Vector3(0, 0, 1);
+		right = Vector3::Cross(forward, Vector3(0,1,0));
+		physicsXObject->CMove(PxVec3(0.0f, -9.8f, 0.0f)*0.1);
+		playerState->Update(dt);
+	};
+	PushComponent(input);
 
-				forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
-				right = Vector3::Cross(Vector3(0, 1, 0), forward);
+	auto camera = new ComponentCamera();
+	camera->gO = this;
 
-				dashCooldown -= dt;
-			};
-			auto* controller = new PlayerController();
-			input->user_interface = Window::GetInterface();
-			PushComponent(input);
+	camera->camera = new Camera();
+	camera->camera->SetNearPlane(0.1f);
+	camera->camera->SetFarPlane(500.0f);
+	camera->camera->SetPitch(-15.0f);
+	camera->camera->SetYaw(180);
 
-			auto camera = new ComponentCamera();
-			camera->gO = this;
+	PushComponent(camera);
+}
+void Player::Move(Vector2 dir) {
 
-			camera->camera = new Camera();
-			camera->camera->SetNearPlane(0.1f);
-			camera->camera->SetFarPlane(500.0f);
-			camera->camera->SetPitch(-15.0f);
-			camera->camera->SetYaw(180);
-
-			PushComponent(camera);
-		}
-		void Player::Move(Vector2 dir) {
-			
-			// Move forward
-			if (dir.y>0) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-			}
-			// Move backward
-			if (dir.y<0) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward)*(-1), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-			}
-			// Move left
-			if (dir.x<0) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right) * (-1), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-			};
-			// Move right
-			if (dir.x>0) {
-				physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right), 0.0001f, 0.2,
-					PxControllerFilters(), NULL);
-			}
-		}
-
-		void Player::Jump() {
-			if (not isGrounded)return;
-			physicsXObject->controller->move(PxVec3(0.0f, 50.0f, 0.0f), 0.0001f, 0.2, PxControllerFilters(), NULL);
-			isGrounded = false;
-		}
-		void Player::Dash() {
-				if (dashCooldown <= 0.0f) {
-					physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 20.0f, 0.0001f, 0.2,
-						PxControllerFilters(), NULL);
-					dashCooldown = 2.0f;
-				}
-		}
-		void Player::Openfire() {
-			if (ammo > 0) {
-				YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE,GetWorldID());
-				ammo--;
-			}
-		}
-		float Player::TakeDamage(float dmg) {
-			health = health - dmg < 0 ? 0 : health - dmg;
-			return health;
-		}
-
-		bool Player::IsDead() {
-			return health == 0 ? true : false;
-		}
-
-		// Give damage to palyer a
-		void Player::GiveDamage(float dmg, Player* a) {
-			a->TakeDamage(dmg);
-			if (a->IsDead() == true) {
-				teamKill++;
-			}
-		}
-
-
-
-		void Player::Reload() {
-			isReloading = false;
-			if (ammo >= 0 && ammo < maxAmmo) {				
-				isReloading = true;
-				ammo = maxAmmo;
-				// Finish reload
-				isReloading = false;
-			}
-		}
-
-		void Player::AssignRole(AbilityContainer* aCont)
-		{
-			std::string colour;
-
-			switch (pColour) {
-			case PlayerRole_red:
-				colour = "Red";
-				abilities[0] = aCont->allAbilities[0];
-				abilities[1] = aCont->allAbilities[1];
-				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_red);
-				break;
-			case PlayerRole_green:
-				colour = "Green";
-				abilities[0] = aCont->allAbilities[2];
-				abilities[1] = aCont->allAbilities[3];
-				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_green);
-				break;
-			case PlayerRole_blue:
-				colour = "Blue";
-				abilities[0] = aCont->allAbilities[4];
-				abilities[1] = aCont->allAbilities[5];
-				bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_blue);
-				break;
-			}
-		}
-	
+	// Move forward
+	if (dir.y > 0) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward), 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
+	}
+	// Move backward
+	if (dir.y < 0) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * (-1), 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
+	}
+	// Move left
+	if (dir.x < 0) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right) * (-1), 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
+	};
+	// Move right
+	if (dir.x > 0) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right), 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
 	}
 }
 
+
+void Player::Dash() {
+	if (dashCooldown <= 0.0f) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 20.0f, 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
+		dashCooldown = 2.0f;
+	}
+}
+void Player::Openfire() {
+	if (ammo > 0) {
+		YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, GetWorldID());
+		ammo--;
+	}
+}
+
+float Player::TakeDamage(float dmg) {
+	health = health - dmg < 0 ? 0 : health - dmg;
+	return health;
+}
+
+bool Player::IsDead() {
+	return health == 0 ? true : false;
+}
+
+// Give damage to palyer a
+void Player::GiveDamage(float dmg, Player* a) {
+	a->TakeDamage(dmg);
+	if (a->IsDead() == true) {
+		teamKill++;
+	}
+}
+
+
+
+void Player::Reload() {
+	isReloading = false;
+	if (ammo >= 0 && ammo < maxAmmo) {
+		isReloading = true;
+		ammo = maxAmmo;
+		// Finish reload
+		isReloading = false;
+	}
+}
+
+void Player::AssignRole(AbilityContainer* aCont)
+{
+	std::string colour;
+
+	switch (pColour) {
+	case PlayerRole_red:
+		colour = "Red";
+		abilities[0] = aCont->allAbilities[0];
+		abilities[1] = aCont->allAbilities[1];
+		bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_red);
+		break;
+	case PlayerRole_green:
+		colour = "Green";
+		abilities[0] = aCont->allAbilities[2];
+		abilities[1] = aCont->allAbilities[3];
+		bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_green);
+		break;
+	case PlayerRole_blue:
+		colour = "Blue";
+		abilities[0] = aCont->allAbilities[4];
+		abilities[1] = aCont->allAbilities[5];
+		bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_blue);
+		break;
+	}
+}
+
+void Player::SetupStateMachine()
+{
+	playerState = new StateMachine();
+
+	State* Idle = new State([&](float dt) -> void {
+		Input input = GetComponentInput()->user_interface->get_inputs();
+ 		if (input.buttons[jump]and isGrounded) {
+			physicsXObject->CMove(PxVec3(0.0f, 150.0f, 0.0f));
+			isJumping = true;
+			isGrounded = false;
+			}
+		if (input.movement_direction not_eq Vector2()) {
+			isWalking = true;
+		}		
+	});
+	State* Walk = new State([&](float dt) -> void {
+		Input input = GetComponentInput()->user_interface->get_inputs();
+		if (input.movement_direction == Vector2(0, 1)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
+		}
+		if (input.movement_direction == Vector2(0, -1)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
+		}
+		if (input.movement_direction == Vector2(1, 0)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
+		}
+		if (input.movement_direction == Vector2(-1, 0)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
+		}
+		if (input.buttons[jump] and isGrounded) {
+			physicsXObject->CMove(PxVec3(0.0f, 150.0f, 0.0f));
+			isJumping = true;
+			isGrounded = false;
+		}
+	});
+	State* StandingJump = new State([&](float dt) -> void {
+		Input input = GetComponentInput()->user_interface->get_inputs();
+		if (input.buttons[dash])
+			isDashing = true;
+		if (input.buttons[jump])
+			isDashing = true;
+		});
+	State* DoubleJump = new State([&](float dt) -> void {
+		Input input = GetComponentInput()->user_interface->get_inputs();
+		if (input.buttons[dash])
+			isDashing = true;
+		});
+	State* Dashing = new State([&](float dt) -> void {
+		Input input = GetComponentInput()->user_interface->get_inputs();
+		if (input.buttons[jump])
+			isJumping = true;
+		});
+
+	StateTransition* IdleToStandingJump = new StateTransition(Idle, StandingJump, [&](void)->bool {
+		return isJumping;
+		});
+	StateTransition* IdleToWalk = new StateTransition(Idle, Walk, [&](void)->bool {
+		return isWalking;
+		});
+
+	StateTransition* StandingJumpToIdle = new StateTransition(StandingJump, Idle, [&](void)->bool {
+		return isGrounded;
+		});
+	playerState->AddState(Idle);
+	playerState->AddState(Walk);
+	playerState->AddState(StandingJump);
+	playerState->AddTransition(IdleToStandingJump);
+	playerState->AddTransition(IdleToWalk);
+	playerState->AddTransition(StandingJumpToIdle);
+	//automata 
+}

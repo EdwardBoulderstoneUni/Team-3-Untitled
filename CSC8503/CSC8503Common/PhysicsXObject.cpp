@@ -21,6 +21,10 @@ void PhysicsXObject::SetLinearVelocity(Vector3 v) {
 	if (!actor)return;
 	actor->setLinearVelocity(PhysXConvert::Vector3ToPxVec3(v));
 }
+void PhysicsXObject::CMove(PxVec3 disp) {
+	if (not controller)return;
+	controller->move(disp, 0.0001f, 0.2f, PxControllerFilters(), NULL);
+}
 
 
 

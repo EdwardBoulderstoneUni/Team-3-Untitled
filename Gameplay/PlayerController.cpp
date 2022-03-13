@@ -22,11 +22,10 @@ void PlayerController::update(const float dt)
       if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
           buttons[jump] = true;
       if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT))
-        buttons[dash] = true;
+          buttons[dash] = true;
       if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R))
           buttons[reload] = true;
 
-	  movement_direction = NCL::Maths::Vector2(0, 0);
 	  if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
 		  movement_direction= NCL::Maths::Vector2(0, 1);
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))
@@ -36,5 +35,5 @@ void PlayerController::update(const float dt)
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
           movement_direction = NCL::Maths::Vector2(1, 0);
       if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
-              buttons[attack] = true;
+          buttons[attack] = true;
 }

@@ -5,6 +5,7 @@
 #include "../../include/PhysX/PxPhysicsAPI.h"
 #include "../../Gameplay/Player.h"
 
+PhysicsXSystem* PhysicsXSystem::p_self = nullptr;
 
 #define PVD_HOST "127.0.0.1"
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
@@ -101,15 +102,40 @@ class ContackCallback :public PxSimulationEventCallback {
 		PX_UNUSED((pairHeader));
 		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
 		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
-		PhysicsXSystem::FlagCheck(a, b);
+		const PxU32 bufferSize = 64;
+		//TODO写一个队列来存这些碰撞数据
+		/*PxContactPairPoint contacts[bufferSize];
+		for (PxU32 i = 0; i < nbPairs; i++)
+		{
+			const PxContactPair& cp = pairs[i];
+
+			PxU32 nbContacts = pairs[i].extractContacts(contacts, bufferSize);
+			for (PxU32 j = 0; j < nbContacts; j++)
+			{
+				PxVec3 point = contacts[j].position;
+				PxVec3 impulse = contacts[j].impulse;
+				PxU32 internalFaceIndex0 = contacts[j].internalFaceIndex0;
+				PxU32 internalFaceIndex1 = contacts[j].internalFaceIndex1;
+			}
+		}*/
+		_CONTACT_O2OHandle(a,b);
+	}
+	void _CONTACT_O2OHandle(GameObject* a, GameObject* b) {
+		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
+			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+		}
+		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_floor) {
+			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+		}
 	}
 };
 class CharacterCallback :public PxUserControllerHitReport,public PxControllerBehaviorCallback {
 	void onShapeHit(const PxControllerShapeHit& hit) {
 		PX_UNUSED((hit));
-		GameObject* a = (GameObject*)hit.actor->userData;
-		GameObject* b = (GameObject*)hit.controller->getActor()->userData;
-		PhysicsXSystem::FlagCheck(a, b);
+		GameObject* a = (GameObject*)hit.controller->getActor()->userData;
+		GameObject* b = (GameObject*)hit.actor->userData;
+		//YiEventSystem::GetMe()->PushEvent(COLLISION_CONTACT_P2O, a->GetWorldID(), b->GetWorldID());
+		_CONTACT_P2OHandle(a,b);
 	}
 	void onControllerHit(const PxControllersHit& hit) {}
 	void onObstacleHit(const PxControllerObstacleHit& hit){}
@@ -120,6 +146,13 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 	}
 	PxControllerBehaviorFlags		getBehaviorFlags(const PxController& controller) { return PxControllerBehaviorFlags(0); }
 	PxControllerBehaviorFlags		getBehaviorFlags(const PxObstacle& obstacle) { return PxControllerBehaviorFlags(0); }
+	void _CONTACT_P2OHandle(GameObject* a, GameObject* b)
+	{
+		if (a->type == GameObjectType_team1 and b->type == GameObjectType_floor) {
+			Player* player = dynamic_cast<Player*>(a);
+			player->isGrounded = true;
+		}
+	}
 };
 
 ContackCallback* callback = new ContackCallback;
@@ -128,6 +161,7 @@ CharacterCallback* characterCallback = new CharacterCallback;
 
 PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 {
+	p_self = this;
 	dTOffset = 0.0f;
 	initPhysics();
 }
@@ -170,6 +204,7 @@ void PhysicsXSystem::initPhysics()
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 	gManager = PxCreateControllerManager(*gScene);
+	
 }
 
 void PhysicsXSystem::Update(float dt)
@@ -380,24 +415,9 @@ void PhysicsXSystem::SyncGameObjs()
 	}
 }
 
-void PhysicsXSystem::FlagCheck(GameObject* a, GameObject* b) {
 
-	// FLOOR CHECK
-	
-	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_team2) {
-		a->OnCollisionBegin(b,a->GetTransform().GetPosition());
-	}
 
-	if (a->type == GameObjectType::GameObjectType_team1Bullet && b->type == GameObjectType::GameObjectType_floor) {
-		a->OnCollisionBegin(b, a->GetTransform().GetPosition()-a->GetTransform().GetScale());
-	}
-	//here bullet和player之间的关系需要重新调整
-	if (a->type == GameObjectType_floor and
-		b->type == GameObjectType_team1) {
-		Player* player = (Player*)b;
-		player->isGrounded = true;
-	}
-		
-}
+
+
 
 

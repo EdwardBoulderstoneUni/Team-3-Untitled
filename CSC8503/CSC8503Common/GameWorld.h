@@ -68,6 +68,7 @@ namespace NCL
 			std::vector<GameObject*>& GetGameObjects() { return gameObjects; }
 
 			GameObject* FindObjectbyID(int id);
+	
 		protected:
 			std::vector<GameObject*> gameObjects;
 			std::vector<Constraint*> constraints;
@@ -77,6 +78,9 @@ namespace NCL
 			bool shuffleConstraints;
 			bool shuffleObjects;
 			int worldIDCounter;
+
+		
+
 		};
 	}
 }

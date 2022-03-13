@@ -2,11 +2,12 @@
 #include "ComponentGameObject.h"
 #include "Ability.h"
 #include "AbilityContainer.h"
+#include "../CSC8503/CSC8503Common/StateMachine.h"
 #include "../CSC8503/GameTech/YiEventSystem.h"
 #include "ePlayerRole.h"
 #include "Bullet.h"
 namespace NCL {
-	namespace CSC8503 {		
+	namespace CSC8503 {
 		class Player : public ComponentGameObject {
 		public:
 			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
@@ -15,7 +16,7 @@ namespace NCL {
 			void SetUp() override;
 
 			void Move(Vector2 dir);
-			void Jump();
+	
 			void GiveDamage(float dmg, Player* a);
 			bool IsDead();
 			float TakeDamage(float dmg);
@@ -60,13 +61,18 @@ namespace NCL {
 			int time = 0;
 
 			bool isJumping = false;
+			bool isDashing;
 			bool hasAmmo = true;
 			bool isReloading = false;
+			bool isWalking;
 			
-			PlayerRole pColour;
-			NCL::CSC8503::Ability *abilities[2];
+			StateMachine* playerState;
+			StateMachine* weaponState;
 
-			std::vector<Component> components;
+			PlayerRole pColour;
+			Ability *abilities[2];
+
+			vector<Component> components;
 
 			Vector3 forward;
 			Vector3 right;
@@ -74,6 +80,8 @@ namespace NCL {
 			PxTransform camOri;
 
 			Bullet* bullet;
+
+			void SetupStateMachine();
 
 		};
 	}

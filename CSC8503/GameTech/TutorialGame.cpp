@@ -18,13 +18,13 @@ TutorialGame* TutorialGame::p_self = NULL;
 
 TutorialGame::TutorialGame()
 {
+	eventSystem = new YiEventSystem();
 	p_self = this;
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
 	physicsX = new PhysicsXSystem(*world);
 	forceMagnitude = 10.0f;
 	inSelectionMode = false;
-	eventSystem = new YiEventSystem();
 	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
@@ -93,17 +93,15 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt)
 {
-	
+	eventSystem->ProcessAllEvent();
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 
 	if (DebugMode) {
 		CalculateFrameRate(dt);
 	}
-
 	player->Update(dt);
 	physicsX->Update(dt);
-	eventSystem->ProcessAllEvent();
 	if (lockedObject != nullptr)
 	{
 		Vector3 objPos = lockedObject->GetTransform().GetPosition();
@@ -419,22 +417,6 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 	return apple;
 }
 
-void NCL::CSC8503::TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
-{
-	string worldID=pEvent->vArg[0];
-	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
-	Vector3 positon = player->GetTransform().GetPosition();
-	Vector3 forward = player->GetForward();
-	
-	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f));
-
-	bullet->type = GameObjectType_team1Bullet;
-	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	bullet->SetCollisionFunction(func);
-	TutorialGame::getMe()->physicsX->addActor(*bullet);
-	bullet->GetPhysicsXObject()->SetLinearVelocity(forward*50.0f);
-}
-
 void TutorialGame::AmmoLeft() {
 	Player* player = TutorialGame::getMe()->player;
 	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 80));
@@ -462,3 +444,21 @@ void TutorialGame::CalculateFrameRate(float dt) {
 	}
 	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
 }
+
+
+void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
+{
+	string worldID = pEvent->vArg[0];
+	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
+	Vector3 positon = player->GetTransform().GetPosition();
+	Vector3 forward = player->GetForward();
+
+	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f));
+
+	bullet->type = GameObjectType_team1Bullet;
+	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	bullet->SetCollisionFunction(func);
+	TutorialGame::getMe()->physicsX->addActor(*bullet);
+	bullet->GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
+}
+
