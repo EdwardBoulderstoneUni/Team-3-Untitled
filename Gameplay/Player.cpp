@@ -1,9 +1,7 @@
 #include "Player.h"
 #include "PlayerController.h"
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
-#include "../CSC8503/CSC8503Common/State.h"
-#include "../CSC8503/CSC8503Common/StateTransition.h"
-
+#include "PlayerState.h"
 Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 {
 	forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
@@ -44,6 +42,8 @@ void Player::SetUp()
 		right = Vector3::Cross(forward, Vector3(0,1,0));
    		lastInput = GetComponentInput()->user_interface->get_inputs();
 		playerState->Update(dt);
+
+		dashCooldown -= dt;
 	};
 	PushComponent(input);
 
@@ -58,37 +58,28 @@ void Player::SetUp()
 
 	PushComponent(camera);
 }
-void Player::Move(Vector2 dir) {
-
-	// Move forward
-	if (dir.y > 0) {
-		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward), 0.0001f, 0.2,
-			PxControllerFilters(), NULL);
+void Player::Move() {
+	if (lastInput.movement_direction == Vector2(0, 1)) {
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
 	}
-	// Move backward
-	if (dir.y < 0) {
-		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * (-1), 0.0001f, 0.2,
-			PxControllerFilters(), NULL);
+	if (lastInput.movement_direction == Vector2(0, -1)) {
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
 	}
-	// Move left
-	if (dir.x < 0) {
-		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right) * (-1), 0.0001f, 0.2,
-			PxControllerFilters(), NULL);
-	};
-	// Move right
-	if (dir.x > 0) {
-		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right), 0.0001f, 0.2,
-			PxControllerFilters(), NULL);
+	if (lastInput.movement_direction == Vector2(1, 0)) {
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
+	}
+	if (lastInput.movement_direction == Vector2(-1, 0)) {
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
 	}
 }
-
-
-void Player::Dash() {
-	if (dashCooldown <= 0.0f) {
-		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 20.0f, 0.0001f, 0.2,
+void Player::Jump(float dt) {
+	physicsXObject->CMove(PxVec3(0, 1, 0) * cos(JumpingTimeStack));
+	JumpingTimeStack += dt * 3;
+}
+void Player::Dash(float dt) {
+	physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward)*3.0f, 0.0001f, 0.2,
 			PxControllerFilters(), NULL);
-		dashCooldown = 2.0f;
-	}
+	DashingTimeStack += dt;
 }
 void Player::Openfire() {
 	if (ammo > 0) {
@@ -96,12 +87,10 @@ void Player::Openfire() {
 		ammo--;
 	}
 }
-
 float Player::TakeDamage(float dmg) {
 	health = health - dmg < 0 ? 0 : health - dmg;
 	return health;
 }
-
 bool Player::IsDead() {
 	return health == 0 ? true : false;
 }
@@ -113,8 +102,6 @@ void Player::GiveDamage(float dmg, Player* a) {
 		teamKill++;
 	}
 }
-
-
 
 void Player::Reload() {
 	isReloading = false;
@@ -154,135 +141,7 @@ void Player::AssignRole(AbilityContainer* aCont)
 
 void Player::SetupStateMachine()
 {
-	playerState = new StateMachine();
-
-	State* Idle = new State([&](float dt) -> void {
-	});
-	State* Walk = new State([&](float dt) -> void {
-		if (lastInput.movement_direction == Vector2(0, 1)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
-		}
-		if (lastInput.movement_direction == Vector2(0, -1)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
-		}
-		if (lastInput.movement_direction == Vector2(1, 0)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
-		}
-		if (lastInput.movement_direction == Vector2(-1, 0)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
-		}
-	});
-	State* StandingJump = new State([&](float dt) -> void {
-		if (lastInput.movement_direction == Vector2(0, 1)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
-		}
-		if (lastInput.movement_direction == Vector2(0, -1)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
-		}
-		if (lastInput.movement_direction == Vector2(1, 0)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
-		}
-		if (lastInput.movement_direction == Vector2(-1, 0)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
-		}
-		if (CurrentHeight < JumpHeight) {
-				CurrentHeight += 0.1f;
-				physicsXObject->CMove(PxVec3(0, 1, 0) * CurrentJumpspeed);
-				CurrentJumpspeed -= 0.1f;
-			}
-		else {
-				physicsXObject->CMove(PxVec3(0, 1, 0) * -CurrentJumpspeed);
-				CurrentJumpspeed += 0.1f;
-			}
-		});
-	State* DoubleJump = new State([&](float dt) -> void {
-		if (lastInput.movement_direction == Vector2(0, 1)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
-		}
-		if (lastInput.movement_direction == Vector2(0, -1)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
-		}
-		if (lastInput.movement_direction == Vector2(1, 0)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
-		}
-		if (lastInput.movement_direction == Vector2(-1, 0)) {
-			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
-		}
-		if (CurrentHeight < JumpHeight) {
-			CurrentHeight += 0.1f;
-			physicsXObject->CMove(PxVec3(0, 1, 0) * CurrentJumpspeed);
-			CurrentJumpspeed -= 0.1f;
-		}
-		else {
-			physicsXObject->CMove(PxVec3(0, 1, 0) * -CurrentJumpspeed);
-			CurrentJumpspeed += 0.1f;
-		}
-	});
-	State* Dashing = new State([&](float dt) -> void {
-		
-		});
-
-	StateTransition* IdleToStandingJump = new StateTransition(Idle, StandingJump, [&](void)->bool {
-		if (lastInput.buttons[jump] and isGrounded)
-		{
-			isGrounded = false;
-			return true;
-		}
-		return false;
-		});
-	StateTransition* WalkToStandingJump = new StateTransition(Walk, StandingJump, [&](void)->bool {
-		if (lastInput.buttons[jump] and isGrounded)
-		{
-			isGrounded = false;
-			return true;
-		}
-		return false;
-		});
-	StateTransition* StandingJumpToIdle = new StateTransition(StandingJump, Idle, [&](void)->bool {
-		if (isGrounded)
-		{
-			CurrentHeight = 0.0f;
-			CurrentJumpspeed = 2.0f;
-			return true;
-		}
-		return false;
-		});
-	StateTransition* DoubleJumpToIdle = new StateTransition(DoubleJump, Idle, [&](void)->bool {
-		if (isGrounded)
-		{
- 			CurrentHeight = 0.0f;
-			CurrentJumpspeed = 2.0f;
-			return true;
-		}
-		return false;
-		});
-	StateTransition* StandingJumpToDoubleJump = new StateTransition(StandingJump, DoubleJump, [&](void)->bool {
-		if (lastInput.buttons[jump]) {
-			CurrentHeight = 0.0f;
-			CurrentJumpspeed = 2.0f;
-			return true;
-		}
-		return false;
-		});
-	StateTransition* IdleToWalk = new StateTransition(Idle, Walk, [&](void)->bool {
-		return lastInput.movement_direction not_eq Vector2();
-		});
-	StateTransition* WalkToIdle = new StateTransition(Walk, Idle, [&](void)->bool {
-		return lastInput.movement_direction == Vector2();
-		});
-
-	
-	playerState->AddState(Idle);
-	playerState->AddState(Walk);
-	playerState->AddState(StandingJump);
-	playerState->AddState(DoubleJump);
-	playerState->AddTransition(IdleToStandingJump);
-	playerState->AddTransition(StandingJumpToIdle);
-	playerState->AddTransition(StandingJumpToDoubleJump);
-	playerState->AddTransition(DoubleJumpToIdle);
-	playerState->AddTransition(WalkToStandingJump);
-	playerState->AddTransition(IdleToWalk);
-	playerState->AddTransition(WalkToIdle);
-
-	//automata 
+	Idle* idle = new Idle();
+	idle->userdata = this;
+	playerState = new PushdownMachine(idle);
 }

@@ -101,6 +101,9 @@
     <ClInclude Include="ComponentGameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerState.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Ability.json">

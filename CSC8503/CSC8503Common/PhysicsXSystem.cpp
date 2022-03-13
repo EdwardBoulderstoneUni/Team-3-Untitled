@@ -137,7 +137,11 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 		//YiEventSystem::GetMe()->PushEvent(COLLISION_CONTACT_P2O, a->GetWorldID(), b->GetWorldID());
 		_CONTACT_P2OHandle(a,b);
 	}
-	void onControllerHit(const PxControllersHit& hit) {}
+	void onControllerHit(const PxControllersHit& hit) {
+		GameObject* a = (GameObject*)hit.controller->getActor()->userData;
+		GameObject* b = (GameObject*)hit.other->getActor()->userData;
+		_CONTACT_P2PHandle(a,b);
+	}
 	void onObstacleHit(const PxControllerObstacleHit& hit){}
 
 	PxControllerBehaviorFlags		getBehaviorFlags(const PxShape& shape, const PxActor& actor) { 
@@ -150,7 +154,14 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 	{
 		if (a->type == GameObjectType_team1 and b->type == GameObjectType_floor) {
 			Player* player = dynamic_cast<Player*>(a);
-			player->isGrounded = true;
+			player->SetGrounded(true);
+		}
+	}
+	void _CONTACT_P2PHandle(GameObject* a, GameObject* b)
+	{
+		if (a->type == GameObjectType_team1 and b->type == GameObjectType_team2) {
+			Player* player = dynamic_cast<Player*>(a);
+			player->SetGrounded(true);
 		}
 	}
 };
