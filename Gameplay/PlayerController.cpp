@@ -25,7 +25,6 @@ void PlayerController::update(const float dt)
           buttons[dash] = true;
       if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R))
           buttons[reload] = true;
-
 	  if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W))
 		  movement_direction= NCL::Maths::Vector2(0, 1);
       if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S))

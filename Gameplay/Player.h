@@ -40,12 +40,13 @@ namespace NCL {
 			Vector3 GetShootDiretion() { return shootDir; }
 			void SetShootDirection(Vector3 val) { shootDir = val; }
 
-			bool isGrounded = false;
+			bool isGrounded=true;
 
 		private:
 			float health = 100.0f;
-			float speed = 5.0f;
-			
+			float CurrentJumpspeed = 2.0f;
+			float JumpHeight = 5.0f;
+			float CurrentHeight = 0.0f;
 			// t is short for timer (cooldowns)
 			float tDash;
 			float dashCooldown=0.0f;
@@ -60,11 +61,12 @@ namespace NCL {
 			int jumpNo = 0;
 			int time = 0;
 
-			bool isJumping = false;
+		
 			bool isDashing;
+			bool isWalking;
+
 			bool hasAmmo = true;
 			bool isReloading = false;
-			bool isWalking;
 			
 			StateMachine* playerState;
 			StateMachine* weaponState;
@@ -82,7 +84,7 @@ namespace NCL {
 			Bullet* bullet;
 
 			void SetupStateMachine();
-
+			Input lastInput;
 		};
 	}
 }

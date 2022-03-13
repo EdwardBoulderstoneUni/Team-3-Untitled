@@ -22,7 +22,7 @@ namespace NCL
 			void AddTransition(StateTransition* t);
 
 			void Update(float dt);
-
+		
 		protected:
 			State* activeState;
 

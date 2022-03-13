@@ -3,6 +3,7 @@
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "../CSC8503/CSC8503Common/State.h"
 #include "../CSC8503/CSC8503Common/StateTransition.h"
+
 Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 {
 	forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
@@ -41,7 +42,7 @@ void Player::SetUp()
 	input->updateCallback = [this](float dt) {
 		forward = transform.GetOrientation() * Vector3(0, 0, 1);
 		right = Vector3::Cross(forward, Vector3(0,1,0));
-		physicsXObject->CMove(PxVec3(0.0f, -9.8f, 0.0f)*0.1);
+   		lastInput = GetComponentInput()->user_interface->get_inputs();
 		playerState->Update(dt);
 	};
 	PushComponent(input);
@@ -156,69 +157,132 @@ void Player::SetupStateMachine()
 	playerState = new StateMachine();
 
 	State* Idle = new State([&](float dt) -> void {
-		Input input = GetComponentInput()->user_interface->get_inputs();
- 		if (input.buttons[jump]and isGrounded) {
-			physicsXObject->CMove(PxVec3(0.0f, 150.0f, 0.0f));
-			isJumping = true;
-			isGrounded = false;
-			}
-		if (input.movement_direction not_eq Vector2()) {
-			isWalking = true;
-		}		
 	});
 	State* Walk = new State([&](float dt) -> void {
-		Input input = GetComponentInput()->user_interface->get_inputs();
-		if (input.movement_direction == Vector2(0, 1)) {
+		if (lastInput.movement_direction == Vector2(0, 1)) {
 			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
 		}
-		if (input.movement_direction == Vector2(0, -1)) {
+		if (lastInput.movement_direction == Vector2(0, -1)) {
 			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
 		}
-		if (input.movement_direction == Vector2(1, 0)) {
+		if (lastInput.movement_direction == Vector2(1, 0)) {
 			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
 		}
-		if (input.movement_direction == Vector2(-1, 0)) {
+		if (lastInput.movement_direction == Vector2(-1, 0)) {
 			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
-		}
-		if (input.buttons[jump] and isGrounded) {
-			physicsXObject->CMove(PxVec3(0.0f, 150.0f, 0.0f));
-			isJumping = true;
-			isGrounded = false;
 		}
 	});
 	State* StandingJump = new State([&](float dt) -> void {
-		Input input = GetComponentInput()->user_interface->get_inputs();
-		if (input.buttons[dash])
-			isDashing = true;
-		if (input.buttons[jump])
-			isDashing = true;
+		if (lastInput.movement_direction == Vector2(0, 1)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
+		}
+		if (lastInput.movement_direction == Vector2(0, -1)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
+		}
+		if (lastInput.movement_direction == Vector2(1, 0)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
+		}
+		if (lastInput.movement_direction == Vector2(-1, 0)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
+		}
+		if (CurrentHeight < JumpHeight) {
+				CurrentHeight += 0.1f;
+				physicsXObject->CMove(PxVec3(0, 1, 0) * CurrentJumpspeed);
+				CurrentJumpspeed -= 0.1f;
+			}
+		else {
+				physicsXObject->CMove(PxVec3(0, 1, 0) * -CurrentJumpspeed);
+				CurrentJumpspeed += 0.1f;
+			}
 		});
 	State* DoubleJump = new State([&](float dt) -> void {
-		Input input = GetComponentInput()->user_interface->get_inputs();
-		if (input.buttons[dash])
-			isDashing = true;
-		});
+		if (lastInput.movement_direction == Vector2(0, 1)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
+		}
+		if (lastInput.movement_direction == Vector2(0, -1)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
+		}
+		if (lastInput.movement_direction == Vector2(1, 0)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
+		}
+		if (lastInput.movement_direction == Vector2(-1, 0)) {
+			physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
+		}
+		if (CurrentHeight < JumpHeight) {
+			CurrentHeight += 0.1f;
+			physicsXObject->CMove(PxVec3(0, 1, 0) * CurrentJumpspeed);
+			CurrentJumpspeed -= 0.1f;
+		}
+		else {
+			physicsXObject->CMove(PxVec3(0, 1, 0) * -CurrentJumpspeed);
+			CurrentJumpspeed += 0.1f;
+		}
+	});
 	State* Dashing = new State([&](float dt) -> void {
-		Input input = GetComponentInput()->user_interface->get_inputs();
-		if (input.buttons[jump])
-			isJumping = true;
+		
 		});
 
 	StateTransition* IdleToStandingJump = new StateTransition(Idle, StandingJump, [&](void)->bool {
-		return isJumping;
+		if (lastInput.buttons[jump] and isGrounded)
+		{
+			isGrounded = false;
+			return true;
+		}
+		return false;
+		});
+	StateTransition* WalkToStandingJump = new StateTransition(Walk, StandingJump, [&](void)->bool {
+		if (lastInput.buttons[jump] and isGrounded)
+		{
+			isGrounded = false;
+			return true;
+		}
+		return false;
+		});
+	StateTransition* StandingJumpToIdle = new StateTransition(StandingJump, Idle, [&](void)->bool {
+		if (isGrounded)
+		{
+			CurrentHeight = 0.0f;
+			CurrentJumpspeed = 2.0f;
+			return true;
+		}
+		return false;
+		});
+	StateTransition* DoubleJumpToIdle = new StateTransition(DoubleJump, Idle, [&](void)->bool {
+		if (isGrounded)
+		{
+ 			CurrentHeight = 0.0f;
+			CurrentJumpspeed = 2.0f;
+			return true;
+		}
+		return false;
+		});
+	StateTransition* StandingJumpToDoubleJump = new StateTransition(StandingJump, DoubleJump, [&](void)->bool {
+		if (lastInput.buttons[jump]) {
+			CurrentHeight = 0.0f;
+			CurrentJumpspeed = 2.0f;
+			return true;
+		}
+		return false;
 		});
 	StateTransition* IdleToWalk = new StateTransition(Idle, Walk, [&](void)->bool {
-		return isWalking;
+		return lastInput.movement_direction not_eq Vector2();
+		});
+	StateTransition* WalkToIdle = new StateTransition(Walk, Idle, [&](void)->bool {
+		return lastInput.movement_direction == Vector2();
 		});
 
-	StateTransition* StandingJumpToIdle = new StateTransition(StandingJump, Idle, [&](void)->bool {
-		return isGrounded;
-		});
+	
 	playerState->AddState(Idle);
 	playerState->AddState(Walk);
 	playerState->AddState(StandingJump);
+	playerState->AddState(DoubleJump);
 	playerState->AddTransition(IdleToStandingJump);
-	playerState->AddTransition(IdleToWalk);
 	playerState->AddTransition(StandingJumpToIdle);
+	playerState->AddTransition(StandingJumpToDoubleJump);
+	playerState->AddTransition(DoubleJumpToIdle);
+	playerState->AddTransition(WalkToStandingJump);
+	playerState->AddTransition(IdleToWalk);
+	playerState->AddTransition(WalkToIdle);
+
 	//automata 
 }
