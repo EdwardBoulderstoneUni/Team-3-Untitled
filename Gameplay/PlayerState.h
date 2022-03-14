@@ -118,7 +118,18 @@ class Idle :public PushdownState {
 	}
 };
 
-
+class Respawn : public PushdownState {
+	PushdownResult OnUpdate(float dt,
+		PushdownState** newState) override {
+		Player* player = static_cast<Player*>(userdata);
+		if (player->IsDead() == true) {
+			player->RespawnCooldown();
+			return PushdownResult::Pop;
+		}
+		player->Respawn();
+		return PushdownResult::NoChange;
+	}
+};
 
 
 

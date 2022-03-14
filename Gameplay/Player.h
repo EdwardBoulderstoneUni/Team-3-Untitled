@@ -20,6 +20,7 @@ namespace NCL {
 	
 			void GiveDamage(float dmg, Player* a);
 			bool IsDead();
+			void Respawn();
 			float TakeDamage(float dmg);
 			void Reload();
 			void AssignRole(AbilityContainer* aCont);
@@ -50,6 +51,8 @@ namespace NCL {
 			void  SetDashingTimeStack(float t) { DashingTimeStack = t; }
 			bool DashAlready() { return dashCooldown <= 0 ? true : false; }
 			void DashCooldown() { dashCooldown = 1.0f; }
+			void RespawnCooldown() { dashCooldown = 1.0f; }
+		private:
 		private:
 			float health = 100.0f;
 

@@ -95,6 +95,20 @@ float Player::TakeDamage(float dmg) {
 bool Player::IsDead() {
 	return health == 0 ? true : false;
 }
+void Player::Respawn() {
+	auto physics = new ComponentPhysics();
+	physics->phyObj = GetPhysicsXObject();
+	PhyProperties properties = PhyProperties();
+	properties.type = PhyProperties::Character;
+	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
+	properties.Mass = 10.0f;
+
+	Vector3 scale = GetTransform().GetScale() / 2.0f;
+	properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
+
+	physics->phyObj->properties = properties;
+	PushComponent(physics);
+}
 
 // Give damage to palyer a
 void Player::GiveDamage(float dmg, Player* a) {
