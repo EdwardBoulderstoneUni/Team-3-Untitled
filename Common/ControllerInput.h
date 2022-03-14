@@ -1,14 +1,16 @@
 #pragma once
 #include "UserController.h"
+#include "PS4Input.h"
 #include <stdexcept>
 
 class ControllerInput final :
     public UserController
 {
 public:
-    explicit ControllerInput() = default;
-    Input get_inputs() override
-    {
-        throw std::runtime_error("Controllers not implemented");
-    }
+    ControllerInput(NCL::PS4::PS4Input* controller);
+    Input get_inputs() override;
+    void update(float dt) override;
+
+protected:
+    NCL::PS4::PS4Input* controller_;
 };
