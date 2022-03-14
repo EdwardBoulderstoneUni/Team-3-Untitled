@@ -7,7 +7,8 @@ namespace NCL {
 		public:
 			Sphere();
 			~Sphere();
-			void SetUp() override;
+			virtual void SetUp() override;
+			virtual void Update(float dt)override;
 		};
 	}
 }

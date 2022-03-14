@@ -21,7 +21,7 @@ class DoubleJump :public PushdownState {
 		PushdownState** newState) override {
 		Player* player = static_cast<Player*>(userdata);
 		Input lastInput = player->GetLastInput();
-		if (player->GetGrounded())
+		if (player->GetJumpingTimeStack()>1.5f*3.15f)
 		{
 			return PushdownResult::Pop;
 		}
@@ -42,14 +42,14 @@ class StandingJump :public PushdownState {
 		PushdownState** newState) override {
 		Player* player = static_cast<Player*>(userdata);
 		Input lastInput = player->GetLastInput();
-		if (player->GetGrounded())
+		if (player->GetJumpingTimeStack()>3.2f)
 		{
 			return PushdownResult::Pop;
 		}
 		if (lastInput.buttons[jump]) {
 			*newState = new DoubleJump();
 			(*newState)->userdata = player;
-			player->SetJumpingTimeStack(0.3f);
+			player->SetJumpingTimeStack(0.0f);
 			return PushdownResult::Push;
 		}
 		if (lastInput.buttons[dash]and player->DashAlready()) {
@@ -70,12 +70,12 @@ class Walk :public PushdownState {
 		Input lastInput = player->GetLastInput();
 		if (player->GetLastInput().movement_direction == Vector2())
 			return PushdownResult::Pop;
-		if (lastInput.buttons[jump] and player->GetGrounded())
+		if (lastInput.buttons[jump])
 		{
 			*newState = new StandingJump();
 			(*newState)->userdata = player;
 			player->SetGrounded(false);
-			player->SetJumpingTimeStack(0.01f);
+			player->SetJumpingTimeStack(0.0f);
 			return PushdownResult::Push;
 		}
 		if (lastInput.buttons[dash] and player->DashAlready()) {
@@ -85,6 +85,7 @@ class Walk :public PushdownState {
 			return PushdownResult::Push;
 		}
 		player->Move();
+		player->GetPhysicsXObject()->CMove(PxVec3(0,-9.8f,0)*0.1f);
 		return PushdownResult::NoChange;
 	}
 };
@@ -93,12 +94,12 @@ class Idle :public PushdownState {
 		PushdownState **newState) override {
 		Player* player = static_cast<Player*>(userdata);
 		Input lastInput = player->GetLastInput();
-		if (lastInput.buttons[jump] and player->GetGrounded())
+		if (lastInput.buttons[jump])
 		{
 			*newState = new StandingJump();
 			(*newState)->userdata = player;
 			player->SetGrounded(false);
-			player->SetJumpingTimeStack(0.01f);
+			player->SetJumpingTimeStack(0.0f);
 			return PushdownResult::Push;
 		}
 		if (lastInput.buttons[dash] and player->DashAlready()) {
@@ -112,6 +113,7 @@ class Idle :public PushdownState {
 			(*newState)->userdata = player;
 			return PushdownResult::Push;
 		}
+		player->GetPhysicsXObject()->CMove(PxVec3(0,-9.8f,0)*0.1f);
 		return PushdownResult::NoChange;
 	}
 };

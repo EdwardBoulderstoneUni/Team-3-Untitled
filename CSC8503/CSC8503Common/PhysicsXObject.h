@@ -26,6 +26,7 @@ struct PhyProperties
 	PxTransform transform;
 	PxGeometry* volume;
 	Type type;
+	Vector3 positionOffset;
 };
 class PhysicsXObject {
 public:

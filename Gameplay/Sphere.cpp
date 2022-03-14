@@ -23,3 +23,8 @@ void NCL::CSC8503::Sphere::SetUp()
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
 }
+
+void NCL::CSC8503::Sphere::Update(float dt)
+{
+
+}

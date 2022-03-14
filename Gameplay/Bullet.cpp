@@ -18,3 +18,13 @@ Bullet::Bullet(GameObjectType type, PlayerRole colour) {
 		break;
 	}
 }
+void Bullet::SetUp() {
+	Sphere::SetUp();
+
+}
+
+void Bullet::Update(float dt)
+{
+	ComponentGameObject::Update(dt);
+	std::cout << "123" << std::endl;
+}

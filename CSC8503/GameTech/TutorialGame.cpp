@@ -17,7 +17,7 @@ using namespace CSC8503;
 TutorialGame* TutorialGame::p_self = NULL;
 
 TutorialGame::TutorialGame()
-{
+{ 
 	eventSystem = new YiEventSystem();
 	p_self = this;
 	world = new GameWorld();

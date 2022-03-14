@@ -14,7 +14,7 @@ namespace NCL {
 			ComponentInput* GetComponentInput();
 			ComponentPhysics* GetComponentPhysics();
 			virtual void SetUp() = 0;
-			void Update(float dt);
+			virtual void Update(float dt);
 			void InitAllComponent();
 			void PushComponent(Component* newCom);
 		private:

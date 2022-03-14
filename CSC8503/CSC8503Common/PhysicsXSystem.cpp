@@ -121,10 +121,10 @@ class ContackCallback :public PxSimulationEventCallback {
 		_CONTACT_O2OHandle(a,b);
 	}
 	void _CONTACT_O2OHandle(GameObject* a, GameObject* b) {
-		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
+		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_floor) {
 			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
 		}
-		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_floor) {
+		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
 			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
 		}
 	}
@@ -134,7 +134,6 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 		PX_UNUSED((hit));
 		GameObject* a = (GameObject*)hit.controller->getActor()->userData;
 		GameObject* b = (GameObject*)hit.actor->userData;
-		//YiEventSystem::GetMe()->PushEvent(COLLISION_CONTACT_P2O, a->GetWorldID(), b->GetWorldID());
 		_CONTACT_P2OHandle(a,b);
 	}
 	void onControllerHit(const PxControllersHit& hit) {
@@ -168,7 +167,6 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 
 ContackCallback* callback = new ContackCallback;
 CharacterCallback* characterCallback = new CharacterCallback;
-
 
 PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
 {
@@ -246,20 +244,23 @@ void PhysicsXSystem::addActor(GameObject& actor)
 	PxRigidDynamic* dynaBody = nullptr;
 	PxRigidStatic* statBody = nullptr;
 	PxShape* shape = nullptr;
-
 	PxBoxControllerDesc* desc=nullptr;
 	PxBoxGeometry* geo = nullptr;
+
 	switch (properties.type)
 	{
 	case PhyProperties::Dynamic:
 		dynaBody = gPhysics->createRigidDynamic(properties.transform);
-
 		shape = gPhysics->createShape(*properties.volume, *gMaterial);
+		if (properties.volume->getType() == PxGeometryType::eCAPSULE) {
+			PxTransform  relativePose(PxQuat(PxHalfPi, PxVec3(0, 0, 1)));
+			shape->setLocalPose(relativePose);
+			//For some reason, when the capsule rotates, so does the character
+		}
 		dynaBody->attachShape(*shape);
 		dynaBody->setMass(properties.Mass);
-
+		
 		gScene->addActor(*dynaBody);
-
 		dynaBody->userData = &actor;
 		phyObj->rb = dynaBody;
 		shape->release();
@@ -295,8 +296,6 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		phyObj->controller->getActor()->userData = &actor;
 		phyObj->rb = phyObj->controller->getActor();
 		break;
-	default:
-		break;
 	}
 }
 
@@ -314,10 +313,20 @@ void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 			const PxTransform shapePose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
 			const PxGeometryHolder h = shapes[j]->getGeometry();
 			GameObject* obj=(GameObject*)actors[i]->userData;
-			obj->GetTransform().SetPosition(Vector3(shapePose.p.x, shapePose.p.y, shapePose.p.z));
+			PhyProperties pro=obj->GetPhysicsXObject()->properties;
+			obj->GetTransform().SetPosition(Vector3(shapePose.p.x,shapePose.p.y, shapePose.p.z)-pro.positionOffset);
 			if (obj->GetPhysicsXObject()->controller)continue;
-			obj->GetTransform().SetOrientation(Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
-				shapePose.q.w));
+			if (h.getType() == PxGeometryType::eCAPSULE) {
+				Quaternion quat=Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
+					shapePose.q.w);
+				Vector3 temp = quat.ToEuler();
+				quat = Quaternion::EulerAnglesToQuaternion(temp.x,temp.y,temp.z-90.0f);
+				obj->GetTransform().SetOrientation(quat);
+			}
+			else {
+				obj->GetTransform().SetOrientation(Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
+					shapePose.q.w));
+			}
 		}
 	}
 }
