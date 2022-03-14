@@ -2,6 +2,7 @@
 #include "PlayerController.h"
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "PlayerState.h"
+#include "WeaponState.h"
 Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 {
 	forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
@@ -42,7 +43,7 @@ void Player::SetUp()
 		right = Vector3::Cross(forward, Vector3(0,1,0));
    		lastInput = GetComponentInput()->user_interface->get_inputs();
 		playerState->Update(dt);
-
+		weaponState->Update(dt);
 		dashCooldown -= dt;
 	};
 	PushComponent(input);
@@ -144,4 +145,8 @@ void Player::SetupStateMachine()
 	Idle* idle = new Idle();
 	idle->userdata = this;
 	playerState = new PushdownMachine(idle);
+
+	Hold* hold = new Hold();
+	hold->userdata = this;
+	weaponState = new PushdownMachine(hold);
 }

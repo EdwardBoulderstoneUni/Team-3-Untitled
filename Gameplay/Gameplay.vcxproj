@@ -160,6 +160,7 @@
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="PlayerState.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="WeaponState.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Ability.json" />

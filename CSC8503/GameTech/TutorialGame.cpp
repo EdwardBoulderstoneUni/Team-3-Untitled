@@ -122,7 +122,7 @@ void TutorialGame::UpdateGame(float dt)
 	}
 	AmmoLeft();
 	TimeLeft(dt);
-	
+	//CalculateFrameRate(dt);
 
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
