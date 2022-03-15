@@ -317,7 +317,8 @@ void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 			const PxGeometryHolder h = shapes[j]->getGeometry();
 			GameObject* obj=(GameObject*)actors[i]->userData;
 			PhyProperties pro=obj->GetPhysicsXObject()->properties;
-			obj->GetTransform().SetPosition(Vector3(shapePose.p.x,shapePose.p.y, shapePose.p.z)-pro.positionOffset);	
+			obj->GetTransform().SetPosition(Vector3(shapePose.p.x,shapePose.p.y, shapePose.p.z)-pro.positionOffset);
+			if (obj->GetPhysicsXObject()->controller)continue;
 			if (h.getType() == PxGeometryType::eCAPSULE) {
 				Quaternion quat=Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
 					shapePose.q.w);
