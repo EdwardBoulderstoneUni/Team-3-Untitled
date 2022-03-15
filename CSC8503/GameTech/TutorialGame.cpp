@@ -428,6 +428,7 @@ void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, UINT dwOwner
 {
 	string worldID = pEvent->vArg[0];
 	GameObject* temp= TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID));
+	TutorialGame::getMe()->physicsX->deleteActor(*temp);
 	TutorialGame::getMe()->world->RemoveGameObject(temp);
 }
 
