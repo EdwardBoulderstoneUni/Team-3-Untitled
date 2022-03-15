@@ -83,13 +83,12 @@ namespace NCL
 		{
 		};
 
-    static const UserInterface* GetInterface() { return user_interface_; }
-		static const	 Keyboard* GetKeyboard()	{ return keyboard; }
-		static const	Mouse* GetMouse()			{ return mouse; }
-		static const	GameTimer* GetTimer()		{ return timer; }
-		virtual bool	IsFullScreen()				{ return true; }
+		static const UserInterface* GetInterface() { return user_interface_; }
+		static const Keyboard* GetKeyboard() { return keyboard; }
+		static const Mouse* GetMouse() { return mouse; }
+		static const GameTimer* GetTimer() { return timer; }
 
-		static Window* const GetWindow()			{ return window; }
+		static Window* const GetWindow() { return window; }
 	protected:
 		Window();
 		virtual ~Window();

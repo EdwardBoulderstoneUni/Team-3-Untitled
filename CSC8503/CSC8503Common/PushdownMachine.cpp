@@ -2,10 +2,6 @@
 #include "PushdownState.h"
 using namespace NCL::CSC8503;
 
-PushdownMachine::PushdownMachine(PushdownState* initState) : initialState(initState)
-{
-	activeState = nullptr;
-}
 
 PushdownMachine::~PushdownMachine()
 {
@@ -16,37 +12,35 @@ bool PushdownMachine::Update(float dt)
 	if (activeState)
 	{
 		PushdownState* newState = nullptr;
-		PushdownState::PushdownResult result = activeState->OnUpdate(dt, &newState);
+		PushdownState::PushdownResult result = activeState->OnUpdate(dt,&newState);
+
 		switch (result)
 		{
-		case PushdownState::PushdownResult::Pop:
-		{
-			activeState->OnSleep();
-			delete activeState;
-			stateStack.pop();
-			if (stateStack.empty())
+		case PushdownState::Pop:
 			{
-				return false;
-			}
-			else
+				activeState->OnSleep();
+				delete activeState;
+				stateStack.pop();
+				if (stateStack.empty()) {
+					return false;
+				}
+				else {
+					activeState = stateStack.top();
+					activeState->OnAwake();
+				}
+			}break;
+
+		case PushdownState::Push:
 			{
-				activeState = stateStack.top();
-				activeState->OnAwake();
+				activeState->OnSleep();
+				stateStack.push(newState);
+				activeState = newState;
+				newState->OnAwake();
 			}
-		}
-		break;
-		case PushdownState::PushdownResult::Push:
-		{
-			activeState->OnSleep();
-			stateStack.push(newState);
-			activeState = newState;
-			activeState->OnAwake();
-		}
-		break;
+			break;
 		}
 	}
-	else
-	{
+	else {
 		stateStack.push(initialState);
 		activeState = initialState;
 		activeState->OnAwake();

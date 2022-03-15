@@ -1,43 +1,27 @@
 #pragma once
 #include <functional>
-
-namespace NCL {
-	namespace CSC8503 {
-		typedef std::function<void(float)> StateUpdateFunction;
-		class State {
+namespace NCL
+{
+	namespace CSC8503
+	{
+		typedef std::function<void(float)> StateUpdateFunciton;
+		class State
+		{
 		public:
-			State() {};
-			State(StateUpdateFunction func)
-				: function(func)
-			{};
-			virtual ~State() {};
-
-			virtual void Update(float dt)
-			{
-				if (function)
-					function(dt);
-			};
-
-		protected:
-			StateUpdateFunction function;
-		};
-
-		typedef void(*StateFunc)(void*);
-
-		class GenericState : public State {
-		public:
-			GenericState(StateFunc someFunc, void* someData) {
+			State(){}
+			State(StateUpdateFunciton someFunc) {
 				func = someFunc;
-				funcData = someData;
 			}
-			virtual void Update(float dt) {
-				if (funcData != nullptr) {
-					func(funcData);
-				}
+			virtual ~State()
+			{
+			}
+
+			void Update(float dt) {
+				if (func != nullptr)
+					func(dt);
 			}
 		protected:
-			StateFunc func;
-			void* funcData;
-		};
+			StateUpdateFunciton func;
+		};	
 	}
 }
