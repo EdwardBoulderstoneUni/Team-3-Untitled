@@ -5,12 +5,11 @@
 #include "../CSC8503/CSC8503Common/PushdownMachine.h"
 #include "../CSC8503/GameTech/YiEventSystem.h"
 #include "ePlayerRole.h"
-#include "Bullet.h"
 namespace NCL {
 	namespace CSC8503 {
 		class Player : public ComponentGameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
+			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool localplayer=false);
 			~Player();
 			virtual void Update(float dt)override;
 			void SetUp() override;
@@ -32,10 +31,6 @@ namespace NCL {
 				return time;
 			}
 
-			Bullet* GetBullet() {
-				return bullet;
-			}
-
 			void Openfire();
 			Vector3 GetForward() { return forward; }
 			void SetForward(Vector3 val) { forward = val; }
@@ -52,7 +47,7 @@ namespace NCL {
 			bool DashAlready() { return dashCooldown <= 0 ? true : false; }
 			void DashCooldown() { dashCooldown = 1.0f; }
 			void RespawnCooldown() { respawnCooldown = 1.0f; }
-		private:
+			PlayerRole GetRole() { return pColour; }
 		private:
 			float health = 100.0f;
 
@@ -79,7 +74,7 @@ namespace NCL {
 
 			bool hasAmmo = true;
 			bool isReloading = false;
-			
+			bool isLocalPlayer;
 			PushdownMachine* playerState;
 			PushdownMachine* weaponState;
 		
@@ -93,8 +88,6 @@ namespace NCL {
 			Vector3 right;
 			Vector3 shootDir;
 			PxTransform camOri;
-
-			Bullet* bullet;
 
 			void SetupStateMachine();
 			Input lastInput;

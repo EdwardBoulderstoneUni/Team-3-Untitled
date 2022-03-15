@@ -3,6 +3,15 @@
 #include "Player.h"
 using namespace NCL;
 using namespace CSC8503;
+class Die :public PushdownState {
+	PushdownResult OnUpdate(float dt,
+		PushdownState** newState) override {
+		Player* player = static_cast<Player*>(userdata);
+		player->GetPhysicsXObject()->CMove(PxVec3(0, -9.8f, 0) * 0.1f);
+		std::cout << "die die die" << std::endl;
+		return PushdownResult::NoChange;
+	}
+};
 class Dash :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
@@ -11,6 +20,11 @@ class Dash :public PushdownState {
 		{
 			player->DashCooldown();
 			return PushdownResult::Pop;
+		}
+		if (player->IsDead()) {
+			*newState = new Die();
+			(*newState)->userdata = player;
+			return PushdownResult::Push;
 		}
 		player->Dash(dt);
 		return PushdownResult::NoChange;
@@ -29,6 +43,11 @@ class DoubleJump :public PushdownState {
 			*newState = new Dash();
 			(*newState)->userdata = player;
 			player->SetDashingTimeStack(0.0f);
+			return PushdownResult::Push;
+		}
+		if (player->IsDead()) {
+			*newState = new Die();
+			(*newState)->userdata = player;
 			return PushdownResult::Push;
 		}
 		player->Jump(dt);
@@ -58,6 +77,11 @@ class StandingJump :public PushdownState {
 			player->SetDashingTimeStack(0.0f);
 			return PushdownResult::Push;
 		}
+		if (player->IsDead()) {
+			*newState = new Die();
+			(*newState)->userdata = player;
+			return PushdownResult::Push;
+		}
 		player->Jump(dt);
 		player->Move();
 		return PushdownResult::NoChange;
@@ -82,6 +106,11 @@ class Walk :public PushdownState {
 			*newState = new Dash();
 			(*newState)->userdata = player;
 			player->SetDashingTimeStack(0.0f);
+			return PushdownResult::Push;
+		}
+		if (player->IsDead()) {
+			*newState = new Die();
+			(*newState)->userdata = player;
 			return PushdownResult::Push;
 		}
 		player->Move();
@@ -110,6 +139,11 @@ class Idle :public PushdownState {
 		}
 		if (lastInput.movement_direction not_eq Vector2()) {
 			*newState = new Walk();
+			(*newState)->userdata = player;
+			return PushdownResult::Push;
+		}
+		if (player->IsDead()) {
+			*newState = new Die();
 			(*newState)->userdata = player;
 			return PushdownResult::Push;
 		}

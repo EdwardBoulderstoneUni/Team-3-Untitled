@@ -24,7 +24,7 @@ namespace NCL {
 			void InitialiseAssets();
 
 			void InitAbilityContainer();
-			void InitPlayer(Vector3 pos, GameObjectType team);
+			void InitPlayer(Vector3 pos, GameObjectType team, bool islocal=false);
 		
 			void InitWorld();
 
@@ -94,6 +94,7 @@ namespace NCL {
 		protected:
 			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static void _deleteHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _HitHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static TutorialGame* p_self;
 			static TutorialGame* getMe() { return p_self; }
 			void UpdateGameObjects(float dt);

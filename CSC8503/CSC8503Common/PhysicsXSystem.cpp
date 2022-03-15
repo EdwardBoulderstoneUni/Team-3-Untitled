@@ -125,7 +125,7 @@ class ContackCallback :public PxSimulationEventCallback {
 			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
 		}
 		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
-			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT,a->GetWorldID(),b->GetWorldID());
 		}
 	}
 };
@@ -244,8 +244,8 @@ void PhysicsXSystem::addActor(GameObject& actor)
 	PxRigidDynamic* dynaBody = nullptr;
 	PxRigidStatic* statBody = nullptr;
 	PxShape* shape = nullptr;
-	PxBoxControllerDesc* desc=nullptr;
-	PxBoxGeometry* geo = nullptr;
+	PxCapsuleControllerDesc* desc=nullptr;
+	PxCapsuleGeometry* geo = nullptr;
 
 	switch (properties.type)
 	{
@@ -280,12 +280,11 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		break;
 	case PhyProperties::Character:
 		
-		geo = (PxBoxGeometry*)properties.volume;
+		geo = (PxCapsuleGeometry*)properties.volume;
 		trans = properties.transform;
-		desc = new PxBoxControllerDesc();
-		desc->halfSideExtent = geo->halfExtents.x;
-		desc->halfForwardExtent = geo->halfExtents.z;
-		desc->halfHeight = geo->halfExtents.y;
+		desc = new PxCapsuleControllerDesc();
+		desc->radius = geo->radius/2;
+		desc->height = geo->halfHeight;
 		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
 		desc->material = gMaterial;
 		desc->density = 10;
@@ -318,13 +317,12 @@ void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 			const PxGeometryHolder h = shapes[j]->getGeometry();
 			GameObject* obj=(GameObject*)actors[i]->userData;
 			PhyProperties pro=obj->GetPhysicsXObject()->properties;
-			obj->GetTransform().SetPosition(Vector3(shapePose.p.x,shapePose.p.y, shapePose.p.z)-pro.positionOffset);
-			if (obj->GetPhysicsXObject()->controller)continue;
+			obj->GetTransform().SetPosition(Vector3(shapePose.p.x,shapePose.p.y, shapePose.p.z)-pro.positionOffset);	
 			if (h.getType() == PxGeometryType::eCAPSULE) {
 				Quaternion quat=Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
 					shapePose.q.w);
 				Vector3 temp = quat.ToEuler();
-				quat = Quaternion::EulerAnglesToQuaternion(temp.x,temp.y,temp.z-90.0f);
+				quat = Quaternion::EulerAnglesToQuaternion(temp.x,temp.y+180.0f,temp.z-90.0f);
 				obj->GetTransform().SetOrientation(quat);
 			}
 			else {

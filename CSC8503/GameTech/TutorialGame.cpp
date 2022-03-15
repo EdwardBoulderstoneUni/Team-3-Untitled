@@ -10,6 +10,7 @@
 #include "../../Common/Assets.h"
 #include "..//..//Gameplay/ePlayerRole.h"
 #include "../../Gameplay/GameObjects.h"
+#include "../../Gameplay/Bullet.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -46,7 +47,7 @@ void TutorialGame::InitialiseAssets() {
 	};
 	loadFunc("cube.msh", &cubeMesh);
 	loadFunc("sphere.msh", &sphereMesh);
-	loadFunc("Male1.msh", &charMeshA);
+	loadFunc("Female_Guard.msh", &charMeshA);
 	loadFunc("courier.msh", &charMeshB);
 	loadFunc("security.msh", &enemyMesh);
 	loadFunc("coin.msh", &bonusMesh);
@@ -76,7 +77,7 @@ void TutorialGame::InitialiseAssets() {
 
 	InitWorld();
 	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1);
+	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
 	RegisterEventHandles();
 }
 	
@@ -132,18 +133,19 @@ void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
+void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 {
-	player = new Player(PlayerRole_blue, abilityContainer, team);
+	player = new Player(PlayerRole_blue, abilityContainer, team,islocal);
 	camFollowPlayer = true;
 
 	player->GetTransform()
-		.SetScale(Vector3(5,5,5))
+		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
+	
 
 	player->InitAllComponent();
 
-	player->SetRenderObject(new RenderObject(&player->GetTransform(), cubeMesh, basicTex, basicShader));
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, basicTex, basicShader));
 
 	world->SetMainCamera(player->GetComponentCamera()->camera);
 	
@@ -263,7 +265,7 @@ void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 {
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle);
-
+	eventSystem->RegisterEventHandle("HIT", _HitHandle);
 }
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
@@ -394,7 +396,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 	Vector3 positon = player->GetTransform().GetPosition();
 	Vector3 forward = player->GetForward();
 
-	auto bullet = new Bullet(GameObjectType::GameObjectType_team1Bullet,PlayerRole::PlayerRole_red);
+	auto bullet = new Bullet(*player);
 
 	auto sphereSize = Vector3(1.0f, 1.0f, 1.0f);
 
@@ -420,6 +422,22 @@ void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, UINT dwOwner
 	TutorialGame::getMe()->physicsX->deleteActor(*temp);
 	TutorialGame::getMe()->world->RemoveGameObject(temp);
 }
+void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerData)
+{
+	string bulletID = pEvent->vArg[0];
+	string hitID = pEvent->vArg[1];
+
+	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(bulletID)));
+	int shooterID = bullet->GetShooterID();
+
+	Player* shooter = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(shooterID));
+	Player* hitobj = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(hitID)));
+
+	hitobj->TakeDamage(bullet->GetDamage());
+
+	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
+}
+
 
 void NCL::CSC8503::TutorialGame::UpdateGameObjects(float dt)
 {

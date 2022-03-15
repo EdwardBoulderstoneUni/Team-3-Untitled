@@ -3,12 +3,13 @@
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "PlayerState.h"
 #include "WeaponState.h"
-Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
+Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool localplayer)
 {
 	forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 	right = Vector3::Cross(Vector3(0, 1, 0), forward);
 	shootDir = forward;
 	pColour = colour;
+	isLocalPlayer = localplayer;
 	AssignRole(aCont);
 	this->type = type;
 	SetupStateMachine();
@@ -18,7 +19,6 @@ Player::~Player() {
 	for (auto i : abilities)
 		delete i;
 
-	delete bullet;
 }
 
 void Player::SetUp()
@@ -29,28 +29,32 @@ void Player::SetUp()
 	properties.type = PhyProperties::Character;
 	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
 	properties.Mass = 10.0f;
+	properties.positionOffset = Vector3(0,4.1,0);
 
-	Vector3 scale = GetTransform().GetScale() / 2.0f;
-	properties.volume = new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(scale));
+	Vector3 scale = GetTransform().GetScale();
+	properties.volume = new PxCapsuleGeometry(PhysXConvert::Vector3ToPxVec3(scale).x,
+		PhysXConvert::Vector3ToPxVec3(scale).y);
 
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
 
-	const auto input = new ComponentInput();
-	input->user_interface = new PlayerController();
-	
-	PushComponent(input);
+	if (isLocalPlayer) {
+		const auto input = new ComponentInput();
+		input->user_interface = new PlayerController();
 
-	auto camera = new ComponentCamera();
-	camera->gO = this;
+		PushComponent(input);
 
-	camera->camera = new Camera();
-	camera->camera->SetNearPlane(0.1f);
-	camera->camera->SetFarPlane(500.0f);
-	camera->camera->SetPitch(-15.0f);
-	camera->camera->SetYaw(180);
+		auto camera = new ComponentCamera();
+		camera->gO = this;
 
-	PushComponent(camera);
+		camera->camera = new Camera();
+		camera->camera->SetNearPlane(0.1f);
+		camera->camera->SetFarPlane(500.0f);
+		camera->camera->SetPitch(-15.0f);
+		camera->camera->SetYaw(180);
+
+		PushComponent(camera);
+	}
 }
 void Player::Move() {
 	if (lastInput.movement_direction == Vector2(0, 1)) {
@@ -130,19 +134,16 @@ void Player::AssignRole(AbilityContainer* aCont)
 		colour = "Red";
 		abilities[0] = aCont->allAbilities[0];
 		abilities[1] = aCont->allAbilities[1];
-		bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_red);
 		break;
 	case PlayerRole_green:
 		colour = "Green";
 		abilities[0] = aCont->allAbilities[2];
 		abilities[1] = aCont->allAbilities[3];
-		bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_green);
 		break;
 	case PlayerRole_blue:
 		colour = "Blue";
 		abilities[0] = aCont->allAbilities[4];
 		abilities[1] = aCont->allAbilities[5];
-		bullet = new Bullet(static_cast<GameObjectType>(this->type + 1), PlayerRole_blue);
 		break;
 	}
 }
@@ -161,7 +162,8 @@ void Player::Update(float dt) {
 	ComponentGameObject::Update(dt);
 	forward = transform.GetOrientation() * Vector3(0, 0, 1);
 	right = Vector3::Cross(forward, Vector3(0, 1, 0));
-	lastInput = GetComponentInput()->user_interface->get_inputs();
+	if(GetComponentInput())
+		lastInput = GetComponentInput()->user_interface->get_inputs();
 	playerState->Update(dt);
 	weaponState->Update(dt);
 	dashCooldown -= dt;
