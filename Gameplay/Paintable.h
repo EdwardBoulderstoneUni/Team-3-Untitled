@@ -1,7 +1,8 @@
 #pragma once
+#include "Component.h"
 
 enum Colour{};
-class Paintable
+class Paintable : Component
 {
 
 public:

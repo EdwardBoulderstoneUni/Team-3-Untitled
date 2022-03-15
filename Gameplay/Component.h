@@ -7,6 +7,7 @@ public:
 		Input,
 		Physics,
 		Render,
+		Paint,
 		MAX_COM_TYPE
 	};
 	virtual void Init() {}
