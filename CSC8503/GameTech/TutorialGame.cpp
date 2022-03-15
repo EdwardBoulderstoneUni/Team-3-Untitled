@@ -119,6 +119,7 @@ void TutorialGame::UpdateGame(float dt)
 		world->GetMainCamera()->SetYaw(angles.y);
 	}
 	AmmoLeft();
+	HealthLeft();
 	TimeLeft(dt);
 
 	world->UpdateWorld(dt);
@@ -358,20 +359,30 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 	return apple;
 }
 
+
+//HUD
 void TutorialGame::AmmoLeft() {
 	Player* player = TutorialGame::getMe()->player;
-	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 80));
+	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 90));
 	if (player->GetAmmo() == 0) {
 		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
 	}
 }
-
+void TutorialGame::HealthLeft() {
+	Player* player = TutorialGame::getMe()->player;
+	renderer->DrawString("Health: " + std::to_string(player->GetHealth()), Vector2(5, 85));
+}
 void TutorialGame::TimeLeft(float dt) {
-	tLeft -= dt;
-	int t = tLeft;
-	int m = tLeft / 60;
-	int s = int(tLeft) % 60;
-	renderer->DrawString("Time Remaining: "+std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
+	if (tLeft >= 0) {
+		tLeft -= dt;
+		int m = tLeft / 60;
+		int s = int(tLeft) % 60;
+		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
+	}
+	else {
+		isEnd = true; // Game end.
+		renderer->DrawString("Time up!", Vector2(45, 50));
+	}
 }
 
 void TutorialGame::CalculateFrameRate(float dt) {
