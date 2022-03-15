@@ -38,14 +38,7 @@ void Player::SetUp()
 
 	const auto input = new ComponentInput();
 	input->user_interface = new PlayerController();
-	input->updateCallback = [this](float dt) {
-		forward = transform.GetOrientation() * Vector3(0, 0, 1);
-		right = Vector3::Cross(forward, Vector3(0,1,0));
-   		lastInput = GetComponentInput()->user_interface->get_inputs();
-		playerState->Update(dt);
-		weaponState->Update(dt);
-		dashCooldown -= dt;
-	};
+	
 	PushComponent(input);
 
 	auto camera = new ComponentCamera();
@@ -163,4 +156,13 @@ void Player::SetupStateMachine()
 	Hold* hold = new Hold();
 	hold->userdata = this;
 	weaponState = new PushdownMachine(hold);
+}
+void Player::Update(float dt) {
+	ComponentGameObject::Update(dt);
+	forward = transform.GetOrientation() * Vector3(0, 0, 1);
+	right = Vector3::Cross(forward, Vector3(0, 1, 0));
+	lastInput = GetComponentInput()->user_interface->get_inputs();
+	playerState->Update(dt);
+	weaponState->Update(dt);
+	dashCooldown -= dt;
 }

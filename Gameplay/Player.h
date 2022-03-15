@@ -12,7 +12,7 @@ namespace NCL {
 		public:
 			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
 			~Player();
-
+			virtual void Update(float dt)override;
 			void SetUp() override;
 
 			void Move();
