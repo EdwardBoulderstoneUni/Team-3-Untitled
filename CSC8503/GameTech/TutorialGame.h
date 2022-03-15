@@ -5,9 +5,16 @@
 #include "../../AudioManager/AudioManager.h"
 #include "../CSC8503Common/PushdownMachine.h"
 #include "GameState.h"
-
+#include "YiEventSystem.h"
+#include "../../Gameplay/Player.h"
 namespace NCL {
 	namespace CSC8503 {
+		enum CameraMode {
+			LockedObject,
+			DebugObject,
+			PlayerLock
+		};
+
 		class TutorialGame		{
 		public:
 			TutorialGame();
@@ -24,9 +31,8 @@ namespace NCL {
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
-			void InitCamera();
-			void UpdateKeys();
-
+			void InitAbilityContainer();
+			void InitPlayer(Vector3 pos, GameObjectType team);
 			void InitWorld();
 
 			void InitGameExamples();
@@ -36,14 +42,11 @@ namespace NCL {
 			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing,
 			                       const Vector3& cubeDims);
 			void InitDefaultFloor();
-			void BridgeConstraintTest();
+			void RegisterEventHandles();
+			void AmmoLeft();
+			void TimeLeft(float dt);
 
-			bool SelectObject();
-			bool SelectXObject();
-
-			void MoveSelectedObject();
-			void DebugObjectMovement();
-			void LockedObjectMovement();
+			void CalculateFrameRate(float dt);
 
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
@@ -54,16 +57,22 @@ namespace NCL {
 
 			GameObject* AddPlayerToWorld(const Vector3& position);
 			GameObject* AddEnemyToWorld(const Vector3& position);
+			GameObject* AddPaint(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 
 			GameTechRenderer*	renderer;
 			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
+			Player*				player;
+			AbilityContainer*	abilityContainer;
+			YiEventSystem* eventSystem;
 	
-			bool useGravity;
 			bool inSelectionMode;
+			bool camFollowPlayer;
+			bool DebugMode;
 
 			float forceMagnitude;
+			float tLeft = 60;
 
 			GameObject* selectionObject = nullptr;
 
@@ -83,15 +92,20 @@ namespace NCL {
 			GameObject* lockedObject = nullptr;
 			Vector3 lockedOffset = Vector3(0, 14, 20);
 
+			float FPS = 0.0f;
+			float framesPerSecond = 0.0f;
+			float lastTime = 0.0f;
+			float previousSecond;
+			float currentSecond;
+
 			void LockCameraToObject(GameObject* o)
 			{
 				lockedObject = o;
 			}
-
-		
-
 			GameUI* gameUI;
-
+			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static TutorialGame* p_self;
+			static TutorialGame* getMe() { return p_self; }
 		};
 	}
 }

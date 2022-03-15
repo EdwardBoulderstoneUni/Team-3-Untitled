@@ -16,7 +16,6 @@ namespace NCL {
 		protected:
 			PushdownState* activeState;
 			PushdownState* initialState;
-
 			std::stack<PushdownState*> stateStack;
 		};
 	}

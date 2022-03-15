@@ -7,9 +7,7 @@ PushdownMachine::PushdownMachine(PushdownState* initState) : initialState(initSt
 	activeState = nullptr;
 }
 
-PushdownMachine::~PushdownMachine()
-{
-}
+PushdownMachine::~PushdownMachine() {}
 
 bool PushdownMachine::Update(float dt)
 {
@@ -17,36 +15,30 @@ bool PushdownMachine::Update(float dt)
 	{
 		PushdownState* newState = nullptr;
 		PushdownState::PushdownResult result = activeState->OnUpdate(dt, &newState);
-		switch (result)
-		{
-		case PushdownState::PushdownResult::Pop:
-		{
-			activeState->OnSleep();
-			delete activeState;
-			stateStack.pop();
-			if (stateStack.empty())
-			{
-				return false;
-			}
-			else
-			{
+		switch (result) {
+			case PushdownState::PushdownResult::Pop: {
+				activeState->OnSleep();
+				delete activeState;
+				stateStack.pop();
+				if (stateStack.empty())
+					return false;
+
+				else {
 				activeState = stateStack.top();
 				activeState->OnAwake();
+				}
 			}
-		}
-		break;
-		case PushdownState::PushdownResult::Push:
-		{
-			activeState->OnSleep();
-			stateStack.push(newState);
-			activeState = newState;
-			activeState->OnAwake();
-		}
-		break;
+			break;
+			case PushdownState::PushdownResult::Push: {
+				activeState->OnSleep();
+				stateStack.push(newState);
+				activeState = newState;
+				activeState->OnAwake();
+			}
+			break;
 		}
 	}
-	else
-	{
+	else {
 		stateStack.push(initialState);
 		activeState = initialState;
 		activeState->OnAwake();
