@@ -34,10 +34,4 @@ public:
 	static PxQuat QuatToPxQuat(const Quaternion q) {
 		return PxQuat(q.x, q.y, q.z, q.w);
 	}
-	static PxTransform TransformToPxTransform(const Transform trans) {
-		PxTransform px = PxTransform();
-		px.p = Vector3ToPxVec3(trans.GetPosition());
-		px.q = QuatToPxQuat(trans.GetOrientation());
-		return px;
-	}
 };

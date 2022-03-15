@@ -8,32 +8,33 @@ GameObject::GameObject(string objectName)
 	name = objectName;
 	worldID = -1;
 	isActive = true;
-	physicsXObject = new PhysicsXObject();
+	boundingVolume = nullptr;
+	physicsObject = nullptr;
+	physicsXObject = nullptr;
 	renderObject = nullptr;
-	type = GameObjectType::GameObjectType_null;
-	m_CollisionFunction = nullptr;
 }
 
 GameObject::~GameObject()
 {
-
+	delete boundingVolume;
+	delete physicsObject;
 	delete physicsXObject;
 	delete renderObject;
 }
 
 bool GameObject::GetBroadphaseAABB(Vector3& outSize) const
 {
-	/*if (!boundingVolume)
+	if (!boundingVolume)
 	{
 		return false;
 	}
-	outSize = broadphaseAABB;*/
+	outSize = broadphaseAABB;
 	return true;
 }
 
 void GameObject::UpdateBroadphaseAABB()
 {
-	/*if (!boundingVolume)
+	if (!boundingVolume)
 	{
 		return;
 	}
@@ -52,7 +53,7 @@ void GameObject::UpdateBroadphaseAABB()
 		mat = mat.Absolute();
 		Vector3 halfSizes = reinterpret_cast<OBBVolume&>(boundingVolume).GetHalfDimensions();
 		broadphaseAABB = mat * halfSizes;
-	}*/
+	}
 }
 
 void GameObject::SetNetworkObject(int id) {

@@ -11,21 +11,22 @@ class PhysicsXSystem {
 			~PhysicsXSystem();
 			void initPhysics();
 			void Update(float dt);
-			void addActor(GameObject& actor);
+
+			void addDynamicActor(GameObject& actor);
+			void addStaticActor(GameObject& actor);
+			void SyncGameObjs();
+
 			bool raycast(Vector3 origin,Vector3 dir,float maxdis,PxRaycastBuffer& hit);
 			bool raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit);
-			static  PhysicsXSystem* getMe() {return p_self;}
+			
 		protected:
-			void SynActorsPose(PxRigidActor** actors, const PxU32 numActors);
-			void SyncGameObjs();
 		
+			void getActorsPose(PxRigidActor** actors, const PxU32 numActors);
+
 			Vector3 Unproject(const Vector3& screenPos, const Camera& cam);
 			Matrix4 GenerateInverseView(const Camera& c);
 			Matrix4 GenerateInverseProjection(float aspect, float fov, float nearPlane, float farPlane);
 			GameWorld& gameWorld;
 			float dTOffset;	
-
-			static PhysicsXSystem* p_self;
-
 		};
 	
