@@ -1,13 +1,12 @@
 #pragma once
 #include "Transform.h"
-#include "CollisionVolume.h"
-
-#include "PhysicsObject.h"
+#include "..//../Gameplay/eGameObjectType.h"
 #include "PhysicsXObject.h"
 
 #include "RenderObject.h"
 
 #include <vector>
+#include <functional>
 
 using std::vector;
 
@@ -18,6 +17,7 @@ namespace NCL
 		class NetworkObject;
 		class GameObject
 		{
+			void ( *m_CollisionFunction)(GameObject*, Vector3) ;
 		public:
 			GameObject(string name = "");
 			~GameObject();
@@ -66,7 +66,9 @@ namespace NCL
 				return name;
 			}
 
-			virtual void OnCollisionBegin(GameObject* otherObject) {}
+			void SetCollisionFunction(void (*function)(GameObject*, Vector3)) { m_CollisionFunction = function; }
+
+			virtual void OnCollisionBegin(GameObject* otherObject, Vector3 point = Vector3(0, 5, 0)) { if (m_CollisionFunction) m_CollisionFunction(otherObject, point); }
 
 			virtual void OnCollisionEnd(GameObject* otherObject) {}
 			
@@ -84,13 +86,11 @@ namespace NCL
 				return worldID;
 			}
 
-			
+			GameObjectType type;
 
 		protected:
 			Transform transform;
 
-			CollisionVolume* boundingVolume;
-			PhysicsObject* physicsObject;
 			PhysicsXObject* physicsXObject;
 			RenderObject* renderObject;
 			NetworkObject* networkObject;

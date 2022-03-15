@@ -38,9 +38,11 @@ void NCL::CSC8503::GameObjectGenerator::SetTransform(GameObject* object, const r
 void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, const rapidjson::Value& value)
 {
 	NCL::Maths::Vector3 dim;
+	NCL::Maths::Vector3 dimoffset;
 	PxGeometry* volume = nullptr;
 
 	GetVector(value, "dimensions", dim);
+	GetVector(value, "dimensionsoff", dimoffset);
 	int objectType = value["objShape"].GetInt();
 
 	switch (objectType)
@@ -51,8 +53,19 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 	case 1:
 		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim));
 		break;
+	case 2:
+		volume = new PxCapsuleGeometry(dim.x,dim.y);
+		break;
 	}
-	object->SetPhysicsXObject(new PhysicsXObject(object->GetTransform(),volume));
+	PxTransform trans = PhysXConvert::TransformToPxTransform(object->GetTransform());
+	trans.p = trans.p + PhysXConvert::Vector3ToPxVec3(dimoffset);
+	PhysicsXObject* phyObj = new PhysicsXObject();
+	phyObj->properties.type = PhyProperties::Dynamic;
+	phyObj->properties.transform = trans;
+	phyObj->properties.positionOffset =dimoffset;
+	phyObj->properties.volume = volume;
+	phyObj->properties.Mass = 10.0f;
+	object->SetPhysicsXObject(phyObj);
 }
 
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)
@@ -67,7 +80,6 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 	{
 		material = AssetManager::GetInstance()->GetMaterial(value["meshPath"].GetString());
 	}
-
 	switch (objectType)
 	{
 	case 0:
@@ -78,6 +90,12 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 		break;
 	case 1:
 		
+		object->SetRenderObject(new RenderObject
+		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
+			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
+		break;
+	case 2:
+
 		object->SetRenderObject(new RenderObject
 		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
 			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
