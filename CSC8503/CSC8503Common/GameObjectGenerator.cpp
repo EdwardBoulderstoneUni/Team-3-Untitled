@@ -105,7 +105,7 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 
 
 
-void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, std::vector<GameObject*>& outobjects) 
+void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, GameWorld& world)
 {
 	std::ifstream file(fileName);
 	std::stringstream buffer;
@@ -118,7 +118,6 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, std::vect
 	{
 		rapidjson::Value& objects = document["Objects"];
 		GameObject* object;
-		outobjects.clear();
 		for (auto i = 0; i < objects.Size(); i++)
 		{			
 			object = new GameObject();
@@ -127,8 +126,7 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, std::vect
 			SetPhysicsObject(object, objects[i]);
 			SetRenderObject(object, objects[i]);
 			
-			outobjects.push_back(object);
-			
+			world.AddGameObject(object);
 		}
 	}
 }
