@@ -1,5 +1,5 @@
 #include "Bullet.h"
-
+#include "../CSC8503/GameTech/YiEventSystem.h"
 Bullet::Bullet(GameObjectType type, PlayerRole colour) {
 	this->type = type;
 
@@ -26,5 +26,7 @@ void Bullet::SetUp() {
 void Bullet::Update(float dt)
 {
 	ComponentGameObject::Update(dt);
-	std::cout << "123" << std::endl;
+	timeStack += dt;
+	if(timeStack>1.0f)
+		YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE,GetWorldID());
 }
