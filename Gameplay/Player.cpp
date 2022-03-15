@@ -165,4 +165,5 @@ void Player::Update(float dt) {
 	playerState->Update(dt);
 	weaponState->Update(dt);
 	dashCooldown -= dt;
+	respawnCooldown -= dt;
 }
