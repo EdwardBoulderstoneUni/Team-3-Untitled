@@ -31,7 +31,9 @@ namespace NCL {
 			void InitDefaultFloor();
 			void RegisterEventHandles();
 			void AmmoLeft();
+			void HealthLeft();
 			void TimeLeft(float dt);
+			void CoolDown();
 
 			void CalculateFrameRate(float dt);
 
@@ -57,9 +59,10 @@ namespace NCL {
 			bool inSelectionMode;
 			bool camFollowPlayer;
 			bool DebugMode;
+			bool isEnd;
 
 			float forceMagnitude;
-			float tLeft = 60;
+			float tLeft = 10;
 
 			GameObject* selectionObject = nullptr;
 

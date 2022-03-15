@@ -27,6 +27,9 @@ namespace NCL {
 			int GetAmmo() {
 				return ammo;
 			}
+			int GetHealth() {
+				return health;
+			}
 			int GetTime() {
 				return time;
 			}
@@ -45,6 +48,7 @@ namespace NCL {
 			float GetDashingTimeStack() { return DashingTimeStack; }
 			void  SetDashingTimeStack(float t) { DashingTimeStack = t; }
 			bool DashAlready() { return dashCooldown <= 0 ? true : false; }
+			int GetDashCD() { return dashCooldown; }
 			void DashCooldown() { dashCooldown = 1.0f; }
 			void RespawnCooldown() { respawnCooldown = 1.0f; }
 			PlayerRole GetRole() { return pColour; }
