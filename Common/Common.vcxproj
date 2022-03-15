@@ -199,7 +199,9 @@
   <ItemGroup>
     <ClCompile Include="Assets.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ControllerInput.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="InputBase.cpp" />
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="Matrix2.cpp" />
@@ -211,6 +213,7 @@
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="MouseAndKeyboardInput.cpp" />
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="PS4Input.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="RendererBase.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
@@ -235,6 +238,8 @@
     <ClInclude Include="Assets.h" />
     <ClInclude Include="ControllerInput.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="InputBase.h" />
+    <ClInclude Include="PS4Input.h" />
     <ClInclude Include="UserController.h" />
     <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Maths.h" />

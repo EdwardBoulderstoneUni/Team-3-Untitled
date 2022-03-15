@@ -120,6 +120,15 @@
     <ClCompile Include="MouseAndKeyboardInput.cpp">
       <Filter>Input</Filter>
     </ClCompile>
+    <ClCompile Include="InputBase.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="PS4Input.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ControllerInput.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -213,6 +222,12 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="MouseAndKeyboardInput.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="InputBase.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="PS4Input.h">
       <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>

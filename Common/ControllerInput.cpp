@@ -1,7 +1,10 @@
+#ifdef _ORBIS
 #include "ControllerInput.h"
 
 ControllerInput::ControllerInput(NCL::PS4::PS4Input* controller) :
-    UserController(), controller_(controller){ }
+    UserController(), controller_(controller){}
+
+ControllerInput::~ControllerInput() {}
 
 Input ControllerInput::get_inputs()
 {
@@ -19,3 +22,4 @@ Input ControllerInput::get_inputs()
 void ControllerInput::update(const float dt)
 {
 }
+#endif
