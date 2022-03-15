@@ -155,7 +155,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventSystem.h" />
-    <ClCompile Include="TutorialMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameMenu.h" />
