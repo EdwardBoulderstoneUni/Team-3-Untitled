@@ -298,7 +298,11 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		break;
 	}
 }
-
+void PhysicsXSystem::deleteActor(GameObject& actor)
+{
+	PxActor* temp = actor.GetPhysicsXObject()->rb;
+	gScene->removeActor(*temp);
+}
 void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 {
 	PxShape* shapes[MAX_NUM_ACTOR_SHAPES];
