@@ -114,6 +114,10 @@ void GameTechRenderer::RenderFrame()
 	render_skybox();
 	render_camera();
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
+	if (gameUI)
+	{
+		gameUI->DrawUI();
+	}
 }
 
 void GameTechRenderer::build_object_list()
@@ -307,4 +311,12 @@ Matrix4 GameTechRenderer::SetupDebugLineMatrix() const
 Matrix4 GameTechRenderer::SetupDebugStringMatrix() const
 {
 	return Matrix4::Orthographic(-1, 1.0f, 100, 0, 0, 100);
+}
+
+void GameTechRenderer::BeginFrame() {
+	gameUI->UpdateUI();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	BindShader(nullptr);
+	BindMesh(nullptr);
 }
