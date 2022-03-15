@@ -8,8 +8,6 @@
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
-#include "..//..//Gameplay/ePlayerRole.h"
-#include "../../Gameplay/GameObjects.h"
 #include "../GameTech/TutorialMenu.h"
 using namespace NCL;
 using namespace CSC8503;
@@ -76,40 +74,12 @@ void TutorialGame::InitialiseAssets() {
 	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 
-
-	ShaderManager::GetInstance()->Init();
-	AssetManager::GetInstance()->Init();
-	InitAbilityContainer();
-	
-	auto loadFunc = [](const string& name, OGLMesh** into) {
-		*into = new OGLMesh(name);
-		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
-		(*into)->UploadToGPU();
-	};
-	// need this, or will cause exception 
-	loadFunc("cube.msh", &cubeMesh);
-	loadFunc("sphere.msh", &sphereMesh);
-	loadFunc("Male1.msh", &charMeshA);
-	loadFunc("courier.msh", &charMeshB);
-	loadFunc("security.msh", &enemyMesh);
-	loadFunc("coin.msh", &bonusMesh);
-	loadFunc("capsule.msh", &capsuleMesh);
-
-	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
-	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
-
 	InitCamera();
 	InitWorld();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
-
-
-	InitWorld();
-	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1);
-	RegisterEventHandles();
 	physicsX->SyncGameObjs();
 	world->GetGameObjects().at(0)->GetPhysicsXObject()->SetGravity(false);
 }
@@ -118,20 +88,32 @@ void TutorialGame::InitialiseUI()
 {
 	gameUI = new GameUI();
 	renderer->SetUI(gameUI);
+	//gameMenu.reset(new TutorialMenu(this));
+	//gameUI->PushMenu(gameMenu);
+	//InGameState* t = new InGameState(this);
+	//pauseMachine = new PushdownMachine(t);
+	//pauseMachine = new PushdownMachine(new InGameState(this));
 }
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
 	delete physicsX;
 	delete renderer;
 	delete world;
-	delete player;
-	delete abilityContainer;
+
+	
 	delete gameUI;
 }
 
 void TutorialGame::UpdateGame(float dt)
 {
-	eventSystem->ProcessAllEvent();
+	//InMainMenu = !pauseMachine->Update(dt);
+	//quit = !pauseMachine->Update(dt);
+
+	/*if (freezed)
+	{
+		return;
+	}*/
+
 	if (!inSelectionMode)
 	{
 		world->GetMainCamera()->UpdateCamera(dt);
@@ -179,6 +161,57 @@ void TutorialGame::UpdateGame(float dt)
 	Debug::FlushRenderables(dt);
 
 
+}
+
+void TutorialGame::UpdateKeys()
+{
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1))
+	{
+		InitWorld(); //We can reset the simulation at any time with F1
+		selectionObject = nullptr;
+		lockedObject = nullptr;
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2))
+	{
+		InitCamera(); //F2 will reset the camera to a specific default place
+	}
+
+	//if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
+	//{
+	//	useGravity = !useGravity; //Toggle gravity!
+	//	physics->UseGravity(useGravity);
+	//}
+	//Running certain physics updates in a consistent order might cause some
+	//bias in the calculations - the same objects might keep 'winning' the constraint
+	//allowing the other one to stretch too much etc. Shuffling the order so that it
+	//is random every frame can help reduce such bias.
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9))
+	{
+		world->ShuffleConstraints(true);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10))
+	{
+		world->ShuffleConstraints(false);
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F7))
+	{
+		world->ShuffleObjects(true);
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8))
+	{
+		world->ShuffleObjects(false);
+	}
+
+	if (lockedObject)
+	{
+		LockedObjectMovement();
+	}
+	else
+	{
+		DebugObjectMovement();
+	}
 }
 
 void TutorialGame::LockedObjectMovement()
