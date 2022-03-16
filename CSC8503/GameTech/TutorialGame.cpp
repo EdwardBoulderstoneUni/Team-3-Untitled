@@ -119,10 +119,8 @@ void TutorialGame::UpdateGame(float dt)
 		world->GetMainCamera()->SetPitch(angles.x);
 		world->GetMainCamera()->SetYaw(angles.y);
 	}
-	AmmoLeft();
-	HealthLeft();
-	TimeLeft(dt);
-
+	
+	HUDUpdate(dt);
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 
@@ -269,6 +267,30 @@ void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("HIT", _HitHandle);
 }
 
+void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
+{
+	Player* player = TutorialGame::getMe()->player;
+	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 90));
+	if (player->GetAmmo() == 0) {
+		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
+	}
+
+	renderer->DrawString("Health: " + std::to_string(player->GetHealth()), Vector2(5, 85));
+
+	if (tLeft >= 0) {
+		tLeft -= dt;
+		int m = tLeft / 60;
+		int s = int(tLeft) % 60;
+		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
+	}
+	else {
+		isEnd = true; // Game end.
+		renderer->DrawString("Time up!", Vector2(45, 50));
+	}
+
+	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
+}
+
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 {
 	float meshSize = 3.0f;
@@ -362,31 +384,6 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 }
 
 
-//HUD
-void TutorialGame::AmmoLeft() {
-	Player* player = TutorialGame::getMe()->player;
-	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 90));
-	if (player->GetAmmo() == 0) {
-		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
-	}
-}
-void TutorialGame::HealthLeft() {
-	Player* player = TutorialGame::getMe()->player;
-	renderer->DrawString("Health: " + std::to_string(player->GetHealth()), Vector2(5, 85));
-}
-void TutorialGame::TimeLeft(float dt) {
-	if (tLeft >= 0) {
-		tLeft -= dt;
-		int m = tLeft / 60;
-		int s = int(tLeft) % 60;
-		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
-	}
-	else {
-		isEnd = true; // Game end.
-		renderer->DrawString("Time up!", Vector2(45, 50));
-	}
-}
-
 void TutorialGame::CalculateFrameRate(float dt) {
 	float currentTime = GetTickCount64() * 0.001f;
 	++framesPerSecond;
@@ -444,12 +441,13 @@ void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerDat
 	Player* shooter = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(shooterID));
 	Player* hitobj = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(hitID)));
 
+	shooter->AddScore(10);
 	hitobj->TakeDamage(bullet->GetDamage());
-
+	if (hitobj->IsDead())
+		std::cout<<(std::to_string(shooter->GetWorldID()) + " --->" +
+			std::to_string(hitobj->GetWorldID()))<<std::endl;
 	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
 }
-
-
 void NCL::CSC8503::TutorialGame::UpdateGameObjects(float dt)
 {
 	world->OperateOnContents(

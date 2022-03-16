@@ -30,10 +30,7 @@ namespace NCL {
 
 			void InitDefaultFloor();
 			void RegisterEventHandles();
-			void AmmoLeft();
-			void HealthLeft();
-			void TimeLeft(float dt);
-			void CoolDown();
+			void HUDUpdate(float dt);
 
 			void CalculateFrameRate(float dt);
 

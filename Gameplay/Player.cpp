@@ -71,13 +71,13 @@ void Player::Move() {
 	}
 }
 void Player::Jump(float dt) {
-	physicsXObject->CMove(PxVec3(0, 1, 0) * cos(JumpingTimeStack));
-	JumpingTimeStack += dt * 3;
+	physicsXObject->CMove(PxVec3(0, 1, 0) * cos(timeStack.jumpingTimeStack));
+	timeStack.jumpingTimeStack += dt * 3;
 }
 void Player::Dash(float dt) {
 	physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward)*3.0f, 0.0001f, 0.2,
 			PxControllerFilters(), NULL);
-	DashingTimeStack += dt;
+	timeStack.dashingTimeStack += dt;
 }
 void Player::Openfire() {
 	if (ammo > 0) {
@@ -166,6 +166,6 @@ void Player::Update(float dt) {
 		lastInput = GetComponentInput()->user_interface->get_inputs();
 	playerState->Update(dt);
 	weaponState->Update(dt);
-	dashCooldown -= dt;
-	respawnCooldown -= dt;
+	timeStack.dashCooldown -= dt;
+	timeStack.respawnCooldown -= dt;
 }
