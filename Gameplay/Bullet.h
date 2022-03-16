@@ -2,6 +2,7 @@
 #include "Sphere.h"
 #include "ePlayerRole.h"
 #include "Player.h"
+#define BULLET_DURA 5.0f
 class Bullet : public Sphere {
 public:
 	Bullet(Player& player);

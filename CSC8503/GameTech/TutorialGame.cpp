@@ -447,8 +447,8 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 
 	TutorialGame::getMe()->world->AddGameObject(bullet);
 
-	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	bullet->SetCollisionFunction(func);
+	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	//bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
 }
@@ -471,15 +471,14 @@ void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerDat
 
 	Player* shooter = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(shooterID));
 	Player* hitobj = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(hitID)));
-
-	shooter->AddScore(10);
-	hitobj->TakeDamage(bullet->GetDamage());
-	if (hitobj->IsDead()) {
+	int health=hitobj->GetHealth();
+	if (health!=0 and hitobj->TakeDamage(bullet->GetDamage())==0) {
 		std::cout << (std::to_string(shooter->GetWorldID()) + " --->" +
 			std::to_string(hitobj->GetWorldID())) << std::endl;
 		shooter->AddTeamKill(1);
 	}
-		
+	if(not hitobj->IsDead())
+		shooter->AddScore(10);
 	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
 }
 void NCL::CSC8503::TutorialGame::UpdateGameObjects(float dt)

@@ -30,6 +30,6 @@ void Bullet::Update(float dt)
 {
 	ComponentGameObject::Update(dt);
 	timeStack += dt;
-	if(timeStack>1.0f)
+	if(timeStack> BULLET_DURA)
 		YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE,GetWorldID());
 }
