@@ -15,8 +15,14 @@ namespace NCL {
 		}
 
 		AbilityContainer::~AbilityContainer() {
-			for (auto i : allAbilities)
-				delete i;
+			for (int i = 0; i < 6; ++i)
+			{
+				if (allAbilities != nullptr)
+				{
+					delete allAbilities[i];
+					allAbilities[i] = nullptr;
+				}
+			}
 		}
 	}
 }
