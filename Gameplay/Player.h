@@ -45,6 +45,9 @@ namespace NCL {
 			int GetHealth() {
 				return health;
 			}
+			void SetHealth(int h) {
+				health = h;
+			}
 			int GetTime() {
 				return time;
 			}

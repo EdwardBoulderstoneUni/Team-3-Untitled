@@ -102,6 +102,7 @@ namespace NCL {
 			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static void _deleteHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static void _HitHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _respawnHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static TutorialGame* p_self;
 			static TutorialGame* getMe() { return p_self; }
 			void UpdateGameObjects(float dt);

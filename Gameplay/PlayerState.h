@@ -61,8 +61,11 @@ class Die :public PushdownState {
 		if(stack->deathTimeStack>RESPAWN_DURA)
 		{
 			stack->respawnCooldown = RESPAWN_CD;
+			player->Respawn();
+			stack->deathTimeStack = 0.0f;
 			return PushdownResult::Pop;
 		}
+		stack->deathTimeStack += dt;
 		player->GetPhysicsXObject()->CMove(PxVec3(0, -9.8f, 0) * 0.1f);
 		return PushdownResult::NoChange;
 	}

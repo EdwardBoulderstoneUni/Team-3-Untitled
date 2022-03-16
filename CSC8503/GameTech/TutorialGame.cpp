@@ -293,6 +293,7 @@ void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle);
 	eventSystem->RegisterEventHandle("HIT", _HitHandle);
+	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle);
 }
 
 void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
@@ -502,6 +503,13 @@ void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerDat
 	if(not hitobj->IsDead())
 		shooter->AddScore(10);
 	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
+}
+void NCL::CSC8503::TutorialGame::_respawnHandle(const EVENT* pEvent, UINT dwOwnerData)
+{
+	string worldID = pEvent->vArg[0];
+ 	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
+	player->SetHealth(100);
+	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(20,5,10));
 }
 void NCL::CSC8503::TutorialGame::UpdateGameObjects(float dt)
 {
