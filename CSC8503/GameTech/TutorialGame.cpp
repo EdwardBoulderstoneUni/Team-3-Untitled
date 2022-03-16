@@ -464,6 +464,7 @@ void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerDat
 	string hitID = pEvent->vArg[1];
 
 	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(bulletID)));
+	if (not bullet)return;
 	int shooterID = bullet->GetShooterID();
 
 	Player* shooter = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(shooterID));
