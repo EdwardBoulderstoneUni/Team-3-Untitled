@@ -16,7 +16,6 @@ GameObject::GameObject(string objectName)
 
 GameObject::~GameObject()
 {
-
 	delete physicsXObject;
 	delete renderObject;
 }

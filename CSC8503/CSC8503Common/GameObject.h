@@ -50,6 +50,8 @@ namespace NCL
 
 			void SetPhysicsXObject(PhysicsXObject* newObject)
 			{
+				if (physicsXObject != nullptr)
+					delete physicsXObject;
 				physicsXObject = newObject;
 			}
 

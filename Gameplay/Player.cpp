@@ -16,8 +16,7 @@ Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,b
 }
 
 Player::~Player() {
-	for (auto i : abilities)
-		delete i;
+
 
 }
 
