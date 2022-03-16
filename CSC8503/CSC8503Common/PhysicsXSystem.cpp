@@ -427,13 +427,22 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 	return raycast(camera.GetPosition(), c, maxdis, hit);
 }
 
-Vector3 PhysicsXSystem::ScreenToWorld(Camera& camera,Vector2 pos)
+Vector3 PhysicsXSystem::ScreenToWorld(Camera& camera,Vector2 pos, bool isNear)
 {
-	auto farPos = Vector3(pos.x,
-		pos.y,
-		0.99999f
-	);
-	Vector3 a = Unproject(farPos, camera);
+	auto Pos = Vector3();
+	if (isNear) {
+		Pos = Vector3(pos.x,
+			pos.y,
+			-0.99999f
+		);
+	}
+	else {
+		Pos = Vector3(pos.x,
+			pos.y,
+			0.99999f
+		);
+	}
+	Vector3 a = Unproject(Pos, camera);
 	return a;
 }
 

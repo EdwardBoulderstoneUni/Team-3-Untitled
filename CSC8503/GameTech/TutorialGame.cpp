@@ -328,6 +328,7 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 
 	Vector3 position = player->GetTransform().GetPosition()+Vector3(0,5,0);
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+
 #define TARGET_OFF 20.0f
 	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, screenSize / 2.0f);
 	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, 
@@ -341,8 +342,6 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 	renderer->DrawLine(position, target, Vector4(0,1,0,1));
 	renderer->DrawLine(targetleft, targetright, Vector4(0, 1, 0, 1));
 	renderer->DrawLine(targettop, targetbot, Vector4(0, 1, 0, 1));
-
-
 }
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
@@ -463,7 +462,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 
 	bullet->GetTransform()
 		.SetScale(sphereSize)
-		.SetPosition(position + player->GetShootDiretion() * 10);
+		.SetPosition(position + player->GetShootDiretion() * 15);
 	bullet->InitAllComponent();
 	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), TutorialGame::getMe()->sphereMesh,
 		TutorialGame::getMe()->basicTex, TutorialGame::getMe()->basicShader));

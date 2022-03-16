@@ -16,7 +16,7 @@ class PhysicsXSystem {
 			bool raycast(Vector3 origin,Vector3 dir,float maxdis,PxRaycastBuffer& hit);
 			bool raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit);
 
-			Vector3 ScreenToWorld(Camera& camera,Vector2 pos);
+			Vector3 ScreenToWorld(Camera& camera,Vector2 pos,bool isNear=true);
 			static  PhysicsXSystem* getMe() {return p_self;}
 		protected:
 			void SynActorsPose(PxRigidActor** actors, const PxU32 numActors);

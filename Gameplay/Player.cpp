@@ -163,8 +163,8 @@ void Player::Update(float dt) {
 	if (GetComponentCamera()) {
 		forward = GetComponentCamera()->camera->GetThirdPersonOrientation() * Vector3(0, 0, -1);
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f);
-		shootDir = (target - transform.GetPosition()).Normalised();
+		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f,false);
+		shootDir = (target-transform.GetPosition()).Normalised();
 	}
 	right = Vector3::Cross(forward, Vector3(0, 1, 0));
 	if(GetComponentInput())
