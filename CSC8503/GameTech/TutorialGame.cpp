@@ -319,6 +319,23 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
 	renderer->DrawString("TeamKill: " + std::to_string(player->GetTeamKill()), Vector2(70, 20));
 
+	Vector3 position = player->GetTransform().GetPosition()+Vector3(0,5,0);
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+#define TARGET_OFF 20.0f
+	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, screenSize / 2.0f);
+	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, 
+		screenSize / 2.0f+Vector2(-TARGET_OFF,0));
+	Vector3 targetright = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(TARGET_OFF, 0));
+	Vector3 targettop = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(0, TARGET_OFF));
+	Vector3 targetbot = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(0, -TARGET_OFF));
+	renderer->DrawLine(position, target, Vector4(0,1,0,1));
+	renderer->DrawLine(targetleft, targetright, Vector4(0, 1, 0, 1));
+	renderer->DrawLine(targettop, targetbot, Vector4(0, 1, 0, 1));
+
+
 }
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
@@ -431,8 +448,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 {
 	string worldID = pEvent->vArg[0];
 	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
-	Vector3 positon = player->GetTransform().GetPosition();
-	Vector3 forward = player->GetForward();
+	Vector3 position = player->GetTransform().GetPosition() + Vector3(0,5,0);
 
 	auto bullet = new Bullet(*player);
 
@@ -440,7 +456,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 
 	bullet->GetTransform()
 		.SetScale(sphereSize)
-		.SetPosition(positon + forward * 15);
+		.SetPosition(position + player->GetShootDiretion() * 10);
 	bullet->InitAllComponent();
 	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), TutorialGame::getMe()->sphereMesh,
 		TutorialGame::getMe()->basicTex, TutorialGame::getMe()->basicShader));
@@ -450,7 +466,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
 	//bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
-	bullet->GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
+	bullet->GetPhysicsXObject()->SetLinearVelocity(player->GetShootDiretion() * 50.0f);
 }
 
 void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, UINT dwOwnerData)

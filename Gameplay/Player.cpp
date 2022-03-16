@@ -50,7 +50,6 @@ void Player::SetUp()
 		camera->camera->SetNearPlane(0.1f);
 		camera->camera->SetFarPlane(500.0f);
 		camera->camera->SetPitch(-15.0f);
-		camera->camera->SetYaw(180);
 
 		PushComponent(camera);
 	}
@@ -159,7 +158,14 @@ void Player::SetupStateMachine()
 }
 void Player::Update(float dt) {
 	ComponentGameObject::Update(dt);
-	forward = transform.GetOrientation() * Vector3(0, 0, 1);
+	transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
+		lastInput.look_direction.y,0));
+	if (GetComponentCamera()) {
+		forward = GetComponentCamera()->camera->GetThirdPersonOrientation() * Vector3(0, 0, -1);
+		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f);
+		shootDir = (target - transform.GetPosition()).Normalised();
+	}
 	right = Vector3::Cross(forward, Vector3(0, 1, 0));
 	if(GetComponentInput())
 		lastInput = GetComponentInput()->user_interface->get_inputs();

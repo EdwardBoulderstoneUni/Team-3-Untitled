@@ -427,6 +427,16 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 	return raycast(camera.GetPosition(), c, maxdis, hit);
 }
 
+Vector3 PhysicsXSystem::ScreenToWorld(Camera& camera,Vector2 pos)
+{
+	auto farPos = Vector3(pos.x,
+		pos.y,
+		0.99999f
+	);
+	Vector3 a = Unproject(farPos, camera);
+	return a;
+}
+
 void PhysicsXSystem::SyncGameObjs()
 {
 	std::vector<GameObject*>& actors=gameWorld.GetGameObjects();

@@ -113,7 +113,7 @@ namespace NCL
 
 		Quaternion GetThirdPersonOrientation() {
 			Quaternion orientation;
-			orientation = orientation.EulerAnglesToQuaternion(0.0f, yaw - 180, 0.0f);
+			orientation = orientation.EulerAnglesToQuaternion(pitch, yaw, 0.0f);
 			return orientation;
 		}
 
@@ -122,7 +122,7 @@ namespace NCL
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top,
 		                               float bottom, float near, float far);
 
-		void ThirdPersonCamera(NCL::CSC8503::GameObject* object);
+		void ThirdPersonCamera(NCL::CSC8503::GameObject* object,Vector3 offset,float yawoffset);
 	protected:
 		CameraType camType;
 
