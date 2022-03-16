@@ -8,6 +8,7 @@
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
+#include "../GameTech/TutorialMenu.h"
 #include "..//..//Gameplay/ePlayerRole.h"
 #include "../../Gameplay/GameObjects.h"
 #include "../../Gameplay/Bullet.h"
@@ -16,7 +17,6 @@ using namespace NCL;
 using namespace CSC8503;
 
 TutorialGame* TutorialGame::p_self = NULL;
-
 TutorialGame::TutorialGame()
 { 
 	eventSystem = new YiEventSystem();
@@ -29,6 +29,7 @@ TutorialGame::TutorialGame()
 	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
+	InitialiseUI();
 	InitialiseAssets();
 }
 
@@ -39,12 +40,30 @@ and the same texture and shader. There's no need to ever load in anything else
 for this module, even in the coursework, but you can add it if you like!
 
 */
+void TutorialGame::UpdateRender(float dt)
+{
+	Debug::FlushRenderables(dt);
+	renderer->Update(dt);
+	renderer->Render();
+}
+void TutorialGame::SetSingleMode()
+{
+
+	InitialiseAssets();
+}
+
+void TutorialGame::SetMultiMode()
+{
+
+	InitWorld();
+}
 void TutorialGame::InitialiseAssets() {
 	auto loadFunc = [](const string& name, OGLMesh** into) {
 		*into = new OGLMesh(name);
 		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
 		(*into)->UploadToGPU();
 	};
+
 	loadFunc("cube.msh", &cubeMesh);
 	loadFunc("sphere.msh", &sphereMesh);
 	loadFunc("Female_Guard.msh", &charMeshA);
@@ -56,11 +75,9 @@ void TutorialGame::InitialiseAssets() {
 	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 
-
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
 	InitAbilityContainer();
-	
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
@@ -80,14 +97,23 @@ void TutorialGame::InitialiseAssets() {
 	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
 	RegisterEventHandles();
 }
-	
 
+void TutorialGame::InitialiseUI()
+{
+	gameUI = new GameUI();
+	renderer->SetUI(gameUI);
+	//gameMenu.reset(new TutorialMenu(this));
+	//gameUI->PushMenu(gameMenu);
+	//InGameState* t = new InGameState(this);
+	//pauseMachine = new PushdownMachine(t);
+	//pauseMachine = new PushdownMachine(new InGameState(this));
+}
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
-
 	delete physicsX;
 	delete renderer;
 	delete world;
+	delete gameUI;
 	delete player;
 	delete abilityContainer;
 }
@@ -123,9 +149,11 @@ void TutorialGame::UpdateGame(float dt)
 	HUDUpdate(dt);
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
+	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-	renderer->Render();
+
+
 }
 
 void TutorialGame::InitAbilityContainer() {

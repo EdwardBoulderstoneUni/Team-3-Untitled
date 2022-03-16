@@ -3,6 +3,8 @@
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
+#include "../CSC8503Common/PushdownMachine.h"
+#include "GameState.h"
 #include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
 namespace NCL {
@@ -19,10 +21,16 @@ namespace NCL {
 			~TutorialGame();
 
 			virtual void UpdateGame(float dt);
+			virtual void UpdateRender(float dt);
 
+			GameUI* GetUI()const { return gameUI; }
+			void StartRender()const { renderer->Render(); }
+
+			void SetSingleMode();
+			void SetMultiMode();
 		protected:
 			void InitialiseAssets();
-
+			void InitialiseUI();
 			void InitAbilityContainer();
 			void InitPlayer(Vector3 pos, GameObjectType team, bool islocal=false);
 		
@@ -89,9 +97,7 @@ namespace NCL {
 			{
 				lockedObject = o;
 			}
-
-
-		protected:
+			GameUI* gameUI;
 			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static void _deleteHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static void _HitHandle(const EVENT* pEvent, UINT dwOwnerData);
