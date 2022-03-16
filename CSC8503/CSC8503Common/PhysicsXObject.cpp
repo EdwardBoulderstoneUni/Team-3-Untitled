@@ -13,8 +13,8 @@ PhysicsXObject::PhysicsXObject()
 
 PhysicsXObject::~PhysicsXObject()
 {
-	PX_RELEASE(rb);
-	PX_RELEASE(controller);
+	//PX_RELEASE(rb);
+	//PX_RELEASE(controller);
 }
 void PhysicsXObject::SetLinearVelocity(Vector3 v) {
 	PxRigidDynamic* actor = rb->is<PxRigidDynamic>();

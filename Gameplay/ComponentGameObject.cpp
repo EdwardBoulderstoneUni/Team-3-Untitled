@@ -7,11 +7,15 @@ NCL::CSC8503::ComponentGameObject::ComponentGameObject()
 
 NCL::CSC8503::ComponentGameObject::~ComponentGameObject()
 {
-	for (auto i : components) {
+	for (auto &i : components) {
 		if (i == nullptr)continue;
-		delete i;
-	}
-		
+		else
+		{
+			delete i;
+			i = nullptr;
+
+		}
+	}		
 }
 
 ComponentCamera* NCL::CSC8503::ComponentGameObject::GetComponentCamera()
