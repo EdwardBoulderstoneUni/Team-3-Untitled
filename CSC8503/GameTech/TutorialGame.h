@@ -68,6 +68,7 @@ namespace NCL {
 
 			float forceMagnitude;
 			float tLeft = 10;
+			
 
 			GameObject* selectionObject = nullptr;
 

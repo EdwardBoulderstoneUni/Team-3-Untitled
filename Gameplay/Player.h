@@ -60,7 +60,9 @@ namespace NCL {
 			Input GetLastInput() { return lastInput; }
 			PlayerRole GetRole() { return pColour; }
 			int GetScore() { return score; }
+			int GetTeamKill() { return teamKill; }
 			void AddScore(int s) { score += s; }
+			void AddTeamKill(int k) { teamKill += k; }
 			TimeStack* GetTimeStack() { return &timeStack; }
 		private:
 			TimeStack timeStack;

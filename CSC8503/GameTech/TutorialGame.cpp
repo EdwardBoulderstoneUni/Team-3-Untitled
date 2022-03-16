@@ -317,6 +317,8 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 	}
 
 	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
+	renderer->DrawString("TeamKill: " + std::to_string(player->GetTeamKill()), Vector2(70, 20));
+
 }
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
@@ -472,9 +474,12 @@ void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerDat
 
 	shooter->AddScore(10);
 	hitobj->TakeDamage(bullet->GetDamage());
-	if (hitobj->IsDead())
-		std::cout<<(std::to_string(shooter->GetWorldID()) + " --->" +
-			std::to_string(hitobj->GetWorldID()))<<std::endl;
+	if (hitobj->IsDead()) {
+		std::cout << (std::to_string(shooter->GetWorldID()) + " --->" +
+			std::to_string(hitobj->GetWorldID())) << std::endl;
+		shooter->AddTeamKill(1);
+	}
+		
 	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
 }
 void NCL::CSC8503::TutorialGame::UpdateGameObjects(float dt)
