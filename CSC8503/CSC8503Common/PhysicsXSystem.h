@@ -12,6 +12,7 @@ class PhysicsXSystem {
 			void initPhysics();
 			void Update(float dt);
 			void addActor(GameObject& actor);
+			void deleteActor(GameObject& actor);
 			bool raycast(Vector3 origin,Vector3 dir,float maxdis,PxRaycastBuffer& hit);
 			bool raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit);
 			static  PhysicsXSystem* getMe() {return p_self;}

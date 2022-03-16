@@ -9,5 +9,4 @@ public:
 	}
 	void Update(float dt) override;
 	UserController* user_interface;
-	std::function<void(float dt)> updateCallback;
 };

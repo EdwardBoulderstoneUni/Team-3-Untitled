@@ -3,6 +3,8 @@
 #include "OGLTexture.h"
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
+#include "../CSC8503Common/PushdownMachine.h"
+#include "GameState.h"
 #include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
 namespace NCL {
@@ -19,25 +21,24 @@ namespace NCL {
 			~TutorialGame();
 
 			virtual void UpdateGame(float dt);
+			virtual void UpdateRender(float dt);
 
+			GameUI* GetUI()const { return gameUI; }
+			void StartRender()const { renderer->Render(); }
+
+			void SetSingleMode();
+			void SetMultiMode();
 		protected:
 			void InitialiseAssets();
-
+			void InitialiseUI();
 			void InitAbilityContainer();
-			void InitPlayer(Vector3 pos, GameObjectType team);
+			void InitPlayer(Vector3 pos, GameObjectType team, bool islocal=false);
 		
 			void InitWorld();
 
-			void InitGameExamples();
-
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing,
-			                       const Vector3& cubeDims);
 			void InitDefaultFloor();
 			void RegisterEventHandles();
-			void AmmoLeft();
-			void TimeLeft(float dt);
+			void HUDUpdate(float dt);
 
 			void CalculateFrameRate(float dt);
 
@@ -63,9 +64,10 @@ namespace NCL {
 			bool inSelectionMode;
 			bool camFollowPlayer;
 			bool DebugMode;
+			bool isEnd;
 
 			float forceMagnitude;
-			float tLeft = 60;
+			float tLeft = 10;
 
 			GameObject* selectionObject = nullptr;
 
@@ -95,12 +97,13 @@ namespace NCL {
 			{
 				lockedObject = o;
 			}
-
-
-		protected:
+			GameUI* gameUI;
 			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _deleteHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _HitHandle(const EVENT* pEvent, UINT dwOwnerData);
 			static TutorialGame* p_self;
 			static TutorialGame* getMe() { return p_self; }
+			void UpdateGameObjects(float dt);
 		};
 	}
 }

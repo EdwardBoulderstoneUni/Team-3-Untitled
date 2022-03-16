@@ -2,9 +2,7 @@
 #include "Transform.h"
 #include "..//../Gameplay/eGameObjectType.h"
 #include "PhysicsXObject.h"
-
 #include "RenderObject.h"
-
 #include <vector>
 #include <functional>
 
@@ -85,7 +83,7 @@ namespace NCL
 			{
 				return worldID;
 			}
-
+			virtual void Update(float dt) {}
 			GameObjectType type;
 
 		protected:

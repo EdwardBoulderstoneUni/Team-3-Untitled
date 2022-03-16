@@ -3,6 +3,8 @@
 YiEventSystem* YiEventSystem::p_self = NULL;
 EVENT_DEFINE g_GlobalEvent[] = {
 	{PLAYER_OPEN_FIRE,"OPEN_FIRE"},
+	{OBJECT_DELETE,"OBJECT_DELETE"},
+	{PLAYER_HIT,"HIT"},
 };
 YiEventSystem::YiEventSystem()
 {

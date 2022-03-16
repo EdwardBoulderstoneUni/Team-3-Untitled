@@ -3,6 +3,8 @@
 
 enum GAME_EVENT_ID {
 	PLAYER_OPEN_FIRE,
+	OBJECT_DELETE,
+	PLAYER_HIT,
 };
 class YiEventSystem:public EventSystem 
 {
