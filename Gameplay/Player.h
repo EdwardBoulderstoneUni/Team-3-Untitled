@@ -6,7 +6,7 @@
 #include "../CSC8503/GameTech/YiEventSystem.h"
 #include "ePlayerRole.h"
 
-#define DASH_CD 1.0f
+#define DASH_CD 5.0f
 #define DASH_DURA 0.2f
 #define RESPAWN_CD 5.0f
 #define RESPAWN_DURA 5.0f
@@ -64,6 +64,9 @@ namespace NCL {
 			void AddScore(int s) { score += s; }
 			void AddTeamKill(int k) { teamKill += k; }
 			TimeStack* GetTimeStack() { return &timeStack; }
+
+			int GetDashCD() { return timeStack.dashCooldown; }
+			bool DashCD() {return timeStack.dashCooldown >= 1 ? true : false;}
 		private:
 			TimeStack timeStack;
 			float health = 100.0f;
