@@ -69,7 +69,8 @@ namespace NCL {
 			TimeStack* GetTimeStack() { return &timeStack; }
 
 			int GetDashCD() { return timeStack.dashCooldown; }
-			bool DashCD() {return timeStack.dashCooldown >= 1 ? true : false;}
+			int GetRespawnCD() { return timeStack.respawnCooldown; }
+			bool DashCD() {return timeStack.dashCooldown >= 0 ? true : false;}
 		private:
 			TimeStack timeStack;
 			float health = 100.0f;
