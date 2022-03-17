@@ -186,7 +186,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, 
 	_PushEvent(event);
 }
 
-void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, UINT uOwnerData)
+void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, DWORD64 uOwnerData)
 {
 	if (!funHandle) return;
 

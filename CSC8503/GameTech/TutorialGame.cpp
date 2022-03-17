@@ -459,7 +459,7 @@ void TutorialGame::CalculateFrameRate(float dt) {
 }
 
 
-void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
+void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	string worldID = pEvent->vArg[0];
 	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
@@ -484,14 +484,14 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 	bullet->GetPhysicsXObject()->SetLinearVelocity(player->GetShootDiretion() * 250.0f);
 }
 
-void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, UINT dwOwnerData)
+void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	string worldID = pEvent->vArg[0];
 	GameObject* temp= TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID));
 	TutorialGame::getMe()->physicsX->deleteActor(*temp);
 	TutorialGame::getMe()->world->RemoveGameObject(temp);
 }
-void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerData)
+void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	string bulletID = pEvent->vArg[0];
 	string hitID = pEvent->vArg[1];
@@ -512,7 +512,7 @@ void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerDat
 		shooter->AddScore(10);
 	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
 }
-void NCL::CSC8503::TutorialGame::_respawnHandle(const EVENT* pEvent, UINT dwOwnerData)
+void NCL::CSC8503::TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
