@@ -42,7 +42,7 @@ namespace NCL
 			Vector3 GetDiagonal() const;
 			//Sets the scale vector (floats 1,5, and 10)
 			void SetDiagonal(const Vector3& in);
-			const float* as_float_array();
+			const float* as_float_array() const;
 
 			//Creates a rotation matrix that rotates by 'degrees' around the 'axis'
 			//Analogous to glRotatef

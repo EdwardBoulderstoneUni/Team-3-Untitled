@@ -111,7 +111,7 @@ void Matrix4::SetDiagonal(const Vector3& in)
 	array[10] = in.z;
 }
 
-const float* Matrix4::as_float_array()
+const float* Matrix4::as_float_array() const
 {
 	return array;
 }
