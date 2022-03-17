@@ -384,7 +384,7 @@ GameObject* NCL::CSC8503::TutorialGame::AddPaint(const Vector3& position)
 		.SetPosition(position);
 
 	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), AssetManager::GetInstance()->GetMesh("Cylinder.msh"), nullptr, basicShader));
-	disc->GetRenderObject()->SetColour(Vector4(1, 0, 0, 1));
+	disc->GetRenderObject()->colour_ = Vector4(1, 0, 0, 1);
 
 	world->AddGameObject(disc);
 	return disc;

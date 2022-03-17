@@ -272,7 +272,7 @@ void GameTechRenderer::render_camera()
 		Matrix4 full_shadow_mat = shadow_matrix_ * model_matrix;
 		glUniformMatrix4fv(shadow_location, 1, false, reinterpret_cast<float*>(&full_shadow_mat));
 
-		const auto colour = object->GetColour();
+		const auto colour = object->colour_;
 
 		glUniform4fv(colour_location, 1, reinterpret_cast<const float*>(&colour));
 
@@ -280,8 +280,8 @@ void GameTechRenderer::render_camera()
 
 		if (!useMaterial)
 		{
-			BindTextureToShader((OGLTexture*)object->GetDefaultTexture(), "mainTex", 0);
-			glUniform1i(has_tex_location, (OGLTexture*)object->GetDefaultTexture() ? 1 : 0);
+			BindTextureToShader((OGLTexture*)object->texture_, "mainTex", 0);
+			glUniform1i(has_tex_location, (OGLTexture*)object->texture_ ? 1 : 0);
 		}
 
 		BindMesh(object->GetMesh());
