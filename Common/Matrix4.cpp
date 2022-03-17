@@ -111,6 +111,11 @@ void Matrix4::SetDiagonal(const Vector3& in)
 	array[10] = in.z;
 }
 
+const float* Matrix4::as_float_array()
+{
+	return array;
+}
+
 Matrix4 Matrix4::Perspective(float znear, float zfar, float aspect, float fov)
 {
 	Matrix4 m;
