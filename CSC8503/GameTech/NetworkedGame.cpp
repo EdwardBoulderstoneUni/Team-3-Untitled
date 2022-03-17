@@ -148,8 +148,8 @@ void NetworkedGame::UpdateMinimumState() {
 	int maxID = 0; //we could use this to see if a player is lagging behind?
 
 	for (auto i : stateIDs) {
-		minID = min(minID, i.second);
-		maxID = max(maxID, i.second);
+		minID = fmin(minID, i.second);
+		maxID = fmax(maxID, i.second);
 	}
 	//every client has acknowledged reaching at least state minID
 	//so we can get rid of any old states!
@@ -302,10 +302,10 @@ void NetworkedGame::OutputDebug(const char* strOutputString, ...)
 	char strBuffer[4096] = { 0 };
 	va_list vlArgs;
 	va_start(vlArgs, strOutputString);
-	_vsnprintf_s(strBuffer, sizeof(strBuffer) - 1, strOutputString, vlArgs);
+	vsnprintf_s(strBuffer, sizeof(strBuffer) - 1, strOutputString, vlArgs);
 	//vsprintf(strBuffer, strOutputString, vlArgs);
 	va_end(vlArgs);
-	OutputDebugString(strBuffer);
+	//OutputDebugString(strBuffer);
 }
 
 void NetworkedGame::ToggleNetworkState(GameObject* object, bool state)

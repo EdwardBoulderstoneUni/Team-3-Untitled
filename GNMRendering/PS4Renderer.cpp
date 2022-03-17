@@ -21,7 +21,7 @@ using namespace NCL;
 using namespace NCL::PS4;
 
 sce::Gnmx::Toolkit::IAllocator	oAllocator;
-sce::Gnmx::Toolkit::IAllocator	gAllocator;
+sce::Gnmx::Toolkit::IAllocator	g_Allocator;
 
 PS4RendererBase::PS4RendererBase(PS4Window* window)
 	: RendererBase(*window),
@@ -33,9 +33,7 @@ PS4RendererBase::PS4RendererBase(PS4Window* window)
 	framesSubmitted = 0;
 	currentGPUBuffer = 0;
 	currentScreenBuffer = 0;
-	prevScreenBuffer = 0;
-
-	std::cerr << "Starting Rich Code!" << std::endl;
+	prevScreenBuffer = 0;	
 
 	currentGFXContext = nullptr;
 
@@ -90,7 +88,7 @@ void	PS4RendererBase::InitialiseGCMRendering() {
 		new (&frames[i])PS4Frame();
 	}
 
-	sce::Gnmx::Toolkit::Allocators allocators = sce::Gnmx::Toolkit::Allocators(oAllocator, gAllocator, ownerHandle);
+	sce::Gnmx::Toolkit::Allocators allocators = sce::Gnmx::Toolkit::Allocators(oAllocator, g_Allocator, ownerHandle);
 	Gnmx::Toolkit::initializeWithAllocators(&allocators);
 }
 
@@ -99,9 +97,9 @@ void	PS4RendererBase::InitialiseMemoryAllocators() {
 	stackAllocators[MEMORY_ONION].init(SCE_KERNEL_WB_ONION, _OnionMemory);
 
 	oAllocator = Gnmx::Toolkit::GetInterface(&stackAllocators[MEMORY_ONION]);
-	gAllocator = Gnmx::Toolkit::GetInterface(&stackAllocators[MEMORY_GARLIC]);
+	g_Allocator = Gnmx::Toolkit::GetInterface(&stackAllocators[MEMORY_GARLIC]);
 
-	this->garlicAllocator = &gAllocator;
+	this->garlicAllocator = &g_Allocator;
 	this->onionAllocator = &oAllocator;
 	Gnm::registerOwner(&ownerHandle, "PS4RendererBase");
 }
