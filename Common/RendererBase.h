@@ -11,10 +11,10 @@ _-_-_-_-_-_-_-""  ""
 
 */ /////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Matrix4.h"
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
-#include "Matrix4.h"
 #include "Window.h"
 
 namespace NCL
