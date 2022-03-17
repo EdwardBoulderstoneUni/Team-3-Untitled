@@ -32,7 +32,7 @@ float paintedFlag(){
 	float noiseScale = 50.0;
 	float noise = snoise(IN.texCoord * noiseScale);
 
-	float paintChannel = texture(mainTex, IN.texCoord).a
+	float paintChannel = texture(mask, IN.texCoord).a
 	float paintBlur = (noise *  paintChannel) + paintChannel;
 
 	float isPainted = 0.0;
