@@ -11,6 +11,10 @@ _-_-_-_-_-_-_-""  ""
 
 */ /////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include "Vector2.h"
+#include "Vector3.h"
+#include "Vector4.h"
+#include "Matrix4.h"
 #include "Window.h"
 
 namespace NCL
@@ -51,7 +55,17 @@ namespace NCL
 				return false;
 			}
 
+			
+			template<class ShaderArgs>
+			void bind_shader_property(const std::string& shader_property_name, const ShaderArgs& data) {
+				throw std::logic_error("Class cannot be passed to shader");
+			}
 		protected:
+			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data) = 0;
+			virtual void bind_vector2_to_shader(const std::string& shader_property_name, const float* data) = 0;
+			virtual void bind_vector3_to_shader(const std::string& shader_property_name, const float* data) = 0;
+			virtual void bind_vector4_to_shader(const std::string& shader_property_name, const float* data) = 0;
+			virtual void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) = 0;
 			virtual void OnWindowResize(int w, int h) = 0;
 
 			virtual void OnWindowDetach() {}
@@ -65,5 +79,26 @@ namespace NCL
 			int currentWidth;
 			int currentHeight;
 		};
+
+		template <>
+		inline void RendererBase::bind_shader_property<float>(const std::string& shader_property_name, const float& data) {
+			bind_float_to_shader(shader_property_name, data);
+		}
+		template <>
+		inline void RendererBase::bind_shader_property<Vector2>(const std::string& shader_property_name, const Vector2& data) {
+			bind_vector2_to_shader(shader_property_name, data.as_float_array());
+		}
+		template <>
+		inline void RendererBase::bind_shader_property<Vector3>(const std::string& shader_property_name, const Vector3& data) {
+			bind_vector3_to_shader(shader_property_name, data.as_float_array());
+		}
+		template <>
+		inline void RendererBase::bind_shader_property<Vector4>(const std::string& shader_property_name, const Vector4& data) {
+			bind_vector4_to_shader(shader_property_name, data.as_float_array());
+		}
+		template <>
+		inline void RendererBase::bind_shader_property<Matrix4>(const std::string& shader_property_name, const Matrix4& data) {
+			bind_matrix4_to_shader(shader_property_name, data.as_float_array());
+		}
 	}
 }
