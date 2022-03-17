@@ -56,16 +56,16 @@ void Player::SetUp()
 }
 void Player::Move() {
 	if (lastInput.movement_direction == Vector2(0, 1)) {
-		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward));
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(forward)*speed);
 	}
 	if (lastInput.movement_direction == Vector2(0, -1)) {
-		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward));
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-forward) * speed);
 	}
 	if (lastInput.movement_direction == Vector2(1, 0)) {
-		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right));
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(right) * speed);
 	}
 	if (lastInput.movement_direction == Vector2(-1, 0)) {
-		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right));
+		physicsXObject->CMove(PhysXConvert::Vector3ToPxVec3(-right) * speed);
 	}
 }
 void Player::Jump(float dt) {
@@ -176,4 +176,19 @@ void Player::Update(float dt) {
 	weaponState->Update(dt);
 	timeStack.dashCooldown -= dt;
 	timeStack.respawnCooldown -= dt;
+}
+
+void Player::OnBlue() {
+	if (isOnBlue == true) {
+		speed = speed * 2;
+	}
+}
+
+void Player::OnGreen() {
+	if (isOnGreen == true) {
+		health += 30;
+		if (health >= 100) {
+			health = 100;
+		}
+	}
 }

@@ -33,3 +33,9 @@ void Bullet::Update(float dt)
 	if(timeStack> BULLET_DURA)
 		YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE,GetWorldID());
 }
+
+void Bullet::OnRed() {
+	if (isOnRed == true) {
+		damage = damage * 2;
+	}
+}

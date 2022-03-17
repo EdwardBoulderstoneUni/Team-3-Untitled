@@ -481,7 +481,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
 	//bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
-	bullet->GetPhysicsXObject()->SetLinearVelocity(player->GetShootDiretion() * 50.0f);
+	bullet->GetPhysicsXObject()->SetLinearVelocity(player->GetShootDiretion() * 250.0f);
 }
 
 void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, UINT dwOwnerData)

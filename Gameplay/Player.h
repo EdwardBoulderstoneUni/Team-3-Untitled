@@ -71,6 +71,9 @@ namespace NCL {
 			int GetDashCD() { return timeStack.dashCooldown; }
 			int GetRespawnCD() { return timeStack.respawnCooldown; }
 			bool DashCD() {return timeStack.dashCooldown >= 0 ? true : false;}
+
+			void OnGreen();
+			void OnBlue();
 		private:
 			TimeStack timeStack;
 			float health = 100.0f;
@@ -80,6 +83,7 @@ namespace NCL {
 			// t is short for timer (cooldowns)
 			float tAbility1;
 			float tAbility2;
+			float speed = 1.0f;
 			
 			int maxAmmo = 20;
 			int ammo = 20;
@@ -91,6 +95,8 @@ namespace NCL {
 			bool hasAmmo = true;
 			bool isReloading = false;
 			bool isLocalPlayer;
+			bool isOnBlue = false;
+			bool isOnGreen = false;
 
 			PushdownMachine* playerState;
 			PushdownMachine* weaponState;

@@ -11,9 +11,12 @@ public:
 	float GetDamage(){
 		return damage;
 	}
+
 	int GetShooterID() { return shooterID; }
+	void OnRed();
 private:
 	float timeStack = 0;
 	float damage = 0;
 	int shooterID;
+	bool isOnRed = false;
 };
