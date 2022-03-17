@@ -2,9 +2,7 @@
 #include "Transform.h"
 #include "..//../Gameplay/eGameObjectType.h"
 #include "PhysicsXObject.h"
-
 #include "RenderObject.h"
-
 #include <vector>
 #include <functional>
 
@@ -52,6 +50,8 @@ namespace NCL
 
 			void SetPhysicsXObject(PhysicsXObject* newObject)
 			{
+				if (physicsXObject != nullptr)
+					delete physicsXObject;
 				physicsXObject = newObject;
 			}
 
@@ -85,7 +85,7 @@ namespace NCL
 			{
 				return worldID;
 			}
-
+			virtual void Update(float dt) {}
 			GameObjectType type;
 
 		protected:

@@ -1,9 +1,12 @@
 #include "Bullet.h"
+#include "../CSC8503/GameTech/YiEventSystem.h"
+Bullet::Bullet(Player& player) {
+	if(player.type==GameObjectType::GameObjectType_team1)
+		this->type = GameObjectType::GameObjectType_team1Bullet;
+	if (player.type == GameObjectType::GameObjectType_team2)
+		this->type = GameObjectType::GameObjectType_team2Bullet;
 
-Bullet::Bullet(GameObjectType type, PlayerRole colour) {
-	this->type = type;
-
-	switch (colour) {
+	switch (player.GetRole()) {
 	case PlayerRole_red:
 		damage = 5;
 		break;
@@ -17,14 +20,16 @@ Bullet::Bullet(GameObjectType type, PlayerRole colour) {
 		damage = 0;
 		break;
 	}
+	shooterID = player.GetWorldID();
 }
 void Bullet::SetUp() {
 	Sphere::SetUp();
-
 }
 
 void Bullet::Update(float dt)
 {
 	ComponentGameObject::Update(dt);
-	std::cout << "123" << std::endl;
+	timeStack += dt;
+	if(timeStack>1.0f)
+		YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE,GetWorldID());
 }

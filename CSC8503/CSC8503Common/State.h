@@ -8,7 +8,7 @@ namespace NCL
 		class State
 		{
 		public:
-			State(){}
+			State() {}
 			State(StateUpdateFunciton someFunc) {
 				func = someFunc;
 			}
@@ -22,6 +22,6 @@ namespace NCL
 			}
 		protected:
 			StateUpdateFunciton func;
-		};	
+		};
 	}
 }

@@ -8,14 +8,15 @@
 #include "../../Plugins/OpenGLRendering/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
+#include "../GameTech/TutorialMenu.h"
 #include "..//..//Gameplay/ePlayerRole.h"
 #include "../../Gameplay/GameObjects.h"
+#include "../../Gameplay/Bullet.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 TutorialGame* TutorialGame::p_self = NULL;
-
 TutorialGame::TutorialGame()
 { 
 	eventSystem = new YiEventSystem();
@@ -28,6 +29,7 @@ TutorialGame::TutorialGame()
 	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
+	InitialiseUI();
 	InitialiseAssets();
 }
 
@@ -38,15 +40,33 @@ and the same texture and shader. There's no need to ever load in anything else
 for this module, even in the coursework, but you can add it if you like!
 
 */
+void TutorialGame::UpdateRender(float dt)
+{
+	Debug::FlushRenderables(dt);
+	renderer->Update(dt);
+	renderer->Render();
+}
+void TutorialGame::SetSingleMode()
+{
+
+	InitialiseAssets();
+}
+
+void TutorialGame::SetMultiMode()
+{
+
+	InitWorld();
+}
 void TutorialGame::InitialiseAssets() {
 	auto loadFunc = [](const string& name, OGLMesh** into) {
 		*into = new OGLMesh(name);
 		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
 		(*into)->UploadToGPU();
 	};
+
 	loadFunc("cube.msh", &cubeMesh);
 	loadFunc("sphere.msh", &sphereMesh);
-	loadFunc("Male1.msh", &charMeshA);
+	loadFunc("Female_Guard.msh", &charMeshA);
 	loadFunc("courier.msh", &charMeshB);
 	loadFunc("security.msh", &enemyMesh);
 	loadFunc("coin.msh", &bonusMesh);
@@ -55,15 +75,13 @@ void TutorialGame::InitialiseAssets() {
 	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 
-
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
 	InitAbilityContainer();
-	
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
-	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
+	g.Generate(worldFilePath.c_str(), *world);
 
 
 
@@ -76,17 +94,26 @@ void TutorialGame::InitialiseAssets() {
 
 	InitWorld();
 	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1);
+	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
 	RegisterEventHandles();
 }
-	
 
+void TutorialGame::InitialiseUI()
+{
+	gameUI = new GameUI();
+	renderer->SetUI(gameUI);
+	//gameMenu.reset(new TutorialMenu(this));
+	//gameUI->PushMenu(gameMenu);
+	//InGameState* t = new InGameState(this);
+	//pauseMachine = new PushdownMachine(t);
+	//pauseMachine = new PushdownMachine(new InGameState(this));
+}
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
-
 	delete physicsX;
 	delete renderer;
 	delete world;
+	delete gameUI;
 	delete player;
 	delete abilityContainer;
 }
@@ -100,7 +127,7 @@ void TutorialGame::UpdateGame(float dt)
 	if (DebugMode) {
 		CalculateFrameRate(dt);
 	}
-	player->Update(dt);
+	UpdateGameObjects(dt);
 	physicsX->Update(dt);
 	if (lockedObject != nullptr)
 	{
@@ -117,36 +144,35 @@ void TutorialGame::UpdateGame(float dt)
 		world->GetMainCamera()->SetPosition(camPos);
 		world->GetMainCamera()->SetPitch(angles.x);
 		world->GetMainCamera()->SetYaw(angles.y);
-
-		//Debug::DrawAxisLines(lockedObject->GetTransform().GetMatrix(), 2.0f);
 	}
-	AmmoLeft();
-	TimeLeft(dt);
-	//CalculateFrameRate(dt);
-
+	
+	HUDUpdate(dt);
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
+	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-	renderer->Render();
+
+
 }
 
 void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
+void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 {
-	player = new Player(PlayerRole_blue, abilityContainer, team);
+	player = new Player(PlayerRole_blue, abilityContainer, team,islocal);
 	camFollowPlayer = true;
 
 	player->GetTransform()
-		.SetScale(Vector3(5,5,5))
+		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
+	
 
 	player->InitAllComponent();
 
-	player->SetRenderObject(new RenderObject(&player->GetTransform(), cubeMesh, basicTex, basicShader));
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, basicTex, basicShader));
 
 	world->SetMainCamera(player->GetComponentCamera()->camera);
 	
@@ -155,8 +181,6 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 
 void TutorialGame::InitWorld()
 {
-	//InitMixedGridWorld(5, 5, 5.0f, 5.0f);
-	//InitGameExamples();
 	InitDefaultFloor();
 	
 	AudioManager::Startup();
@@ -249,55 +273,6 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	return cube;
 }
 
-void TutorialGame::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius)
-{
-	for (int x = 0; x < numCols; ++x)
-	{
-		for (int z = 0; z < numRows; ++z)
-		{
-			auto position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
-			AddSphereToWorld(position, radius, 1.0f);
-		}
-	}
-	AddFloorToWorld(Vector3(0, -2, 0));
-}
-
-void TutorialGame::InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing)
-{
-	float sphereRadius = 1.0f;
-	auto cubeDims = Vector3(1, 1, 1);
-
-	for (int x = 0; x < numCols; ++x)
-	{
-		for (int z = 0; z < numRows; ++z)
-		{
-			auto position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
-
-			if (rand() % 2)
-			{
-				AddCubeToWorld(position, cubeDims);
-			}
-			else
-			{
-				AddSphereToWorld(position, sphereRadius);
-			}
-		}
-	}
-}
-
-void TutorialGame::InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing,
-                                     const Vector3& cubeDims)
-{
-	for (int x = 1; x < numCols + 1; ++x)
-	{
-		for (int z = 1; z < numRows + 1; ++z)
-		{
-			auto position = Vector3(x * colSpacing, 10.0f, z * rowSpacing);
-			AddCubeToWorld(position, cubeDims, 1.0f);
-		}
-	}
-}
-
 void TutorialGame::InitDefaultFloor()
 {
 	Floor* floor = new Floor();
@@ -316,13 +291,32 @@ void TutorialGame::InitDefaultFloor()
 void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 {
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle);
+	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle);
+	eventSystem->RegisterEventHandle("HIT", _HitHandle);
 }
 
-void TutorialGame::InitGameExamples()
+void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 {
-	AddPlayerToWorld(Vector3(0, 5, 0));
-	AddEnemyToWorld(Vector3(5, 5, 0));
-	AddBonusToWorld(Vector3(10, 5, 0));
+	Player* player = TutorialGame::getMe()->player;
+	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 90));
+	if (player->GetAmmo() == 0) {
+		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
+	}
+
+	renderer->DrawString("Health: " + std::to_string(player->GetHealth()), Vector2(5, 85));
+
+	if (tLeft >= 0) {
+		tLeft -= dt;
+		int m = tLeft / 60;
+		int s = int(tLeft) % 60;
+		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
+	}
+	else {
+		isEnd = true; // Game end.
+		renderer->DrawString("Time up!", Vector2(45, 50));
+	}
+
+	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
 }
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
@@ -417,21 +411,6 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 	return apple;
 }
 
-void TutorialGame::AmmoLeft() {
-	Player* player = TutorialGame::getMe()->player;
-	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 80));
-	if (player->GetAmmo() == 0) {
-		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
-	}
-}
-
-void TutorialGame::TimeLeft(float dt) {
-	tLeft -= dt;
-	int t = tLeft;
-	int m = tLeft / 60;
-	int s = int(tLeft) % 60;
-	renderer->DrawString("Time Remaining: "+std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
-}
 
 void TutorialGame::CalculateFrameRate(float dt) {
 	float currentTime = GetTickCount64() * 0.001f;
@@ -453,12 +432,61 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 	Vector3 positon = player->GetTransform().GetPosition();
 	Vector3 forward = player->GetForward();
 
-	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->AddSphereToWorld(positon + forward * 15, 1.0f));
+	auto bullet = new Bullet(*player);
 
-	bullet->type = GameObjectType_team1Bullet;
+	auto sphereSize = Vector3(1.0f, 1.0f, 1.0f);
+
+	bullet->GetTransform()
+		.SetScale(sphereSize)
+		.SetPosition(positon + forward * 15);
+	bullet->InitAllComponent();
+	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), TutorialGame::getMe()->sphereMesh,
+		TutorialGame::getMe()->basicTex, TutorialGame::getMe()->basicShader));
+
+	TutorialGame::getMe()->world->AddGameObject(bullet);
+
 	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
 	bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
+}
+
+void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, UINT dwOwnerData)
+{
+	string worldID = pEvent->vArg[0];
+	GameObject* temp= TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID));
+	TutorialGame::getMe()->physicsX->deleteActor(*temp);
+	TutorialGame::getMe()->world->RemoveGameObject(temp);
+}
+void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerData)
+{
+	string bulletID = pEvent->vArg[0];
+	string hitID = pEvent->vArg[1];
+
+	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(bulletID)));
+	if (not bullet)return;
+	int shooterID = bullet->GetShooterID();
+
+	Player* shooter = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(shooterID));
+	Player* hitobj = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(hitID)));
+
+	shooter->AddScore(10);
+	hitobj->TakeDamage(bullet->GetDamage());
+	if (hitobj->IsDead())
+		std::cout<<(std::to_string(shooter->GetWorldID()) + " --->" +
+			std::to_string(hitobj->GetWorldID()))<<std::endl;
+	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
+}
+void NCL::CSC8503::TutorialGame::UpdateGameObjects(float dt)
+{
+	world->OperateOnContents(
+		[&](GameObject* o)
+		{
+			if (o->IsActive())
+			{
+				o->Update(dt);
+			}
+		}
+	);
 }
 

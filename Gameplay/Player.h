@@ -5,14 +5,28 @@
 #include "../CSC8503/CSC8503Common/PushdownMachine.h"
 #include "../CSC8503/GameTech/YiEventSystem.h"
 #include "ePlayerRole.h"
-#include "Bullet.h"
+
+#define DASH_CD 1.0f
+#define DASH_DURA 0.2f
+#define RESPAWN_CD 5.0f
+#define RESPAWN_DURA 5.0f
+#define JUMP_DURA 3.2f
+#define DOUBLE_DURA 1.5f*3.15f
+
 namespace NCL {
 	namespace CSC8503 {
+		struct TimeStack{
+			float jumpingTimeStack=0.0f;
+			float dashingTimeStack=0.0f;
+			float dashCooldown=-1.0f;
+			float respawnCooldown=-1.0f;
+			float deathTimeStack=0.0f;
+		};
 		class Player : public ComponentGameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
+			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool localplayer=false);
 			~Player();
-
+			virtual void Update(float dt)override;
 			void SetUp() override;
 
 			void Move();
@@ -23,17 +37,16 @@ namespace NCL {
 			void Respawn();
 			float TakeDamage(float dmg);
 			void Reload();
-			void AssignRole(AbilityContainer* aCont);
+			
 			void Dash(float dt);
 			int GetAmmo() {
 				return ammo;
 			}
+			int GetHealth() {
+				return health;
+			}
 			int GetTime() {
 				return time;
-			}
-
-			Bullet* GetBullet() {
-				return bullet;
 			}
 
 			void Openfire();
@@ -45,57 +58,44 @@ namespace NCL {
 			bool GetGrounded(){ return isGrounded; }
 			void SetGrounded(bool s) { isGrounded = s; }
 			Input GetLastInput() { return lastInput; }
-			float GetJumpingTimeStack() { return JumpingTimeStack; }
-			void SetJumpingTimeStack(float t) { JumpingTimeStack = t; }
-			float GetDashingTimeStack() { return DashingTimeStack; }
-			void  SetDashingTimeStack(float t) { DashingTimeStack = t; }
-			bool DashAlready() { return dashCooldown <= 0 ? true : false; }
-			void DashCooldown() { dashCooldown = 1.0f; }
-			void RespawnCooldown() { dashCooldown = 1.0f; }
+			PlayerRole GetRole() { return pColour; }
+			int GetScore() { return score; }
+			void AddScore(int s) { score += s; }
+			TimeStack* GetTimeStack() { return &timeStack; }
 		private:
-		private:
+			TimeStack timeStack;
 			float health = 100.0f;
 
-			//this is for jumping
-			float JumpingTimeStack;
 			bool isGrounded = true;
-
-			//this is for dashing
-			float DashingTimeStack;
-			float dashCooldown= 1.0f;
 
 			// t is short for timer (cooldowns)
 			float tAbility1;
 			float tAbility2;
-			float tDeath;
-			float damage;
-		
+			
 			int maxAmmo = 20;
 			int ammo = 20;
 			int teamKill = 0;
 			int jumpNo = 0;
 			int time = 0;
+			int score = 0;
 
 			bool hasAmmo = true;
 			bool isReloading = false;
-			
+			bool isLocalPlayer;
+
 			PushdownMachine* playerState;
 			PushdownMachine* weaponState;
 		
-
 			PlayerRole pColour;
 			Ability *abilities[2];
-
-			vector<Component> components;
 
 			Vector3 forward;
 			Vector3 right;
 			Vector3 shootDir;
 			PxTransform camOri;
 
-			Bullet* bullet;
-
 			void SetupStateMachine();
+			void AssignRole(AbilityContainer* aCont);
 			Input lastInput;
 		};
 	}
