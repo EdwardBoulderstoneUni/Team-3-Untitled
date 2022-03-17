@@ -73,8 +73,22 @@ void Player::Jump(float dt) {
 	timeStack.jumpingTimeStack += dt * 3;
 }
 void Player::Dash(float dt) {
-	physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward)*3.0f, 0.0001f, 0.2,
+	if (lastInput.movement_direction == Vector3(0,0,1)) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(forward) * 3.0f, 0.0001f, 0.2,
 			PxControllerFilters(), NULL);
+	}
+	if (lastInput.movement_direction == Vector3(0,0,-1)) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(-forward) * 3.0f, 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
+	}
+	if (lastInput.movement_direction == Vector3(1,0, 0)) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(right) * 3.0f, 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
+	}
+	if (lastInput.movement_direction == Vector3(-1,0,0)) {
+		physicsXObject->controller->move(PhysXConvert::Vector3ToPxVec3(-right) * 3.0f, 0.0001f, 0.2,
+			PxControllerFilters(), NULL);
+	}
 	timeStack.dashingTimeStack += dt;
 }
 void Player::Openfire() {
