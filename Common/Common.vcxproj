@@ -208,7 +208,6 @@
     <ClCompile Include="MouseAndKeyboardInput.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Quaternion.cpp" />
-    <ClCompile Include="RendererBase.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
     <ClCompile Include="SimpleFont.cpp" />
     <ClCompile Include="TextureBase.cpp" />
