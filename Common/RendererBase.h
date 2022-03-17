@@ -31,7 +31,7 @@ namespace NCL
 		class RendererBase
 		{
 		public:
-			friend class Window;
+			friend class ::NCL::Window;
 
 			explicit RendererBase(Window& w) : hostWindow(w), currentWidth(0), currentHeight(0) {}
 			virtual ~RendererBase() = default;
