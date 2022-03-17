@@ -29,8 +29,8 @@ namespace NCL
 		public:
 			friend class Window;
 
-			RendererBase(Window& w);
-			virtual ~RendererBase();
+			explicit RendererBase(Window& w) : hostWindow(w), currentWidth(0), currentHeight(0) {}
+			virtual ~RendererBase() = default;
 
 			virtual bool HasInitialised() const { return true; }
 
@@ -54,9 +54,7 @@ namespace NCL
 		protected:
 			virtual void OnWindowResize(int w, int h) = 0;
 
-			virtual void OnWindowDetach()
-			{
-			}; //Most renderers won't care about this
+			virtual void OnWindowDetach() {}
 
 			virtual void BeginFrame() = 0;
 			virtual void RenderFrame() = 0;
