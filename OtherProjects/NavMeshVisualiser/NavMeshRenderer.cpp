@@ -1,9 +1,6 @@
 #include "NavMeshRenderer.h"
 #include "../../Common/Assets.h"
 #include "../../Common/Camera.h"
-
-#include "../../Common/Vector3.h"
-#include "../../Common/Matrix4.h"
 #include "../../Common/MeshAnimation.h"
 
 #include <fstream>
