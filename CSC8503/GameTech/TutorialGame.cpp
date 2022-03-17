@@ -306,6 +306,7 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 
 	renderer->DrawString("Health: " + std::to_string(player->GetHealth()), Vector2(5, 85));
 
+	//World timer
 	if (tLeft >= 0) {
 		tLeft -= dt;
 		int m = tLeft / 60;
@@ -319,11 +320,18 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 
 	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
 	renderer->DrawString("TeamKill: " + std::to_string(player->GetTeamKill()), Vector2(70, 20));
+
+	//Dash CD
 	if (player->DashCD() == true) {
 		renderer->DrawString("Dash CD: " + std::to_string(player->GetDashCD()), Vector2(5, 80));
 	}
 	else {
 		renderer->DrawString("Dash ready!", Vector2(5, 80));
+	}
+
+	//Respawn CD
+	if (player->IsDead()==true && player->GetRespawnCD() >= 0) {
+		renderer->DrawString("Respawn in " + std::to_string(player->GetRespawnCD())+ 's', Vector2(40, 40));
 	}
 
 
