@@ -1,12 +1,15 @@
 #pragma once
-#include "../../Common/Matrix4.h"
-#include "../../Common/TextureBase.h"
-#include "../../Common/ShaderBase.h"
-#include "../../Common/Vector4.h"
 #include "../../Common/MeshMaterial.h"
+#include "../../Common/ShaderBase.h"
+#include "../../Common/TextureBase.h"
+#include "../../Common/Vector4.h"
 
 namespace NCL
 {
+	namespace Rendering {
+		class RendererBase;
+	}
+
 	using namespace Rendering;
 
 	class MeshGeometry;
@@ -19,55 +22,46 @@ namespace NCL
 		class RenderObject
 		{
 		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
-			~RenderObject();
+			RenderObject(Transform* parent_transform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
+
+			void render(RendererBase* renderer) const;
+			void bind_shader_values(const RendererBase* renderer) const;
 
 			void SetDefaultTexture(TextureBase* t)
 			{
-				texture = t;
+				texture_ = t;
 			}
 
 			TextureBase* GetDefaultTexture() const
 			{
-				return texture;
+				return texture_;
 			}
 
 			MeshGeometry* GetMesh() const
 			{
-				return mesh;
+				return mesh_;
 			}
 
 			Transform* GetTransform() const
 			{
-				return transform;
+				return transform_;
 			}
 
 			ShaderBase* GetShader() const
 			{
-				return shader;
-			}
-
-			void SetColour(const Vector4& c)
-			{
-				colour = c;
-			}
-
-			Vector4 GetColour() const
-			{
-				return colour;
+				return shader_;
 			}
 
 			MeshMaterial* GetMaterial() const {
-				return material;
+				return material_;
 			}
-
+			Vector4 colour_;
+			TextureBase* texture_;
 		protected:
-			MeshGeometry*	mesh;
-			TextureBase*	texture;
-			ShaderBase*		shader;
-			Transform*		transform;
-			Vector4			colour;
-			MeshMaterial*	material;
+			MeshGeometry*	mesh_;
+			ShaderBase*		shader_;
+			Transform*		transform_;
+			MeshMaterial*	material_;
 		};
 	}
 }
