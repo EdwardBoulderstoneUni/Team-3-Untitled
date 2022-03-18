@@ -92,8 +92,10 @@ namespace NCL
 			void bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data) override;
 			
 			void reset_shader_for_next_object() override;
+			void reset_state_for_next_frame() override;
 			void free_reserved_textures() const override;
-			void bind_and_reserve_texture(const std::string& shader_property_name, const TextureBase& data) override;
+			unsigned reserve_texture(const TextureBase& data) override;
+			void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) override;
 
 #ifdef _WIN32
 			void InitWithWin32(Window& w);

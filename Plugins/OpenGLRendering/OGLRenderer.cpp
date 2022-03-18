@@ -276,7 +276,7 @@ void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name
 		return; //Debug message time!
 	}
 
-	const GLuint slot = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
+	const int ogl_texture_address = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
 
 	if (const auto ogl_texture = dynamic_cast<const OGLTexture*>(&data))
 	{
@@ -286,7 +286,7 @@ void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name
 	glActiveTexture(GL_TEXTURE0 + current_tex_unit_);
 	glBindTexture(GL_TEXTURE_2D, tex_id);
 
-	glUniform1i(static_cast<int>(slot), static_cast<int>(current_tex_unit_));
+	glUniform1i(ogl_texture_address, static_cast<int>(current_tex_unit_));
 	current_tex_unit_ += 1;
 }
 
@@ -295,16 +295,44 @@ void OGLRenderer::reset_shader_for_next_object()
 	current_tex_unit_ = 0;
 }
 
+void OGLRenderer::reset_state_for_next_frame()
+{
+	RendererBase::reset_state_for_next_frame();
+	bound_shader_ = nullptr;
+}
+
 void OGLRenderer::free_reserved_textures() const
 {
 	for (auto texture_slot : reserved_texture_slot_)
 		texture_slot = false;
 }
 
-void OGLRenderer::bind_and_reserve_texture(const std::string& shader_property_name, const TextureBase& data)
+unsigned OGLRenderer::reserve_texture(const TextureBase& data)
 {
-	bind_shader_property(shader_property_name, data);
-	reserved_texture_slot_[current_tex_unit_ - 1] = true;
+	while (reserved_texture_slot_[current_tex_unit_]) {
+		current_tex_unit_++;
+		assert(current_tex_unit_ < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	}
+	GLint tex_id = 0;
+
+	if (const auto ogl_texture = dynamic_cast<const OGLTexture*>(&data))
+	{
+		tex_id = static_cast<int>(ogl_texture->GetObjectID());
+	}
+
+	glActiveTexture(GL_TEXTURE0 + current_tex_unit_);
+	glBindTexture(GL_TEXTURE_2D, tex_id);
+	
+	reserved_texture_slot_[current_tex_unit_] = true;
+	current_tex_unit_ += 1;
+	return current_tex_unit_ - 1;
+}
+
+void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name, const unsigned texture_address)
+{
+	glActiveTexture(GL_TEXTURE0 + texture_address);
+	const int ogl_texture_address = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
+	glUniform1i(ogl_texture_address, static_cast<int>(texture_address));
 }
 
 void OGLRenderer::DrawString(const std::string& text, const Vector2& pos, const Vector4& colour, float size)
