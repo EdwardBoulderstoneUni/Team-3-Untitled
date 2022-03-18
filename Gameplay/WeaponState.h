@@ -3,34 +3,41 @@
 #include "Player.h"
 using namespace NCL;
 using namespace CSC8503;
+
+#define M_INIT										\
+Player* player = static_cast<Player*>(userdata);	\
+Input lastInput = player->GetLastInput();           \
+TimeStack* timeStack = player->GetTimeStack();		\
+PhysicsXObject* phyobj =player->GetPhysicsXObject(); \
+DirectionVec dir=player->GetDirectionVec();         \
+PlayerPro* playerPro=player->GetPlayerPro();         \
+
+
 class Shooting :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
-		Player* player = static_cast<Player*>(userdata);
-		Input lastInput = player->GetLastInput();
+		M_INIT
 		if (lastInput.buttons[attack])
 		{
-			player->Openfire();
+			if (playerPro->ammo > 0) {
+				YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, player->GetWorldID());
+				playerPro->ammo--;
+			}
 		}
 		if (lastInput.buttons[reload])
 		{
-			player->Reload();
+			if (playerPro->ammo >= 0 && playerPro->ammo < playerPro->maxAmmo) {
+				playerPro->ammo = playerPro->maxAmmo;
+			}
 		}
 		return PushdownResult::NoChange;
 	}
 };
-//class Roloading :public PushdownState {
-//	PushdownResult OnUpdate(float dt,
-//		PushdownState** newState) override {
-//		Player* player = static_cast<Player*>(userdata);
-//		return PushdownResult::NoChange;
-//	}
-//};
+
 class Hold :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
-		Player* player = static_cast<Player*>(userdata);
-		Input lastInput = player->GetLastInput();
+		M_INIT
 		if (lastInput.buttons[attack])
 		{
 			*newState = new Shooting();

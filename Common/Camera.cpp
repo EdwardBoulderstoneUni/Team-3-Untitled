@@ -123,51 +123,18 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 	return c;
 }
 
-void Camera::ThirdPersonCamera(NCL::CSC8503::GameObject* object) {
-	//in this way of control we use left mouse to change pitch and right mouse to change the angle of camera
-	//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::LEFT)) {
-	//	pitch -= (Window::GetMouse()->GetRelativePosition().y);
-	//}
-	//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::RIGHT)) {
-	//	float angleChange = Window::GetMouse()->GetRelativePosition().x;
-	//	angleAroundObject += angleChange;
-	//}
+void Camera::ThirdPersonCamera(NCL::CSC8503::GameObject* object, Vector3 offset, float yawoffset) {
+	
+	Quaternion quat = object->GetTransform().GetOrientation();
+	Vector3 eular = quat.ToEuler();
+	Vector3 dir = quat*Vector3(0,0,1);
+	Vector3 middle = object->GetTransform().GetPosition()+ offset;
 
-	//in this way we can just move the mouse to change the view
-	pitch -= (NCL::Window::GetMouse()->GetRelativePosition().y);
-	float anglechange = NCL::Window::GetMouse()->GetRelativePosition().x;
-	angleAroundObject += anglechange;
+	Vector3 direction = middle - object->GetTransform().GetPosition();
+	Vector3 rotatedDirection = quat * direction;
+	Vector3 rotatedPoint = rotatedDirection + object->GetTransform().GetPosition();
 
-	pitch = std::min(pitch, 90.0f);
-	pitch = std::max(pitch, -90.0f);
-
-	//we can just reset the value of angleAroundObject and pitch to reset the view
-				//if (Window::GetMouse()->ButtonHeld(NCL::MouseButtons::MIDDLE)) {
-	//	angleAroundObject = 0;
-	//	pitch = -15;
-	//}
-
-	float horizontalDistance = distanceFromObject * cos(DegreesToRadians(pitch));
-	float verticalDistance = distanceFromObject * sin(DegreesToRadians(pitch));
-
-	yaw = 180.0f - (angleAroundObject);
-
-	if (yaw < 0) {
-		yaw += 360.0f;
-	}
-	if (yaw > 360.0f) {
-		yaw -= 360.0f;
-	}
-
-	float theta = angleAroundObject;
-	float offsetX = horizontalDistance * sin(DegreesToRadians(theta));
-	float offsetZ = horizontalDistance * cos(DegreesToRadians(theta));
-
-	float cameraX = object->GetTransform().GetPosition().x + offsetX;
-	float cameraZ = object->GetTransform().GetPosition().z - offsetZ;
-	float cameraY = object->GetTransform().GetPosition().y - verticalDistance;
-
-	SetPosition(Vector3(cameraX, cameraY, cameraZ));
-	SetPitch(pitch);
-	SetYaw(yaw);
+	SetPosition(rotatedPoint +dir*10.0f);
+	SetPitch(eular.x);
+	SetYaw(eular.y+yawoffset);
 }

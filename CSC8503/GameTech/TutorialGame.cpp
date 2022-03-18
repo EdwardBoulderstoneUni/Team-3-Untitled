@@ -16,16 +16,12 @@
 using namespace NCL;
 using namespace CSC8503;
 
-TutorialGame* TutorialGame::p_self = NULL;
 TutorialGame::TutorialGame()
 { 
 	eventSystem = new YiEventSystem();
-	p_self = this;
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
 	physicsX = new PhysicsXSystem(*world);
-	forceMagnitude = 10.0f;
-	inSelectionMode = false;
 	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
@@ -72,7 +68,7 @@ void TutorialGame::InitialiseAssets() {
 	loadFunc("coin.msh", &bonusMesh);
 	loadFunc("capsule.msh", &capsuleMesh);
 
-	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
+	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("corridor_wall_c.tga");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 
 	ShaderManager::GetInstance()->Init();
@@ -82,15 +78,6 @@ void TutorialGame::InitialiseAssets() {
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
-
-
-
-	//world->GetMainCamera()->SetNearPlane(0.1f);
-	//world->GetMainCamera()->SetFarPlane(500.0f);
-	//world->GetMainCamera()->SetPitch(-15.0f);
-	//world->GetMainCamera()->SetYaw(315.0f);
-	//world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
-
 
 	InitWorld();
 	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
@@ -129,22 +116,6 @@ void TutorialGame::UpdateGame(float dt)
 	}
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
-	if (lockedObject != nullptr)
-	{
-		Vector3 objPos = lockedObject->GetTransform().GetPosition();
-		Vector3 camPos = objPos + lockedOffset;
-
-		Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
-
-		Matrix4 modelMat = temp.Inverse();
-
-		Quaternion q(modelMat);
-		Vector3 angles = q.ToEuler(); //nearly there now!
-
-		world->GetMainCamera()->SetPosition(camPos);
-		world->GetMainCamera()->SetPitch(angles.x);
-		world->GetMainCamera()->SetYaw(angles.y);
-	}
 	
 	HUDUpdate(dt);
 	world->UpdateWorld(dt);
@@ -152,7 +123,6 @@ void TutorialGame::UpdateGame(float dt)
 	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-
 
 }
 
@@ -163,7 +133,7 @@ void TutorialGame::InitAbilityContainer() {
 void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 {
 	player = new Player(PlayerRole_blue, abilityContainer, team,islocal);
-	camFollowPlayer = true;
+
 
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
@@ -181,8 +151,10 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 
 void TutorialGame::InitWorld()
 {
-	InitDefaultFloor();
-	
+	InitDefaultFloor(Vector3(0,0,0),Vector4(1,1,1,1));
+	InitDefaultFloor(Vector3(150, 0, 0), Vector4(0, 1, 0, 1));
+	InitDefaultFloor(Vector3(-150, 0, 0), Vector4(1, 0, 0, 1));
+	InitDefaultFloor(Vector3(0,0,150), Vector4(0, 0, 1, 1));
 	AudioManager::Startup();
 	//AudioManager::GetInstance().Play_Sound();
 }
@@ -273,38 +245,43 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	return cube;
 }
 
-void TutorialGame::InitDefaultFloor()
+void TutorialGame::InitDefaultFloor(Vector3 position, Vector4 color)
 {
 	Floor* floor = new Floor();
 
 	floor->GetTransform()
 		.SetScale(Vector3(150, 1, 150))
-		.SetPosition(Vector3(0,0,0));
+		.SetPosition(position);
 
 	floor->InitAllComponent();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
+	floor->GetRenderObject()->SetColour(color);
 
 	world->AddGameObject(floor);
 }
 
-void NCL::CSC8503::TutorialGame::RegisterEventHandles()
+void TutorialGame::RegisterEventHandles()
 {
-	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle);
-	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle);
-	eventSystem->RegisterEventHandle("HIT", _HitHandle);
+	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
 }
 
-void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
+void TutorialGame::HUDUpdate(float dt)
 {
-	Player* player = TutorialGame::getMe()->player;
-	renderer->DrawString("Ammo Left: " + std::to_string(player->GetAmmo()), Vector2(5, 90));
-	if (player->GetAmmo() == 0) {
+	PlayerPro* playerPro = player->GetPlayerPro();
+	TimeStack* timeStack = player->GetTimeStack();
+	renderer->DrawString("Ammo Left: " + std::to_string(playerPro->ammo), Vector2(5, 90));
+	if (playerPro->ammo == 0) {
 		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
 	}
 
-	renderer->DrawString("Health: " + std::to_string(player->GetHealth()), Vector2(5, 85));
+	renderer->DrawString("Health: " + std::to_string(playerPro->health), Vector2(5, 85));
 
+	//World timer
 	if (tLeft >= 0) {
 		tLeft -= dt;
 		int m = tLeft / 60;
@@ -312,11 +289,33 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
 	}
 	else {
-		isEnd = true; // Game end.
-		renderer->DrawString("Time up!", Vector2(45, 50));
+		YiEventSystem::GetMe()->PushEvent(GAME_OVER);
 	}
 
-	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
+	renderer->DrawString("Score: " + std::to_string(playerPro->score), Vector2(70, 85));
+	renderer->DrawString("TeamKill: " + std::to_string(playerPro->teamKill), Vector2(70, 20));
+
+	if(timeStack->dashCooldown>0)
+		renderer->DrawString("Dash CD: " + std::to_string(timeStack->dashCooldown), Vector2(5, 80));
+	else
+		renderer->DrawString("Dash ready!", Vector2(5, 80));
+
+	Vector3 position = player->GetTransform().GetPosition()+Vector3(0,5,0);
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+
+#define TARGET_OFF 20.0f
+	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, screenSize / 2.0f);
+	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, 
+		screenSize / 2.0f+Vector2(-TARGET_OFF,0));
+	Vector3 targetright = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(TARGET_OFF, 0));
+	Vector3 targettop = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(0, TARGET_OFF));
+	Vector3 targetbot = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(0, -TARGET_OFF));
+	renderer->DrawLine(position, target, Vector4(0,1,0,1));
+	renderer->DrawLine(targetleft, targetright, Vector4(0, 1, 0, 1));
+	renderer->DrawLine(targettop, targetbot, Vector4(0, 1, 0, 1));
 }
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
@@ -375,7 +374,7 @@ GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position)
 	return character;
 }
 
-GameObject* NCL::CSC8503::TutorialGame::AddPaint(const Vector3& position)
+GameObject* TutorialGame::AddPaint(const Vector3& position)
 {
 	GameObject* disc = new GameObject();
 
@@ -425,59 +424,92 @@ void TutorialGame::CalculateFrameRate(float dt) {
 }
 
 
-void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
+void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
-	Player* player = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID)));
-	Vector3 positon = player->GetTransform().GetPosition();
-	Vector3 forward = player->GetForward();
+
+	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
+	Vector3 position = player->GetTransform().GetPosition() + Vector3(0,5,0);
 
 	auto bullet = new Bullet(*player);
 
 	auto sphereSize = Vector3(1.0f, 1.0f, 1.0f);
-
+	DirectionVec dir = player->GetDirectionVec();
 	bullet->GetTransform()
 		.SetScale(sphereSize)
-		.SetPosition(positon + forward * 15);
+		.SetPosition(position + dir.shootDir * 15);
 	bullet->InitAllComponent();
-	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), TutorialGame::getMe()->sphereMesh,
-		TutorialGame::getMe()->basicTex, TutorialGame::getMe()->basicShader));
+	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), game->sphereMesh,
+		game->basicTex, game->basicShader));
 
-	TutorialGame::getMe()->world->AddGameObject(bullet);
+	game->world->AddGameObject(bullet);
 
-	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	bullet->SetCollisionFunction(func);
-	TutorialGame::getMe()->physicsX->addActor(*bullet);
-	bullet->GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
+	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	//bullet->SetCollisionFunction(func);
+	game->physicsX->addActor(*bullet);
+	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
 }
 
-void NCL::CSC8503::TutorialGame::_deleteHandle(const EVENT* pEvent, UINT dwOwnerData)
+void TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
-	GameObject* temp= TutorialGame::getMe()->world->FindObjectbyID(stoi(worldID));
-	TutorialGame::getMe()->physicsX->deleteActor(*temp);
-	TutorialGame::getMe()->world->RemoveGameObject(temp);
+	GameObject* temp= game->world->FindObjectbyID(stoi(worldID));
+	game->physicsX->deleteActor(*temp);
+	game->world->RemoveGameObject(temp);
 }
-void NCL::CSC8503::TutorialGame::_HitHandle(const EVENT* pEvent, UINT dwOwnerData)
+void TutorialGame::_HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	string bulletID = pEvent->vArg[0];
 	string hitID = pEvent->vArg[1];
+	GameWorld* world = (GameWorld*)dwOwnerData;
 
-	Bullet* bullet = static_cast<Bullet*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(bulletID)));
+	Bullet* bullet = static_cast<Bullet*>(world->FindObjectbyID(stoi(bulletID)));
 	if (not bullet)return;
 	int shooterID = bullet->GetShooterID();
 
-	Player* shooter = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(shooterID));
-	Player* hitobj = static_cast<Player*>(TutorialGame::getMe()->world->FindObjectbyID(stoi(hitID)));
-
-	shooter->AddScore(10);
-	hitobj->TakeDamage(bullet->GetDamage());
-	if (hitobj->IsDead())
-		std::cout<<(std::to_string(shooter->GetWorldID()) + " --->" +
-			std::to_string(hitobj->GetWorldID()))<<std::endl;
+	Player* shooter = static_cast<Player*>(world->FindObjectbyID(shooterID));
+	Player* hitobj = static_cast<Player*>(world->FindObjectbyID(stoi(hitID)));
+	PlayerPro* playerPro = hitobj->GetPlayerPro();
+	int health=hitobj->GetPlayerPro()->health;
+	if (health > 0 and playerPro->health - bullet->GetDamage() <= 0) {
+		std::cout << (std::to_string(shooter->GetWorldID()) + " --->" +
+			std::to_string(hitobj->GetWorldID())) << std::endl;
+		shooter->GetPlayerPro()->teamKill++;
+	}
+	if (playerPro->health not_eq 0)
+		shooter->GetPlayerPro()->score++;
+	playerPro->health = playerPro->health - bullet->GetDamage() < 0 ? 0 : playerPro->health - bullet->GetDamage();
 	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
 }
-void NCL::CSC8503::TutorialGame::UpdateGameObjects(float dt)
+void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	GameWorld* world = (GameWorld*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+ 	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
+	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(20,5,10));
+}
+void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	GameWorld* world = (GameWorld*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+	string color = pEvent->vArg[1];
+	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
+	switch (stoi(color))
+	{case 0:
+		player->GetPlayerPro()->health ++;
+		break;
+	case 1:
+		player->GetPlayerPro()->damage = 100.0f;
+		break;
+	case 2:
+		player->GetPlayerPro()->speed = 1.5f;
+		break;
+	}
+	
+}
+void TutorialGame::UpdateGameObjects(float dt)
 {
 	world->OperateOnContents(
 		[&](GameObject* o)

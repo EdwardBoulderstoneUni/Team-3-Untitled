@@ -7,11 +7,13 @@ using namespace CSC8503;
 #define M_INIT										\
 Player* player = static_cast<Player*>(userdata);	\
 Input lastInput = player->GetLastInput();           \
-TimeStack* stack = player->GetTimeStack();			\
+TimeStack* timeStack = player->GetTimeStack();		\
+PhysicsXObject* phyobj =player->GetPhysicsXObject(); \
+DirectionVec dir=player->GetDirectionVec();         \
+PlayerPro* playerPro=player->GetPlayerPro();         \
 
 #define M_DIE                        \
-if (player->IsDead())                \
-{                                    \
+if (playerPro->health==0){           \
 *newState = new Die();               \
 (*newState)->userdata = player;      \
 return PushdownResult::Push;         \
@@ -19,51 +21,69 @@ return PushdownResult::Push;         \
 
 						
 #define M_STANDINGJUMP                                       \
-if (lastInput.buttons[jump])								 \
-{															 \
+if (lastInput.buttons[jump]){								 \
 	*newState = new StandingJump();							 \
 	(*newState)->userdata = player;							 \
-	player->SetGrounded(false);								 \
-	stack->jumpingTimeStack = 0.0f;							 \
+	playerPro->isGrounded=false;							 \
+	timeStack->jumpingTimeStack = 0.0f;						 \
 	return PushdownResult::Push;							 \
 }															 \
 
 #define M_DOUBLEJUMP                                         \
-if (lastInput.buttons[jump])								 \
-{															 \
+if (lastInput.buttons[jump]){								 \
 	*newState = new DoubleJump();							 \
 	(*newState)->userdata = player;							 \
-	stack->jumpingTimeStack = 0.0f;							 \
+	timeStack->jumpingTimeStack = 0.0f;						 \
 	return PushdownResult::Push;							 \
 }															 \
-
+  
 #define M_DASH                                               \
-if (lastInput.buttons[dash] and stack->dashCooldown < 0)	 \
-{                                                            \
+if (lastInput.buttons[dash] and timeStack->dashCooldown < 0){\
 *newState = new Dash();										 \
 (*newState)->userdata = player;								 \
-stack->dashingTimeStack = 0.0f;								 \
+timeStack->dashingTimeStack = 0.0f;							 \
 return PushdownResult::Push;								 \
 }															 \
 
 #define M_WALK                                               \
-if (lastInput.movement_direction != Vector2())               \
-{															 \
+if (lastInput.movement_direction != Vector2()){				 \
 	*newState = new Walk();									 \
 	(*newState)->userdata = player;							 \
 	return PushdownResult::Push;							 \
 }															 \
 
+
+#define M_PLAYER_MOVE                                                                \
+if (lastInput.movement_direction == Vector2(0, 1)) {								 \
+	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * playerPro->speed);	 \
+}																					 \
+if (lastInput.movement_direction == Vector2(0, -1)) {								 \
+	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * playerPro->speed);	 \
+}																					 \
+if (lastInput.movement_direction == Vector2(1, 0)) {								 \
+	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.right) * playerPro->speed);		 \
+}																					 \
+if (lastInput.movement_direction == Vector2(-1, 0)) {								 \
+	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.right) * playerPro->speed);	 \
+}																					 \
+
+#define M_GRAVITY player->GetPhysicsXObject()->CMove(PxVec3(0, -9.8f, 0) * 0.1f);
+
+#define DASH_OFF 5.0f
 class Die :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if(stack->deathTimeStack>RESPAWN_DURA)
+		if(timeStack->deathTimeStack>RESPAWN_DURA)
 		{
-			stack->respawnCooldown = RESPAWN_CD;
+			timeStack->respawnCooldown = RESPAWN_CD;
+			timeStack->deathTimeStack = 0.0f;
+			playerPro->health = 100.0;
+			YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN, player->GetWorldID());
 			return PushdownResult::Pop;
 		}
-		player->GetPhysicsXObject()->CMove(PxVec3(0, -9.8f, 0) * 0.1f);
+		timeStack->deathTimeStack += dt;
+		M_GRAVITY
 		return PushdownResult::NoChange;
 	}
 };
@@ -71,13 +91,28 @@ class Dash :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (stack->dashingTimeStack > DASH_DURA)
+		if (timeStack->dashingTimeStack > DASH_DURA)
 		{
-			stack->dashCooldown = DASH_CD;
+			timeStack->dashCooldown = DASH_CD;
 			return PushdownResult::Pop;
 		}
 		M_DIE
-		player->Dash(dt);
+		if (lastInput.movement_direction == Vector2(0, 1)){
+			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * DASH_OFF);
+		}																		
+		if (lastInput.movement_direction == Vector2(0, -1)){
+			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * DASH_OFF);
+		}																		
+		if (lastInput.movement_direction == Vector2(1, 0)){
+			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.right) * DASH_OFF);
+		}																		
+		if (lastInput.movement_direction == Vector2(-1, 0)) {
+			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * DASH_OFF);
+		}																		
+		if (lastInput.movement_direction == Vector2(0, 0)) {
+			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * DASH_OFF);
+		}																	
+		timeStack->dashingTimeStack += dt;									    
 		return PushdownResult::NoChange;
 	}
 };
@@ -85,14 +120,15 @@ class DoubleJump :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (stack->jumpingTimeStack> DOUBLE_DURA)
+		if (timeStack->jumpingTimeStack> DOUBLE_DURA)
 		{
 			return PushdownResult::Pop;
 		}
  		M_DASH
 		M_DIE
-		player->Jump(dt);
-		player->Move();
+		M_PLAYER_MOVE
+		player->GetPhysicsXObject()->CMove(PxVec3(0, 1, 0) * cos(timeStack->jumpingTimeStack));
+		timeStack->jumpingTimeStack += dt * 3;
 		return PushdownResult::NoChange;
 	}
 
@@ -101,15 +137,16 @@ class StandingJump :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (stack->jumpingTimeStack > JUMP_DURA)
+		if (timeStack->jumpingTimeStack > JUMP_DURA)
 		{
-			return PushdownResult::Pop;
+ 			return PushdownResult::Pop;
 		}
 		M_DOUBLEJUMP
 		M_DASH
 		M_DIE
-		player->Jump(dt);
-		player->Move();
+		M_PLAYER_MOVE
+		player->GetPhysicsXObject()->CMove(PxVec3(0, 1, 0) * cos(timeStack->jumpingTimeStack));
+		timeStack->jumpingTimeStack += dt * 3;
 		return PushdownResult::NoChange;
 	}
 };
@@ -123,8 +160,8 @@ class Walk :public PushdownState {
 		M_STANDINGJUMP
 		M_DASH
 		M_DIE
-		player->Move();
-		player->GetPhysicsXObject()->CMove(PxVec3(0,-9.8f,0)*0.1f);
+		M_PLAYER_MOVE
+		M_GRAVITY
 		return PushdownResult::NoChange;
 	}
 };
@@ -132,27 +169,15 @@ class Idle :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState **newState) override {
 		M_INIT
-		M_STANDINGJUMP
+ 		M_STANDINGJUMP
 		M_DASH
 		M_WALK
 		M_DIE
-		player->GetPhysicsXObject()->CMove(PxVec3(0,-9.8f,0)*0.1f);
+		M_GRAVITY
 		return PushdownResult::NoChange;
 	}
 };
 
-//class Respawn : public PushdownState {
-//	PushdownResult OnUpdate(float dt,
-//		PushdownState** newState) override {
-//		Player* player = static_cast<Player*>(userdata);
-//		if (player->IsDead() == true) {
-//			player->RespawnCooldown();
-//			return PushdownResult::Pop;
-//		}
-//		player->Respawn();
-//		return PushdownResult::NoChange;
-//	}
-//};
 
 
 

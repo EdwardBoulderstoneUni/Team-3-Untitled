@@ -5,6 +5,9 @@ EVENT_DEFINE g_GlobalEvent[] = {
 	{PLAYER_OPEN_FIRE,"OPEN_FIRE"},
 	{OBJECT_DELETE,"OBJECT_DELETE"},
 	{PLAYER_HIT,"HIT"},
+	{PLAYER_RESPWAN,"RESPWAN"},
+	{GAME_OVER,"GAME_OVER"},
+	{PLAYER_COLOR_ZONE,"COLOR_ZONE"}
 };
 YiEventSystem::YiEventSystem()
 {
@@ -185,7 +188,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, 
 	_PushEvent(event);
 }
 
-void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, UINT uOwnerData)
+void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, DWORD64 uOwnerData)
 {
 	if (!funHandle) return;
 
