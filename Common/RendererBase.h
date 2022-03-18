@@ -21,6 +21,9 @@ namespace NCL
 {
 	namespace Rendering
 	{
+		class TextureBase;
+		class ShaderBase;
+
 		enum class VerticalSyncState
 		{
 			VSync_ON,
@@ -55,7 +58,9 @@ namespace NCL
 				return false;
 			}
 
-			
+			virtual void bind_shader(ShaderBase* shader) = 0;
+			virtual void bind_shader_defaults() {};
+
 			template<class ShaderArgs>
 			void bind_shader_property(const std::string& shader_property_name, const ShaderArgs& data) {
 				throw std::logic_error("Class cannot be passed to shader");
@@ -64,6 +69,7 @@ namespace NCL
 			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data) = 0;
 			virtual void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) = 0;
 			virtual void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) = 0;
+			virtual void bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data) = 0;
 			virtual void OnWindowResize(int w, int h) = 0;
 
 			virtual void OnWindowDetach() {}
@@ -97,6 +103,10 @@ namespace NCL
 		template <>
 		inline void RendererBase::bind_shader_property<Matrix4>(const std::string& shader_property_name, const Matrix4& data) {
 			bind_matrix4_to_shader(shader_property_name, data.as_float_array());
+		}
+		template <>
+		inline void RendererBase::bind_shader_property<TextureBase>(const std::string& shader_property_name, const TextureBase& data) {
+			bind_texture_to_shader(shader_property_name, data);
 		}
 	}
 }

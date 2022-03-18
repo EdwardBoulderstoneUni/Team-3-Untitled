@@ -12,17 +12,10 @@ RenderObject::RenderObject(Transform* parent_transform, MeshGeometry* mesh, Text
 	this->colour_	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-void RenderObject::render(RendererBase* renderer) const
-{
-	const auto shader_changed = renderer->BindShader(shader_);
-	if (shader_changed) 
-		renderer->bind_shader_defaults();
-	bind_shader_values(renderer);
-}
-
 void RenderObject::bind_shader_values(RendererBase* renderer) const
 {
-	renderer->BindTextureToShader(texture_, "mainTex", 0);
+	renderer->bind_shader(shader_);
+	renderer->bind_shader_property("mainTex", texture_);
 	renderer->bind_shader_property("modelMatrix", transform_->GetMatrix());
 	renderer->bind_shader_property("objectColour", colour_);
 	renderer->bind_shader_property("hasVertexColours", !mesh_->GetColourData().empty());

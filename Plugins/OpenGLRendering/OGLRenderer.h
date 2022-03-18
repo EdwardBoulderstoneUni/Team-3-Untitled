@@ -70,6 +70,7 @@ namespace NCL
 			virtual Matrix4 SetupDebugLineMatrix() const;
 			virtual Matrix4 SetupDebugStringMatrix() const;
 
+			void bind_shader(ShaderBase* shader) override;
 		protected:
 			void BeginFrame() override;
 			void RenderFrame() override {}
@@ -80,17 +81,18 @@ namespace NCL
 			void DrawDebugStrings();
 			void DrawDebugLines();
 
-			void BindShader(ShaderBase* s);
-			void BindTextureToShader(const TextureBase* t, const std::string& uniform, int tex_unit) const;
 			void BindMesh(MeshGeometry* m);
 			void DrawBoundMesh(unsigned sub_layer = 0, unsigned num_instances = 1) const;
 			int get_shader_property_location(const std::string& shader_property_name) const;
+
 			void bind_float_to_shader(const std::string& shader_property_name, const float& data) override;
 			void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) override;
 			void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) override;
+			void bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data) override;
 #ifdef _WIN32
 			void InitWithWin32(Window& w);
 			void DestroyWithWin32() const;
+			
 			HDC device_context_{}; //...Device context?
 			HGLRC render_context_{}; //Permanent Rendering Context		
 #endif
@@ -123,6 +125,7 @@ namespace NCL
 
 			bool init_state_;
 			bool force_valid_debug_state_;
+			unsigned current_tex_unit_;
 		};
 	}
 }

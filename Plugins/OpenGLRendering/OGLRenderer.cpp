@@ -39,7 +39,8 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
                                    const GLchar* message, const void* userParam);
 #endif
 
-OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), bound_mesh_(nullptr), bound_shader_(nullptr), init_state_(false)
+OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), bound_mesh_(nullptr), bound_shader_(nullptr), init_state_(false),
+                                      current_tex_unit_(0)
 {
 #ifdef _WIN32
 	InitWithWin32(w);
@@ -107,7 +108,7 @@ void OGLRenderer::BeginFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	BindShader(nullptr);
+	bind_shader(nullptr);
 	BindMesh(nullptr);
 }
 
@@ -121,17 +122,19 @@ void OGLRenderer::SwapBuffers()
 	::SwapBuffers(device_context_);
 }
 
-void OGLRenderer::BindShader(ShaderBase* s)
+void OGLRenderer::bind_shader(ShaderBase* shader)
 {
-	if (!s)
+	if (!shader)
 	{
 		glUseProgram(0);
 		bound_shader_ = nullptr;
 	}
-	else if (const auto ogl_shader = dynamic_cast<OGLShader*>(s))
+	else if (const auto ogl_shader = dynamic_cast<OGLShader*>(shader))
 	{
 		glUseProgram(ogl_shader->programID);
 		bound_shader_ = ogl_shader;
+		current_tex_unit_ = 0;
+		bind_shader_defaults();
 	}
 	else
 	{
@@ -257,7 +260,31 @@ void OGLRenderer::bind_matrix4_to_shader(const std::string& shader_property_name
 	glUniform4fv(get_shader_property_location(shader_property_name), 1, data);
 }
 
-void OGLRenderer::BindTextureToShader(const TextureBase* t, const std::string& uniform, int tex_unit) const
+void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data)
+{
+	GLint tex_id = 0;
+
+	if (!bound_shader_)
+	{
+		std::cout << __FUNCTION__ << " has been called without a bound shader!" << std::endl;
+		return; //Debug message time!
+	}
+
+	const GLuint slot = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
+
+	if (const auto ogl_texture = dynamic_cast<const OGLTexture*>(&data))
+	{
+		tex_id = static_cast<int>(ogl_texture->GetObjectID());
+	}
+
+	glActiveTexture(GL_TEXTURE0 + current_tex_unit_);
+	glBindTexture(GL_TEXTURE_2D, tex_id);
+
+	glUniform1i(static_cast<int>(slot), static_cast<int>(current_tex_unit_));
+	current_tex_unit_ += 1;
+}
+
+void OGLRenderer::bind_texture_to_shader(const TextureBase* t, const std::string& uniform, int tex_unit) const
 {
 	GLint tex_id = 0;
 
@@ -309,13 +336,14 @@ Matrix4 OGLRenderer::SetupDebugStringMatrix() const
 	return {};
 }
 
+
 void OGLRenderer::DrawDebugData()
 {
 	if (debug_strings_.empty() && debug_lines_.empty())
 	{
 		return; //don't mess with OGL state if there's no point!
 	}
-	BindShader(debug_shader_);
+	bind_shader(debug_shader_);
 
 	if (force_valid_debug_state_)
 	{
@@ -327,7 +355,7 @@ void OGLRenderer::DrawDebugData()
 	const int mat_location = glGetUniformLocation(debug_shader_->GetProgramID(), "viewProjMatrix");
 	Matrix4 pMat;
 
-	BindTextureToShader(font_->GetTexture(), "mainTex", 0);
+	bind_shader_property("mainTex", *font_->GetTexture());
 
 	const GLuint tex_slot = glGetUniformLocation(bound_shader_->programID, "useTexture");
 
