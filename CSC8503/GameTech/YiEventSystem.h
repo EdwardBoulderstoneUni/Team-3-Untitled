@@ -5,6 +5,9 @@ enum GAME_EVENT_ID {
 	PLAYER_OPEN_FIRE,
 	OBJECT_DELETE,
 	PLAYER_HIT,
+	PLAYER_RESPWAN,
+	GAME_OVER,
+	PLAYER_COLOR_ZONE,
 };
 class YiEventSystem:public EventSystem 
 {
@@ -22,7 +25,7 @@ public:
 	virtual void	PushEvent(GAME_EVENT_ID id, INT iArg0, INT iArg1);
 	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT iArg2, INT iArg3);
 
-	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, UINT uOwnerData = NULL);
+	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, DWORD64 uOwnerData = NULL);
 
 	virtual void	ProcessAllEvent();
 
