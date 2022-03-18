@@ -13,42 +13,39 @@ constexpr unsigned shadow_size = 4096;
 
 Matrix4 bias_matrix = Matrix4::Translation(Vector3(0.5, 0.5, 0.5)) * Matrix4::Scale(Vector3(0.5, 0.5, 0.5));
 
-GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), game_world_(world)
+GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), game_world_(world),
+                                                       skybox_mesh_(new OGLMesh()), skybox_tex_(0), shadow_tex_(0), shadow_fbo_(0),
+                                                       light_radius_(1000.0f)
 {
 	glEnable(GL_DEPTH_TEST);
 
 	shadow_shader_ = new OGLShader("GameTechShadowVert.glsl", "GameTechShadowFrag.glsl");
-	shadow_tex_ = 0;
 	glGenTextures(1, &shadow_tex_);
 	glBindTexture(GL_TEXTURE_2D, shadow_tex_);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 	             shadow_size, shadow_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	shadow_fbo_ = 0;
+
 	glGenFramebuffers(1, &shadow_fbo_);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadow_fbo_);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D, shadow_tex_, 0);
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	glClearColor(1, 1, 1, 1);
 	
 	light_colour_ = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
-	light_radius_ = 1000.0f;
 	light_position_ = Vector3(-200.0f, 60.0f, -200.0f);
 	
 	skybox_shader_ = new OGLShader("skyboxVertex.glsl", "skyboxFragment.glsl");
-	skybox_mesh_ = new OGLMesh();
 	skybox_mesh_->SetVertexPositions({Vector3(-1, 1, -1), Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(1, 1, -1)});
 	skybox_mesh_->SetVertexIndices({0, 1, 2, 2, 3, 0});
 	skybox_mesh_->UploadToGPU();
-	skybox_tex_ = 0;
+
 	load_skybox();
 
 
@@ -113,7 +110,7 @@ void GameTechRenderer::RenderFrame()
 	render_shadow_map();
 	render_skybox();
 	render_camera();
-	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
+	glDisable(GL_CULL_FACE);
 	if (gameUI)
 	{
 		gameUI->DrawUI();
@@ -283,8 +280,8 @@ void GameTechRenderer::render_camera()
 		}
 
 		BindMesh(object->GetMesh());
-		int layerCount = object->GetMesh()->GetSubMeshCount();
-		for (int count = 0; count < layerCount; ++count) {
+		const unsigned layer_count = object->GetMesh()->GetSubMeshCount();
+		for (unsigned count = 0; count < layer_count; ++count) {
 
 			if (use_material)
 			{
