@@ -11,12 +11,12 @@ namespace NCL
 	{
 		class RenderObject;
 
-		class GameTechRenderer : public OGLRenderer
+		class GameTechRenderer final : public OGLRenderer
 		{
 		public:
 			explicit GameTechRenderer(GameWorld& world);
 			~GameTechRenderer() override;
-			void SetUI(const GameUI* ui) { gameUI = ui; };
+			void SetUI(const GameUI* ui) { gameUI = ui; }
 		protected:
 			void RenderFrame() override;
 			void BeginFrame() override;
