@@ -284,29 +284,6 @@ void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name
 	current_tex_unit_ += 1;
 }
 
-void OGLRenderer::bind_texture_to_shader(const TextureBase* t, const std::string& uniform, int tex_unit) const
-{
-	GLint tex_id = 0;
-
-	if (!bound_shader_)
-	{
-		std::cout << __FUNCTION__ << " has been called without a bound shader!" << std::endl;
-		return; //Debug message time!
-	}
-
-	const GLuint slot = glGetUniformLocation(bound_shader_->programID, uniform.c_str());
-
-	if (const auto ogl_texture = dynamic_cast<const OGLTexture*>(t))
-	{
-		tex_id = static_cast<int>(ogl_texture->GetObjectID());
-	}
-
-	glActiveTexture(GL_TEXTURE0 + tex_unit);
-	glBindTexture(GL_TEXTURE_2D, tex_id);
-
-	glUniform1i(static_cast<int>(slot), tex_unit);
-}
-
 void OGLRenderer::DrawString(const std::string& text, const Vector2& pos, const Vector4& colour, float size)
 {
 	DebugString s;
