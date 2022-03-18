@@ -59,8 +59,7 @@ namespace NCL
 			}
 
 			virtual void bind_shader(ShaderBase* shader) = 0;
-			virtual void bind_shader_defaults() {};
-
+			virtual void bind_shader_defaults() {}
 			template<class ShaderArgs>
 			void bind_shader_property(const std::string& shader_property_name, const ShaderArgs& data) {
 				throw std::logic_error("Class cannot be passed to shader");
