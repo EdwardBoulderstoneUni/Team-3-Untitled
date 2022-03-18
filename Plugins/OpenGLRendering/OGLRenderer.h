@@ -83,16 +83,16 @@ namespace NCL
 			void BindShader(ShaderBase* s);
 			void BindTextureToShader(const TextureBase* t, const std::string& uniform, int tex_unit) const;
 			void BindMesh(MeshGeometry* m);
-			void DrawBoundMesh(unsigned sub_layer = 0, unsigned num_instances = 1);
+			void DrawBoundMesh(unsigned sub_layer = 0, unsigned num_instances = 1) const;
 			int get_shader_property_location(const std::string& shader_property_name) const;
 			void bind_float_to_shader(const std::string& shader_property_name, const float& data) override;
 			void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) override;
 			void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) override;
 #ifdef _WIN32
 			void InitWithWin32(Window& w);
-			void DestroyWithWin32();
-			HDC device_context_; //...Device context?
-			HGLRC render_context_; //Permanent Rendering Context		
+			void DestroyWithWin32() const;
+			HDC device_context_{}; //...Device context?
+			HGLRC render_context_{}; //Permanent Rendering Context		
 #endif
 		private:
 			struct DebugString

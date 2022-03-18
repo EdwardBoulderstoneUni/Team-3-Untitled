@@ -23,11 +23,10 @@ https://research.ncl.ac.uk/game/
 #ifdef _WIN32
 #include "../../Common/Win32Window.h"
 
-#include "KHR/khrplatform.h"
 #include "glad/glad.h"
 
-#include "GL/GL.h"
-#include "KHR/WGLext.h"
+#include "gl/GL.h"
+#include "KHR/wglext.h"
 
 PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = nullptr;
 #endif
@@ -38,16 +37,13 @@ using namespace Rendering;
 #ifdef OPENGL_DEBUGGING
 static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
                                    const GLchar* message, const void* userParam);
-#endif;
+#endif
 
-OGLRenderer::OGLRenderer(Window& w) : RendererBase(w)
+OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), bound_mesh_(nullptr), bound_shader_(nullptr), init_state_(false)
 {
 #ifdef _WIN32
 	InitWithWin32(w);
 #endif
-	init_state_ = false;
-	bound_mesh_ = nullptr;
-	bound_shader_ = nullptr;
 
 	currentWidth = static_cast<int>(w.GetScreenSize().x);
 	currentHeight = static_cast<int>(w.GetScreenSize().y);
@@ -58,7 +54,7 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w)
 
 		font_ = new SimpleFont("PressStart2P.fnt", "PressStart2P.png");
 
-		auto t = (OGLTexture*)font_->GetTexture();
+		const auto t = dynamic_cast<const OGLTexture*>(font_->GetTexture());
 
 		if (t)
 		{
@@ -132,10 +128,10 @@ void OGLRenderer::BindShader(ShaderBase* s)
 		glUseProgram(0);
 		bound_shader_ = nullptr;
 	}
-	else if (auto oglShader = dynamic_cast<OGLShader*>(s))
+	else if (const auto ogl_shader = dynamic_cast<OGLShader*>(s))
 	{
-		glUseProgram(oglShader->programID);
-		bound_shader_ = oglShader;
+		glUseProgram(ogl_shader->programID);
+		bound_shader_ = ogl_shader;
 	}
 	else
 	{
@@ -151,14 +147,14 @@ void OGLRenderer::BindMesh(MeshGeometry* m)
 		glBindVertexArray(0);
 		bound_mesh_ = nullptr;
 	}
-	else if (auto oglMesh = dynamic_cast<OGLMesh*>(m))
+	else if (const auto ogl_mesh = dynamic_cast<OGLMesh*>(m))
 	{
-		if (oglMesh->GetVAO() == 0)
+		if (ogl_mesh->GetVAO() == 0)
 		{
 			std::cout << __FUNCTION__ << " has received invalid mesh?!" << std::endl;
 		}
-		glBindVertexArray(oglMesh->GetVAO());
-		bound_mesh_ = oglMesh;
+		glBindVertexArray(ogl_mesh->GetVAO());
+		bound_mesh_ = ogl_mesh;
 	}
 	else
 	{
@@ -167,7 +163,7 @@ void OGLRenderer::BindMesh(MeshGeometry* m)
 	}
 }
 
-void OGLRenderer::DrawBoundMesh(unsigned sub_layer, unsigned num_instances)
+void OGLRenderer::DrawBoundMesh(const unsigned sub_layer, unsigned num_instances) const
 {
 	if (!bound_mesh_)
 	{
@@ -180,8 +176,8 @@ void OGLRenderer::DrawBoundMesh(unsigned sub_layer, unsigned num_instances)
 		return;
 	}
 	GLuint mode = 0;
-	int count = 0;
-	int offset = 0;
+	unsigned count;
+	unsigned offset = 0;
 
 	if (bound_mesh_->GetSubMeshCount() == 0)
 	{
@@ -219,11 +215,11 @@ void OGLRenderer::DrawBoundMesh(unsigned sub_layer, unsigned num_instances)
 
 	if (bound_mesh_->GetIndexCount() > 0)
 	{
-		glDrawElements(mode, count, GL_UNSIGNED_INT, (const GLvoid*)(offset * sizeof(unsigned int)));
+		glDrawElements(mode, static_cast<int>(count), GL_UNSIGNED_INT, (const GLvoid*)(offset * sizeof(unsigned int)));
 	}
 	else
 	{
-		glDrawArrays(mode, 0, count);
+		glDrawArrays(mode, 0, static_cast<int>(count));
 	}
 }
 
@@ -263,7 +259,7 @@ void OGLRenderer::bind_matrix4_to_shader(const std::string& shader_property_name
 
 void OGLRenderer::BindTextureToShader(const TextureBase* t, const std::string& uniform, int tex_unit) const
 {
-	GLint texID = 0;
+	GLint tex_id = 0;
 
 	if (!bound_shader_)
 	{
@@ -271,22 +267,17 @@ void OGLRenderer::BindTextureToShader(const TextureBase* t, const std::string& u
 		return; //Debug message time!
 	}
 
-	GLuint slot = glGetUniformLocation(bound_shader_->programID, uniform.c_str());
+	const GLuint slot = glGetUniformLocation(bound_shader_->programID, uniform.c_str());
 
-	if (slot < 0)
+	if (const auto ogl_texture = dynamic_cast<const OGLTexture*>(t))
 	{
-		return;
-	}
-
-	if (auto oglTexture = dynamic_cast<const OGLTexture*>(t))
-	{
-		texID = oglTexture->GetObjectID();
+		tex_id = static_cast<int>(ogl_texture->GetObjectID());
 	}
 
 	glActiveTexture(GL_TEXTURE0 + tex_unit);
-	glBindTexture(GL_TEXTURE_2D, texID);
+	glBindTexture(GL_TEXTURE_2D, tex_id);
 
-	glUniform1i(slot, tex_unit);
+	glUniform1i(static_cast<int>(slot), tex_unit);
 }
 
 void OGLRenderer::DrawString(const std::string& text, const Vector2& pos, const Vector4& colour, float size)
@@ -310,12 +301,12 @@ void OGLRenderer::DrawLine(const Vector3& start, const Vector3& end, const Vecto
 
 Matrix4 OGLRenderer::SetupDebugLineMatrix() const
 {
-	return Matrix4();
+	return {};
 }
 
 Matrix4 OGLRenderer::SetupDebugStringMatrix() const
 {
-	return Matrix4();
+	return {};
 }
 
 void OGLRenderer::DrawDebugData()
@@ -333,26 +324,26 @@ void OGLRenderer::DrawDebugData()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	int matLocation = glGetUniformLocation(debug_shader_->GetProgramID(), "viewProjMatrix");
+	const int mat_location = glGetUniformLocation(debug_shader_->GetProgramID(), "viewProjMatrix");
 	Matrix4 pMat;
 
 	BindTextureToShader(font_->GetTexture(), "mainTex", 0);
 
-	GLuint texSlot = glGetUniformLocation(bound_shader_->programID, "useTexture");
+	const GLuint tex_slot = glGetUniformLocation(bound_shader_->programID, "useTexture");
 
-	if (debug_lines_.size() > 0)
+	if (!debug_lines_.empty())
 	{
 		pMat = SetupDebugLineMatrix();
-		glUniformMatrix4fv(matLocation, 1, false, pMat.array);
-		glUniform1i(texSlot, 0);
+		glUniformMatrix4fv(mat_location, 1, false, pMat.array);
+		glUniform1i(static_cast<int>(tex_slot), 0);
 		DrawDebugLines();
 	}
 
-	if (debug_strings_.size() > 0)
+	if (!debug_strings_.empty())
 	{
 		pMat = SetupDebugStringMatrix();
-		glUniformMatrix4fv(matLocation, 1, false, pMat.array);
-		glUniform1i(texSlot, 1);
+		glUniformMatrix4fv(mat_location, 1, false, pMat.array);
+		glUniform1i(static_cast<int>(tex_slot), 1);
 		DrawDebugStrings();
 	}
 
@@ -366,19 +357,19 @@ void OGLRenderer::DrawDebugData()
 
 void OGLRenderer::DrawDebugStrings()
 {
-	vector<Vector3> vertPos;
-	vector<Vector2> vertTex;
-	vector<Vector4> vertColours;
+	vector<Vector3> vert_pos;
+	vector<Vector2> vert_tex;
+	vector<Vector4> vert_colours;
 
 	for (DebugString& s : debug_strings_)
 	{
-		font_->BuildVerticesForString(s.text, s.pos, s.colour, s.size, vertPos, vertTex, vertColours);
+		font_->BuildVerticesForString(s.text, s.pos, s.colour, s.size, vert_pos, vert_tex, vert_colours);
 	}
 
-	debug_text_mesh_->SetVertexPositions(vertPos);
-	debug_text_mesh_->SetVertexTextureCoords(vertTex);
-	debug_text_mesh_->SetVertexColours(vertColours);
-	debug_text_mesh_->UpdateGPUBuffers(0, vertPos.size());
+	debug_text_mesh_->SetVertexPositions(vert_pos);
+	debug_text_mesh_->SetVertexTextureCoords(vert_tex);
+	debug_text_mesh_->SetVertexColours(vert_colours);
+	debug_text_mesh_->UpdateGPUBuffers(0, static_cast<unsigned>(vert_pos.size()));
 
 	BindMesh(debug_text_mesh_);
 	DrawBoundMesh();
@@ -388,21 +379,21 @@ void OGLRenderer::DrawDebugStrings()
 
 void OGLRenderer::DrawDebugLines()
 {
-	vector<Vector3> vertPos;
-	vector<Vector4> vertCol;
+	vector<Vector3> vert_pos;
+	vector<Vector4> vert_col;
 
 	for (DebugLine& s : debug_lines_)
 	{
-		vertPos.emplace_back(s.start);
-		vertPos.emplace_back(s.end);
+		vert_pos.emplace_back(s.start);
+		vert_pos.emplace_back(s.end);
 
-		vertCol.emplace_back(s.colour);
-		vertCol.emplace_back(s.colour);
+		vert_col.emplace_back(s.colour);
+		vert_col.emplace_back(s.colour);
 	}
 
-	debug_lines_mesh_->SetVertexPositions(vertPos);
-	debug_lines_mesh_->SetVertexColours(vertCol);
-	debug_lines_mesh_->UpdateGPUBuffers(0, vertPos.size());
+	debug_lines_mesh_->SetVertexPositions(vert_pos);
+	debug_lines_mesh_->SetVertexColours(vert_col);
+	debug_lines_mesh_->UpdateGPUBuffers(0, static_cast<unsigned>(vert_pos.size()));
 
 	BindMesh(debug_lines_mesh_);
 	DrawBoundMesh();
@@ -413,17 +404,16 @@ void OGLRenderer::DrawDebugLines()
 #ifdef _WIN32
 void OGLRenderer::InitWithWin32(Window& w)
 {
-	auto realWindow = static_cast<Win32Code::Win32Window*>(&w);
+	const auto real_window = dynamic_cast<Win32Code::Win32Window*>(&w);
 
-	if (!(device_context_ = GetDC(realWindow->GetHandle())))
+	if (!(device_context_ = GetDC(real_window->GetHandle())))
 	{
 		std::cout << __FUNCTION__ << " Failed to create window!" << std::endl;
 		return;
 	}
 
 	//A pixel format descriptor is a struct that tells the Windows OS what type of front / back buffers we want to create etc
-	PIXELFORMATDESCRIPTOR pfd;
-	memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+	PIXELFORMATDESCRIPTOR pfd = {};
 
 	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 	pfd.nVersion = 1;
@@ -435,35 +425,35 @@ void OGLRenderer::InitWithWin32(Window& w)
 	pfd.cStencilBits = 8; //plus an 8 bit stencil buffer
 	pfd.iLayerType = PFD_MAIN_PLANE;
 
-	GLuint PixelFormat;
-	if (!(PixelFormat = ChoosePixelFormat(device_context_, &pfd)))
+	GLuint pixel_format;
+	if (!(pixel_format = ChoosePixelFormat(device_context_, &pfd)))
 	{
 		// Did Windows Find A Matching Pixel Format for our PFD?
 		std::cout << __FUNCTION__ << " Failed to choose a pixel format!" << std::endl;
 		return;
 	}
 
-	if (!SetPixelFormat(device_context_, PixelFormat, &pfd))
+	if (!SetPixelFormat(device_context_, static_cast<int>(pixel_format), &pfd))
 	{
 		// Are We Able To Set The Pixel Format?
 		std::cout << __FUNCTION__ << " Failed to set a pixel format!" << std::endl;
 		return;
 	}
 
-	HGLRC tempContext; //We need a temporary OpenGL context to check for OpenGL 3.2 compatibility...stupid!!!
-	if (!(tempContext = wglCreateContext(device_context_)))
+	HGLRC temp_context; //We need a temporary OpenGL context to check for OpenGL 3.2 compatibility...stupid!!!
+	if (!(temp_context = wglCreateContext(device_context_)))
 	{
 		// Are We Able To get the temporary context?
 		std::cout << __FUNCTION__ << "  Cannot create a temporary context!" << std::endl;
-		wglDeleteContext(tempContext);
+		wglDeleteContext(temp_context);
 		return;
 	}
 
-	if (!wglMakeCurrent(device_context_, tempContext))
+	if (!wglMakeCurrent(device_context_, temp_context))
 	{
 		// Try To Activate The Rendering Context
 		std::cout << __FUNCTION__ << " Cannot set temporary context!" << std::endl;
-		wglDeleteContext(tempContext);
+		wglDeleteContext(temp_context);
 		return;
 	}
 	if (!gladLoadGL())
@@ -472,15 +462,15 @@ void OGLRenderer::InitWithWin32(Window& w)
 		return;
 	}
 	//Now we have a temporary context, we can find out if we support OGL 4.x
-	auto ver = (char*)glGetString(GL_VERSION); // ver must equal "4.1.0" (or greater!)
-	int major = ver[0] - '0'; //casts the 'correct' major version integer from our version string
-	int minor = ver[2] - '0'; //casts the 'correct' minor version integer from our version string
+	const auto ver = (char*)glGetString(GL_VERSION); // ver must equal "4.1.0" (or greater!)
+	const int major = ver[0] - '0'; //casts the 'correct' major version integer from our version string
+	const int minor = ver[2] - '0'; //casts the 'correct' minor version integer from our version string
 
 	if (major < 3)
 	{
 		//Graphics hardware does not support OGL 4! Erk...
 		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.x!" << std::endl;
-		wglDeleteContext(tempContext);
+		wglDeleteContext(temp_context);
 		return;
 	}
 
@@ -488,12 +478,12 @@ void OGLRenderer::InitWithWin32(Window& w)
 	{
 		//Graphics hardware does not support ENOUGH of OGL 4! Erk...
 		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.1!" << std::endl;
-		wglDeleteContext(tempContext);
+		wglDeleteContext(temp_context);
 		return;
 	}
 	//We do support OGL 4! Let's set it up...
 
-	int attribs[] = {
+	const int attributes[] = {
 		WGL_CONTEXT_MAJOR_VERSION_ARB, major,
 		WGL_CONTEXT_MINOR_VERSION_ARB, minor,
 		WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
@@ -506,20 +496,20 @@ void OGLRenderer::InitWithWin32(Window& w)
 
 	//Everywhere else in the Renderers, we use function pointers provided by GLEW...but we can't initialise GLEW yet! So we have to use the 'Wiggle' API
 	//to get a pointer to the function that will create our OpenGL 3.2 context...
-	auto wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
+	const auto wgl_create_context_attributes_arb = (PFNWGLCREATECONTEXTATTRIBSARBPROC)
 		wglGetProcAddress("wglCreateContextAttribsARB");
-	render_context_ = wglCreateContextAttribsARB(device_context_, nullptr, attribs);
+	render_context_ = wgl_create_context_attributes_arb(device_context_, nullptr, attributes);
 
 	// Check for the context, and try to make it the current rendering context
 	if (!render_context_ || !wglMakeCurrent(device_context_, render_context_))
 	{
 		std::cout << __FUNCTION__ << " Cannot set OpenGL 3 context!" << std::endl; //It's all gone wrong!
 		wglDeleteContext(render_context_);
-		wglDeleteContext(tempContext);
+		wglDeleteContext(temp_context);
 		return;
 	}
 
-	wglDeleteContext(tempContext); //We don't need the temporary context any more!
+	wglDeleteContext(temp_context); //We don't need the temporary context any more!
 
 	std::cout << __FUNCTION__ << " Initialised OpenGL " << major << "." << minor << " rendering context" << std::endl;
 	//It's all gone wrong!
@@ -535,12 +525,12 @@ void OGLRenderer::InitWithWin32(Window& w)
 	//If we get this far, everything's going well!
 	init_state_ = true;
 
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+	wglSwapIntervalEXT = PFNWGLSWAPINTERVALEXTPROC(wglGetProcAddress("wglSwapIntervalEXT"));
 
 	w.SetRenderer(this);
 }
 
-void OGLRenderer::DestroyWithWin32()
+void OGLRenderer::DestroyWithWin32() const
 {
 	wglDeleteContext(render_context_);
 }
@@ -551,19 +541,22 @@ bool OGLRenderer::SetVerticalSync(VerticalSyncState s)
 	{
 		return false;
 	}
-	GLuint state;
+	GLuint state = 0;
 
 	switch (s)
 	{
-	case VerticalSyncState::VSync_OFF: state = 0;
+	case VerticalSyncState::VSync_OFF:
+		state = 0;
 		break;
-	case VerticalSyncState::VSync_ON: state = 1;
+	case VerticalSyncState::VSync_ON: 
+		state = 1;
 		break;
-	case VerticalSyncState::VSync_ADAPTIVE: state = -1;
+	case VerticalSyncState::VSync_ADAPTIVE: 
+		state = -1;
 		break;
 	}
 
-	return wglSwapIntervalEXT(state);
+	return wglSwapIntervalEXT(static_cast<int>(state));
 }
 #endif
 
@@ -589,6 +582,8 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 		break;
 	case GL_DEBUG_SOURCE_OTHER_ARB: sourceName = "Source(Other)";
 		break;
+	default: sourceName = "";
+		break;
 	}
 
 	switch (type)
@@ -605,6 +600,8 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 		break;
 	case GL_DEBUG_TYPE_OTHER_ARB: typeName = "Type(Other)";
 		break;
+	default: typeName = "";
+		break;
 	}
 
 	switch (severity)
@@ -614,6 +611,8 @@ static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum
 	case GL_DEBUG_SEVERITY_MEDIUM_ARB: severityName = "Priority(Medium)";
 		break;
 	case GL_DEBUG_SEVERITY_LOW_ARB: severityName = "Priority(Low)";
+		break;
+	default: severityName = "";
 		break;
 	}
 
