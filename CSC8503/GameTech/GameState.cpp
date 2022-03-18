@@ -40,7 +40,7 @@ void GamingState::OnSleep() {
 }
 
 PushdownState::PushdownResult GamingState::OnUpdate(float dt, PushdownState** newState) {
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE) or game->tLeft<0)
 	{
 		*newState = new PauseState(game);
 		return PushdownResult::Push;
@@ -65,7 +65,7 @@ void PauseState::OnSleep() {
 PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** newState) {
 	if (pause_menu->EnterGame) {
 		game->SetMultiMode();
-
+		game->tLeft = 10.0f;
 		*newState = new GamingState(game);
 		return PushdownResult::Pop;
 	}

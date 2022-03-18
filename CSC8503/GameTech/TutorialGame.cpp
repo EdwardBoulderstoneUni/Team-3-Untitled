@@ -68,7 +68,7 @@ void TutorialGame::InitialiseAssets() {
 	loadFunc("coin.msh", &bonusMesh);
 	loadFunc("capsule.msh", &capsuleMesh);
 
-	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
+	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("corridor_wall_c.tga");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 
 	ShaderManager::GetInstance()->Init();
@@ -151,8 +151,10 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 
 void TutorialGame::InitWorld()
 {
-	InitDefaultFloor();
-	
+	InitDefaultFloor(Vector3(0,0,0),Vector4(1,1,1,1));
+	InitDefaultFloor(Vector3(150, 0, 0), Vector4(0, 1, 0, 1));
+	InitDefaultFloor(Vector3(-150, 0, 0), Vector4(1, 0, 0, 1));
+	InitDefaultFloor(Vector3(0,0,150), Vector4(0, 0, 1, 1));
 	AudioManager::Startup();
 	//AudioManager::GetInstance().Play_Sound();
 }
@@ -243,17 +245,18 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	return cube;
 }
 
-void TutorialGame::InitDefaultFloor()
+void TutorialGame::InitDefaultFloor(Vector3 position, Vector4 color)
 {
 	Floor* floor = new Floor();
 
 	floor->GetTransform()
 		.SetScale(Vector3(150, 1, 150))
-		.SetPosition(Vector3(0,0,0));
+		.SetPosition(position);
 
 	floor->InitAllComponent();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
+	floor->GetRenderObject()->SetColour(color);
 
 	world->AddGameObject(floor);
 }
@@ -264,6 +267,7 @@ void TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
 }
 
 void TutorialGame::HUDUpdate(float dt)
@@ -469,7 +473,7 @@ void TutorialGame::_HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	Player* hitobj = static_cast<Player*>(world->FindObjectbyID(stoi(hitID)));
 	PlayerPro* playerPro = hitobj->GetPlayerPro();
 	int health=hitobj->GetPlayerPro()->health;
-	if (health > 0 and playerPro->health - bullet->GetDamage() < 0) {
+	if (health > 0 and playerPro->health - bullet->GetDamage() <= 0) {
 		std::cout << (std::to_string(shooter->GetWorldID()) + " --->" +
 			std::to_string(hitobj->GetWorldID())) << std::endl;
 		shooter->GetPlayerPro()->teamKill++;
@@ -485,6 +489,25 @@ void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
 	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(20,5,10));
+}
+void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	GameWorld* world = (GameWorld*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+	string color = pEvent->vArg[1];
+	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
+	switch (stoi(color))
+	{case 0:
+		player->GetPlayerPro()->health ++;
+		break;
+	case 1:
+		player->GetPlayerPro()->damage = 100.0f;
+		break;
+	case 2:
+		player->GetPlayerPro()->speed = 1.5f;
+		break;
+	}
+	
 }
 void TutorialGame::UpdateGameObjects(float dt)
 {

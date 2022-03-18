@@ -7,6 +7,7 @@ enum GAME_EVENT_ID {
 	PLAYER_HIT,
 	PLAYER_RESPWAN,
 	GAME_OVER,
+	PLAYER_COLOR_ZONE,
 };
 class YiEventSystem:public EventSystem 
 {

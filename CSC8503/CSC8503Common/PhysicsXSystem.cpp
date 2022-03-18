@@ -154,6 +154,19 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 		if (a->type == GameObjectType_team1 and b->type == GameObjectType_floor) {
 			Player* player = dynamic_cast<Player*>(a);
 			player->GetPlayerPro()->isGrounded = true;
+			int color;
+			if (b->GetRenderObject()->GetColour() == Vector4(0, 1, 0, 1)) {
+				color = 0;
+			}
+			else if (b->GetRenderObject()->GetColour() == Vector4(1, 0, 0, 1)) {
+				color = 1;
+			}
+			else if (b->GetRenderObject()->GetColour() == Vector4(0, 0, 1, 1)) {
+				color = 2;
+			}else if (b->GetRenderObject()->GetColour() == Vector4(1, 1, 1, 1)) {
+				color = 3;
+			}
+			YiEventSystem::GetMe()->PushEvent(PLAYER_COLOR_ZONE,player->GetWorldID(),color);
 		}
 	}
 	void _CONTACT_P2PHandle(GameObject* a, GameObject* b)

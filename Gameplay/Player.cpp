@@ -58,25 +58,10 @@ void Player::SetUp()
 
 
 
-//float Player::TakeDamage(float dmg) {
-//	health = health - dmg < 0 ? 0 : health - dmg;
-//	return health;
-//}
-//bool Player::IsDead() {
-//	return health == 0 ? true : false;
-//}
+
 void Player::Respawn() {
 	YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN,GetWorldID());
 }
-
-// Give damage to palyer a
-//void Player::GiveDamage(float dmg, Player* a) {
-//	a->TakeDamage(dmg);
-//	if (a->IsDead() == true) {
-//		teamKill++;
-//	}
-//}
-
 
 
 void Player::AssignRole(AbilityContainer* aCont)

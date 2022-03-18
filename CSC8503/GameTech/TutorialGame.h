@@ -28,6 +28,7 @@ namespace NCL {
 
 			void SetSingleMode();
 			void SetMultiMode();
+			float tLeft = 900;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
@@ -36,7 +37,7 @@ namespace NCL {
 		
 			void InitWorld();
 
-			void InitDefaultFloor();
+			void InitDefaultFloor(Vector3 position,Vector4 color);
 			void RegisterEventHandles();
 			void HUDUpdate(float dt);
 
@@ -62,8 +63,6 @@ namespace NCL {
 			YiEventSystem* eventSystem;
 	
 			bool DebugMode;
-
-			float tLeft = 10;
 			
 			OGLMesh* capsuleMesh = nullptr;
 			OGLMesh* cubeMesh = nullptr;
@@ -88,7 +87,7 @@ namespace NCL {
 			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			
+			static void _colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			void UpdateGameObjects(float dt);
 		};
 	}
