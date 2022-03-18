@@ -231,29 +231,16 @@ void GameTechRenderer::render_camera()
 
 		if (active_shader != shader)
 		{
-			const int proj_location = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-			const int view_location = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-			model_location = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-			shadow_location = glGetUniformLocation(shader->GetProgramID(), "shadowMatrix");
-			colour_location = glGetUniformLocation(shader->GetProgramID(), "objectColour");
-			has_v_col_location = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
+			
 			has_tex_location = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
-
-			const int light_pos_location = glGetUniformLocation(shader->GetProgramID(), "lightPos");
-			const int light_colour_location = glGetUniformLocation(shader->GetProgramID(), "lightColour");
-			const int light_radius_location = glGetUniformLocation(shader->GetProgramID(), "lightRadius");
-
-			const int camera_location = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
-			const auto camera_world_position = game_world_.GetMainCamera()->GetPosition();
-			glUniform3fv(camera_location, 1, reinterpret_cast<const float*>(&camera_world_position));
-
-			glUniformMatrix4fv(proj_location, 1, false, reinterpret_cast<float*>(&proj_matrix));
-			glUniformMatrix4fv(view_location, 1, false, reinterpret_cast<float*>(&view_matrix));
-
-			glUniform3fv(light_pos_location, 1, reinterpret_cast<float*>(&light_position_));
-			glUniform4fv(light_colour_location, 1, reinterpret_cast<float*>(&light_colour_));
-			glUniform1f(light_radius_location, light_radius_);
-
+			
+			bind_shader_property("cameraPos", game_world_.GetMainCamera()->GetPosition());
+			bind_shader_property("projMatrix", proj_matrix);
+			bind_shader_property("viewMatrix", view_matrix);
+			bind_shader_property("lightPos", light_position_);
+			bind_shader_property("lightColour", light_colour_);
+			bind_shader_property("lightRadius", light_radius_);
+			// bind_shader_property("shadowTex", 1);
 			const int shadow_tex_location = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
 			glUniform1i(shadow_tex_location, 1);
 
@@ -262,21 +249,17 @@ void GameTechRenderer::render_camera()
 
 		Matrix4 model_matrix = object->GetTransform()->GetMatrix();
 		model_matrix = model_matrix * object->GetMesh()->GetLocalTransform();
-		glUniformMatrix4fv(model_location, 1, false, reinterpret_cast<float*>(&model_matrix));
+		bind_shader_property("modelMatrix", model_matrix);
 
 		Matrix4 full_shadow_mat = shadow_matrix_ * model_matrix;
-		glUniformMatrix4fv(shadow_location, 1, false, reinterpret_cast<float*>(&full_shadow_mat));
+		bind_shader_property("shadowMatrix", full_shadow_mat);
 
-		const auto colour = object->colour_;
-
-		glUniform4fv(colour_location, 1, reinterpret_cast<const float*>(&colour));
-
-		glUniform1i(has_v_col_location, !(*object).GetMesh()->GetColourData().empty());
-
+		bind_shader_property("objectColour", object->colour_);
+		bind_shader_property("hasVertexColours", !(*object).GetMesh()->GetColourData().empty());
 		if (!use_material)
 		{
 			bind_shader_property("mainTex", *object->texture_);
-			glUniform1i(has_tex_location, (OGLTexture*)object->texture_ ? 1 : 0);
+			bind_shader_property("hasTexture", (OGLTexture*)object->texture_ ? 1 : 0);
 		}
 
 		BindMesh(object->GetMesh());
@@ -287,10 +270,10 @@ void GameTechRenderer::render_camera()
 			{
 				TextureBase* texture = object->GetMaterial()->GetMaterialForLayer(count)->GetEntry("Diffuse");
 				bind_shader_property("mainTex", *texture);
-				glUniform1i(has_tex_location, (OGLTexture*)texture ? 1 : 0);
+				bind_shader_property("hasTexture", (OGLTexture*)texture ? 1 : 0);
 			}
 			DrawBoundMesh(count);
-			reset_texture_storage();
+			reset_shader_for_next_object();
 		}
 	}
 }
