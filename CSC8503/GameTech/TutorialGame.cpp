@@ -256,7 +256,7 @@ void TutorialGame::InitDefaultFloor(Vector3 position, Vector4 color)
 	floor->InitAllComponent();
 
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	floor->GetRenderObject()->SetColour(color);
+	floor->GetRenderObject()->colour_ = color;
 
 	world->AddGameObject(floor);
 }
