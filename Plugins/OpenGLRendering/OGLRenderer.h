@@ -22,6 +22,7 @@ https://research.ncl.ac.uk/game/
 
 #include <string>
 #include <vector>
+#include <glad/glad.h>
 
 namespace NCL
 {
@@ -90,7 +91,10 @@ namespace NCL
 			void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) override;
 			void bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data) override;
 			
-			void reset_texture_storage();
+			void reset_shader_for_next_object() override;
+			void free_reserved_textures() const override;
+			void bind_and_reserve_texture(const std::string& shader_property_name, const TextureBase& data) override;
+
 #ifdef _WIN32
 			void InitWithWin32(Window& w);
 			void DestroyWithWin32() const;
@@ -128,6 +132,8 @@ namespace NCL
 			bool init_state_;
 			bool force_valid_debug_state_;
 			unsigned current_tex_unit_;
+
+			bool reserved_texture_slot_[GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS] = { false };
 		};
 	}
 }

@@ -7,6 +7,9 @@ Comments and queries to: richard-gordon.davison AT ncl.ac.uk
 https://research.ncl.ac.uk/game/
 */
 #include "OGLRenderer.h"
+
+#include <cassert>
+
 #include "OGLShader.h"
 #include "OGLMesh.h"
 #include "OGLTexture.h"
@@ -22,8 +25,6 @@ https://research.ncl.ac.uk/game/
 
 #ifdef _WIN32
 #include "../../Common/Win32Window.h"
-
-#include "glad/glad.h"
 
 #include "gl/GL.h"
 #include "KHR/wglext.h"
@@ -45,7 +46,6 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), bound_mesh_(nullptr), bou
 #ifdef _WIN32
 	InitWithWin32(w);
 #endif
-
 	currentWidth = static_cast<int>(w.GetScreenSize().x);
 	currentHeight = static_cast<int>(w.GetScreenSize().y);
 
@@ -134,6 +134,7 @@ void OGLRenderer::bind_shader(ShaderBase* shader)
 		glUseProgram(ogl_shader->programID);
 		bound_shader_ = ogl_shader;
 		current_tex_unit_ = 0;
+		reset_state_for_next_shader();
 		bind_shader_defaults();
 	}
 	else
@@ -262,6 +263,11 @@ void OGLRenderer::bind_matrix4_to_shader(const std::string& shader_property_name
 
 void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data)
 {
+	while (reserved_texture_slot_[current_tex_unit_]) {
+		current_tex_unit_++;
+		assert(current_tex_unit_ < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	}
+	
 	GLint tex_id = 0;
 
 	if (!bound_shader_)
@@ -284,9 +290,21 @@ void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name
 	current_tex_unit_ += 1;
 }
 
-void OGLRenderer::reset_texture_storage()
+void OGLRenderer::reset_shader_for_next_object()
 {
 	current_tex_unit_ = 0;
+}
+
+void OGLRenderer::free_reserved_textures() const
+{
+	for (auto texture_slot : reserved_texture_slot_)
+		texture_slot = false;
+}
+
+void OGLRenderer::bind_and_reserve_texture(const std::string& shader_property_name, const TextureBase& data)
+{
+	bind_shader_property(shader_property_name, data);
+	reserved_texture_slot_[current_tex_unit_ - 1] = true;
 }
 
 void OGLRenderer::DrawString(const std::string& text, const Vector2& pos, const Vector4& colour, float size)
@@ -410,6 +428,7 @@ void OGLRenderer::DrawDebugLines()
 
 	debug_lines_.clear();
 }
+
 
 #ifdef _WIN32
 void OGLRenderer::InitWithWin32(Window& w)
