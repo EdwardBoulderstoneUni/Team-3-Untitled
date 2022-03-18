@@ -1,7 +1,5 @@
 #include "../GameTech/GameState.h"
-void _gameoverHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 
-}
 #pragma region Start State
 PushdownState::PushdownResult StartState::OnUpdate(float dt, PushdownState** newState)
 {

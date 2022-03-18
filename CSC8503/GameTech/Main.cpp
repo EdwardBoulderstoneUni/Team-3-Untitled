@@ -33,9 +33,6 @@ int main() {
 		return -1;
 	}
 
-	w->ShowOSPointer(true);
-	w->LockMouseToWindow(true);
-
 	auto g = new TutorialGame();
 	PushdownMachine machine(new StartState(g));
 

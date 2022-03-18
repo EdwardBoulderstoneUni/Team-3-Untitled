@@ -5,12 +5,11 @@ using namespace NCL;
 using namespace CSC8503;
 
 #define TUTORMENU_SIZE ImVec2(360,70)
-#define TEXT_WIN_POS_OFF ImVec2(main_viewport->WorkPos.x+0,main_viewport->WorkPos.y+60)
-#define TEXT_WIN_SIZE ImVec2(360,50)
+#define TEXT_WIN_POS_OFF ImVec2(main_viewport->WorkPos.x+900,main_viewport->WorkPos.y+400)
+#define TEXT_WIN_SIZE ImVec2(360,100)
 
 #define TUTORIAL_MENU_TITLE "Tutorial Menu"
 #define TEXT_WIN_TITLE "TEXT"
-
 void TutorialMenu::Draw()
 {
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
@@ -53,15 +52,19 @@ void TutorialMenu::Draw()
 		ImGui::BulletText("Use Up|Down|Left|Right to control the locked object.");
 		ImGui::Separator();
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RETURN)) {
-	
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN)) {
+		isEntering = !isEntering;
+		Window::GetWindow()->ShowOSPointer(isEntering);
+	}
+	if (isEntering) {
 		ImGui::Begin(TEXT_WIN_TITLE);
 		ImGui::Text("This is some useful text.");
-
+		ImGui::SetWindowPos(TEXT_WIN_POS_OFF, ImGuiCond_Always);
+		ImGui::SetWindowSize(TEXT_WIN_SIZE, ImGuiCond_Always);
+		static char buf[128] = "click on a button to set focus";
+		ImGui::SetKeyboardFocusHere();
+		ImGui::InputText("1", buf, IM_ARRAYSIZE(buf));
 		ImGui::End();
-		
 	}
-
-
 	ImGui::End();
 }
