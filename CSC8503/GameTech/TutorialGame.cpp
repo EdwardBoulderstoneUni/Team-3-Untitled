@@ -274,12 +274,14 @@ void TutorialGame::HUDUpdate(float dt)
 {
 	PlayerPro* playerPro = player->GetPlayerPro();
 	TimeStack* timeStack = player->GetTimeStack();
+	renderer->DrawString("Damage :" + std::to_string(playerPro->damage), Vector2(5, 95));
 	renderer->DrawString("Ammo Left: " + std::to_string(playerPro->ammo), Vector2(5, 90));
 	if (playerPro->ammo == 0) {
 		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
 	}
-
-	renderer->DrawString("Health: " + std::to_string(playerPro->health), Vector2(5, 85));
+	int health = playerPro->health;
+	renderer->DrawString("Health: " + std::to_string(health), Vector2(5, 85));
+	renderer->DrawString("Speed : " + std::to_string(playerPro->speed), Vector2(5, 100));
 
 	//World timer
 	if (tLeft >= 0) {
@@ -496,9 +498,11 @@ void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	string worldID = pEvent->vArg[0];
 	string color = pEvent->vArg[1];
 	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
+	float currenthealth = player->GetPlayerPro()->health;
+
 	switch (stoi(color))
 	{case 0:
-		player->GetPlayerPro()->health ++;
+		player->GetPlayerPro()->health = currenthealth + 0.1 > 100 ? 100 : currenthealth + 0.1;
 		break;
 	case 1:
 		player->GetPlayerPro()->damage = 100.0f;
@@ -506,6 +510,8 @@ void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	case 2:
 		player->GetPlayerPro()->speed = 1.5f;
 		break;
+	case 3:
+		player->GetPlayerPro()->Reset(player->GetRole());
 	}
 	
 }

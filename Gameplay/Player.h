@@ -32,7 +32,21 @@ namespace NCL {
 			Vector3 shootDir;
 		};
 		struct PlayerPro {
-			float health = 100.0f;
+			void Reset(PlayerRole colour) {
+				speed = 1.0f;
+				switch (colour) {
+				case PlayerRole_red:
+					damage = 5;
+					break;
+				case PlayerRole_green:
+					damage = 4;
+					break;
+				case PlayerRole_blue:
+					damage = 3;
+					break;
+				}
+			}
+			float health = 50.0f;
 			bool isGrounded = true;
 			float tAbility1;
 			float tAbility2;
