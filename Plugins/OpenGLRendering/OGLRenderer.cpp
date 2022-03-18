@@ -284,6 +284,11 @@ void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name
 	current_tex_unit_ += 1;
 }
 
+void OGLRenderer::reset_texture_storage()
+{
+	current_tex_unit_ = 0;
+}
+
 void OGLRenderer::DrawString(const std::string& text, const Vector2& pos, const Vector4& colour, float size)
 {
 	DebugString s;

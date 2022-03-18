@@ -89,6 +89,8 @@ namespace NCL
 			void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) override;
 			void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) override;
 			void bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data) override;
+			
+			void reset_texture_storage();
 #ifdef _WIN32
 			void InitWithWin32(Window& w);
 			void DestroyWithWin32() const;

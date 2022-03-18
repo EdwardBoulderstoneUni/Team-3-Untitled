@@ -222,8 +222,6 @@ void GameTechRenderer::render_camera()
 	int has_tex_location = 0;
 	int shadow_location = 0;
 
-	bool useMaterial = false;
-
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, shadow_tex_);
 
@@ -231,7 +229,7 @@ void GameTechRenderer::render_camera()
 	{
 		const auto shader = dynamic_cast<OGLShader*>((*object).GetShader());
 		bind_shader(shader);
-		useMaterial = object->GetMaterial() != nullptr;
+		const bool use_material = object->GetMaterial() != nullptr;
 
 
 		if (active_shader != shader)
@@ -278,7 +276,7 @@ void GameTechRenderer::render_camera()
 
 		glUniform1i(has_v_col_location, !(*object).GetMesh()->GetColourData().empty());
 
-		if (!useMaterial)
+		if (!use_material)
 		{
 			bind_shader_property("mainTex", *object->texture_);
 			glUniform1i(has_tex_location, (OGLTexture*)object->texture_ ? 1 : 0);
@@ -288,13 +286,14 @@ void GameTechRenderer::render_camera()
 		int layerCount = object->GetMesh()->GetSubMeshCount();
 		for (int count = 0; count < layerCount; ++count) {
 
-			if (useMaterial)
+			if (use_material)
 			{
 				TextureBase* texture = object->GetMaterial()->GetMaterialForLayer(count)->GetEntry("Diffuse");
 				bind_shader_property("mainTex", *texture);
 				glUniform1i(has_tex_location, (OGLTexture*)texture ? 1 : 0);
 			}
 			DrawBoundMesh(count);
+			reset_texture_storage();
 		}
 	}
 }
