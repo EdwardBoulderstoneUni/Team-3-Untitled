@@ -12,15 +12,13 @@ https://research.ncl.ac.uk/game/
 #include "../../Common/Vector3.h"
 #include "../../Common/Vector4.h"
 
-
 #ifdef _WIN32
-#include "windows.h"
+#include "Windows.h"
 #endif
 
 #ifdef _DEBUG
 #define OPENGL_DEBUGGING
 #endif
-
 
 #include <string>
 #include <vector>
@@ -48,19 +46,19 @@ namespace NCL
 		{
 		public:
 			friend class OGLRenderer;
-			OGLRenderer(Window& w);
+			explicit OGLRenderer(Window& w);
 			~OGLRenderer() override;
 
 			void OnWindowResize(int w, int h) override;
 
 			bool HasInitialised() const override
 			{
-				return initState;
+				return init_state_;
 			}
 
-			void ForceValidDebugState(bool newState)
+			void ForceValidDebugState(const bool new_state)
 			{
-				forceValidDebugState = newState;
+				force_valid_debug_state_ = new_state;
 			}
 
 			bool SetVerticalSync(VerticalSyncState s) override;
@@ -74,7 +72,7 @@ namespace NCL
 
 		protected:
 			void BeginFrame() override;
-			void RenderFrame() override;
+			void RenderFrame() override {}
 			void EndFrame() override;
 			void SwapBuffers() override;
 
@@ -83,9 +81,9 @@ namespace NCL
 			void DrawDebugLines();
 
 			void BindShader(ShaderBase* s);
-			void BindTextureToShader(const TextureBase* t, const std::string& uniform, int texUnit) const;
+			void BindTextureToShader(const TextureBase* t, const std::string& uniform, int tex_unit) const;
 			void BindMesh(MeshGeometry* m);
-			void DrawBoundMesh(unsigned subLayer = 0, unsigned numInstances = 1);
+			void DrawBoundMesh(unsigned sub_layer = 0, unsigned num_instances = 1);
 			int get_shader_property_location(const std::string& shader_property_name) const;
 			void bind_float_to_shader(const std::string& shader_property_name, const float& data) override;
 			void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) override;
@@ -93,15 +91,15 @@ namespace NCL
 #ifdef _WIN32
 			void InitWithWin32(Window& w);
 			void DestroyWithWin32();
-			HDC deviceContext; //...Device context?
-			HGLRC renderContext; //Permanent Rendering Context		
+			HDC device_context_; //...Device context?
+			HGLRC render_context_; //Permanent Rendering Context		
 #endif
 		private:
 			struct DebugString
 			{
 				Vector4 colour;
 				Vector2 pos;
-				float size;
+				float size{};
 				std::string text;
 			};
 
@@ -112,19 +110,19 @@ namespace NCL
 				Vector4 colour;
 			};
 
-			OGLMesh* debugLinesMesh;
-			OGLMesh* debugTextMesh;
+			OGLMesh* debug_lines_mesh_;
+			OGLMesh* debug_text_mesh_;
 
-			OGLMesh* boundMesh;
-			OGLShader* boundShader;
+			OGLMesh* bound_mesh_;
+			OGLShader* bound_shader_;
 
-			OGLShader* debugShader;
-			SimpleFont* font;
-			std::vector<DebugString> debugStrings;
-			std::vector<DebugLine> debugLines;
+			OGLShader* debug_shader_;
+			SimpleFont* font_;
+			std::vector<DebugString> debug_strings_;
+			std::vector<DebugLine> debug_lines_;
 
-			bool initState;
-			bool forceValidDebugState;
+			bool init_state_;
+			bool force_valid_debug_state_;
 		};
 	}
 }
