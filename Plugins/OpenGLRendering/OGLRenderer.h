@@ -86,6 +86,10 @@ namespace NCL
 			void BindTextureToShader(const TextureBase* t, const std::string& uniform, int texUnit) const;
 			void BindMesh(MeshGeometry* m);
 			void DrawBoundMesh(unsigned subLayer = 0, unsigned numInstances = 1);
+			int get_shader_property_location(const std::string& shader_property_name) const;
+			void bind_float_to_shader(const std::string& shader_property_name, const float& data) override;
+			void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) override;
+			void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) override;
 #ifdef _WIN32
 			void InitWithWin32(Window& w);
 			void DestroyWithWin32();

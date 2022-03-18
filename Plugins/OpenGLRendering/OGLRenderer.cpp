@@ -232,6 +232,40 @@ void OGLRenderer::DrawBoundMesh(unsigned subLayer, unsigned numInstances)
 	}
 }
 
+GLint OGLRenderer::get_shader_property_location(const std::string& shader_property_name) const
+{
+	return glGetUniformLocation(boundShader->GetProgramID(), shader_property_name.c_str());
+}
+
+void OGLRenderer::bind_float_to_shader(const std::string& shader_property_name, const float& data)
+{
+	glUniform1f(get_shader_property_location(shader_property_name), data);
+}
+
+void OGLRenderer::bind_vector_to_shader(const std::string& shader_property_name, const unsigned size, const float* data)
+{
+	switch (size)
+	{
+	case 2:
+		glUniform2fv(get_shader_property_location(shader_property_name), static_cast<int>(size), data);
+		break;
+	case 3:
+		glUniform3fv(get_shader_property_location(shader_property_name), static_cast<int>(size), data);
+		break;
+	case 4:
+		glUniform4fv(get_shader_property_location(shader_property_name), static_cast<int>(size), data);
+		break;
+	default:
+		throw std::logic_error("Vector of size " + std::to_string(size) + " cannot be passed to shader");
+	}
+	
+}
+
+void OGLRenderer::bind_matrix4_to_shader(const std::string& shader_property_name, const float* data)
+{
+	glUniform4fv(get_shader_property_location(shader_property_name), 1, data);
+}
+
 void OGLRenderer::BindTextureToShader(const TextureBase* t, const std::string& uniform, int texUnit) const
 {
 	GLint texID = 0;

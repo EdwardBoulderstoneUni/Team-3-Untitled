@@ -62,9 +62,7 @@ namespace NCL
 			}
 		protected:
 			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data) = 0;
-			virtual void bind_vector2_to_shader(const std::string& shader_property_name, const float* data) = 0;
-			virtual void bind_vector3_to_shader(const std::string& shader_property_name, const float* data) = 0;
-			virtual void bind_vector4_to_shader(const std::string& shader_property_name, const float* data) = 0;
+			virtual void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) = 0;
 			virtual void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) = 0;
 			virtual void OnWindowResize(int w, int h) = 0;
 
@@ -86,15 +84,15 @@ namespace NCL
 		}
 		template <>
 		inline void RendererBase::bind_shader_property<Vector2>(const std::string& shader_property_name, const Vector2& data) {
-			bind_vector2_to_shader(shader_property_name, data.as_float_array());
+			bind_vector_to_shader(shader_property_name, 2, data.as_float_array());
 		}
 		template <>
 		inline void RendererBase::bind_shader_property<Vector3>(const std::string& shader_property_name, const Vector3& data) {
-			bind_vector3_to_shader(shader_property_name, data.as_float_array());
+			bind_vector_to_shader(shader_property_name, 3, data.as_float_array());
 		}
 		template <>
 		inline void RendererBase::bind_shader_property<Vector4>(const std::string& shader_property_name, const Vector4& data) {
-			bind_vector4_to_shader(shader_property_name, data.as_float_array());
+			bind_vector_to_shader(shader_property_name, 4, data.as_float_array());
 		}
 		template <>
 		inline void RendererBase::bind_shader_property<Matrix4>(const std::string& shader_property_name, const Matrix4& data) {
