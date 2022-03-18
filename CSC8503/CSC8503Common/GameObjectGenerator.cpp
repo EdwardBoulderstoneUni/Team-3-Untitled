@@ -42,7 +42,7 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 	PxGeometry* volume = nullptr;
 
 	GetVector(value, "dimensions", dim);
-	GetVector(value, "dimensionsoff", dimoffset);
+	//GetVector(value, "dimensionsoff", dimoffset);
 	int objectType = value["objShape"].GetInt();
 
 	switch (objectType)
