@@ -4,14 +4,21 @@
 using namespace NCL;
 using namespace CSC8503;
 
+#define TUTORMENU_SIZE ImVec2(360,70)
+#define TEXT_WIN_POS_OFF ImVec2(main_viewport->WorkPos.x+0,main_viewport->WorkPos.y+60)
+#define TEXT_WIN_SIZE ImVec2(360,50)
+
+#define TUTORIAL_MENU_TITLE "Tutorial Menu"
+#define TEXT_WIN_TITLE "TEXT"
+
 void TutorialMenu::Draw()
 {
 	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings;
 	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x, main_viewport->WorkPos.y), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(360, 280), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(TUTORMENU_SIZE, ImGuiCond_Always);
 
-	if (!ImGui::Begin("Tutorial Menu", NULL, window_flags))
+	if (!ImGui::Begin(TUTORIAL_MENU_TITLE, NULL, window_flags))
 	{
 		ImGui::End();
 		return;
@@ -46,7 +53,14 @@ void TutorialMenu::Draw()
 		ImGui::BulletText("Use Up|Down|Left|Right to control the locked object.");
 		ImGui::Separator();
 	}
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RETURN)) {
+	
+		ImGui::Begin(TEXT_WIN_TITLE);
+		ImGui::Text("This is some useful text.");
 
+		ImGui::End();
+		
+	}
 
 
 	ImGui::End();

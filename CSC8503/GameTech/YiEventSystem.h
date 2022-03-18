@@ -6,6 +6,7 @@ enum GAME_EVENT_ID {
 	OBJECT_DELETE,
 	PLAYER_HIT,
 	PLAYER_RESPWAN,
+	GAME_OVER,
 };
 class YiEventSystem:public EventSystem 
 {

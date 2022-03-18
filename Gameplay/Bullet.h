@@ -6,12 +6,12 @@
 class Bullet : public Sphere {
 public:
 	Bullet(Player& player);
+	virtual ~Bullet();
 	void SetUp() override;
 	virtual void Update(float dt)override;
 	float GetDamage(){
 		return damage;
 	}
-
 	int GetShooterID() { return shooterID; }
 	void OnRed();
 private:

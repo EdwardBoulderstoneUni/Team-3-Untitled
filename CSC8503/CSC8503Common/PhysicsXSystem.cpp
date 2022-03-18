@@ -153,14 +153,14 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 	{
 		if (a->type == GameObjectType_team1 and b->type == GameObjectType_floor) {
 			Player* player = dynamic_cast<Player*>(a);
-			player->SetGrounded(true);
+			player->GetPlayerPro()->isGrounded = true;
 		}
 	}
 	void _CONTACT_P2PHandle(GameObject* a, GameObject* b)
 	{
 		if (a->type == GameObjectType_team1 and b->type == GameObjectType_team2) {
 			Player* player = dynamic_cast<Player*>(a);
-			player->SetGrounded(true);
+			player->GetPlayerPro()->isGrounded = true;
 		}
 	}
 };

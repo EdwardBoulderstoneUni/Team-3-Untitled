@@ -1,5 +1,7 @@
 #include "../GameTech/GameState.h"
+void _gameoverHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 
+}
 #pragma region Start State
 PushdownState::PushdownResult StartState::OnUpdate(float dt, PushdownState** newState)
 {
@@ -25,6 +27,7 @@ void StartState::OnAwake() {
 void StartState::OnSleep() {
 	game->GetUI()->RemoveMenu(start_menu);
 }
+
 #pragma endregion
 
 #pragma region Gaming State
