@@ -65,7 +65,7 @@ void PauseState::OnSleep() {
 PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** newState) {
 	if (pause_menu->EnterGame) {
 		game->SetMultiMode();
-		game->tLeft = 10.0f;
+		game->tLeft = 900.0f;
 		*newState = new GamingState(game);
 		return PushdownResult::Pop;
 	}

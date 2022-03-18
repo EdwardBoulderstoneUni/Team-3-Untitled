@@ -279,6 +279,7 @@ void TutorialGame::HUDUpdate(float dt)
 	if (playerPro->ammo == 0) {
 		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
 	}
+
 	int health = playerPro->health;
 	renderer->DrawString("Health: " + std::to_string(health), Vector2(5, 85));
 	renderer->DrawString("Speed : " + std::to_string(playerPro->speed), Vector2(5, 100));
