@@ -25,7 +25,7 @@ namespace NCL
 			RenderObject(Transform* parent_transform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
 
 			void render(RendererBase* renderer) const;
-			void bind_shader_values(const RendererBase* renderer) const;
+			void bind_shader_values(RendererBase* renderer) const;
 
 			void SetDefaultTexture(TextureBase* t)
 			{

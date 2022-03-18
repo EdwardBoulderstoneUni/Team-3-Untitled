@@ -20,11 +20,11 @@ void RenderObject::render(RendererBase* renderer) const
 	bind_shader_values(renderer);
 }
 
-void RenderObject::bind_shader_values(const RendererBase* renderer) const
+void RenderObject::bind_shader_values(RendererBase* renderer) const
 {
 	renderer->BindTextureToShader(texture_, "mainTex", 0);
-	renderer->bind_matrix_4_fv("modelMatrix", transform_->GetMatrix().as_float_array());
-	renderer->bind_4_fv("objectColour", colour_.as_float_array());
-	renderer->bind_1_i("hasVertexColours", !mesh_->GetColourData().empty());
-	renderer->bind_1_i("hasTexture", static_cast<bool>(texture_));
+	renderer->bind_shader_property("modelMatrix", transform_->GetMatrix());
+	renderer->bind_shader_property("objectColour", colour_);
+	renderer->bind_shader_property("hasVertexColours", !mesh_->GetColourData().empty());
+	renderer->bind_shader_property("hasTexture", static_cast<bool>(texture_));
 }
