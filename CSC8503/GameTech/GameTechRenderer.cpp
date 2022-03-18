@@ -102,6 +102,20 @@ void GameTechRenderer::load_skybox()
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
+void GameTechRenderer::bind_shader_defaults()
+{
+	const float screen_aspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
+	const auto view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
+	const auto proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
+
+	bind_shader_property("cameraPos", game_world_.GetMainCamera()->GetPosition());
+	bind_shader_property("projMatrix", proj_matrix);
+	bind_shader_property("viewMatrix", view_matrix);
+	bind_shader_property("lightPos", light_position_);
+	bind_shader_property("lightColour", light_colour_);
+	bind_shader_property("lightRadius", light_radius_);
+}
+
 void GameTechRenderer::RenderFrame()
 {
 	glEnable(GL_CULL_FACE);
@@ -208,16 +222,7 @@ void GameTechRenderer::render_skybox()
 
 void GameTechRenderer::render_camera()
 {
-	const float screen_aspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
-	Matrix4 view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
-	Matrix4 proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
-
 	OGLShader* active_shader = nullptr;
-	int model_location = 0;
-	int colour_location = 0;
-	int has_v_col_location = 0;
-	int has_tex_location = 0;
-	int shadow_location = 0;
 
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, shadow_tex_);
@@ -231,15 +236,6 @@ void GameTechRenderer::render_camera()
 
 		if (active_shader != shader)
 		{
-			
-			has_tex_location = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
-			
-			bind_shader_property("cameraPos", game_world_.GetMainCamera()->GetPosition());
-			bind_shader_property("projMatrix", proj_matrix);
-			bind_shader_property("viewMatrix", view_matrix);
-			bind_shader_property("lightPos", light_position_);
-			bind_shader_property("lightColour", light_colour_);
-			bind_shader_property("lightRadius", light_radius_);
 			// bind_shader_property("shadowTex", 1);
 			const int shadow_tex_location = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
 			glUniform1i(shadow_tex_location, 1);

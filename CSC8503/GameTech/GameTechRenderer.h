@@ -18,6 +18,7 @@ namespace NCL
 			~GameTechRenderer() override;
 			void SetUI(const GameUI* ui) { gameUI = ui; }
 		protected:
+			void bind_shader_defaults() override;
 			void RenderFrame() override;
 			void BeginFrame() override;
 
