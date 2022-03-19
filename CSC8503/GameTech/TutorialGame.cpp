@@ -22,6 +22,7 @@ TutorialGame::TutorialGame()
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
 	physicsX = new PhysicsXSystem(*world);
+
 	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
@@ -80,8 +81,8 @@ void TutorialGame::InitialiseAssets() {
 	g.Generate(worldFilePath.c_str(), *world);
 
 	InitWorld();
-	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
+	//InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
+	//InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
 	RegisterEventHandles();
 }
 
@@ -101,7 +102,7 @@ TutorialGame::~TutorialGame()	{
 	delete renderer;
 	delete world;
 	delete gameUI;
-	delete player;
+	delete localPlayer;
 	delete abilityContainer;
 }
 
@@ -132,21 +133,20 @@ void TutorialGame::InitAbilityContainer() {
 
 void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 {
-	player = new Player(PlayerRole_blue, abilityContainer, team,islocal);
-
-
+	auto player = new Player(PlayerRole_blue, abilityContainer, team, islocal);
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
-	
 
 	player->InitAllComponent();
-
+	if (islocal) {
+		localPlayer = player;
+		world->SetMainCamera(localPlayer->GetComponentCamera()->camera);
+	}
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, basicTex, basicShader));
 
-	world->SetMainCamera(player->GetComponentCamera()->camera);
-	
 	world->AddGameObject(player);
+	
 }
 
 void TutorialGame::InitWorld()
@@ -272,8 +272,9 @@ void TutorialGame::RegisterEventHandles()
 
 void TutorialGame::HUDUpdate(float dt)
 {
-	PlayerPro* playerPro = player->GetPlayerPro();
-	TimeStack* timeStack = player->GetTimeStack();
+	if (not localPlayer)return;
+	PlayerPro* playerPro = localPlayer->GetPlayerPro();
+	TimeStack* timeStack = localPlayer->GetTimeStack();
 	renderer->DrawString("Damage :" + std::to_string(playerPro->damage), Vector2(5, 95));
 	renderer->DrawString("Ammo Left: " + std::to_string(playerPro->ammo), Vector2(5, 90));
 	if (playerPro->ammo == 0) {
@@ -292,7 +293,7 @@ void TutorialGame::HUDUpdate(float dt)
 		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
 	}
 	else {
-		YiEventSystem::GetMe()->PushEvent(GAME_OVER);
+	//	YiEventSystem::GetMe()->PushEvent(GAME_OVER);
 	}
 
 	renderer->DrawString("Score: " + std::to_string(playerPro->score), Vector2(70, 85));
@@ -303,53 +304,22 @@ void TutorialGame::HUDUpdate(float dt)
 	else
 		renderer->DrawString("Dash ready!", Vector2(5, 80));
 
-	Vector3 position = player->GetTransform().GetPosition()+Vector3(0,5,0);
+	Vector3 position = localPlayer->GetTransform().GetPosition()+Vector3(0,5,0);
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
 #define TARGET_OFF 20.0f
-	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, screenSize / 2.0f);
-	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, 
+	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera, screenSize / 2.0f);
+	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera, 
 		screenSize / 2.0f+Vector2(-TARGET_OFF,0));
-	Vector3 targetright = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+	Vector3 targetright = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera,
 		screenSize / 2.0f + Vector2(TARGET_OFF, 0));
-	Vector3 targettop = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+	Vector3 targettop = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera,
 		screenSize / 2.0f + Vector2(0, TARGET_OFF));
-	Vector3 targetbot = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+	Vector3 targetbot = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera,
 		screenSize / 2.0f + Vector2(0, -TARGET_OFF));
 	renderer->DrawLine(position, target, Vector4(0,1,0,1));
 	renderer->DrawLine(targetleft, targetright, Vector4(0, 1, 0, 1));
 	renderer->DrawLine(targettop, targetbot, Vector4(0, 1, 0, 1));
-}
-
-GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
-{
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
-
-	auto character = new Player(PlayerRole::PlayerRole_blue, abilityContainer, GameObjectType_team1);
-
-	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
-
-	//character->SetBoundingVolume((CollisionVolume*)volume);
-
-	character->GetTransform()
-	         .SetScale(Vector3(meshSize, meshSize, meshSize))
-	         .SetPosition(position);
-	character->InitAllComponent();
-
-	if (rand() % 2)
-	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
-	}
-	else
-	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, basicShader));
-	}
-	
-	
-	world->AddGameObject(character);
-
-	return character;
 }
 
 GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position)

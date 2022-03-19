@@ -2,12 +2,10 @@
 #include "GameObject.h"
 #include "NetworkBase.h"
 #include "NetworkState.h"
+#include "../GameTech/YiEventSystem.h"
 namespace NCL {
 	namespace CSC8503 {
-		enum class ObjectType
-		{
-			Player
-		};
+
 		struct FullPacket : public GamePacket {
 			int		objectID = -1;
 			NetworkState fullState;
@@ -31,23 +29,20 @@ namespace NCL {
 		};
 
 		struct ClientPacket : public GamePacket {
-			int		lastID = -1;
 			int		playerID = -1;
-			char	buttonstates[8] = { 0 }; //�������� ���� ��� 
+			int		lastID = -1;
+			char	buttonstates[8] = { 0 }; 
 			int     angles[3] = { 0 };
 			ClientPacket() {
 				size = sizeof(ClientPacket);
 			}
 		};
 
-		struct SpawnPacket : public GamePacket {
-			int networkID = -1;
-			int playerID = -1;
-			ObjectType  objectType = {};
-			NetworkState fullState;
-			SpawnPacket() {
-				type = Spawn_Object;
-				size = sizeof(SpawnPacket);
+		struct EventPacket : public GamePacket {
+			GAME_EVENT_ID  eventID;
+			EventPacket() {
+				type = Event_State;
+				size = sizeof(EventPacket);
 			}
 		};
 
@@ -61,7 +56,7 @@ namespace NCL {
 			//Called by servers
 			virtual bool WritePacket(GamePacket** p, bool deltaFrame, int stateID);
 
-			virtual bool WriteSpawnPacket(SpawnPacket** p, int networkID, int playerID);
+			//virtual bool WriteSpawnPacket(SpawnPacket** p, int networkID, int playerID);
 
 			void UpdateStateHistory(int minID);
 

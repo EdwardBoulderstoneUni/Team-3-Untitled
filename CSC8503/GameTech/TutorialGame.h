@@ -29,6 +29,7 @@ namespace NCL {
 			void SetSingleMode();
 			void SetMultiMode();
 			float tLeft = 10;
+
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
@@ -50,7 +51,7 @@ namespace NCL {
 			GameObject* AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius,
 			                              float inverseMass = 10.0f);
 
-			GameObject* AddPlayerToWorld(const Vector3& position);
+		
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddPaint(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
@@ -58,7 +59,7 @@ namespace NCL {
 			GameTechRenderer*	renderer;
 			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
-			Player*				player;
+			Player*				localPlayer;
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 	

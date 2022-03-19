@@ -18,8 +18,6 @@ namespace NCL {
 
 			void UpdateGame(float dt) override;
 
-			GameObject* SpawnPlayer(Vector3 position);
-
 			void StartLevel();
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
@@ -36,8 +34,6 @@ namespace NCL {
 			bool MovePlayerAndFire(GameObject* player, char buttonstates[8], int angle[3]);
 
 			void UpdatePlayer(float dt);
-
-			void InitialiseAssets();
 
 		protected:
 			void UpdateAsServer(float dt);
@@ -80,12 +76,10 @@ namespace NCL {
 
 			std::vector<NetworkObject*> networkObjects;
 
-			std::map<int, GameObject*> serverPlayers;
+			//std::map<int, GameObject*> serverPlayers;
+			std::vector<NetworkPlayer*> networkplayers;
 
-			GameObject* localPlayer = nullptr;
-			int localPlayerID = -1;
 			int localLastID = -1;
-
 		};
 	}
 }

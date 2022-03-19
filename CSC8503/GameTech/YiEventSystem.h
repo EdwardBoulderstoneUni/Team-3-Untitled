@@ -2,6 +2,8 @@
 #include "EventSystem.h"
 
 enum GAME_EVENT_ID {
+	NONE,
+	PLAYER_ENTER_WORLD,
 	PLAYER_OPEN_FIRE,
 	OBJECT_DELETE,
 	PLAYER_HIT,

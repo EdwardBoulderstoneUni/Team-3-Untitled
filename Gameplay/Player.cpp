@@ -3,12 +3,12 @@
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "PlayerState.h"
 #include "WeaponState.h"
-Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool localplayer)
+Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool islocal)
 {
 	dirVec.forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 	dirVec.CaculateRight();
 	pColour = colour;
-	isLocalPlayer = localplayer;
+	isLocalPlayer = islocal;
 	playerPro = new PlayerPro();
 	timeStack = new TimeStack();
 	AssignRole(aCont);

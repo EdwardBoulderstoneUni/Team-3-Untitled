@@ -2,6 +2,8 @@
 #include "../../Common/GameTimer.h"
 YiEventSystem* YiEventSystem::p_self = NULL;
 EVENT_DEFINE g_GlobalEvent[] = {
+	{NONE,"NONE"},
+	{PLAYER_ENTER_WORLD,"ENTER_WORLD"},
 	{PLAYER_OPEN_FIRE,"OPEN_FIRE"},
 	{OBJECT_DELETE,"OBJECT_DELETE"},
 	{PLAYER_HIT,"HIT"},

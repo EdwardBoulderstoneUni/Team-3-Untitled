@@ -32,8 +32,8 @@ int main() {
 	if (!w->HasInitialised()) {
 		return -1;
 	}
-
-	auto g = new TutorialGame();
+	//auto g = new TutorialGame();
+	auto g = new NetworkedGame();
 	PushdownMachine machine(new StartState(g));
 
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!

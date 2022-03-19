@@ -59,7 +59,7 @@ namespace NCL {
 		};
 		class Player : public ComponentGameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool localplayer=false);
+			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type, bool islocal);
 			~Player();
 			virtual void Update(float dt)override;
 			void SetUp() override;
@@ -72,8 +72,8 @@ namespace NCL {
 			PlayerRole GetRole() { return pColour; }
 			TimeStack* GetTimeStack() { return timeStack; }
 			PlayerPro* GetPlayerPro() { return playerPro; }
-		private:
 			bool isLocalPlayer;
+		private:
 			TimeStack* timeStack;
 			PlayerPro* playerPro;
 			PushdownMachine* playerState;

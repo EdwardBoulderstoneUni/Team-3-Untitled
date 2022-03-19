@@ -122,17 +122,17 @@ bool NetworkObject::WriteFullPacket(GamePacket** p, int stateID) {
 	return true;
 }
 
-bool NetworkObject::WriteSpawnPacket(SpawnPacket** p, int networkID, int playerID) {
-	SpawnPacket* sp = new SpawnPacket();
-	sp->networkID = networkID;
-	sp->playerID = playerID;
-	sp->objectType = ObjectType::Player;
-	sp->fullState.stateID = lastFullState.stateID;
-	sp->fullState.position = object.GetTransform().GetPosition();
-	sp->fullState.orientation = object.GetTransform().GetOrientation();
-	*p = sp;
-	return true;
-}
+//bool NetworkObject::WriteSpawnPacket(SpawnPacket** p, int networkID, int playerID) {
+//	SpawnPacket* sp = new SpawnPacket();
+//	sp->networkID = networkID;
+//	sp->playerID = playerID;
+//	sp->objectType = ObjectType::Player;
+//	sp->fullState.stateID = lastFullState.stateID;
+//	sp->fullState.position = object.GetTransform().GetPosition();
+//	sp->fullState.orientation = object.GetTransform().GetOrientation();
+//	*p = sp;
+//	return true;
+//}
 
 NetworkState& NetworkObject::GetLatestNetworkState() {
 	return lastFullState;

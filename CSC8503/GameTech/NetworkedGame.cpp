@@ -24,7 +24,6 @@ NetworkedGame::NetworkedGame() {
 	timeToUpdateMiniState = 0.0f;
 	packetsToSnapshot = 0;
 
-	InitialiseAssets();
 }
 
 NetworkedGame::~NetworkedGame() {
@@ -36,7 +35,7 @@ void NetworkedGame::StartAsServer() {
 	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
 
 	thisServer->RegisterPacketHandler(Received_State, this);
-	thisServer->RegisterPacketHandler(Spawn_Player, this);
+	thisServer->RegisterPacketHandler(Event_State, this);
 	StartLevel();
 }
 
@@ -48,10 +47,8 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Full_State, this);
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
-	thisClient->RegisterPacketHandler(Spawn_Object, this);
 	thisClient->RegisterPacketHandler(Shutdown, this);
 
-	StartLevel();
 }
 
 void NetworkedGame::UpdateGame(float dt) {
@@ -121,7 +118,7 @@ void NetworkedGame::UpdateAsClient(float dt) {
 	newPacket.lastID = localLastID;
 	OutputDebug("localastID: %d", localLastID);
 	newPacket.type = Received_State;
-	newPacket.playerID = localPlayerID;
+	//newPacket.playerID = localPlayerID;
 	thisClient->SendPacket(newPacket);
 }
 
@@ -163,25 +160,6 @@ void NetworkedGame::UpdateMinimumState() {
 	}
 }
 
-GameObject* NetworkedGame::SpawnPlayer(Vector3 position) {
-
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
-
-	GameObject* character = new GameObject();
-
-	character->GetTransform()
-		.SetScale(Vector3(meshSize, meshSize, meshSize))
-		.SetPosition(position);
-
-
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
-
-	world->AddGameObject(character);
-
-	return character;
-}
-
 void NetworkedGame::StartLevel() {
 
 }
@@ -189,14 +167,17 @@ void NetworkedGame::StartLevel() {
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	//server
 	if (type == Received_State) {
-		ClientPacket* realPacket = (ClientPacket*)payload;
+		/*ClientPacket* realPacket = (ClientPacket*)payload;
 		UpdateStateIDs(realPacket);
 		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
-		if (!player)return;
-		MovePlayerAndFire(player, realPacket->buttonstates, realPacket->angles);
+		if (!player)return;*/
+		//MovePlayerAndFire(player, realPacket->buttonstates, realPacket->angles);
 	}
-	else if (type == Spawn_Player) {
-		ClientPacket* realPacket = (ClientPacket*)payload;
+	else if (type == Event_State) {
+		
+	}
+	/*else if (type == Spawn_Player) {*/
+		/*ClientPacket* realPacket = (ClientPacket*)payload;
 		OutputDebug("[Spawn_Player] call from [PlayerID: %d]", realPacket->playerID);
 		GameObject* newPlayer = SpawnPlayer(Vector3(0, 5, 0));
 		ToggleNetworkState(newPlayer, true);
@@ -209,8 +190,8 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		SpawnPacket* newPacket = nullptr;
 		networkObjects[networkObjects.size() - 1]
 			->WriteSpawnPacket(&newPacket, int(networkObjects.size() - 1), realPacket->playerID);
-		thisServer->SendGlobalPacket(*newPacket);
-	}
+		thisServer->SendGlobalPacket(*newPacket);*/
+	//}
 
 	//client
 	else if (type == Delta_State) {
@@ -233,28 +214,27 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	else if (type == Player_Connected) {
 		NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
 		std::cout << "Client: New player connected!" << std::endl;
-		if (localPlayerID != -1)return;
-		localPlayerID = realPacket->playerID;
-		ClientPacket newPacket;
-		newPacket.type = Spawn_Player;
-		newPacket.playerID = localPlayerID;
+		realPacket->playerID;
+
+		EventPacket newPacket;
+		newPacket.eventID = PLAYER_ENTER_WORLD;
 		thisClient->SendPacket(newPacket);
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
 		std::cout << "Client: Player Disconnected!" << std::endl; //TODO:delete player when client is disconnected
 	}
-	else if (type == Spawn_Object) {
-		SpawnPacket* realPacket = (SpawnPacket*)payload;
-		if (realPacket->objectType == ObjectType::Player) {
-			GameObject* newPlayer = SpawnPlayer(realPacket->fullState.position);
-			if (localPlayerID == realPacket->playerID)
-				localPlayer = newPlayer;
-			ToggleNetworkState(newPlayer, true);
-			if (localLastID == -1)localLastID = realPacket->fullState.stateID;//TODO:Strategy Pattern/Consortium
-			OutputDebug("[Spawn_Object] [localLastID:%d]", localLastID);
-		}
-	}
+	//else if (type == Spawn_Object) {
+	//	//SpawnPacket* realPacket = (SpawnPacket*)payload;
+	//	//if (realPacket->objectType == ObjectType::Player) {
+	//	//	GameObject* newPlayer = SpawnPlayer(realPacket->fullState.position);
+	//	//	if (localPlayerID == realPacket->playerID)
+	//	//		localPlayer = newPlayer;
+	//	//	ToggleNetworkState(newPlayer, true);
+	//	//	if (localLastID == -1)localLastID = realPacket->fullState.stateID;//TODO:Strategy Pattern/Consortium
+	//	//	OutputDebug("[Spawn_Object] [localLastID:%d]", localLastID);
+	//	//}
+	//}
 	else if (type == Shutdown) {
 		std::cout << "Server shutdown!" << std::endl;
 	}
@@ -381,23 +361,4 @@ void NetworkedGame::UpdatePlayer(float dt)
 	world->GetMainCamera()->SetPosition(cameraPosition);
 	world->GetMainCamera()->SetPitch(-30.0f);
 	world->GetMainCamera()->SetYaw(yaw);
-}
-
-void NetworkedGame::InitialiseAssets()
-{
-	auto loadFunc = [](const string& name, OGLMesh** into) {
-		*into = new OGLMesh(name);
-		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
-		(*into)->UploadToGPU();
-	};
-	loadFunc("cube.msh", &cubeMesh);
-	loadFunc("sphere.msh", &sphereMesh);
-	loadFunc("Male1.msh", &charMeshA);
-	loadFunc("courier.msh", &charMeshB);
-	loadFunc("security.msh", &enemyMesh);
-	loadFunc("coin.msh", &bonusMesh);
-	loadFunc("capsule.msh", &capsuleMesh);
-
-	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
-	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 }
