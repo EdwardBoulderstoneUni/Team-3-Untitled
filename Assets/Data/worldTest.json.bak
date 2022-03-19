@@ -1,0 +1,3 @@
+{"Objects":[
+{"objShape":1,"position":{"x":40,"y":4,"z":0},"quaternion":{"x":0,"y":0,"z":0,"w":1},"scale":{"x":10.0,"y":10.0,"z":10.0},"dimensions":{"x":1.00005042552948,"y":0.5000030994415283,"z":3.0000007152557375},"dimensionsOrigin":{"x":0.0,"y":-0.7500008344650269,"z":-1.4999998807907105},"materialPath":"corridor_Wall_Straight_Mid_end_L.mat","meshPath":"corridor_Wall_Straight_Mid_end_L.msh"}
+]}

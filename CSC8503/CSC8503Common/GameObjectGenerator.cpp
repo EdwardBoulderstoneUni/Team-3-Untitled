@@ -53,7 +53,7 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 		volume = new PxSphereGeometry(dim.x);
 		break;
 	case 1:
-		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim));
+		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim * scale / 2));
 		break;
 	case 2:
 		volume = new PxCapsuleGeometry(dim.x,dim.y);
@@ -64,7 +64,7 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 	PhysicsXObject* phyObj = new PhysicsXObject();
 	phyObj->properties.type = PhyProperties::Static;
 	phyObj->properties.transform = trans;
-	phyObj->properties.positionOffset =dimOffset;
+	phyObj->properties.positionOffset = dimOffset * scale;
 	phyObj->properties.volume = volume;
 	phyObj->properties.Mass = 10.0f;
 	object->SetPhysicsXObject(phyObj);
