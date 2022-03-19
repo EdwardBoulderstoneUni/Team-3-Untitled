@@ -57,6 +57,7 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)
 {
+#ifndef PLATFORM_ORBIS
 	int objectType = value["objShape"].GetInt();
 	MeshMaterial* material = nullptr;
 	if (value.HasMember("materialPath"))
@@ -83,6 +84,7 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
 		break;
 	}
+#endif
 }
 
 

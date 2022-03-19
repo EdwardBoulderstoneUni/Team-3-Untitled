@@ -98,7 +98,6 @@ OGLRenderer::~OGLRenderer()
 
 #ifdef _WIN32
 	DestroyWithWin32();
-#endif
 }
 
 void OGLRenderer::OnWindowResize(int w, int h)

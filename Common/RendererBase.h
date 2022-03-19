@@ -27,9 +27,9 @@ namespace NCL
 		class RendererBase
 		{
 		public:
-			friend class Window;
+			friend class NCL::Window;
 
-			RendererBase(Window& w);
+			RendererBase(NCL::Window& w);
 			virtual ~RendererBase();
 
 			virtual bool HasInitialised() const { return true; }

@@ -16,16 +16,16 @@ class PhysicsXSystem {
 			void addStaticActor(GameObject& actor);
 			void SyncGameObjs();
 
-			bool raycast(Vector3 origin,Vector3 dir,float maxdis,PxRaycastBuffer& hit);
+			bool raycast(NCL::Maths::Vector3 origin, NCL::Maths::Vector3 dir,float maxdis,PxRaycastBuffer& hit);
 			bool raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit);
 			
 		protected:
 		
 			void getActorsPose(PxRigidActor** actors, const PxU32 numActors);
 
-			Vector3 Unproject(const Vector3& screenPos, const Camera& cam);
-			Matrix4 GenerateInverseView(const Camera& c);
-			Matrix4 GenerateInverseProjection(float aspect, float fov, float nearPlane, float farPlane);
+			NCL::Maths::Vector3 Unproject(const NCL::Maths::Vector3& screenPos, const Camera& cam);
+			NCL::Maths::Matrix4 GenerateInverseView(const Camera& c);
+			NCL::Maths::Matrix4 GenerateInverseProjection(float aspect, float fov, float nearPlane, float farPlane);
 			GameWorld& gameWorld;
 			float dTOffset;	
 		};

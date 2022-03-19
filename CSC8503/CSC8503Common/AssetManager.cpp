@@ -7,11 +7,12 @@
 #include "../../Common/TextureLoader.h"
 #ifndef PLATFORM_ORBIS
 #include <experimental/filesystem>
+#include "AssimpHelper.h"
 #endif
 #include "../../Common/Assets.h"
 #include "../../Common/MeshMaterial.h"
 #include "../../Common/Matrix4.h"
-#include "AssimpHelper.h"
+
 
 namespace NCL
 {
@@ -19,13 +20,16 @@ namespace NCL
 
 	AssetManager::AssetManager()
 	{		
+#ifndef PLATFORM_ORBIS
 		AssimpHelper::GetInstance().Init();
+#endif
 		LoadMeshes();
 		LoadTextures();
 		LoadMaterials();
 	}
 	void AssetManager::LoadMeshes()
 	{
+#ifndef PLATFORM_ORBIS
 		auto loadFunc = [](const std::string& name) {
 			NCL::Rendering::OGLMesh* into = new NCL::Rendering::OGLMesh(name);
 			(into)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);
@@ -36,7 +40,7 @@ namespace NCL
 
 		NCL::Rendering::OGLMesh* mesh = nullptr;
 		NCL::MeshMaterial* material = nullptr;
-#ifndef PLATFORM_ORBIS
+
 		for (const auto& entry : std::experimental::filesystem::directory_iterator(Assets::MESHDIR))
 		{
 			if (entry.path().extension().generic_string().compare(".msh") == 0)			
@@ -62,9 +66,11 @@ namespace NCL
 	}
 	void AssetManager::LoadTextures()
 	{
+#ifndef PLATFORM_ORBIS
 		NCL::Rendering::OGLTexture *basicTex = (NCL::Rendering::OGLTexture*)
 												TextureLoader::LoadAPITexture("checkerboard.png");
 		m_Textures.insert({"checkerboard", basicTex});
+#endif
 	}
 	void AssetManager::LoadMaterials()
 	{

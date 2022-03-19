@@ -5,7 +5,7 @@
 #include "PhysXConvert.h"
 
 using namespace physx;
-using namespace NCL::Maths;
+
 using namespace NCL::CSC8503;
 
 class PhysicsXObject {
@@ -23,16 +23,16 @@ public:
 
 	//float GetInverseMass() const{}
 	PxGeometry* GetVolume() const{ return volume; }
-	void AddForce(const Vector3& force);
+	void AddForce(const NCL::Maths::Vector3& force);
 
-	void AddTorque(const Vector3& torque);
+	void AddTorque(const NCL::Maths::Vector3& torque);
 
 	
 	void ClearForces();
 	void ClearTorque();
-	void SetLinearVelocity(const Vector3& v);
+	void SetLinearVelocity(const NCL::Maths::Vector3& v);
 
-	void SetAngularVelocity(const Vector3& v);
+	void SetAngularVelocity(const NCL::Maths::Vector3& v);
 
 	bool isDynamic();
 	bool isInScene();

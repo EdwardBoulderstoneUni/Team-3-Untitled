@@ -1,11 +1,9 @@
 
 #include "PS4Mesh.h"
-#include "../Common/Vector2.h"
-#include "../Common/Vector3.h"
-
 #include <.\graphics\api_gnm\toolkit\allocators.h>
 #include <.\graphics\api_gnm\toolkit\stack_allocator.h>
-
+#include "../Common/Vector2.h"
+#include "../Common/Vector3.h"
 using namespace NCL::Maths;
 using namespace NCL::PS4;
 

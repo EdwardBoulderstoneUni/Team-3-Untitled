@@ -61,7 +61,9 @@ namespace NCL
 				return material;
 			}
 
-			const Maths::Matrix4& GetLocalTransform() const;
+			const Maths::Matrix4& GetLocalTransform() const {
+				return localTransform;
+			}
 			void	SetLocalTransform(const Maths::Matrix4& mat);
 
 		protected:

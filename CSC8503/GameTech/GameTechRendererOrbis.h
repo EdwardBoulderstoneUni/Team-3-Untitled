@@ -11,7 +11,7 @@ namespace NCL {
 			public PS4RendererBase
 		{
 		public:
-			GameTechRendererOrbis(PS4Window* window);
+			GameTechRendererOrbis();
 			~GameTechRendererOrbis();
 
 			void Update(float dt)	 override;

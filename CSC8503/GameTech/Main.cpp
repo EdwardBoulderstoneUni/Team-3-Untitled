@@ -1,10 +1,13 @@
+#ifndef ORBIS
 #include "../../Common/Window.h"
+#else
+#include "../../GNMRendering/PS4Window.h"
+#endif
 
 #include "../CSC8503Common/StateMachine.h"
 #include "../CSC8503Common/StateTransition.h"
 #include "../CSC8503Common/State.h"
 
-#include "../CSC8503Common/NavigationGrid.h"
 
 #include "TutorialGame.h"
 #include "NetworkedGame.h"
@@ -25,8 +28,11 @@ hide or show the
 */
 int main()
 {
+#ifndef ORBIS
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
-
+#else
+	Window* w = NCL::PS4::PS4Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
+#endif
 	if (!w->HasInitialised())
 	{
 		return -1;
@@ -38,7 +44,7 @@ int main()
 	auto g = new TutorialGame();
 	//auto g = new NetworkedGame(); //This is for network game  
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !Window::GetInterface()->button_down(quit))
+	while (w->UpdateWindow() /*&& !Window::GetInterface()->button_down(quit)*/)
 	{
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f)
@@ -46,7 +52,7 @@ int main()
 			std::cout << "Skipping large time delta" << std::endl;
 			continue; //must have hit a breakpoint or something to have a 1 second frame time!
 		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR))
+	/*	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR))
 		{
 			w->ShowConsole(true);
 		}
@@ -58,7 +64,7 @@ int main()
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T))
 		{
 			w->SetWindowPosition(0, 0);
-		}
+		}*/
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 

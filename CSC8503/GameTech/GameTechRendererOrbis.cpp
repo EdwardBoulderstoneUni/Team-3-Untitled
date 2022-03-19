@@ -3,12 +3,13 @@
 #include "./../../GNMRendering/PS4Mesh.h"
 #include "./../../GNMRendering/PS4Shader.h"
 #include "./../../GNMRendering/PS4Texture.h"
+#include "./../../GNMRendering/PS4Window.h"
 #include "./../CSC8503Common/RenderObject.h"
 
 using namespace NCL;
 using namespace NCL::PS4;
 
-GameTechRendererOrbis::GameTechRendererOrbis(PS4Window* window) : PS4RendererBase(window)
+GameTechRendererOrbis::GameTechRendererOrbis() : PS4RendererBase(dynamic_cast<PS4Window *>(Window::GetWindow()))
 {
 	rotation = 0.0f;
 	translation = 0.0f;

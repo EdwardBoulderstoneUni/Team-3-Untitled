@@ -2,7 +2,7 @@
 using namespace NCL;
 using namespace Rendering;
 
-RendererBase::RendererBase(Window& window) : hostWindow(window)
+RendererBase::RendererBase(NCL::Window& window) : hostWindow(window)
 {
 }
 

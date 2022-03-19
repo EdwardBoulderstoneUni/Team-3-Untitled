@@ -3,6 +3,8 @@
 #include "../CSC8503Common/GameServer.h"
 #include "../CSC8503Common/GameClient.h"
 #include "../../Common/TextureLoader.h"
+#include "../CSC8503Common/GameWorld.h"
+
 #define COLLISION_MSG 30
 
 struct MessagePacket : public GamePacket {
@@ -176,10 +178,10 @@ GameObject* NetworkedGame::SpawnPlayer(Vector3 position) {
 	character->GetTransform()
 		.SetScale(Vector3(meshSize, meshSize, meshSize))
 		.SetPosition(position);
-
+#ifndef ORBIS
 
 	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
-
+#endif
 	world->AddGameObject(character);
 
 	return character;
@@ -388,6 +390,7 @@ void NetworkedGame::UpdatePlayer(float dt)
 
 void NetworkedGame::InitialiseAssets()
 {
+#ifndef ORBIS
 	auto loadFunc = [](const string& name, OGLMesh** into) {
 		*into = new OGLMesh(name);
 		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
@@ -403,4 +406,5 @@ void NetworkedGame::InitialiseAssets()
 
 	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
+#endif
 }

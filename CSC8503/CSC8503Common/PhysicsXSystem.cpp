@@ -171,7 +171,7 @@ void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
 	}
 }
 
-Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
+Vector3 PhysicsXSystem::Unproject(const NCL::Maths::Vector3& screenPos, const Camera& cam)
 {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
@@ -182,14 +182,14 @@ Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
 
 	//Create our inverted matrix! Note how that to get a correct inverse matrix,
 	//the order of matrices used to form it are inverted, too.
-	Matrix4 invVP = GenerateInverseView(cam) * GenerateInverseProjection(aspect, fov, nearPlane, farPlane);
+	NCL::Maths::Matrix4 invVP = GenerateInverseView(cam) * GenerateInverseProjection(aspect, fov, nearPlane, farPlane);
 
 	//Our mouse position x and y values are in 0 to screen dimensions range,
 	//so we need to turn them into the -1 to 1 axis range of clip space.
 	//We can do that by dividing the mouse values by the width and height of the
 	//screen (giving us a range of 0.0 to 1.0), multiplying by 2 (0.0 to 2.0)
 	//and then subtracting 1 (-1.0 to 1.0).
-	auto clipSpace = Vector4(
+	auto clipSpace = NCL::Maths::Vector4(
 		(screenPos.x / screenSize.x) * 2.0f - 1.0f,
 		(screenPos.y / screenSize.y) * 2.0f - 1.0f,
 		(screenPos.z),
@@ -197,18 +197,18 @@ Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
 	);
 
 	//Then, we multiply our clipspace coordinate by our inverted matrix
-	Vector4 transformed = invVP * clipSpace;
+	NCL::Maths::Vector4 transformed = invVP * clipSpace;
 
 	//our transformed w coordinate is now the 'inverse' perspective divide, so
 	//we can reconstruct the final world space by dividing x,y,and z by w.
-	return Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
+	return NCL::Maths::Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
 }
 
 Matrix4 PhysicsXSystem::GenerateInverseView(const Camera& c)
 {
 	float pitch = c.GetPitch();
 	float yaw = c.GetYaw();
-	Vector3 position = c.GetPosition();
+	NCL::Maths::Vector3 position = c.GetPosition();
 
 	Matrix4 iview =
 		Matrix4::Translation(position) *
