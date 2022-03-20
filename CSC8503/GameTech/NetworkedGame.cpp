@@ -23,7 +23,7 @@ NetworkedGame::NetworkedGame() {
 	timeToNextPacket = 0.0f;
 	timeToUpdateMiniState = 0.0f;
 	packetsToSnapshot = 0;
-
+	RegisterHandlers();
 }
 
 NetworkedGame::~NetworkedGame() {
@@ -45,6 +45,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 
 	thisClient->RegisterPacketHandler(Delta_State, this);
 	thisClient->RegisterPacketHandler(Full_State, this);
+	thisClient->RegisterPacketHandler(Event_State, this);
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Shutdown, this);
@@ -81,7 +82,43 @@ void NetworkedGame::UpdateGame(float dt) {
 		thisServer->Shutdown();
 	}
 	
-	TutorialGame::UpdateGame(dt);
+	//TutorialGame::UpdateGame(dt);
+	if (thisServer) {
+		eventSystem->ProcessAllEvent();
+		AudioManager::GetInstance().Play_Sound();
+		AudioManager::GetInstance().Update(dt);
+
+		if (DebugMode) {
+			CalculateFrameRate(dt);
+		}
+		UpdateGameObjects(dt);
+		physicsX->Update(dt);
+
+		HUDUpdate(dt);
+		world->UpdateWorld(dt);
+		renderer->Update(dt);
+		renderer->Render();
+
+		Debug::FlushRenderables(dt);
+	}
+	else {
+		eventSystem->ProcessAllEvent();
+		AudioManager::GetInstance().Play_Sound();
+		AudioManager::GetInstance().Update(dt);
+
+		if (DebugMode) {
+			CalculateFrameRate(dt);
+		}
+		UpdateGameObjects(dt);
+		//physicsX->Update(dt);
+
+		HUDUpdate(dt);
+		world->UpdateWorld(dt);
+		renderer->Update(dt);
+		renderer->Render();
+
+		Debug::FlushRenderables(dt);
+	}
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -97,30 +134,42 @@ void NetworkedGame::UpdateAsServer(float dt) {
 
 void NetworkedGame::UpdateAsClient(float dt) {
 	ClientPacket newPacket;
-
-	if (Window::GetInterface()->button_down(sprint)) {
-		newPacket.buttonstates[0] = 1;  //TODO:fire!
-	}
-	if (Window::GetInterface()->get_movement().y > 0){
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
+		newPacket.buttonstates[0] = 1;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT))
 		newPacket.buttonstates[1] = 1;
-	}
-	if (Window::GetInterface()->get_movement().y < 0) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R))
 		newPacket.buttonstates[2] = 1;
-	}
-	if (Window::GetInterface()->get_movement().x > 0) {
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
 		newPacket.buttonstates[3] = 1;
+		Vector3 origin = localPlayer->GetTransform().GetPosition();
+		DirectionVec dir= localPlayer->GetDirectionVec();
+		PlayerPro* pro= localPlayer->GetPlayerPro();
+		localPlayer->GetTransform().SetPosition(origin- Vector3(0,0,1)*3.0f);
 	}
-	if (Window::GetInterface()->get_movement().x < 0) {
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
 		newPacket.buttonstates[4] = 1;
+		Vector3 origin = localPlayer->GetTransform().GetPosition();
+		DirectionVec dir = localPlayer->GetDirectionVec();
+		PlayerPro* pro = localPlayer->GetPlayerPro();
+		localPlayer->GetTransform().SetPosition(origin + Vector3(0, 0, 1) * 3.0f);
 	}
-	newPacket.angles[0] = Window::GetInterface()->get_look_direction().x;
-	if (localLastID == -1) return;
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
+		newPacket.buttonstates[5] = 1;
+	}
+		
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
+		newPacket.buttonstates[6] = 1;
+	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+		newPacket.buttonstates[7] = 1;
+
 	newPacket.lastID = localLastID;
 	OutputDebug("localastID: %d", localLastID);
 	newPacket.type = Received_State;
-	//newPacket.playerID = localPlayerID;
+	newPacket.playerID = localPlayerID;
 	thisClient->SendPacket(newPacket);
 }
+
 
 void NetworkedGame::BroadcastSnapshot(bool deltaFrame) {
 	std::vector<GameObject*>::const_iterator first;
@@ -167,14 +216,34 @@ void NetworkedGame::StartLevel() {
 void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	//server
 	if (type == Received_State) {
-		/*ClientPacket* realPacket = (ClientPacket*)payload;
+		ClientPacket* realPacket = (ClientPacket*)payload;
+		std::cout << realPacket->lastID << std::endl;
 		UpdateStateIDs(realPacket);
-		GameObject* player = serverPlayers.find(realPacket->playerID)->second;
-		if (!player)return;*/
-		//MovePlayerAndFire(player, realPacket->buttonstates, realPacket->angles);
+		Player* player =(Player*)networkplayers.find(realPacket->playerID)->second;
+		std::cout << player->GetTransform().GetPosition() << std::endl;
+		Input input = Input();
+		input.buttons[attack] = realPacket->buttonstates[7];
+		if (realPacket->buttonstates[3] == 1) 
+			input.movement_direction = Vector2(0, 1);
+		if (realPacket->buttonstates[4] == 1)
+			input.movement_direction = Vector2(0, -1);
+		if (realPacket->buttonstates[5] == 1)
+			input.movement_direction = Vector2(-1, 0);
+		if (realPacket->buttonstates[6] == 1)
+			input.movement_direction = Vector2(1, 0);
+		player->SetLastInput(input);
 	}
 	else if (type == Event_State) {
-		
+		EventPacket* realPacket = (EventPacket*)payload;
+		switch (realPacket->eventID)
+		{
+		case PLAYER_ENTER_WORLD:
+			OutputDebug("[PLAYER_ENTER_WORLD] a new player enters game");
+			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD, realPacket->playerID);
+			break;
+		default:
+			break;
+		}
 	}
 	/*else if (type == Spawn_Player) {*/
 		/*ClientPacket* realPacket = (ClientPacket*)payload;
@@ -196,13 +265,11 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	//client
 	else if (type == Delta_State) {
 		DeltaPacket* realPacket = (DeltaPacket*)payload;
-		if (realPacket->objectID >= (int)networkObjects.size())return;
 		networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 	}
 	else if (type == Full_State) {
 		FullPacket* realPacket = (FullPacket*)payload;
-		if (realPacket->objectID >= (int)networkObjects.size())return;
-		if (!networkObjects[realPacket->objectID]->ReadPacket(*realPacket))return;
+		networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 		localLastID = networkObjects[realPacket->objectID]->GetLatestNetworkState().stateID;
 	}
 	else if (type == Message) {
@@ -214,10 +281,11 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	else if (type == Player_Connected) {
 		NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
 		std::cout << "Client: New player connected!" << std::endl;
-		realPacket->playerID;
+		localPlayerID = realPacket->playerID;
 
 		EventPacket newPacket;
 		newPacket.eventID = PLAYER_ENTER_WORLD;
+		newPacket.playerID = localPlayerID;
 		thisClient->SendPacket(newPacket);
 	}
 	else if (type == Player_Disconnected) {
@@ -256,7 +324,7 @@ void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 int NetworkedGame::GetClientStateID(int clientID)
 {
 	std::map<int, int>::iterator it = stateIDs.find(clientID);
-	return it != stateIDs.end() ? it->second : -1;
+	return it != stateIDs.end() ? it->second : 0;
 }
 
 void NetworkedGame::DistributeSnapshot(NetworkObject* o, bool deltaFrame)
@@ -265,11 +333,11 @@ void NetworkedGame::DistributeSnapshot(NetworkObject* o, bool deltaFrame)
 	{
 		GamePacket* newPacket = nullptr;
 		int playerState = GetClientStateID(i);
-		if (playerState != -1) {
-			if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
-				thisServer->SendPacketToPeer(*newPacket, i);
-			}
+	
+		if (o->WritePacket(&newPacket, deltaFrame, playerState)) {
+			thisServer->SendPacketToPeer(*newPacket, i);
 		}
+		
 		delete newPacket;
 	}
 }
@@ -315,37 +383,39 @@ void NetworkedGame::UpdateStateIDs(ClientPacket* realPacket) {
 	}
 }
 
-bool NetworkedGame::MovePlayerAndFire(GameObject* player, char buttonstates[8], int angle[3])
+void NetworkedGame::RegisterHandlers()
 {
-	int Speed = 2;
-	Vector3 position = player->GetTransform().GetPosition();
-	Quaternion orientation = player->GetTransform().GetOrientation();
-	Vector3 euler = orientation.ToEuler(); //roll yaw pitch
-	euler.y -= (angle[0]);
-	if (euler.y < 0) {
-		euler.y += 360.0f;
-	}
-	if (euler.y > 360.0f) {
-		euler.y -= 360.0f;
-	}
-	if (buttonstates[0] == 1) {
-	}
-	if (buttonstates[1] == 1) {
-		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * Speed;
-	}
-	if (buttonstates[2] == 1) {
-		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(0, 0, -1) * Speed;
-	}
-	if (buttonstates[3] == 1) {
-		position += Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * Speed;
-	}
-	if (buttonstates[4] == 1) {
-		position -= Matrix4::Rotation(euler.y, Vector3(0, 1, 0)) * Vector3(-1, 0, 0) * Speed;
-	}
-	player->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(euler.z, euler.y, euler.x));
-	player->GetTransform().SetPosition(position);
-	return true;
+	eventSystem->RegisterEventHandle("ENTER_WORLD", _enterHandle,(DWORD64)this);
 }
+
+void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	int  playerID = stoi(pEvent->vArg[0]);
+	auto game = (NetworkedGame*)dwOwnerData;
+	GameObject* newPlayer = nullptr;
+	if (game->thisClient) {
+		//newPlayer = game->InitPlayer(Vector3(20, 3, 0), GameObjectType_team1);
+		if (game->localPlayer)newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		else newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
+		game->ToggleNetworkState(newPlayer, true);
+		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
+	}
+	else {
+		newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		/*if (game->localPlayer)newPlayer = game->InitPlayer(Vector3(20, 3, 0), GameObjectType_team1);
+		else newPlayer = game->InitPlayer(Vector3(20, 3, 0), GameObjectType_team1, true);*/
+
+		game->ToggleNetworkState(newPlayer, true);
+		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
+		
+		EventPacket newPacket;
+		newPacket.eventID = PLAYER_ENTER_WORLD;
+		newPacket.playerID = playerID;
+		game->thisServer->SendPacketToPeer(newPacket,playerID);
+	}
+}
+
+
 
 void NetworkedGame::UpdatePlayer(float dt)
 {

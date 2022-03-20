@@ -131,9 +131,10 @@ void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
+GameObject* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 {
 	auto player = new Player(PlayerRole_blue, abilityContainer, team, islocal);
+
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
@@ -146,7 +147,7 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, basicTex, basicShader));
 
 	world->AddGameObject(player);
-	
+	return player;
 }
 
 void TutorialGame::InitWorld()

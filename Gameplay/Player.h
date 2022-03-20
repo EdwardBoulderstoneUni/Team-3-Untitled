@@ -69,6 +69,7 @@ namespace NCL {
 			DirectionVec GetDirectionVec() { return dirVec;}
 
 			Input GetLastInput() { return lastInput; }
+			void SetLastInput(Input i) { lastInput = i; }
 			PlayerRole GetRole() { return pColour; }
 			TimeStack* GetTimeStack() { return timeStack; }
 			PlayerPro* GetPlayerPro() { return playerPro; }

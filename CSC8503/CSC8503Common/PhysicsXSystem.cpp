@@ -232,6 +232,7 @@ void PhysicsXSystem::initPhysics()
 void PhysicsXSystem::Update(float dt)
 {
 	SyncGameObjs();
+	//SyncObjsTransform();
 	float mStepSize = 1.0f / 60.0f;
 	dTOffset += dt;
 	if (dTOffset < mStepSize)return;
@@ -467,6 +468,24 @@ void PhysicsXSystem::SyncGameObjs()
 		PhysicsXObject* obj = actor->GetPhysicsXObject();
 		if (obj->rb)continue;
 		addActor(*actor);
+	}
+}
+
+void PhysicsXSystem::SyncObjsTransform()
+{
+	std::vector<GameObject*>& actors = gameWorld.GetGameObjects();
+	for (auto actor : actors)
+	{
+		Transform trans = actor->GetTransform();
+		Vector3 position = trans.GetPosition();
+		PhysicsXObject* obj = actor->GetPhysicsXObject();
+		obj->properties.transform = PhysXConvert::TransformToPxTransform(trans);
+		if (obj == nullptr)continue;
+		if (obj->controller)
+			obj->CTrans(PxExtendedVec3(position.x, position.y, position.z));
+		else {
+			obj->rb->setGlobalPose(obj->properties.transform);
+		}
 	}
 }
 

@@ -43,7 +43,7 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 	}
 
 	UpdateStateHistory(p.fullID);
-
+	
 	Vector3		fullPos = lastFullState.position;
 	Quaternion  fullOrientation = lastFullState.orientation;
 
@@ -55,7 +55,7 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 	fullOrientation.y += ((float)p.orientation[1]) / 127.0f;
 	fullOrientation.z += ((float)p.orientation[2]) / 127.0f;
 	fullOrientation.w += ((float)p.orientation[3]) / 127.0f;
-
+	std::cout << "Delta: " <<fullPos << std::endl;
 	object.GetTransform()
 		.SetPosition(fullPos)
 		.SetOrientation(fullOrientation);
@@ -67,7 +67,7 @@ bool NetworkObject::ReadFullPacket(FullPacket& p) {
 		return false; // received an 'old' packet, ignore!
 	}
 	lastFullState = p.fullState;
-
+	std::cout << "Full: " << lastFullState.position << std::endl;
 	object.GetTransform()
 		.SetPosition(lastFullState.position)
 		.SetOrientation(lastFullState.orientation);
@@ -122,17 +122,7 @@ bool NetworkObject::WriteFullPacket(GamePacket** p, int stateID) {
 	return true;
 }
 
-//bool NetworkObject::WriteSpawnPacket(SpawnPacket** p, int networkID, int playerID) {
-//	SpawnPacket* sp = new SpawnPacket();
-//	sp->networkID = networkID;
-//	sp->playerID = playerID;
-//	sp->objectType = ObjectType::Player;
-//	sp->fullState.stateID = lastFullState.stateID;
-//	sp->fullState.position = object.GetTransform().GetPosition();
-//	sp->fullState.orientation = object.GetTransform().GetOrientation();
-//	*p = sp;
-//	return true;
-//}
+
 
 NetworkState& NetworkObject::GetLatestNetworkState() {
 	return lastFullState;

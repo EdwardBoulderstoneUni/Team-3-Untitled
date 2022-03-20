@@ -39,10 +39,10 @@ void Player::SetUp()
 	PushComponent(physics);
 
 	if (isLocalPlayer) {
-		const auto input = new ComponentInput();
+		/*const auto input = new ComponentInput();
 		input->user_interface = new PlayerController();
 
-		PushComponent(input);
+		PushComponent(input);*/
 
 		auto camera = new ComponentCamera();
 		camera->gO = this;

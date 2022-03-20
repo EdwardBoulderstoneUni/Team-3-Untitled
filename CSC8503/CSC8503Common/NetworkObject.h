@@ -39,6 +39,7 @@ namespace NCL {
 		};
 
 		struct EventPacket : public GamePacket {
+			int playerID = -1;
 			GAME_EVENT_ID  eventID;
 			EventPacket() {
 				type = Event_State;
@@ -72,7 +73,7 @@ namespace NCL {
 
 			virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
 			virtual bool WriteFullPacket(GamePacket** p, int stateID);
-
+			
 
 			GameObject& object;
 
