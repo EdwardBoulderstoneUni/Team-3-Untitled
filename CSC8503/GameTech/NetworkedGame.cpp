@@ -33,10 +33,10 @@ NetworkedGame::~NetworkedGame() {
 
 void NetworkedGame::StartAsServer() {
 	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
-
 	thisServer->RegisterPacketHandler(Received_State, this);
-	thisServer->RegisterPacketHandler(Event_State, this);
-	StartLevel();
+	thisServer->RegisterPacketHandler(Event_State_Server, this);
+
+	YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,0);
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
@@ -45,7 +45,7 @@ void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 
 	thisClient->RegisterPacketHandler(Delta_State, this);
 	thisClient->RegisterPacketHandler(Full_State, this);
-	thisClient->RegisterPacketHandler(Event_State, this);
+	thisClient->RegisterPacketHandler(Event_State_Client, this);
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Shutdown, this);
@@ -239,36 +239,32 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			input.movement_direction = Vector2(1, 0);
 		player->SetLastInput(input);
 	}
-	else if (type == Event_State) {
+	else if (type == Event_State_Server) {
 		EventPacket* realPacket = (EventPacket*)payload;
 		switch (realPacket->eventID)
 		{
 		case PLAYER_ENTER_WORLD:
 			OutputDebug("[PLAYER_ENTER_WORLD] a new player enters game");
-			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD, realPacket->playerID);
+			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,1,realPacket->playerID);
 			break;
 		default:
 			break;
 		}
 	}
-	/*else if (type == Spawn_Player) {*/
-		/*ClientPacket* realPacket = (ClientPacket*)payload;
-		OutputDebug("[Spawn_Player] call from [PlayerID: %d]", realPacket->playerID);
-		GameObject* newPlayer = SpawnPlayer(Vector3(0, 5, 0));
-		ToggleNetworkState(newPlayer, true);
-		serverPlayers.insert(std::pair<int, GameObject*>(realPacket->playerID, newPlayer));
-		for (int i = 0; i < networkObjects.size() - 1; ++i) {
-			SpawnPacket* newPacket = nullptr;
-			networkObjects[i]->WriteSpawnPacket(&newPacket, i, realPacket->playerID);
-			thisServer->SendPacketToPeer(*newPacket, source);
-		}
-		SpawnPacket* newPacket = nullptr;
-		networkObjects[networkObjects.size() - 1]
-			->WriteSpawnPacket(&newPacket, int(networkObjects.size() - 1), realPacket->playerID);
-		thisServer->SendGlobalPacket(*newPacket);*/
-	//}
 
 	//client
+	else if (type == Event_State_Client) {
+		EventPacket* realPacket = (EventPacket*)payload;
+		switch (realPacket->eventID)
+		{
+		case PLAYER_ENTER_WORLD:
+			OutputDebug("[PLAYER_ENTER_WORLD] a new player enters game");
+			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,0);
+			break;
+		default:
+			break;
+		}
+	}
 	else if (type == Delta_State) {
 		DeltaPacket* realPacket = (DeltaPacket*)payload;
 		networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
@@ -287,28 +283,17 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	else if (type == Player_Connected) {
 		NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
 		std::cout << "Client: New player connected!" << std::endl;
-		localPlayerID = realPacket->playerID;
 
 		EventPacket newPacket;
 		newPacket.eventID = PLAYER_ENTER_WORLD;
-		newPacket.playerID = localPlayerID;
+		newPacket.playerID = realPacket->playerID;
 		thisClient->SendPacket(newPacket);
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
 		std::cout << "Client: Player Disconnected!" << std::endl; //TODO:delete player when client is disconnected
 	}
-	//else if (type == Spawn_Object) {
-	//	//SpawnPacket* realPacket = (SpawnPacket*)payload;
-	//	//if (realPacket->objectType == ObjectType::Player) {
-	//	//	GameObject* newPlayer = SpawnPlayer(realPacket->fullState.position);
-	//	//	if (localPlayerID == realPacket->playerID)
-	//	//		localPlayer = newPlayer;
-	//	//	ToggleNetworkState(newPlayer, true);
-	//	//	if (localLastID == -1)localLastID = realPacket->fullState.stateID;//TODO:Strategy Pattern/Consortium
-	//	//	OutputDebug("[Spawn_Object] [localLastID:%d]", localLastID);
-	//	//}
-	//}
+
 	else if (type == Shutdown) {
 		std::cout << "Server shutdown!" << std::endl;
 	}
@@ -396,28 +381,34 @@ void NetworkedGame::RegisterHandlers()
 
 void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
-	int  playerID = stoi(pEvent->vArg[0]);
 	auto game = (NetworkedGame*)dwOwnerData;
-	Player* newPlayer = nullptr;
-	if (game->thisClient) {
-		//newPlayer = game->InitPlayer(Vector3(20, 3, 0), GameObjectType_team1);
-		if (game->localPlayer)newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
-		else newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
-		game->ToggleNetworkState(newPlayer, true);
-		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
-	}
-	else {
-		newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
-		/*if (game->localPlayer)newPlayer = game->InitPlayer(Vector3(20, 3, 0), GameObjectType_team1);
-		else newPlayer = game->InitPlayer(Vector3(20, 3, 0), GameObjectType_team1, true);*/
+	int origin =stoi(pEvent->vArg[0]);
+	if (game->thisServer) {
+		if (origin == 0) {
+			Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
+			game->ToggleNetworkState(newPlayer, true);
+			game->networkplayers.insert(std::pair<int, GameObject*>(0, newPlayer));
+		}
+		else if (origin == 1) {
+			int  playerID = stoi(pEvent->vArg[1]);
+			Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
+			game->ToggleNetworkState(newPlayer, true);
+			game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
 
-		game->ToggleNetworkState(newPlayer, true);
-		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
-		
-		EventPacket newPacket;
-		newPacket.eventID = PLAYER_ENTER_WORLD;
-		newPacket.playerID = playerID;
-		game->thisServer->SendPacketToPeer(newPacket,playerID);
+			EventPacket newPacket;
+			newPacket.type = Event_State_Client;
+			newPacket.eventID = PLAYER_ENTER_WORLD;
+			newPacket.playerID = playerID;
+			game->thisServer->SendPacketToPeer(newPacket, playerID);
+		}
+	}
+	if (game->thisClient) {
+		if (origin == 0) {
+			int  playerID = stoi(pEvent->vArg[1]);
+			Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
+			game->ToggleNetworkState(newPlayer, true);
+			game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
+		}
 	}
 }
 

@@ -42,7 +42,6 @@ namespace NCL {
 			int playerID = -1;
 			GAME_EVENT_ID  eventID;
 			EventPacket() {
-				type = Event_State;
 				size = sizeof(EventPacket);
 			}
 		};
