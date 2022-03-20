@@ -78,4 +78,12 @@ void NCL::CSC8503::ComponentGameObject::InitComponents()
 		i->Init();
 	}
 }
-
+void ComponentGameObject::RemoveComponetPhysics() {
+	components[Component::Physics] = nullptr;
+}
+void ComponentGameObject::RemoveComponetCamera() {
+	components[Component::Camera] = nullptr;
+}
+void ComponentGameObject::RemoveComponetInput() {
+	components[Component::Input] = nullptr;
+}

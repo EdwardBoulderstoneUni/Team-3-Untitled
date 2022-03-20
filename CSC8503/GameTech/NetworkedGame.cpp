@@ -110,7 +110,7 @@ void NetworkedGame::UpdateGame(float dt) {
 			CalculateFrameRate(dt);
 		}
 		UpdateGameObjects(dt);
-		//physicsX->Update(dt);
+		physicsX->Update(dt);
 
 		HUDUpdate(dt);
 		world->UpdateWorld(dt);
@@ -133,6 +133,11 @@ void NetworkedGame::UpdateAsServer(float dt) {
 }
 
 void NetworkedGame::UpdateAsClient(float dt) {
+#define INIT \
+Vector3 origin = localPlayer->GetTransform().GetPosition();  \
+DirectionVec dir = localPlayer->GetDirectionVec();           \
+PlayerPro* pro = localPlayer->GetPlayerPro();                \
+
 	ClientPacket newPacket;
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
 		newPacket.buttonstates[0] = 1;
@@ -142,24 +147,26 @@ void NetworkedGame::UpdateAsClient(float dt) {
 		newPacket.buttonstates[2] = 1;
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
 		newPacket.buttonstates[3] = 1;
-		Vector3 origin = localPlayer->GetTransform().GetPosition();
-		DirectionVec dir= localPlayer->GetDirectionVec();
-		PlayerPro* pro= localPlayer->GetPlayerPro();
-		localPlayer->GetTransform().SetPosition(origin- Vector3(0,0,1)*3.0f);
+		INIT
+		localPlayer->GetTransform().SetPosition(origin+ dir.forward*3.0f);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
 		newPacket.buttonstates[4] = 1;
-		Vector3 origin = localPlayer->GetTransform().GetPosition();
-		DirectionVec dir = localPlayer->GetDirectionVec();
-		PlayerPro* pro = localPlayer->GetPlayerPro();
-		localPlayer->GetTransform().SetPosition(origin + Vector3(0, 0, 1) * 3.0f);
+		INIT
+		localPlayer->GetTransform().SetPosition(origin -dir.forward*3.0f);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
 		newPacket.buttonstates[5] = 1;
+		INIT
+		localPlayer->GetTransform().SetPosition(origin - dir.right * 3.0f);
 	}
 		
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D))
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
 		newPacket.buttonstates[6] = 1;
+		INIT
+			localPlayer->GetTransform().SetPosition(origin +dir.right * 3.0f);
+	}
+		
 	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
 		newPacket.buttonstates[7] = 1;
 
@@ -220,7 +227,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		std::cout << realPacket->lastID << std::endl;
 		UpdateStateIDs(realPacket);
 		Player* player =(Player*)networkplayers.find(realPacket->playerID)->second;
-		std::cout << player->GetTransform().GetPosition() << std::endl;
 		Input input = Input();
 		input.buttons[attack] = realPacket->buttonstates[7];
 		if (realPacket->buttonstates[3] == 1) 
@@ -392,7 +398,7 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	int  playerID = stoi(pEvent->vArg[0]);
 	auto game = (NetworkedGame*)dwOwnerData;
-	GameObject* newPlayer = nullptr;
+	Player* newPlayer = nullptr;
 	if (game->thisClient) {
 		//newPlayer = game->InitPlayer(Vector3(20, 3, 0), GameObjectType_team1);
 		if (game->localPlayer)newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);

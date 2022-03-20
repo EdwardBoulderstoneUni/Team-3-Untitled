@@ -39,10 +39,10 @@ void Player::SetUp()
 	PushComponent(physics);
 
 	if (isLocalPlayer) {
-		/*const auto input = new ComponentInput();
+		const auto input = new ComponentInput();
 		input->user_interface = new PlayerController();
 
-		PushComponent(input);*/
+		PushComponent(input);
 
 		auto camera = new ComponentCamera();
 		camera->gO = this;
@@ -105,11 +105,11 @@ void Player::Update(float dt) {
 	transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
 		lastInput.look_direction.y,0));
 	if (GetComponentCamera()) {
-		dirVec.forward = GetComponentCamera()->camera->GetThirdPersonOrientation() * Vector3(0, 0, -1);
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f, false);
 		dirVec.shootDir = (target - transform.GetPosition()).Normalised();
 	}	
+	dirVec.forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
 	dirVec.CaculateRight();
 	if(GetComponentInput())
 		lastInput = GetComponentInput()->user_interface->get_inputs();
