@@ -306,7 +306,7 @@ void TutorialGame::HUDUpdate(float dt)
 		renderer->DrawString("Dash ready!", Vector2(5, 80));
 
 	if (timeStack->grenadeCD > 0)
-		renderer->DrawString("Grenade CD: " + std::to_string(timeStack->grenadeCD), Vector2(5, 80));
+		renderer->DrawString("Grenade CD: " + std::to_string(timeStack->grenadeCD), Vector2(5, 60));
 	else
 		renderer->DrawString("Grenade ready!", Vector2(5, 60));
 
@@ -476,7 +476,7 @@ void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 		.SetScale(cubeSize)
 		.SetPosition(position + dir.shootDir * 15);
 	grenade->InitAllComponent();
-	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), game->sphereMesh,
+	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), game->cubeMesh,
 		game->basicTex, game->basicShader));
 
 	game->world->AddGameObject(grenade);
@@ -484,7 +484,7 @@ void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
 	//bullet->SetCollisionFunction(func);
 	game->physicsX->addActor(*grenade);
-	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
+	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 60.0f);
 }
 
 void TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
