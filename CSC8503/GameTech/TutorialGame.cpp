@@ -12,6 +12,7 @@
 #include "..//..//Gameplay/ePlayerRole.h"
 #include "../../Gameplay/GameObjects.h"
 #include "../../Gameplay/Bullet.h"
+#include "../../Gameplay/Grenade.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -264,6 +265,7 @@ void TutorialGame::InitDefaultFloor(Vector3 position, Vector4 color)
 void TutorialGame::RegisterEventHandles()
 {
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
@@ -302,6 +304,11 @@ void TutorialGame::HUDUpdate(float dt)
 		renderer->DrawString("Dash CD: " + std::to_string(timeStack->dashCooldown), Vector2(5, 80));
 	else
 		renderer->DrawString("Dash ready!", Vector2(5, 80));
+
+	if (timeStack->grenadeCD > 0)
+		renderer->DrawString("Grenade CD: " + std::to_string(timeStack->grenadeCD), Vector2(5, 80));
+	else
+		renderer->DrawString("Grenade ready!", Vector2(5, 60));
 
 	Vector3 position = player->GetTransform().GetPosition()+Vector3(0,5,0);
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
@@ -452,6 +459,32 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	//bullet->SetCollisionFunction(func);
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
+}
+
+void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+
+	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
+	Vector3 position = player->GetTransform().GetPosition() + Vector3(0, 5, 0);
+
+	auto grenade = new Grenade(*player);
+
+	auto cubeSize = Vector3(1.0f, 1.0f, 1.0f);
+	DirectionVec dir = player->GetDirectionVec();
+	grenade->GetTransform()
+		.SetScale(cubeSize)
+		.SetPosition(position + dir.shootDir * 15);
+	grenade->InitAllComponent();
+	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), game->sphereMesh,
+		game->basicTex, game->basicShader));
+
+	game->world->AddGameObject(grenade);
+
+	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	//bullet->SetCollisionFunction(func);
+	game->physicsX->addActor(*grenade);
+	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
 }
 
 void TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)

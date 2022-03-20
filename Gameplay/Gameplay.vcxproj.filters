@@ -54,6 +54,9 @@
     <ClCompile Include="Paintable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Grenade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Paintable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Grenade.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

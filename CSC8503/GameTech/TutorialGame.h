@@ -84,6 +84,7 @@ namespace NCL {
 
 			GameUI* gameUI;
 			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData);

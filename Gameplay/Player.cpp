@@ -117,4 +117,5 @@ void Player::Update(float dt) {
 	weaponState->Update(dt);
 	timeStack->dashCooldown -= dt;
 	timeStack->respawnCooldown -= dt;
+	timeStack->grenadeCD -= dt;
 }

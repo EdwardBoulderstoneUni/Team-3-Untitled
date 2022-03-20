@@ -30,6 +30,11 @@ class Shooting :public PushdownState {
 				playerPro->ammo = playerPro->maxAmmo;
 			}
 		}
+		if (lastInput.buttons[grenade] && timeStack->grenadeCD < 0)
+		{
+			YiEventSystem::GetMe()->PushEvent(PLAYER_THROW_GRENADE, player->GetWorldID());
+			timeStack->grenadeCD = GRENADE_CD;
+		}
 		return PushdownResult::NoChange;
 	}
 };
