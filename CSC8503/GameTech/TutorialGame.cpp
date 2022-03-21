@@ -270,6 +270,7 @@ void TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)world);
 }
 
 void TutorialGame::HUDUpdate(float dt)
@@ -549,6 +550,14 @@ void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	}
 	
 }
+void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	string grenadeID = pEvent->vArg[0];
+	GameWorld* world = (GameWorld*)dwOwnerData;
+	Grenade* grenade = static_cast<Grenade*>(world->FindObjectbyID(stoi(grenadeID)));
+	int playerID = grenade->GetPlayerID();
+	Player* player = static_cast<Player*>(world->FindObjectbyID(playerID));
+}
+
 void TutorialGame::UpdateGameObjects(float dt)
 {
 	world->OperateOnContents(

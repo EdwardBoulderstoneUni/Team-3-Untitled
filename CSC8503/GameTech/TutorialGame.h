@@ -89,6 +89,7 @@ namespace NCL {
 			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			void UpdateGameObjects(float dt);
 		};
 	}
