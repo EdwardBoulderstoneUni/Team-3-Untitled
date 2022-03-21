@@ -83,7 +83,10 @@ void NetworkedGame::UpdateGame(float dt) {
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 		thisServer->Shutdown();
 	}
-	
+	if (localPlayer) {
+		inSelectionMode = true;
+		UpdatePlayer(dt);
+	}
 	TutorialGame::UpdateGame(dt);
 }
 

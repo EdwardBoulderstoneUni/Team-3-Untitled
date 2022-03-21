@@ -15,7 +15,7 @@ namespace NCL {
 			
 		protected:
 			TutorialGame* game;
-			bool isEntering=false;
+			
 		};
 
 	}
