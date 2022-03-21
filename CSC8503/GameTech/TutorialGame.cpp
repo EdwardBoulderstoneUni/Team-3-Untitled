@@ -50,7 +50,6 @@ void TutorialGame::SetSingleMode()
 
 void TutorialGame::SetMultiMode()
 {
-
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
@@ -79,7 +78,6 @@ void TutorialGame::InitialiseAssets() {
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
 
-	InitWorld();
 	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
 	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
 	RegisterEventHandles();
@@ -270,6 +268,9 @@ void TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
+
+
+
 	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
 }
 
@@ -553,8 +554,7 @@ void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 
 	string grenadeID = pEvent->vArg[0];
-	//need to check every player object's distance to the grenade.
-	//string enemyID = "5";
+
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	Player* enemy = nullptr;
 	for (auto i : game->world->GetGameObjects()) {
@@ -600,8 +600,7 @@ void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) 
 				YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
 			}
 		}
-	}
-	
+	}	
 }
 
 void TutorialGame::UpdateGameObjects(float dt)
