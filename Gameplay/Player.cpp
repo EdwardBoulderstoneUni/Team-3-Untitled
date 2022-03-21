@@ -3,12 +3,11 @@
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "PlayerState.h"
 #include "WeaponState.h"
-Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool islocal)
+Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 {
 	dirVec.forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 	dirVec.CaculateRight();
 	pColour = colour;
-	isLocalPlayer = islocal;
 	playerPro = new PlayerPro();
 	timeStack = new TimeStack();
 	AssignRole(aCont);
@@ -38,22 +37,22 @@ void Player::SetUp()
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
 
-	if (isLocalPlayer) {
-		const auto input = new ComponentInput();
-		input->user_interface = new PlayerController();
+	
+	const auto input = new ComponentInput();
+	input->user_interface = new PlayerController();
 
-		PushComponent(input);
+	PushComponent(input);
 
-		auto camera = new ComponentCamera();
-		camera->gO = this;
+	auto camera = new ComponentCamera();
+	camera->gO = this;
 
-		camera->camera = new Camera();
-		camera->camera->SetNearPlane(0.1f);
-		camera->camera->SetFarPlane(500.0f);
-		camera->camera->SetPitch(-15.0f);
+	camera->camera = new Camera();
+	camera->camera->SetNearPlane(0.1f);
+	camera->camera->SetFarPlane(500.0f);
+	camera->camera->SetPitch(-15.0f);
 
-		PushComponent(camera);
-	}
+	PushComponent(camera);
+	
 }
 
 
@@ -102,8 +101,7 @@ void Player::SetupStateMachine()
 }
 void Player::Update(float dt) {
 	ComponentGameObject::Update(dt);
-	transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
-		lastInput.look_direction.y,0));
+
 	if (GetComponentCamera()) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f, false);
@@ -111,8 +109,12 @@ void Player::Update(float dt) {
 	}	
 	dirVec.forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
 	dirVec.CaculateRight();
-	if(GetComponentInput())
+	if (GetComponentInput()) {
 		lastInput = GetComponentInput()->user_interface->get_inputs();
+		transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
+			lastInput.look_direction.y, 0));
+	}
+		
 	playerState->Update(dt);
 	weaponState->Update(dt);
 	timeStack->dashCooldown -= dt;

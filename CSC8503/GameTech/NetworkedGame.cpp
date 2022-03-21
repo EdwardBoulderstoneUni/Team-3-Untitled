@@ -34,18 +34,18 @@ NetworkedGame::~NetworkedGame() {
 void NetworkedGame::StartAsServer() {
 	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
 	thisServer->RegisterPacketHandler(Received_State, this);
-	thisServer->RegisterPacketHandler(Event_State_Server, this);
+	thisServer->RegisterPacketHandler(Event_State, this);
 
-	YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,0);
+	YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,-1);
 }
 
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient = new GameClient();
 	thisClient->Connect(a, b, c, d, NetworkBase::GetDefaultPort());
-
+	thisClient->RegisterPacketHandler(Sync_State, this);
+	thisClient->RegisterPacketHandler(Event_State, this);
 	thisClient->RegisterPacketHandler(Delta_State, this);
 	thisClient->RegisterPacketHandler(Full_State, this);
-	thisClient->RegisterPacketHandler(Event_State_Client, this);
 	thisClient->RegisterPacketHandler(Player_Connected, this);
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Shutdown, this);
@@ -73,7 +73,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsServer();
 	}
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
-		StartAsClient(127, 0, 0, 1);
+		StartAsClient(127, 0,0, 1);
 	}
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 		thisClient->Disconnect();
@@ -110,7 +110,7 @@ void NetworkedGame::UpdateGame(float dt) {
 			CalculateFrameRate(dt);
 		}
 		UpdateGameObjects(dt);
-		physicsX->Update(dt);
+		//physicsX->Update(dt);
 
 		HUDUpdate(dt);
 		world->UpdateWorld(dt);
@@ -138,6 +138,7 @@ Vector3 origin = localPlayer->GetTransform().GetPosition();  \
 DirectionVec dir = localPlayer->GetDirectionVec();           \
 PlayerPro* pro = localPlayer->GetPlayerPro();                \
 
+	if (not localPlayer) return;
 	ClientPacket newPacket;
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
 		newPacket.buttonstates[0] = 1;
@@ -147,31 +148,23 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 		newPacket.buttonstates[2] = 1;
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
 		newPacket.buttonstates[3] = 1;
-		INIT
-		localPlayer->GetTransform().SetPosition(origin+ dir.forward*3.0f);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
 		newPacket.buttonstates[4] = 1;
-		INIT
-		localPlayer->GetTransform().SetPosition(origin -dir.forward*3.0f);
 	}
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
 		newPacket.buttonstates[5] = 1;
-		INIT
-		localPlayer->GetTransform().SetPosition(origin - dir.right * 3.0f);
 	}
 		
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
 		newPacket.buttonstates[6] = 1;
-		INIT
-			localPlayer->GetTransform().SetPosition(origin +dir.right * 3.0f);
 	}
 		
 	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
 		newPacket.buttonstates[7] = 1;
 
 	newPacket.lastID = localLastID;
-	OutputDebug("localastID: %d", localLastID);
+	
 	newPacket.type = Received_State;
 	newPacket.playerID = localPlayerID;
 	thisClient->SendPacket(newPacket);
@@ -224,9 +217,10 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	//server
 	if (type == Received_State) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
-		std::cout << realPacket->lastID << std::endl;
 		UpdateStateIDs(realPacket);
+	
 		Player* player =(Player*)networkplayers.find(realPacket->playerID)->second;
+		
 		Input input = Input();
 		input.buttons[attack] = realPacket->buttonstates[7];
 		if (realPacket->buttonstates[3] == 1) 
@@ -239,13 +233,15 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			input.movement_direction = Vector2(1, 0);
 		player->SetLastInput(input);
 	}
-	else if (type == Event_State_Server) {
+	else if (type == Event_State) {
 		EventPacket* realPacket = (EventPacket*)payload;
 		switch (realPacket->eventID)
 		{
 		case PLAYER_ENTER_WORLD:
-			OutputDebug("[PLAYER_ENTER_WORLD] a new player enters game");
-			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,1,realPacket->playerID);
+			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,realPacket->playerID);
+			break;
+		case GAME_WORLD_SYN:
+			YiEventSystem::GetMe()->PushEvent(GAME_WORLD_SYN,realPacket->playerID);
 			break;
 		default:
 			break;
@@ -253,26 +249,32 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	}
 
 	//client
-	else if (type == Event_State_Client) {
-		EventPacket* realPacket = (EventPacket*)payload;
-		switch (realPacket->eventID)
-		{
-		case PLAYER_ENTER_WORLD:
-			OutputDebug("[PLAYER_ENTER_WORLD] a new player enters game");
-			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD,0);
-			break;
-		default:
-			break;
-		}
-	}
 	else if (type == Delta_State) {
 		DeltaPacket* realPacket = (DeltaPacket*)payload;
+		if (realPacket->objectID >= networkObjects.size())return;
 		networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 	}
 	else if (type == Full_State) {
 		FullPacket* realPacket = (FullPacket*)payload;
+		if(realPacket->objectID>=networkObjects.size())return;
 		networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 		localLastID = networkObjects[realPacket->objectID]->GetLatestNetworkState().stateID;
+	}
+	else if (type == Sync_State) {
+		SyncPacket* realPacket = (SyncPacket*)payload;
+		NetworkState state =realPacket->fullState;
+		Player* newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		newPlayer->RemoveComponetCamera();
+		newPlayer->RemoveComponetInput();
+		ToggleNetworkState(newPlayer, true);
+		newPlayer->GetTransform().SetPosition(state.position);
+		newPlayer->GetTransform().SetOrientation(state.orientation);
+		if (networkObjects.size() == realPacket->SyncTotalCount) {
+			EventPacket newPacket;
+			newPacket.eventID = PLAYER_ENTER_WORLD;
+			newPacket.playerID = localPlayerID;
+			thisClient->SendPacket(newPacket);
+		}
 	}
 	else if (type == Message) {
 		MessagePacket* realPacket = (MessagePacket*)payload;
@@ -284,10 +286,21 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		NewPlayerPacket* realPacket = (NewPlayerPacket*)payload;
 		std::cout << "Client: New player connected!" << std::endl;
 
-		EventPacket newPacket;
-		newPacket.eventID = PLAYER_ENTER_WORLD;
-		newPacket.playerID = realPacket->playerID;
-		thisClient->SendPacket(newPacket);
+		if (networkObjects.size()==0) {
+			localPlayerID = realPacket->playerID;
+			EventPacket newPacket;
+			newPacket.eventID = GAME_WORLD_SYN;
+			newPacket.playerID = localPlayerID;
+			thisClient->SendPacket(newPacket);
+		}
+		else {
+			EventPacket newPacket;
+			newPacket.eventID = PLAYER_ENTER_WORLD;
+			newPacket.playerID = localPlayerID;
+			thisClient->SendPacket(newPacket);
+		}
+
+		
 	}
 	else if (type == Player_Disconnected) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
@@ -377,43 +390,63 @@ void NetworkedGame::UpdateStateIDs(ClientPacket* realPacket) {
 void NetworkedGame::RegisterHandlers()
 {
 	eventSystem->RegisterEventHandle("ENTER_WORLD", _enterHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("WORLD_SYN", _worldsyncHandle, (DWORD64)this);
 }
 
 void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	auto game = (NetworkedGame*)dwOwnerData;
-	int origin =stoi(pEvent->vArg[0]);
-	if (game->thisServer) {
-		if (origin == 0) {
-			Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
-			game->ToggleNetworkState(newPlayer, true);
-			game->networkplayers.insert(std::pair<int, GameObject*>(0, newPlayer));
+	int playerID = stoi(pEvent->vArg[0]);
+	if (game->localPlayer) {
+		Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		newPlayer->RemoveComponetCamera();
+		newPlayer->RemoveComponetInput();
+		game->ToggleNetworkState(newPlayer, true);
+		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
+
+		if (game->thisClient) {
+			
 		}
-		else if (origin == 1) {
-			int  playerID = stoi(pEvent->vArg[1]);
-			Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
-			game->ToggleNetworkState(newPlayer, true);
-			game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
+		if (game->thisServer) {
 
 			EventPacket newPacket;
-			newPacket.type = Event_State_Client;
 			newPacket.eventID = PLAYER_ENTER_WORLD;
 			newPacket.playerID = playerID;
+			game->thisServer->SendPacketToPeer(newPacket,playerID);
+		}
+	}
+	else {
+		Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		game->localPlayer = newPlayer;
+		game->ToggleNetworkState(newPlayer, true);
+		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
+		game->world->SetMainCamera(newPlayer->GetComponentCamera()->camera);
+		if (game->thisClient) {
+			newPlayer->RemoveComponetInput();
+		}
+		if (game->thisServer) {
+		
+		}
+		
+	}
+}
+void NetworkedGame::_worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	auto game = (NetworkedGame*)dwOwnerData;
+	int playerID = stoi(pEvent->vArg[0]);
+	if (game->thisClient) {
+		
+	}
+	if (game->thisServer) {
+		for (auto i : game->networkObjects) {
+			SyncPacket newPacket;
+			newPacket.SyncTotalCount = game->networkObjects.size();
+			newPacket.objectID = i->GetNetworkID();
+			newPacket.fullState = i->GetLatestNetworkState();
 			game->thisServer->SendPacketToPeer(newPacket, playerID);
 		}
 	}
-	if (game->thisClient) {
-		if (origin == 0) {
-			int  playerID = stoi(pEvent->vArg[1]);
-			Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1, true);
-			game->ToggleNetworkState(newPlayer, true);
-			game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
-		}
-	}
 }
-
-
-
 void NetworkedGame::UpdatePlayer(float dt)
 {
 	Vector3 position = localPlayer->GetTransform().GetPosition();

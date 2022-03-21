@@ -131,19 +131,13 @@ void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
+Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 {
-	auto player = new Player(PlayerRole_blue, abilityContainer, team, islocal);
-
+	auto player = new Player(PlayerRole_blue, abilityContainer, team);
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
-	player->RemoveComponetPhysics();
 	player->InitAllComponent();
-	if (islocal) {
-		localPlayer = player;
-		world->SetMainCamera(localPlayer->GetComponentCamera()->camera);
-	}
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, basicTex, basicShader));
 
 	world->AddGameObject(player);

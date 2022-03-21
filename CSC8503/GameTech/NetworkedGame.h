@@ -66,6 +66,7 @@ namespace NCL {
 			int localLastID =0;
 			int localPlayerID;
 			static void _enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			
 		};
 	}

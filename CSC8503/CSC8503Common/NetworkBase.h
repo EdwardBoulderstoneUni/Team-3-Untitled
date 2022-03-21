@@ -13,8 +13,8 @@ enum BasicNetworkMessages {
 	Received_State,
 	Player_Connected,
 	Player_Disconnected,
-	Event_State_Client,
-	Event_State_Server,
+	Event_State,
+	Sync_State,
 	Shutdown
 };
 

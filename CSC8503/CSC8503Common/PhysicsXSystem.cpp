@@ -466,6 +466,7 @@ void PhysicsXSystem::SyncGameObjs()
 	for (auto actor:actors)
 	{
 		PhysicsXObject* obj = actor->GetPhysicsXObject();
+		if (not obj)continue;
 		if (obj->rb)continue;
 		addActor(*actor);
 	}

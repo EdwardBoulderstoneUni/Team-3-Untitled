@@ -34,7 +34,7 @@ namespace NCL {
 			void InitialiseAssets();
 			void InitialiseUI();
 			void InitAbilityContainer();
-			Player* InitPlayer(Vector3 pos, GameObjectType team, bool islocal=false);
+			Player* InitPlayer(Vector3 pos, GameObjectType team);
 		
 			void InitWorld();
 
