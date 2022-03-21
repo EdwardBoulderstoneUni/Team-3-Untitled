@@ -228,9 +228,9 @@ void OGLRenderer::draw_bound_mesh(const unsigned sub_layer, unsigned num_instanc
 	}
 }
 
-void OGLRenderer::load_default_texture() const
+ShaderBase* OGLRenderer::load_default_shader() const
 {
-	ShaderManager::GetInstance()->AddShader( "default", new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl"));
+	return new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 }
 
 GLint OGLRenderer::get_shader_property_location(const std::string& shader_property_name) const
