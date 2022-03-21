@@ -90,6 +90,7 @@ namespace NCL
 		virtual bool	IsFullScreen()				{ return true; }
 
 		static Window* const GetWindow()			{ return window; }
+		static const RendererBase* GetRenderer() { return GetWindow()->renderer; }
 	protected:
 		Window();
 		virtual ~Window();
