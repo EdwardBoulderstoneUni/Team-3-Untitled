@@ -12,6 +12,7 @@ Input PlayerController::get_inputs()
     input.look_direction = look_direction;
     input.movement_direction = movement_direction;
 
+    look_direction = NCL::Maths::Vector2();
     movement_direction= NCL::Maths::Vector2();
     return input;
 }
@@ -34,17 +35,4 @@ void PlayerController::update(const float dt)
           movement_direction = NCL::Maths::Vector2(1, 0);
       if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
           buttons[attack] = true;
-
-       look_direction.x -= Window::GetMouse()->GetRelativePosition().y;
-       look_direction.x = std::min(look_direction.x, 90.0f);
-       look_direction.x = std::max(look_direction.x, -90.0f);
-       look_direction.y -= Window::GetMouse()->GetRelativePosition().x;
-       if (look_direction.y < 0)
-       {
-           look_direction.y += 360.0f;
-       }
-       if (look_direction.y > 360.0f)
-       {
-           look_direction.y -= 360.0f;
-       }
 }

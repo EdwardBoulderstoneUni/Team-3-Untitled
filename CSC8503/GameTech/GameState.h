@@ -6,7 +6,7 @@
 #include "TutorialGame.h"
 #include "../GameTech/MainMenu.h"
 #include "TutorialMenu.h"
-#include "YiEventSystem.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -42,7 +42,7 @@ private:
 
 class StartState : public PushdownState {
 public:
-	StartState(TutorialGame* tg) : game(tg) { start_menu.reset(new MainMenu());}
+	StartState(TutorialGame* tg) : game(tg) { start_menu.reset(new MainMenu()); }
 	~StartState() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 
