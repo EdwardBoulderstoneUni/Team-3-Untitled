@@ -19,3 +19,8 @@ Vector4::Vector4(const Vector3& v3, float newW) : x(v3.x), y(v3.y), z(v3.z), w(n
 Vector4::Vector4(const Vector2& v2, float newZ, float newW) : x(v2.x), y(v2.y), z(newZ), w(newW)
 {
 }
+
+const float* Vector4::as_float_array() const
+{
+	return array;
+}
