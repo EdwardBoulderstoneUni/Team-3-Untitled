@@ -93,8 +93,8 @@ void TutorialGame::InitialiseAssets() {
 
 
 	InitWorld();
-	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
+	InitPlayer(Vector3(-250, 10, 0), GameObjectType_team2);
+	InitPlayer(Vector3(-250, 10, -20), GameObjectType_team1,true);
 	RegisterEventHandles();
 }
 
@@ -196,7 +196,7 @@ GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
 {
 	auto floor = new Floor();
 
-	auto floorSize = Vector3(100, 2, 100);
+	auto floorSize = Vector3(100, 1, 100);
 	
 	floor->GetTransform()
 	     .SetScale(floorSize * 2)
@@ -278,8 +278,8 @@ void TutorialGame::InitDefaultFloor()
 	Floor* floor = new Floor();
 
 	floor->GetTransform()
-		.SetScale(Vector3(150, 1, 150))
-		.SetPosition(Vector3(0,0,0));
+		.SetScale(Vector3(500, 1, 500))
+		.SetPosition(Vector3(-250,10,0));
 
 	floor->InitAllComponent();
 
