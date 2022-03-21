@@ -22,7 +22,7 @@ https://research.ncl.ac.uk/game/
 
 #include <string>
 #include <vector>
-#include <glad/glad.h>
+#include "glad/glad.h"
 
 namespace NCL
 {
@@ -86,6 +86,7 @@ namespace NCL
 			void DrawBoundMesh(unsigned sub_layer = 0, unsigned num_instances = 1) const;
 			int get_shader_property_location(const std::string& shader_property_name) const;
 
+			void bind_int_to_shader(const std::string& shader_property_name, const int& data) override;
 			void bind_float_to_shader(const std::string& shader_property_name, const float& data) override;
 			void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) override;
 			void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) override;
@@ -93,7 +94,7 @@ namespace NCL
 			
 			void reset_shader_for_next_object() override;
 			void reset_state_for_next_frame() override;
-			void free_reserved_textures() const override;
+			void free_reserved_textures() override;
 			unsigned reserve_texture(const TextureBase& data) override;
 			void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) override;
 
