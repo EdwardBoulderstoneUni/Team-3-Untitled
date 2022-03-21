@@ -117,7 +117,7 @@ void GameTechRenderer::bind_shader_defaults()
 	bind_shader_property("lightColour", light_colour_);
 	bind_shader_property("lightRadius", light_radius_);
 
-	bind_reserved_texture("shadowTex", bound_shadow_tex);
+	bind_reserved_texture("shadowTex", bound_shadow_tex_);
 }
 
 void GameTechRenderer::RenderFrame()
@@ -133,6 +133,7 @@ void GameTechRenderer::RenderFrame()
 	{
 		gameUI->DrawUI();
 	}
+	reset_state_for_next_frame();
 }
 
 void GameTechRenderer::build_object_list()
@@ -264,7 +265,6 @@ void GameTechRenderer::render_camera()
 			reset_shader_for_next_object();
 		}
 	}
-	reset_state_for_next_frame();
 }
 
 Matrix4 GameTechRenderer::SetupDebugLineMatrix() const
