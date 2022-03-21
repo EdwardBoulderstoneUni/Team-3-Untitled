@@ -28,7 +28,6 @@ namespace NCL {
 
 			void SetSingleMode();
 			void SetMultiMode();
-			float tLeft = 900;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
@@ -37,7 +36,7 @@ namespace NCL {
 		
 			void InitWorld();
 
-			void InitDefaultFloor(Vector3 position,Vector4 color);
+			void InitDefaultFloor();
 			void RegisterEventHandles();
 			void HUDUpdate(float dt);
 
@@ -62,8 +61,16 @@ namespace NCL {
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 	
+			bool inSelectionMode;
+			bool camFollowPlayer;
 			bool DebugMode;
-			
+			bool isEnd;
+
+			float forceMagnitude;
+			float tLeft = 10;
+
+			GameObject* selectionObject = nullptr;
+
 			OGLMesh* capsuleMesh = nullptr;
 			OGLMesh* cubeMesh = nullptr;
 			OGLMesh* sphereMesh = nullptr;
@@ -76,18 +83,26 @@ namespace NCL {
 			OGLMesh* enemyMesh = nullptr;
 			OGLMesh* bonusMesh = nullptr;
 
+			//Coursework Additional functionality	
+			GameObject* lockedObject = nullptr;
+			Vector3 lockedOffset = Vector3(0, 14, 20);
+
 			float FPS = 0.0f;
 			float framesPerSecond = 0.0f;
 			float lastTime = 0.0f;
 			float previousSecond;
 			float currentSecond;
 
+			void LockCameraToObject(GameObject* o)
+			{
+				lockedObject = o;
+			}
 			GameUI* gameUI;
-			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _openFirHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _deleteHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static void _HitHandle(const EVENT* pEvent, UINT dwOwnerData);
+			static TutorialGame* p_self;
+			static TutorialGame* getMe() { return p_self; }
 			void UpdateGameObjects(float dt);
 		};
 	}

@@ -25,7 +25,6 @@ void StartState::OnAwake() {
 void StartState::OnSleep() {
 	game->GetUI()->RemoveMenu(start_menu);
 }
-
 #pragma endregion
 
 #pragma region Gaming State
@@ -40,7 +39,7 @@ void GamingState::OnSleep() {
 }
 
 PushdownState::PushdownResult GamingState::OnUpdate(float dt, PushdownState** newState) {
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE) or game->tLeft<0)
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
 	{
 		*newState = new PauseState(game);
 		return PushdownResult::Push;
@@ -65,7 +64,7 @@ void PauseState::OnSleep() {
 PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** newState) {
 	if (pause_menu->EnterGame) {
 		game->SetMultiMode();
-		game->tLeft = 10.0f;
+
 		*newState = new GamingState(game);
 		return PushdownResult::Pop;
 	}

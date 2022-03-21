@@ -39,7 +39,8 @@ namespace NCL
 			if (entry.path().extension().generic_string().compare(".msh") == 0)			
 			{
 				filename = entry.path().filename().generic_string();
-				NCL::Rendering::OGLMesh* mesh = loadFunc(filename.c_str());				
+				NCL::Rendering::OGLMesh* mesh = loadFunc(filename.c_str());		
+				mesh->SetDebugName(filename);
 				m_Meshes.insert({filename, mesh});
 			}
 			if (entry.path().extension().generic_string().compare(".fbx") == 0)
