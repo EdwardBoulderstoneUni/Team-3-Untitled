@@ -68,7 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>Clang</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -110,7 +110,7 @@
     <IncludePath>$(SolutionDir)\Plugins\OpenGLRendering;$(SolutionDir)\Plugins\Networking-ENet\include;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
-    <LibraryPath>$(SCE_ORBIS_SAMPLE_DIR)\sample_code\graphics\api_gnm\toolkit;$(SolutionDir)$(Platform)_$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\libs\gnm;$(SolutionDir)$(Platform)_$(Configuration)\;$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)\Plugins\OpenGLRendering;$(SolutionDir)\Plugins\Networking-ENet\include;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -118,7 +118,7 @@
     <IncludePath>$(SolutionDir)\Plugins\OpenGLRendering;$(SolutionDir)\Plugins\Networking-ENet\include;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
-    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)$(Platform)_$(Configuration)\;$(SolutionDir)\libs\gnm;$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)\Plugins\OpenGLRendering;$(SolutionDir)\Plugins\Networking-ENet\include;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -154,7 +154,7 @@
       <AdditionalOptions>-frtti %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>AudioManager.a;CSC8503Common.a;Common.a;GNMRendering.a;Networking-ENet.a;Gameplay.a;libfmodL_stub_weak.a;libPhysX_static.a;libPhysXCommon_static.a;libPhysXExtensions_static.a;libPhysXFoundation_static.a;libPhysXPvdSDK_static.a;libSceDbgVideoOut_stub_weak.a;libSceVideoOut_stub_weak.a;libSceGnm_debug.a;libSceGnmx_debug.a;libSceGpuAddress.a;libSceGnmDriver_stub_weak.a;libSceShaderBinary.a;libSceGnf_debug.a;libScePad_stub_weak.a;libSceUserService_stub_weak.a;libSceSysmodule_stub_weak.a;libSceNgs2_stub_weak.a;libScePosix_stub_weak.a</AdditionalDependencies>
+      <AdditionalDependencies>AudioManager.a;CSC8503Common.a;Common.a;GNMRendering.a;Networking-ENet.a;Gameplay.a;libfmodL_stub_weak.a;libSceDbgVideoOut_stub_weak.a;libSceVideoOut_stub_weak.a;libSceGnm_debug.a;libSceGnmx_debug.a;libSceGpuAddress.a;libSceGnmDriver_stub_weak.a;libSceShaderBinary.a;libSceGnf_debug.a;libScePad_stub_weak.a;libSceUserService_stub_weak.a;libSceSysmodule_stub_weak.a;libSceNgs2_stub_weak.a;libScePosix_stub_weak.a;-lSceNet_stub_weak;toolkit_debug.a;libFastXml_static.a;libLowLevelAABB_static.a;libLowLevel_static.a;libLowLevelDynamics_static.a;libPhysX_static.a;libPhysXCommon_static.a;libPhysXFoundation_static.a;libPhysXPvdSDK_static.a;libPhysXTask_static.a;libPhysXExtensions_static.a;libSceneQuery_static.a;libSimulationController_static.a</AdditionalDependencies>
       <AdditionalLibraryDirectories>./../../libs/audio/fmod/orbis;./../../libs/assimp/Debug;./../../libs/PhysX/debug;C:\Program Files (x86)\SCE\ORBIS SDKs\8.500\target\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EditAndContinue>true</EditAndContinue>
       <GenerateMapFile>true</GenerateMapFile>
@@ -200,12 +200,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINSOCKAPI_;NDEBUG;ORBIS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>-frtti %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>AudioManager.a;CSC8503Common.a;Common.a;GNMRendering.a;Networking-ENet.a;Gameplay.a;fmod_vc.lib;assimp-vc142-mt.lib;zlibstatic.lib;advapi32.lib;PhysX_64.lib;PhysXCommon_64.lib;PhysXExtensions_static_64.lib;PhysXFoundation_64.lib;PhysXPvdSDK_static_64.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>./../../libs/audio/fmod/x64;./../../libs/assimp/Release;./../../libs/PhysX/release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>AudioManager.a;CSC8503Common.a;Common.a;GNMRendering.a;Networking-ENet.a;Gameplay.a;libfmod_stub_weak.a;libFastXml_static.a;libLowLevelAABB_static.a;libLowLevel_static.a;libLowLevelDynamics_static.a;libPhysX_static.a;libPhysXCommon_static.a;libPhysXFoundation_static.a;libPhysXPvdSDK_static.a;libPhysXTask_static.a;libPhysXExtensions_static.a;libSceneQuery_static.a;libSimulationController_static.a;libSceDbgVideoOut_stub_weak.a;libSceVideoOut_stub_weak.a;libSceGnm.a;libSceGnmx.a;libSceGpuAddress.a;libSceGnmDriver_stub_weak.a;libSceShaderBinary.a;libSceGnf.a;libScePad_stub_weak.a;libSceUserService_stub_weak.a;libSceSysmodule_stub_weak.a;libSceNgs2_stub_weak.a;libScePosix_stub_weak.a;-lSceNet_stub_weak;toolkit.a</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./../../libs/audio/fmod/orbis;./../../libs/assimp/Release;./../../libs/PhysX/release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
