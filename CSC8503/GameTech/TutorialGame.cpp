@@ -23,7 +23,6 @@ TutorialGame::TutorialGame()
 	world = new GameWorld();
 	renderer = new GameTechRenderer(*world);
 	physicsX = new PhysicsXSystem(*world);
-	DebugMode = false;
 
 	Debug::SetRenderer(renderer);
 	InitialiseUI();
@@ -112,9 +111,7 @@ void TutorialGame::UpdateGame(float dt)
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 
-	if (DebugMode) {
-		CalculateFrameRate(dt);
-	}
+	
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
 	
@@ -124,7 +121,10 @@ void TutorialGame::UpdateGame(float dt)
 	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-
+#ifdef DEBUG
+	physicsX->DrawCollisionLine();
+	CalculateFrameRate(dt);
+#endif // DEBUG
 }
 
 void TutorialGame::InitAbilityContainer() {
