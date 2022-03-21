@@ -80,7 +80,7 @@ void TutorialGame::InitialiseAssets() {
 	InitAbilityContainer();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
-	worldFilePath.append("worldTest.json");
+	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
 
 

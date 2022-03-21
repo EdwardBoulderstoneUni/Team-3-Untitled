@@ -60,7 +60,7 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 		break;
 	}
 	PxTransform trans = PhysXConvert::TransformToPxTransform(object->GetTransform());
-	trans.p = trans.p + PhysXConvert::Vector3ToPxVec3(dimOffset);
+	trans.p = trans.p;
 	PhysicsXObject* phyObj = new PhysicsXObject();
 	phyObj->properties.type = PhyProperties::Static;
 	phyObj->properties.transform = trans;
