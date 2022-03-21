@@ -1,15 +1,15 @@
 #pragma once
 #include <map>
-#include "OGLShader.h"
+#include "../../Common/RendererBase.h"
+#include "../../Common/ShaderBase.h"
 namespace NCL
 {
 	namespace Rendering
 	{
-		class OGLShader;
 		class ShaderManager
 		{
 			static ShaderManager* m_Instance;
-			std::map<const char*, OGLShader*> m_Shaders;
+			std::map<const char*, ShaderBase*> m_Shaders;
 			ShaderManager();
 			~ShaderManager();
 			
@@ -17,7 +17,8 @@ namespace NCL
 			static ShaderManager* GetInstance();
 			static void Init();
 			static void Finish();			
-			OGLShader* GetShader(const char* name);			
+			ShaderBase* GetShader(const char* name) const;
+			void AddShader(const char* name, ShaderBase* shader);
 		};
 	}
 };
