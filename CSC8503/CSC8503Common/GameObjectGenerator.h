@@ -34,6 +34,9 @@ namespace NCL {
 				vector.z = value[attribute]["z"].GetFloat();
 				vector.w = value[attribute]["w"].GetFloat();
 			}
+
+		private:
+			float multiplier = 5.0f;
 		};
 	}
 }
