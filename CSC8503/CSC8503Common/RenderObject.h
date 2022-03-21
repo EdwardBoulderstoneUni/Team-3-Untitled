@@ -26,6 +26,8 @@ namespace NCL
 			
 			void bind_shader_values(RendererBase* renderer) const;
 
+			void render(RendererBase* renderer) const;
+
 			void SetDefaultTexture(TextureBase* t)
 			{
 				texture_ = t;

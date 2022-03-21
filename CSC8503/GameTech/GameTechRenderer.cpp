@@ -179,11 +179,11 @@ void GameTechRenderer::render_shadow_map()
 		Matrix4 model_matrix = (*object).GetTransform()->GetMatrix();
 		Matrix4 mvp_matrix = mv_matrix * model_matrix;
 		glUniformMatrix4fv(mvp_location, 1, false, reinterpret_cast<float*>(&mvp_matrix));
-		BindMesh((*object).GetMesh());
+		bind_mesh((*object).GetMesh());
 		const unsigned layer_count = (*object).GetMesh()->GetSubMeshCount();
 		for (unsigned layer_index = 0; layer_index < layer_count; ++layer_index)
 		{
-			DrawBoundMesh(layer_index);
+			draw_bound_mesh(layer_index);
 		}
 	}
 
@@ -217,8 +217,8 @@ void GameTechRenderer::render_skybox()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_tex_);
 
-	BindMesh(skybox_mesh_);
-	DrawBoundMesh();
+	bind_mesh(skybox_mesh_);
+	draw_bound_mesh();
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
@@ -231,39 +231,9 @@ void GameTechRenderer::render_camera()
 
 	for (const auto& object : active_objects_)
 	{
-		const auto shader = dynamic_cast<OGLShader*>((*object).GetShader());
-		bind_shader(shader);
-
-		const bool use_material = object->GetMaterial() != nullptr;
-
-		Matrix4 model_matrix = object->GetTransform()->GetMatrix();
-		model_matrix = model_matrix * object->GetMesh()->GetLocalTransform();
-		bind_shader_property("modelMatrix", model_matrix);
-
-		Matrix4 full_shadow_mat = shadow_matrix_ * model_matrix;
-		bind_shader_property("shadowMatrix", full_shadow_mat);
-
-		bind_shader_property("objectColour", object->colour_);
-		bind_shader_property("hasVertexColours", !(*object).GetMesh()->GetColourData().empty());
-		if (!use_material)
-		{
-			bind_shader_property("mainTex", *object->texture_);
-			bind_shader_property("hasTexture", (OGLTexture*)object->texture_ ? 1 : 0);
-		}
-
-		BindMesh(object->GetMesh());
-		const unsigned layer_count = object->GetMesh()->GetSubMeshCount();
-		for (unsigned count = 0; count < layer_count; ++count) {
-
-			if (use_material)
-			{
-				TextureBase* texture = object->GetMaterial()->GetMaterialForLayer(count)->GetEntry("Diffuse");
-				bind_shader_property("mainTex", *texture);
-				bind_shader_property("hasTexture", (OGLTexture*)texture ? 1 : 0);
-			}
-			DrawBoundMesh(count);
-			reset_shader_for_next_object();
-		}
+		bind_shader_property("shadowMatrix", shadow_matrix_ * object->GetTransform()->GetMatrix());
+		object->render(this);
+		reset_shader_for_next_object();
 	}
 }
 
@@ -286,5 +256,5 @@ void GameTechRenderer::BeginFrame() {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	bind_shader(nullptr);
-	BindMesh(nullptr);
+	bind_mesh(nullptr);
 }
