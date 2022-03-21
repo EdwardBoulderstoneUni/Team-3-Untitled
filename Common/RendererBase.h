@@ -17,6 +17,10 @@ _-_-_-_-_-_-_-""  ""
 #include "Vector4.h"
 #include "Window.h"
 
+namespace NCL {
+	class MeshGeometry;
+}
+
 namespace NCL
 {
 	namespace Rendering
@@ -70,6 +74,8 @@ namespace NCL
 			void bind_shader_property(const std::string& shader_property_name, const ShaderArgs& data) {
 				throw std::logic_error("Class cannot be passed to shader");
 			}
+			virtual void bind_mesh(MeshGeometry* m) = 0;
+			virtual void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const = 0;
 		protected:
 			virtual void bind_int_to_shader(const std::string& shader_property_name, const int& data) = 0;
 			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data) = 0;

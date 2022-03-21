@@ -72,6 +72,8 @@ namespace NCL
 			virtual Matrix4 SetupDebugStringMatrix() const;
 
 			void bind_shader(ShaderBase* shader) override;
+			void bind_mesh(MeshGeometry* m) override;
+			void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const override;
 		protected:
 			void BeginFrame() override;
 			void RenderFrame() override {}
@@ -82,8 +84,6 @@ namespace NCL
 			void DrawDebugStrings();
 			void DrawDebugLines();
 
-			void BindMesh(MeshGeometry* m);
-			void DrawBoundMesh(unsigned sub_layer = 0, unsigned num_instances = 1) const;
 			int get_shader_property_location(const std::string& shader_property_name) const;
 
 			void bind_int_to_shader(const std::string& shader_property_name, const int& data) override;

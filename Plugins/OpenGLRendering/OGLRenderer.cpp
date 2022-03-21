@@ -109,7 +109,7 @@ void OGLRenderer::BeginFrame()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	bind_shader(nullptr);
-	BindMesh(nullptr);
+	bind_mesh(nullptr);
 }
 
 void OGLRenderer::EndFrame()
@@ -144,7 +144,7 @@ void OGLRenderer::bind_shader(ShaderBase* shader)
 	}
 }
 
-void OGLRenderer::BindMesh(MeshGeometry* m)
+void OGLRenderer::bind_mesh(MeshGeometry* m)
 {
 	if (!m)
 	{
@@ -167,7 +167,7 @@ void OGLRenderer::BindMesh(MeshGeometry* m)
 	}
 }
 
-void OGLRenderer::DrawBoundMesh(const unsigned sub_layer, unsigned num_instances) const
+void OGLRenderer::draw_bound_mesh(const unsigned sub_layer, unsigned num_instances) const
 {
 	if (!bound_mesh_)
 	{
@@ -433,8 +433,8 @@ void OGLRenderer::DrawDebugStrings()
 	debug_text_mesh_->SetVertexColours(vert_colours);
 	debug_text_mesh_->UpdateGPUBuffers(0, static_cast<unsigned>(vert_pos.size()));
 
-	BindMesh(debug_text_mesh_);
-	DrawBoundMesh();
+	bind_mesh(debug_text_mesh_);
+	draw_bound_mesh();
 
 	debug_strings_.clear();
 }
@@ -457,8 +457,8 @@ void OGLRenderer::DrawDebugLines()
 	debug_lines_mesh_->SetVertexColours(vert_col);
 	debug_lines_mesh_->UpdateGPUBuffers(0, static_cast<unsigned>(vert_pos.size()));
 
-	BindMesh(debug_lines_mesh_);
-	DrawBoundMesh();
+	bind_mesh(debug_lines_mesh_);
+	draw_bound_mesh();
 
 	debug_lines_.clear();
 }
