@@ -30,13 +30,16 @@ int main()
 {
 #ifndef ORBIS
 	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
-#else
-	Window* w = NCL::PS4::PS4Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
-#endif
+
 	if (!w->HasInitialised())
 	{
 		return -1;
 	}
+
+#else
+	Window* w = NCL::PS4::PS4Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
+#endif
+
 	srand(time(nullptr));
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);

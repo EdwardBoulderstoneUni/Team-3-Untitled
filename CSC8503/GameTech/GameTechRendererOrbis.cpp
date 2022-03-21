@@ -15,8 +15,8 @@ GameTechRendererOrbis::GameTechRendererOrbis() : PS4RendererBase(dynamic_cast<PS
 	translation = 0.0f;
 
 	defaultShader = PS4Shader::GenerateShader(
-		"/app0/Assets/Shaders/PS4/VertexShader.sb",
-		"/app0/Assets/Shaders/PS4/PixelShader.sb"
+		"/app0/Assets/Shaders/VertexShader.sb",
+		"/app0/Assets/Shaders/PixelShader.sb"
 	);
 
 	defaultMesh = PS4Mesh::GenerateTriangle();
