@@ -5,6 +5,7 @@
 #include "../../imgui/backends/imgui_impl_win32.h"
 #include "../../imgui/backends/imgui_impl_opengl3.h"
 
+
 struct ExInputResult;
 
 class GameUI
@@ -22,6 +23,7 @@ public:
 	void DrawUI() const;
 
 private:
+
 	bool IsValid = false;
 	std::vector<GameMenuPtr> menus;
 };

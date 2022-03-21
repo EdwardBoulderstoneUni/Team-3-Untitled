@@ -33,14 +33,11 @@ int main() {
 		return -1;
 	}
 
-	w->ShowOSPointer(true);
-	w->LockMouseToWindow(true);
-
 	auto g = new TutorialGame();
 	PushdownMachine machine(new StartState(g));
 
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !Window::GetInterface()->button_down(quit)) {
+	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;

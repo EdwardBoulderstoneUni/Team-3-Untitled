@@ -1,28 +1,11 @@
 #include "ComponentCamera.h"
 #include "Player.h"
-
+#define CAMERA_YAW_OFFSET 40.0f
+#define CAMERA_OFFSET Vector3(7,6 ,-6)
 void ComponentCamera::Init() {
-	camera->SetDistanceFromObject(30);
-	camera->SetAngleAroundObject(0);
-	camera->ThirdPersonCamera(gO);
-	gO->GetTransform().SetOrientation(camera->GetThirdPersonOrientation());
+	camera->ThirdPersonCamera(gO, CAMERA_OFFSET, CAMERA_YAW_OFFSET);
 }
 
 void ComponentCamera::Update(float dt) {
-	camera->ThirdPersonCamera(gO);
-
-	//Quaternion orien = gO->GetTransform().GetOrientation();
-	//vec.y = camera->GetYaw();
-	//orien = orien.EulerAnglesToQuaternion(vec.x, vec.y - 180, vec.z);
-	Quaternion orien = camera->GetThirdPersonOrientation();
-
-	gO->GetTransform().SetOrientation(orien);
-
-	Vector3 vec = gO->GetTransform().GetOrientation().ToEuler();
-	vec.x = camera->GetPitch();
-
-	Player* player = dynamic_cast<Player*>(gO);
-	if (player) {
-		player->SetShootDirection(vec);
-	}
+	camera->ThirdPersonCamera(gO, CAMERA_OFFSET, CAMERA_YAW_OFFSET);
 }
