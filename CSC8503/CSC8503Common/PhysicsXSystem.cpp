@@ -233,7 +233,9 @@ void PhysicsXSystem::initPhysics()
 	gScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 3.0f);
 	gScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
 
-	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_DYNAMIC, 2.0f);
+	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_AABBS, 2.0f);
+	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 2.0f);
+
 }
 
 void PhysicsXSystem::Update(float dt)

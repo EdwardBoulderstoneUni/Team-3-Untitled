@@ -568,7 +568,7 @@ void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) 
 
 
 			PlayerPro* playerPro = enemy->GetPlayerPro();
-			int health = enemy->GetPlayerPro()->health;
+		
 
 			Vector3 hitobjPos = enemy->GetTransform().GetPosition();
 			Vector3 grenadePos = grenade->GetTransform().GetPosition();
@@ -582,9 +582,10 @@ void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) 
 				if (status) {
 					GameObject* obj=(GameObject*)hit.block.actor->userData;
 					if (obj->type == GameObjectType_team2) {
-						health -= 5;
-						if (health < 0) {
-							health = 0;
+						playerPro->health -= 25;
+						std::cout << playerPro->health << std::endl;
+						if (playerPro->health <= 0) {
+							playerPro->health = 0;
 							std::cout << (std::to_string(player->GetWorldID()) + " --->" +
 								std::to_string(enemy->GetWorldID())) << std::endl;
 							player->GetPlayerPro()->teamKill++;
