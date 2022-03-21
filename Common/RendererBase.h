@@ -63,7 +63,7 @@ namespace NCL
 			virtual void reset_shader_for_next_object() {}
 			virtual void reset_state_for_next_shader() {}
 			virtual void reset_state_for_next_frame();
-			virtual void free_reserved_textures() const = 0;
+			virtual void free_reserved_textures() = 0;
 			virtual unsigned reserve_texture(const TextureBase& data) = 0;
 			virtual void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) = 0;
 			template<class ShaderArgs>
@@ -71,6 +71,7 @@ namespace NCL
 				throw std::logic_error("Class cannot be passed to shader");
 			}
 		protected:
+			virtual void bind_int_to_shader(const std::string& shader_property_name, const int& data) = 0;
 			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data) = 0;
 			virtual void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data) = 0;
 			virtual void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data) = 0;
@@ -93,7 +94,14 @@ namespace NCL
 		{
 			free_reserved_textures();
 		}
-
+		template <>
+		inline void RendererBase::bind_shader_property<int>(const std::string& shader_property_name, const int& data) {
+			bind_int_to_shader(shader_property_name, data);
+		}
+		template <>
+		inline void RendererBase::bind_shader_property<bool>(const std::string& shader_property_name, const bool& data) {
+			bind_int_to_shader(shader_property_name, data);
+		}
 		template <>
 		inline void RendererBase::bind_shader_property<float>(const std::string& shader_property_name, const float& data) {
 			bind_float_to_shader(shader_property_name, data);
