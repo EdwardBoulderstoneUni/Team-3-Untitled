@@ -232,6 +232,11 @@ GLint OGLRenderer::get_shader_property_location(const std::string& shader_proper
 	return glGetUniformLocation(bound_shader_->GetProgramID(), shader_property_name.c_str());
 }
 
+void OGLRenderer::bind_int_to_shader(const std::string& shader_property_name, const int& data)
+{
+	glUniform1i(get_shader_property_location(shader_property_name), data);
+}
+
 void OGLRenderer::bind_float_to_shader(const std::string& shader_property_name, const float& data)
 {
 	glUniform1f(get_shader_property_location(shader_property_name), data);
@@ -242,13 +247,13 @@ void OGLRenderer::bind_vector_to_shader(const std::string& shader_property_name,
 	switch (size)
 	{
 	case 2:
-		glUniform2fv(get_shader_property_location(shader_property_name), static_cast<int>(size), data);
+		glUniform2fv(get_shader_property_location(shader_property_name), 1, data);
 		break;
 	case 3:
-		glUniform3fv(get_shader_property_location(shader_property_name), static_cast<int>(size), data);
+		glUniform3fv(get_shader_property_location(shader_property_name), 1, data);
 		break;
 	case 4:
-		glUniform4fv(get_shader_property_location(shader_property_name), static_cast<int>(size), data);
+		glUniform4fv(get_shader_property_location(shader_property_name), 1, data);
 		break;
 	default:
 		throw std::logic_error("Vector of size " + std::to_string(size) + " cannot be passed to shader");
@@ -258,7 +263,7 @@ void OGLRenderer::bind_vector_to_shader(const std::string& shader_property_name,
 
 void OGLRenderer::bind_matrix4_to_shader(const std::string& shader_property_name, const float* data)
 {
-	glUniform4fv(get_shader_property_location(shader_property_name), 1, data);
+	glUniformMatrix4fv(get_shader_property_location(shader_property_name), 1, false, data);
 }
 
 void OGLRenderer::bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data)
@@ -301,9 +306,9 @@ void OGLRenderer::reset_state_for_next_frame()
 	bound_shader_ = nullptr;
 }
 
-void OGLRenderer::free_reserved_textures() const
+void OGLRenderer::free_reserved_textures()
 {
-	for (auto texture_slot : reserved_texture_slot_)
+	for (bool& texture_slot : reserved_texture_slot_)
 		texture_slot = false;
 }
 
@@ -313,19 +318,20 @@ unsigned OGLRenderer::reserve_texture(const TextureBase& data)
 		current_tex_unit_++;
 		assert(current_tex_unit_ < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	}
-	GLint tex_id = 0;
 
 	if (const auto ogl_texture = dynamic_cast<const OGLTexture*>(&data))
 	{
-		tex_id = static_cast<int>(ogl_texture->GetObjectID());
-	}
+		const unsigned tex_id = static_cast<int>(ogl_texture->GetObjectID());
 
-	glActiveTexture(GL_TEXTURE0 + current_tex_unit_);
-	glBindTexture(GL_TEXTURE_2D, tex_id);
-	
-	reserved_texture_slot_[current_tex_unit_] = true;
-	current_tex_unit_ += 1;
-	return current_tex_unit_ - 1;
+
+		glActiveTexture(GL_TEXTURE0 + current_tex_unit_);
+		glBindTexture(GL_TEXTURE_2D, tex_id);
+
+		reserved_texture_slot_[current_tex_unit_] = true;
+		current_tex_unit_ += 1;
+		return current_tex_unit_ - 1;
+	}
+	return 0;
 }
 
 void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name, const unsigned texture_address)
