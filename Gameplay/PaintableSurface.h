@@ -2,14 +2,15 @@
 #include "Component.h"
 
 enum Colour{};
-class Paintable : Component
+class PaintableSurface : Component
 {
 
 public:
-	Paintable();
+	PaintableSurface();
 
 	Colour getColour();
 protected:
 	Colour colour_;
+
 };
 
