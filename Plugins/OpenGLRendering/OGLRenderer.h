@@ -74,7 +74,7 @@ namespace NCL
 			void bind_shader(ShaderBase* shader) override;
 			void bind_mesh(MeshGeometry* m) override;
 			void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const override;
-			void load_default_texture() const override;
+			ShaderBase* load_default_shader() const override;
 		protected:
 			void BeginFrame() override;
 			void RenderFrame() override {}
