@@ -7,6 +7,8 @@
 #include "GameState.h"
 #include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
+
+#define DEBUG
 namespace NCL {
 	namespace CSC8503 {
 		enum CameraMode {
@@ -42,7 +44,7 @@ namespace NCL {
 			void HUDUpdate(float dt);
 
 			void CalculateFrameRate(float dt);
-
+		
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -62,8 +64,6 @@ namespace NCL {
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 	
-			bool DebugMode;
-			
 			OGLMesh* capsuleMesh = nullptr;
 			OGLMesh* cubeMesh = nullptr;
 			OGLMesh* sphereMesh = nullptr;

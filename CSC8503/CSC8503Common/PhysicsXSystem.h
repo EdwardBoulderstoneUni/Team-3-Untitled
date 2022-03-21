@@ -18,6 +18,9 @@ class PhysicsXSystem {
 
 			Vector3 ScreenToWorld(Camera& camera,Vector2 pos,bool isNear=true);
 			static  PhysicsXSystem* getMe() {return p_self;}
+
+			void DrawCollisionLine();
+
 		protected:
 			void SynActorsPose(PxRigidActor** actors, const PxU32 numActors);
 			void SyncGameObjs();

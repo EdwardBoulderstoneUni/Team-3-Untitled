@@ -230,7 +230,10 @@ void PhysicsXSystem::initPhysics()
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 	gManager = PxCreateControllerManager(*gScene);
-	
+	gScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 3.0f);
+	gScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
+
+	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_DYNAMIC, 2.0f);
 }
 
 void PhysicsXSystem::Update(float dt)
@@ -471,6 +474,14 @@ void PhysicsXSystem::SyncGameObjs()
 		PhysicsXObject* obj = actor->GetPhysicsXObject();
 		if (obj->rb)continue;
 		addActor(*actor);
+	}
+}
+void PhysicsXSystem::DrawCollisionLine() {
+	const PxRenderBuffer& rb = gScene->getRenderBuffer();
+	for (PxU32 i = 0; i < rb.getNbLines(); i++)
+	{
+		const PxDebugLine& line = rb.getLines()[i];
+		Debug::DrawLine(PhysXConvert::PxVec3ToVector3(line.pos0), PhysXConvert::PxVec3ToVector3(line.pos1));
 	}
 }
 
