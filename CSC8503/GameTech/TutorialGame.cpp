@@ -270,7 +270,7 @@ void TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
-	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
 }
 
 void TutorialGame::HUDUpdate(float dt)
@@ -551,11 +551,56 @@ void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	
 }
 void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+
 	string grenadeID = pEvent->vArg[0];
-	GameWorld* world = (GameWorld*)dwOwnerData;
-	Grenade* grenade = static_cast<Grenade*>(world->FindObjectbyID(stoi(grenadeID)));
-	int playerID = grenade->GetPlayerID();
-	Player* player = static_cast<Player*>(world->FindObjectbyID(playerID));
+	//need to check every player object's distance to the grenade.
+	//string enemyID = "5";
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	Player* enemy = nullptr;
+	for (auto i : game->world->GetGameObjects()) {
+		if (i->type == GameObjectType_team2) {
+			enemy = static_cast<Player*>(i);
+
+			Grenade* grenade = static_cast<Grenade*>(game->world->FindObjectbyID(stoi(grenadeID)));
+			if (not grenade)return;
+			int playerID = grenade->GetPlayerID();
+			Player* player = static_cast<Player*>(game->world->FindObjectbyID(playerID));
+
+
+			PlayerPro* playerPro = enemy->GetPlayerPro();
+			int health = enemy->GetPlayerPro()->health;
+
+			Vector3 hitobjPos = enemy->GetTransform().GetPosition();
+			Vector3 grenadePos = grenade->GetTransform().GetPosition();
+			Vector3 dis = hitobjPos - grenadePos;
+			float d = dis.Length();//distance between grenade and object
+			if (d < 100.0) // damage range = 5 
+			{
+				PxRaycastBuffer hit;
+				// move the 1.0 to the distance vector.
+				bool status=game->physicsX->raycast(grenadePos + Vector3(0,1,0),dis.Normalised(),d, hit);
+				if (status) {
+					GameObject* obj=(GameObject*)hit.block.actor->userData;
+					if (obj->type == GameObjectType_team2) {
+						health -= 5;
+						if (health < 0) {
+							health = 0;
+							std::cout << (std::to_string(player->GetWorldID()) + " --->" +
+								std::to_string(enemy->GetWorldID())) << std::endl;
+							player->GetPlayerPro()->teamKill++;
+						}
+						YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
+					}
+				}
+				
+			}
+			else
+			{
+				YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
+			}
+		}
+	}
+	
 }
 
 void TutorialGame::UpdateGameObjects(float dt)

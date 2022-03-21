@@ -127,6 +127,10 @@ class ContackCallback :public PxSimulationEventCallback {
 		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
 			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT,a->GetWorldID(),b->GetWorldID());
 		}
+		if (a->type == GameObjectType_team1Grenade and b->type == GameObjectType_floor) {
+			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+			YiEventSystem::GetMe()->PushEvent(GRENADE_DAMAGE_RANGE, a->GetWorldID(), b->GetWorldID());
+		}
 	}
 };
 class CharacterCallback :public PxUserControllerHitReport,public PxControllerBehaviorCallback {

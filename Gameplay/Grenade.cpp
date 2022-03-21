@@ -23,7 +23,8 @@ void Grenade::SetUp() {
 void Grenade::Update(float dt)
 {
 	ComponentGameObject::Update(dt);
-	timeStack += dt;
+	/*timeStack += dt;
 	if (timeStack > GRENADE_DURA)
 		YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, GetWorldID());
+		*/
 }
