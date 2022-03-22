@@ -138,8 +138,6 @@
     <ClCompile Include="ComponentGameObject.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Floor.cpp" />
-    <ClCompile Include="PaintableRenderObject.cpp" />
-    <ClCompile Include="PaintableSurface.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="Sphere.cpp" />
