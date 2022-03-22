@@ -60,6 +60,25 @@ namespace NCL {
 			void	ClearBuffer(bool colour, bool depth, bool stencil);
 			PS4ScreenBuffer* GenerateScreenBuffer(uint width, uint height, bool colour = true, bool depth = true, bool stencil = false);
 
+			virtual void free_reserved_textures() {}
+			virtual unsigned reserve_texture(const TextureBase& data)  {}
+			virtual void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address)  {}
+			template<class ShaderArgs>
+			void bind_shader_property(const std::string& shader_property_name, const ShaderArgs& data) {
+				throw std::logic_error("Class cannot be passed to shader");
+			}
+			virtual void bind_mesh(MeshGeometry* m)  {}
+			virtual void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const  {}
+			virtual ShaderBase* load_default_shader() const  {}
+			virtual TextureBase* init_blank_texture(unsigned width, unsigned height) const  {}
+		protected:
+			virtual void bind_int_to_shader(const std::string& shader_property_name, const int& data)  {}
+			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data)  {}
+			virtual void bind_vector_to_shader(const std::string& shader_property_name, unsigned size, const float* data)  {}
+			virtual void bind_matrix4_to_shader(const std::string& shader_property_name, const float* data)  {}
+			virtual void bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data)  {}
+			
+			virtual void bind_shader(ShaderBase* shader) {}
 		private:
 			void	InitialiseMemoryAllocators();
 			void	InitialiseVideoSystem();
