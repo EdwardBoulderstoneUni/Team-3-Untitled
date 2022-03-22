@@ -174,7 +174,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_ORBIS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_ORBIS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CppExceptions>true</CppExceptions>
       <AdditionalOptions>-frtti %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
