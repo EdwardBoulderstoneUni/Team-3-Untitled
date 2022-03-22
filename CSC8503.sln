@@ -30,6 +30,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui", "imgui\imgui.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gameplay", "Gameplay\Gameplay.vcxproj", "{E01D4478-7B03-4F39-892C-462C38856EA3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Paint", "Paint\Paint.vcxproj", "{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ORBIS = Debug|ORBIS
@@ -98,6 +100,14 @@ Global
 		{E01D4478-7B03-4F39-892C-462C38856EA3}.Release|ORBIS.ActiveCfg = Release|Win32
 		{E01D4478-7B03-4F39-892C-462C38856EA3}.Release|x64.ActiveCfg = Release|x64
 		{E01D4478-7B03-4F39-892C-462C38856EA3}.Release|x64.Build.0 = Release|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Debug|ORBIS.ActiveCfg = Debug|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Debug|ORBIS.Build.0 = Debug|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Debug|x64.ActiveCfg = Debug|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Debug|x64.Build.0 = Debug|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Release|ORBIS.ActiveCfg = Release|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Release|ORBIS.Build.0 = Release|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Release|x64.ActiveCfg = Release|x64
+		{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
