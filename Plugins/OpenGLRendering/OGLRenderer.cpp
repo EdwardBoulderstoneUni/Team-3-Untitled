@@ -271,6 +271,21 @@ void OGLRenderer::render_to(TextureBase* texture)
 	draw_bound_mesh();
 }
 
+void OGLRenderer::blit(TextureBase* source, TextureBase* dest)
+{
+	if (associated_fbo_.find(source) == associated_fbo_.end())
+	{
+		associated_fbo_[source] = generate_fbo(source);
+	}
+	if (associated_fbo_.find(dest) == associated_fbo_.end())
+	{
+		associated_fbo_[dest] = generate_fbo(dest);
+	}
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, *associated_fbo_.at(source));
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, *associated_fbo_.at(dest));
+	glBlitFramebuffer(0, 0, source->get_width(), source->get_height(), 0 , 0 , dest->get_width(), dest->get_width(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
 ShaderBase* OGLRenderer::load_default_shader() const
 {
 	return new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
