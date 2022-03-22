@@ -17,7 +17,6 @@
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PushdownMachine.cpp" />
-    <ClCompile Include="PushdownState.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -28,87 +27,33 @@
     <ClCompile Include="PhysicsXSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameWorld.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionDetection.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsObject.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ray.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="StateMachine.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="StateTransition.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="State.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="PushdownState.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="PushdownMachine.h">
-      <Filter>AI</Filter>
-    </ClInclude>
-    <ClInclude Include="Debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Constraint.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysicsSystem.h">
-      <Filter>Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="SphereVolume.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="OBBVolume.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="AABBVolume.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionVolume.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="NavigationPath.h">
-      <Filter>Pathfinding</Filter>
-    </ClInclude>
-    <ClInclude Include="NavigationGrid.h">
-      <Filter>Pathfinding</Filter>
-    </ClInclude>
-    <ClInclude Include="NavigationMesh.h">
-      <Filter>Pathfinding</Filter>
-    </ClInclude>
-    <ClInclude Include="NavigationMap.h">
-      <Filter>Pathfinding</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadTree.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="CapsuleVolume.h">
-      <Filter>CollisionDetection</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObjectGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AssetManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="AABBVolume.h" />
+    <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="CapsuleVolume.h" />
+    <ClInclude Include="GameObjectGenerator.h" />
+    <ClInclude Include="NavigationGrid.h" />
+    <ClInclude Include="NavigationMap.h" />
+    <ClInclude Include="NavigationMesh.h" />
+    <ClInclude Include="NavigationPath.h" />
+    <ClInclude Include="OBBVolume.h" />
+    <ClInclude Include="SphereVolume.h" />
+    <ClInclude Include="CollisionVolume.h" />
+    <ClInclude Include="CollisionDetection.h" />
+    <ClInclude Include="Constraint.h" />
+    <ClInclude Include="Debug.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameWorld.h" />
+    <ClInclude Include="PhysicsObject.h" />
+    <ClInclude Include="PhysicsSystem.h" />
+    <ClInclude Include="PushdownMachine.h" />
+    <ClInclude Include="PushdownState.h" />
+    <ClInclude Include="QuadTree.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="State.h" />
+    <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="StateTransition.h" />
+    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameWorld.cpp">

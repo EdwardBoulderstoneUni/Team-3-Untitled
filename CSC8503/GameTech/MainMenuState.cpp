@@ -1,3 +1,9 @@
-|#include "GameState.h"
+#include "GameState.h"
+#include "MainMenuState.h"
 
-PushdownState::PushdownResult StartState::Onupdate()
+
+using namespace NCL::CSC8503;
+PushdownState::PushdownResult NCL::CSC8503::MainMenuState::OnUpdate(float dt, PushdownState** newState)
+{
+	return PushdownResult();
+}

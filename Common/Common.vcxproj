@@ -101,14 +101,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ORBIS'">
     <OutDir>$(SolutionDir)$(Platform)_$(Configuration)\</OutDir>
-    <IncludePath>./../include/;$(IncludePath)</IncludePath>
+    <IncludePath>./../include/;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ORBIS'">
     <OutDir>$(SolutionDir)$(Platform)_$(Configuration)\</OutDir>
-    <IncludePath>./../include/;$(IncludePath)</IncludePath>
+    <IncludePath>./../include/;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)\include;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>

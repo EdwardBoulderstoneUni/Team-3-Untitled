@@ -145,6 +145,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>PLATFORM_ORBIS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-frtti %(AdditionalOptions)</AdditionalOptions>
+      <CppExceptions>true</CppExceptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -186,6 +187,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>PLATFORM_ORBIS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>-frtti %(AdditionalOptions)</AdditionalOptions>
+      <CppExceptions>true</CppExceptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

@@ -1,235 +1,73 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Maths">
-      <UniqueIdentifier>{04de09b2-3268-484d-99eb-bb38e96becde}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Rendering">
-      <UniqueIdentifier>{92093c3d-690f-4bb0-9dda-1fb247f863de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Asset Handling">
-      <UniqueIdentifier>{1d0b54c1-f5de-4083-b62a-78e5b7ec9b10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windowing">
-      <UniqueIdentifier>{2bc51177-8cb2-4a97-be15-ba366777f17b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Windowing\Win32">
-      <UniqueIdentifier>{6c4f3ce4-6425-4d48-bb36-05ba6e237747}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Input">
-      <UniqueIdentifier>{1176147b-dfa1-4005-a9b6-3c64a99f456f}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="Assets.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ControllerInput.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="InputBase.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Maths.cpp" />
+    <ClCompile Include="Matrix2.cpp" />
+    <ClCompile Include="Matrix3.cpp" />
+    <ClCompile Include="Matrix4.cpp" />
+    <ClCompile Include="MeshAnimation.cpp" />
+    <ClCompile Include="MeshGeometry.cpp" />
+    <ClCompile Include="MeshMaterial.cpp" />
+    <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="MouseAndKeyboardInput.cpp" />
+    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="PS4Input.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="ShaderBase.cpp" />
+    <ClCompile Include="SimpleFont.cpp" />
+    <ClCompile Include="TextureBase.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="TextureWriter.cpp" />
+    <ClCompile Include="UserInterface.cpp" />
+    <ClCompile Include="Vector2.cpp" />
+    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="Vector4.cpp" />
+    <ClCompile Include="Win32Keyboard.cpp" />
+    <ClCompile Include="Win32Mouse.cpp" />
+    <ClCompile Include="Win32Window.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTimer.cpp">
-      <Filter>Windowing</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix4.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Windowing</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix2.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix3.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="Quaternion.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="Plane.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="Win32Keyboard.cpp">
-      <Filter>Windowing\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Win32Mouse.cpp">
-      <Filter>Windowing\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="Win32Window.cpp">
-      <Filter>Windowing\Win32</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderBase.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Maths.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureBase.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshGeometry.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Assets.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureWriter.cpp">
-      <Filter>Asset Handling</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleFont.cpp">
-      <Filter>Asset Handling</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureLoader.cpp">
-      <Filter>Asset Handling</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector4.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector2.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector3.cpp">
-      <Filter>Maths</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshAnimation.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshMaterial.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="UserInterface.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Mouse.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Keyboard.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseAndKeyboardInput.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="InputBase.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="PS4Input.cpp">
-      <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="ControllerInput.cpp">
-      <Filter>Input</Filter>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Asset Handling</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Windowing</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector4.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTimer.h">
-      <Filter>Windowing</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix4.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix2.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="Matrix3.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="Plane.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="Quaternion.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="Win32Window.h">
-      <Filter>Windowing\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Win32Keyboard.h">
-      <Filter>Windowing\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Win32Mouse.h">
-      <Filter>Windowing\Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Maths.h">
-      <Filter>Maths</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderBase.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="RendererBase.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureBase.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshGeometry.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Assets.h">
-      <Filter>Asset Handling</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureWriter.h">
-      <Filter>Asset Handling</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleFont.h">
-      <Filter>Asset Handling</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureLoader.h">
-      <Filter>Asset Handling</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshAnimation.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshMaterial.h">
-      <Filter>Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="UserInterface.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Keyboard.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="UserController.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="ControllerInput.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseAndKeyboardInput.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="InputBase.h">
-      <Filter>Input</Filter>
-    </ClInclude>
-    <ClInclude Include="PS4Input.h">
-      <Filter>Input</Filter>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Asset Handling</Filter>
-    </ClInclude>
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Assets.h" />
+    <ClInclude Include="ControllerInput.h" />
+    <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="InputBase.h" />
+    <ClInclude Include="PS4Input.h" />
+    <ClInclude Include="UserController.h" />
+    <ClInclude Include="Keyboard.h" />
+    <ClInclude Include="Maths.h" />
+    <ClInclude Include="Matrix2.h" />
+    <ClInclude Include="Matrix3.h" />
+    <ClInclude Include="Matrix4.h" />
+    <ClInclude Include="MeshAnimation.h" />
+    <ClInclude Include="MeshGeometry.h" />
+    <ClInclude Include="MeshMaterial.h" />
+    <ClInclude Include="Mouse.h" />
+    <ClInclude Include="MouseAndKeyboardInput.h" />
+    <ClInclude Include="Plane.h" />
+    <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="RendererBase.h" />
+    <ClInclude Include="ShaderBase.h" />
+    <ClInclude Include="SimpleFont.h" />
+    <ClInclude Include="TextureBase.h" />
+    <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="TextureWriter.h" />
+    <ClInclude Include="UserInterface.h" />
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
+    <ClInclude Include="Win32Keyboard.h" />
+    <ClInclude Include="Win32Mouse.h" />
+    <ClInclude Include="Win32Window.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
 </Project>
