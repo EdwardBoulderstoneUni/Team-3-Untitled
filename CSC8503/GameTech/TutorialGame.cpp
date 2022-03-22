@@ -432,7 +432,7 @@ void TutorialGame::CalculateFrameRate(float dt) {
 		FPS = framesPerSecond;
 		framesPerSecond = 0;
 	}
-	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
+	renderer->DrawString("FPS: "+std::to_string(FPS), Vector2(60, 90));
 }
 
 

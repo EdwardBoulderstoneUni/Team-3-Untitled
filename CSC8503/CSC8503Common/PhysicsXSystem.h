@@ -24,6 +24,7 @@ class PhysicsXSystem {
 		protected:
 			void SynActorsPose(PxRigidActor** actors, const PxU32 numActors);
 			void SyncGameObjs();
+			
 		
 			Vector3 Unproject(const Vector3& screenPos, const Camera& cam);
 			Matrix4 GenerateInverseView(const Camera& c);

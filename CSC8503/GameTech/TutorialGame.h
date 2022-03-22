@@ -30,7 +30,7 @@ namespace NCL {
 
 			void SetSingleMode();
 			void SetMultiMode();
-			float tLeft = 10;
+			float tLeft = 900;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();

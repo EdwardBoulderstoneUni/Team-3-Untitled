@@ -230,11 +230,14 @@ void PhysicsXSystem::initPhysics()
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 	gManager = PxCreateControllerManager(*gScene);
+	
 	gScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 3.0f);
 	gScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
 
 	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_AABBS, 2.0f);
 	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 2.0f);
+
+	
 
 }
 
