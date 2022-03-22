@@ -3,6 +3,8 @@
 #include "../CSC8503Common/GameServer.h"
 #include "../CSC8503Common/GameClient.h"
 #include "../../Common/TextureLoader.h"
+
+
 #define COLLISION_MSG 30
 
 struct MessagePacket : public GamePacket {
@@ -23,6 +25,7 @@ NetworkedGame::NetworkedGame() {
 	timeToNextPacket = 0.0f;
 	timeToUpdateMiniState = 0.0f;
 	packetsToSnapshot = 0;
+	pc = new PlayerController();
 	RegisterHandlers();
 }
 
@@ -110,7 +113,7 @@ void NetworkedGame::UpdateGame(float dt) {
 			CalculateFrameRate(dt);
 		}
 		UpdateGameObjects(dt);
-		physicsX->Update(dt);
+		//physicsX->Update(dt);
 
 		HUDUpdate(dt);
 		world->UpdateWorld(dt);
@@ -140,34 +143,41 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 
 	if (not localPlayer) return;
 	ClientPacket newPacket;
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
+	Input lastinput = pc->get_inputs();
+	if (lastinput.buttons[jump]) {
 		newPacket.buttonstates[0] = 1;
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SHIFT))
+	}
+	if (lastinput.buttons[dash]) {
 		newPacket.buttonstates[1] = 1;
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::R))
+	}
+	if (lastinput.buttons[reload]) {
 		newPacket.buttonstates[2] = 1;
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::W)) {
+	}
+	if (lastinput.movement_direction==Vector2(0,1)) {
 		newPacket.buttonstates[3] = 1;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::S)) {
+	if (lastinput.movement_direction == Vector2(0, -1)) {
 		newPacket.buttonstates[4] = 1;
 	}
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::A)) {
+	if (lastinput.movement_direction == Vector2(-1, 0)) {
 		newPacket.buttonstates[5] = 1;
 	}
-		
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::D)) {
+	if (lastinput.movement_direction == Vector2(1, 0)) {
 		newPacket.buttonstates[6] = 1;
 	}
-		
-	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+	if (lastinput.buttons[attack]) {
 		newPacket.buttonstates[7] = 1;
+	}
+	newPacket.angles[0] = lastinput.look_direction.x;
+	newPacket.angles[1] = lastinput.look_direction.y;
+	newPacket.angles[2] = 0;
 
 	newPacket.lastID = localLastID;
 	
 	newPacket.type = Received_State;
 	newPacket.playerID = localPlayerID;
 	thisClient->SendPacket(newPacket);
+	pc->update(dt);
 }
 
 
@@ -223,6 +233,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		
 		Input input = Input();
 		input.buttons[attack] = realPacket->buttonstates[7];
+		
 		if (realPacket->buttonstates[3] == 1) 
 			input.movement_direction = Vector2(0, 1);
 		if (realPacket->buttonstates[4] == 1)
@@ -231,7 +242,10 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			input.movement_direction = Vector2(-1, 0);
 		if (realPacket->buttonstates[6] == 1)
 			input.movement_direction = Vector2(1, 0);
+		input.look_direction.x = realPacket->angles[0];
+		input.look_direction.y = realPacket->angles[1];
 		player->SetLastInput(input);
+		player->networkInput = true;
 	}
 	else if (type == Event_State) {
 		EventPacket* realPacket = (EventPacket*)payload;

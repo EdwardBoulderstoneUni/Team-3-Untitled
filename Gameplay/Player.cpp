@@ -10,6 +10,7 @@ Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 	pColour = colour;
 	playerPro = new PlayerPro();
 	timeStack = new TimeStack();
+	networkInput = false;
 	AssignRole(aCont);
 	this->type = type;
 	SetupStateMachine();
@@ -106,15 +107,19 @@ void Player::Update(float dt) {
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f, false);
 		dirVec.shootDir = (target - transform.GetPosition()).Normalised();
-	}	
+	}
 	dirVec.forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
 	dirVec.CaculateRight();
+
 	if (GetComponentInput()) {
 		lastInput = GetComponentInput()->user_interface->get_inputs();
 		transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
 			lastInput.look_direction.y, 0));
 	}
-		
+	if (networkInput) {
+		transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
+			lastInput.look_direction.y, 0));
+	}
 	playerState->Update(dt);
 	weaponState->Update(dt);
 	timeStack->dashCooldown -= dt;

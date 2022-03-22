@@ -1,7 +1,7 @@
 #pragma once
 #include "TutorialGame.h"
 #include "../CSC8503Common/NetworkObject.h"
-
+#include "../../Gameplay/PlayerController.h"
 namespace NCL {
 	namespace CSC8503 {
 		class GameServer;
@@ -65,6 +65,9 @@ namespace NCL {
 
 			int localLastID =0;
 			int localPlayerID;
+
+			PlayerController* pc;
+
 			static void _enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			

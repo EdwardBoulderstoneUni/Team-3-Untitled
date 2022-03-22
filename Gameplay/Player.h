@@ -74,6 +74,7 @@ namespace NCL {
 			TimeStack* GetTimeStack() { return timeStack; }
 			PlayerPro* GetPlayerPro() { return playerPro; }
 			
+			bool networkInput;
 		private:
 			TimeStack* timeStack;
 			PlayerPro* playerPro;
