@@ -13,6 +13,7 @@ https://research.ncl.ac.uk/game/
 #include "OGLShader.h"
 #include "OGLMesh.h"
 #include "OGLTexture.h"
+#include "../../Common/ShaderManager.h"
 
 #include "../../Common/SimpleFont.h"
 #include "../../Common/TextureLoader.h"
