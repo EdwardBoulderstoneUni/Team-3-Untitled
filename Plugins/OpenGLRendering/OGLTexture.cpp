@@ -19,7 +19,7 @@ using namespace Rendering;
 
 OGLTexture::OGLTexture()
 {
-	glGenTextures(1, &texID);
+	glGenTextures(1, &tex_id_);
 	width_ = 0;
 	height_ = 0;
 }
@@ -31,23 +31,29 @@ OGLTexture::OGLTexture(const unsigned width, const unsigned height, const unsign
 	width_ = width;
 	height_ = height;
 	constexpr auto pixel_type = GL_UNSIGNED_BYTE;
-	int source_type;
+	GLint internal_format;
+	int pixel_format;
 	switch (channels)
 	{
 	case(1):
-		source_type = GL_R;
+		internal_format = GL_R32F;
+		pixel_format = GL_R;
 		break;
 	case(2):
-		source_type = GL_RG;
+		internal_format = GL_RG32F;
+		pixel_format = GL_RG;
 		break;
 	case(3):
-		source_type = GL_RGB;
+		internal_format = GL_RGB32F;
+		pixel_format = GL_RGB;
 		break;
 	case(4):
-		source_type = GL_RGBA;
+		internal_format = GL_RGBA32F;
+		pixel_format = GL_RGBA;
 		break;
-	default: 
-		source_type = 0;
+	default:
+		internal_format = 0;
+		pixel_format = 0;
 		break;
 	}
 	
@@ -59,33 +65,31 @@ OGLTexture::OGLTexture(const unsigned width, const unsigned height, const unsign
 			data[i] = 0;
 		}
 	}
+	init_texture(internal_format, pixel_format, pixel_type, data);
 
-	glBindTexture(GL_TEXTURE_2D, texID);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, static_cast<int>(width_), static_cast<int>(height_), 0, source_type, pixel_type, data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
 	
 }
 
-OGLTexture::OGLTexture(GLuint texToOwn)
+OGLTexture::OGLTexture(const unsigned width, const unsigned height, const GLint internal_format,
+                       const GLint pixel_format, const GLint pixel_type, GLuint* data) : OGLTexture()
 {
-	texID = texToOwn;
+	width_ = width;
+	height_ = height;
+	init_texture(internal_format, pixel_format, pixel_type, data);
+}
+
+OGLTexture::OGLTexture(const GLuint tex_to_own) : tex_id_(tex_to_own)
+{
 	width_ = 0;
 	height_ = 0;
 }
 
 OGLTexture::~OGLTexture()
 {
-	glDeleteTextures(1, &texID);
+	glDeleteTextures(1, &tex_id_);
 }
 
-TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, int channels)
+TextureBase* OGLTexture::RGBATextureFromData(const char* data, const int width, const int height, const int channels)
 {
 	auto tex = new OGLTexture();
 	tex->width_ = width;
@@ -108,7 +112,7 @@ TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, 
 		//default:
 	}
 
-	glBindTexture(GL_TEXTURE_2D, tex->texID);
+	glBindTexture(GL_TEXTURE_2D, tex->tex_id_);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, sourceType, GL_UNSIGNED_BYTE, data);
 
@@ -138,7 +142,7 @@ TextureBase* OGLTexture::RGBATextureFromFilename(const std::string& name)
 	return glTex;
 }
 
-TextureBase* NCL::Rendering::OGLTexture::RGBATextureFromCompressedData(char* data, int dataLength)
+TextureBase* OGLTexture::RGBATextureFromCompressedData(char* data, int dataLength)
 {
 	char* texData = nullptr;
 	int width = 0;
@@ -152,4 +156,21 @@ TextureBase* NCL::Rendering::OGLTexture::RGBATextureFromCompressedData(char* dat
 	free(texData);
 
 	return glTex;
+}
+
+void OGLTexture::init_texture(const GLint internal_format, const GLint pixel_format, const GLint pixel_type, const GLuint* data) const
+{
+	glBindTexture(GL_TEXTURE_2D, tex_id_);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, internal_format, static_cast<int>(width_), static_cast<int>(height_), 0, pixel_format, pixel_type, data);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
