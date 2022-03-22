@@ -91,7 +91,6 @@ namespace NCL
 		static const RendererBase* GetRenderer() { return GetWindow()->renderer; }
 
 		static Window* const GetWindow()			{ return window; }
-		static const RendererBase* GetRenderer() { return GetWindow()->renderer; }
 	protected:
 		Window();
 		virtual ~Window();

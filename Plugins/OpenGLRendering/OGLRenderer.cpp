@@ -347,11 +347,6 @@ void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name,
 	glUniform1i(ogl_texture_address, static_cast<int>(texture_address));
 }
 
-TextureBase* OGLRenderer::init_blank_texture(const unsigned width, const unsigned height) const
-{
-	return new OGLTexture(width, height);
-}
-
 void OGLRenderer::DrawString(const std::string& text, const Vector2& pos, const Vector4& colour, float size)
 {
 	DebugString s;

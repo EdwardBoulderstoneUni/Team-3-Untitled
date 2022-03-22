@@ -99,8 +99,6 @@ namespace NCL
 			unsigned reserve_texture(const TextureBase& data) override;
 			void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) override;
 
-			TextureBase* init_blank_texture(unsigned width, unsigned height) const override;
-
 #ifdef _WIN32
 			void InitWithWin32(Window& w);
 			void DestroyWithWin32() const;

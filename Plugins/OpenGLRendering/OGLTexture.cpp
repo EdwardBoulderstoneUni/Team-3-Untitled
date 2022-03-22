@@ -7,9 +7,6 @@ Comments and queries to: richard-gordon.davison AT ncl.ac.uk
 https://research.ncl.ac.uk/game/
 */
 #include "OGLTexture.h"
-
-#include <cassert>
-
 #include "OGLRenderer.h"
 
 #include "../../Common/TextureLoader.h"
@@ -20,64 +17,11 @@ using namespace Rendering;
 OGLTexture::OGLTexture()
 {
 	glGenTextures(1, &texID);
-	width_ = 0;
-	height_ = 0;
-}
-
-OGLTexture::OGLTexture(const unsigned width, const unsigned height, const unsigned channels, GLuint* data) : OGLTexture()
-{
-	assert(channels > 0);
-	assert(channels < 5);
-	width_ = width;
-	height_ = height;
-	constexpr auto pixel_type = GL_UNSIGNED_BYTE;
-	int source_type;
-	switch (channels)
-	{
-	case(1):
-		source_type = GL_R;
-		break;
-	case(2):
-		source_type = GL_RG;
-		break;
-	case(3):
-		source_type = GL_RGB;
-		break;
-	case(4):
-		source_type = GL_RGBA;
-		break;
-	default: 
-		source_type = 0;
-		break;
-	}
-	
-	const auto data_size = static_cast<unsigned long long>(width_) * height_ * channels;
-	if (!data) {
-		data = new GLuint[data_size];
-		for (unsigned long long i = 3; i < data_size; i++)
-		{
-			data[i] = 0;
-		}
-	}
-
-	glBindTexture(GL_TEXTURE_2D, texID);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, static_cast<int>(width_), static_cast<int>(height_), 0, source_type, pixel_type, data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	
 }
 
 OGLTexture::OGLTexture(GLuint texToOwn)
 {
 	texID = texToOwn;
-	width_ = 0;
-	height_ = 0;
 }
 
 OGLTexture::~OGLTexture()
@@ -88,8 +32,7 @@ OGLTexture::~OGLTexture()
 TextureBase* OGLTexture::RGBATextureFromData(char* data, int width, int height, int channels)
 {
 	auto tex = new OGLTexture();
-	tex->width_ = width;
-	tex->height_ = height;
+
 	int dataSize = width * height * channels; //This always assumes data is 1 byte per channel
 
 	int sourceType = GL_RGB;
