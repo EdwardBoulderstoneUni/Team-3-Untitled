@@ -4,6 +4,12 @@ PaintableRenderObject::PaintableRenderObject(NCL::CSC8503::Transform* parent_tra
 	paint_instance_texture_(NCL::Window::GetRenderer()->init_blank_texture(tex->get_width(), tex->get_height())),
 	mask_(NCL::Window::GetRenderer()->init_blank_texture(tex->get_width(), tex->get_height())) { }
 
+void PaintableRenderObject::bind_shader_values(NCL::RendererBase* renderer) const
+{
+	RenderObject::bind_shader_values(renderer);
+	renderer->bind_shader_property("mask", mask_);
+}
+
 NCL::TextureBase* PaintableRenderObject::get_paint_dest() const
 {
 	return paint_instance_texture_;

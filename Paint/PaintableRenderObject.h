@@ -9,6 +9,7 @@ class PaintableRenderObject :
 public:
 	PaintableRenderObject(NCL::CSC8503::Transform* parent_transform, NCL::MeshGeometry* mesh, NCL::TextureBase* tex, NCL::MeshMaterial* mat = nullptr);
 	~PaintableRenderObject();
+	void bind_shader_values(NCL::RendererBase* renderer) const override;
 	NCL::TextureBase* get_paint_dest() const;
 	NCL::TextureBase* get_mask() const;
 protected:
