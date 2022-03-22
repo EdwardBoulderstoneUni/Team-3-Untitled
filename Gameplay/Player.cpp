@@ -3,7 +3,7 @@
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "PlayerState.h"
 #include "WeaponState.h"
-Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool localplayer)
+Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type, bool localplayer)
 {
 	dirVec.forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 	dirVec.CaculateRight();
@@ -29,7 +29,7 @@ void Player::SetUp()
 	properties.type = PhyProperties::Character;
 	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
 	properties.Mass = 10.0f;
-	properties.positionOffset = Vector3(0,4.1,0);
+	properties.positionOffset = Vector3(0, 4.1, 0);
 
 	Vector3 scale = GetTransform().GetScale();
 	properties.volume = new PxCapsuleGeometry(PhysXConvert::Vector3ToPxVec3(scale).x,
@@ -60,7 +60,7 @@ void Player::SetUp()
 
 
 void Player::Respawn() {
-	YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN,GetWorldID());
+	YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN, GetWorldID());
 }
 
 
@@ -103,15 +103,15 @@ void Player::SetupStateMachine()
 void Player::Update(float dt) {
 	ComponentGameObject::Update(dt);
 	transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
-		lastInput.look_direction.y,0));
+		lastInput.look_direction.y, 0));
 	if (GetComponentCamera()) {
 		dirVec.forward = GetComponentCamera()->camera->GetThirdPersonOrientation() * Vector3(0, 0, -1);
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f, false);
 		dirVec.shootDir = (target - transform.GetPosition()).Normalised();
-	}	
+	}
 	dirVec.CaculateRight();
-	if(GetComponentInput())
+	if (GetComponentInput())
 		lastInput = GetComponentInput()->user_interface->get_inputs();
 	playerState->Update(dt);
 	weaponState->Update(dt);
