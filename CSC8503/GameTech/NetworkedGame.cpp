@@ -91,9 +91,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		AudioManager::GetInstance().Play_Sound();
 		AudioManager::GetInstance().Update(dt);
 
-		if (DebugMode) {
-			CalculateFrameRate(dt);
-		}
+		
 		UpdateGameObjects(dt);
 		physicsX->Update(dt);
 
@@ -109,9 +107,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		AudioManager::GetInstance().Play_Sound();
 		AudioManager::GetInstance().Update(dt);
 
-		if (DebugMode) {
-			CalculateFrameRate(dt);
-		}
+		
 		UpdateGameObjects(dt);
 		//physicsX->Update(dt);
 

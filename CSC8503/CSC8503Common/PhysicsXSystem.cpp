@@ -493,23 +493,7 @@ void PhysicsXSystem::DrawCollisionLine() {
 	}
 }
 
-void PhysicsXSystem::SyncObjsTransform()
-{
-	std::vector<GameObject*>& actors = gameWorld.GetGameObjects();
-	for (auto actor : actors)
-	{
-		Transform trans = actor->GetTransform();
-		Vector3 position = trans.GetPosition();
-		PhysicsXObject* obj = actor->GetPhysicsXObject();
-		obj->properties.transform = PhysXConvert::TransformToPxTransform(trans);
-		if (obj == nullptr)continue;
-		if (obj->controller)
-			obj->CTrans(PxExtendedVec3(position.x, position.y, position.z));
-		else {
-			obj->rb->setGlobalPose(obj->properties.transform);
-		}
-	}
-}
+
 
 
 
