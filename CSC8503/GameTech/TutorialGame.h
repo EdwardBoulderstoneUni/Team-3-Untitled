@@ -8,7 +8,7 @@
 #include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
 
-#define DEBUG
+//#define DEBUG
 namespace NCL {
 	namespace CSC8503 {
 		enum CameraMode {

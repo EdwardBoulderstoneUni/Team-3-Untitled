@@ -31,7 +31,7 @@ namespace NCL {
 			/// <returns>Client's state ID/-1</returns>
 			int GetClientStateID(int clientID);
 
-			void UpdatePlayer(float dt);
+			
 
 		protected:
 			void UpdateAsServer(float dt);
@@ -70,7 +70,8 @@ namespace NCL {
 
 			static void _enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			
+			static void _exitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _serverShutdownHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 		};
 	}
 }

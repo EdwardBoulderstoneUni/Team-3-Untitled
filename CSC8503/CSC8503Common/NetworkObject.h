@@ -39,6 +39,7 @@ namespace NCL {
 		};
 
 		struct EventPacket : public GamePacket {
+			int networkID = -1;
 			int playerID = -1;
 			GAME_EVENT_ID  eventID;
 			EventPacket() {
@@ -75,6 +76,7 @@ namespace NCL {
 			NetworkState& GetLatestNetworkState();
 
 			int GetNetworkID() { return networkID; }
+			int GetWorldID() { return object.GetWorldID(); }
 		protected:
 
 			bool GetNetworkState(int frameID, NetworkState& state);
