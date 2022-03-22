@@ -48,13 +48,11 @@ void TutorialGame::UpdateRender(float dt)
 }
 void TutorialGame::SetSingleMode()
 {
-
 	InitialiseAssets();
 }
 
 void TutorialGame::SetMultiMode()
 {
-
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
@@ -64,33 +62,15 @@ void TutorialGame::InitialiseAssets() {
 		(*into)->UploadToGPU();
 	};
 
-	loadFunc("cube.msh", &cubeMesh);
-	loadFunc("sphere.msh", &sphereMesh);
-	loadFunc("Female_Guard.msh", &charMeshA);
-	loadFunc("courier.msh", &charMeshB);
-	loadFunc("security.msh", &enemyMesh);
-	loadFunc("coin.msh", &bonusMesh);
-	loadFunc("capsule.msh", &capsuleMesh);
-
-	basicTex = (OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
-	basicShader = new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
-
+	//Loading Screen start
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
+	//Loading End
 	InitAbilityContainer();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
-
-
-
-	//world->GetMainCamera()->SetNearPlane(0.1f);
-	//world->GetMainCamera()->SetFarPlane(500.0f);
-	//world->GetMainCamera()->SetPitch(-15.0f);
-	//world->GetMainCamera()->SetYaw(315.0f);
-	//world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
-
 
 	InitWorld();
 	InitPlayer(Vector3(-250, 10, 0), GameObjectType_team2);
@@ -102,11 +82,6 @@ void TutorialGame::InitialiseUI()
 {
 	gameUI = new GameUI();
 	renderer->SetUI(gameUI);
-	//gameMenu.reset(new TutorialMenu(this));
-	//gameUI->PushMenu(gameMenu);
-	//InGameState* t = new InGameState(this);
-	//pauseMachine = new PushdownMachine(t);
-	//pauseMachine = new PushdownMachine(new InGameState(this));
 }
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
@@ -152,8 +127,6 @@ void TutorialGame::UpdateGame(float dt)
 	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-
-
 }
 
 void TutorialGame::InitAbilityContainer() {
@@ -169,10 +142,9 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
 	
-
 	player->InitAllComponent();
 
-	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, basicTex, basicShader));
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 
 	world->SetMainCamera(player->GetComponentCamera()->camera);
 	
@@ -182,95 +154,7 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 void TutorialGame::InitWorld()
 {
 	InitDefaultFloor();
-	
 	AudioManager::Startup();
-	//AudioManager::GetInstance().Play_Sound();
-}
-
-/*
-
-A single function to add a large immoveable cube to the bottom of our world
-
-*/
-GameObject* TutorialGame::AddFloorToWorld(const Vector3& position)
-{
-	auto floor = new Floor();
-
-	auto floorSize = Vector3(100, 1, 100);
-	
-	floor->GetTransform()
-	     .SetScale(floorSize * 2)
-	     .SetPosition(position);
-
-	floor->InitAllComponent();
-
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	
-	world->AddGameObject(floor);
-
-	return floor;
-}
-
-/*
-
-Builds a game object that uses a sphere mesh for its graphics, and a bounding sphere for its
-rigid body representation. This and the cube function will let you build a lot of 'simple' 
-physics worlds. You'll probably need another function for the creation of OBB cubes too.
-
-*/
-GameObject* TutorialGame::AddSphereToWorld(const Vector3& position, float radius, float inverseMass)
-{
-	auto sphere = new Sphere();
-
-	auto sphereSize = Vector3(radius, radius, radius);
-
-
-	sphere->GetTransform()
-	      .SetScale(sphereSize)
-	      .SetPosition(position);
-	sphere->InitAllComponent();
-	sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
-
-	world->AddGameObject(sphere);
-
-	return sphere;
-}
-
-GameObject* TutorialGame::AddCapsuleToWorld(const Vector3& position, float halfHeight, float radius, float inverseMass)
-{
-	auto capsule = new GameObject();
-
-	//auto volume = new CapsuleVolume(halfHeight, radius);
-	//capsule->SetBoundingVolume(volume);
-
-	capsule->GetTransform()
-	       .SetScale(Vector3(radius * 2, halfHeight, radius * 2))
-	       .SetPosition(position);
-
-	capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, basicTex, basicShader));
-	//capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
-
-	//capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//capsule->GetPhysicsObject()->InitCubeInertia();
-
-	world->AddGameObject(capsule);
-
-	return capsule;
-}
-
-GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass)
-{
-	auto cube = new Cube();
-
-	cube->GetTransform()
-	    .SetPosition(position)
-	    .SetScale(dimensions * 2);
-	cube->InitAllComponent();
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
-	
-	world->AddGameObject(cube);
-
-	return cube;
 }
 
 void TutorialGame::InitDefaultFloor()
@@ -282,7 +166,7 @@ void TutorialGame::InitDefaultFloor()
 		.SetPosition(Vector3(-250,10,0));
 
 	floor->InitAllComponent();
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
+	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 	world->AddGameObject(floor);
 }
 
@@ -321,13 +205,7 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 {
 	float meshSize = 3.0f;
 	float inverseMass = 0.5f;
-
 	auto character = new Player(PlayerRole::PlayerRole_blue, abilityContainer, GameObjectType_team1);
-
-	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
-
-	//character->SetBoundingVolume((CollisionVolume*)volume);
-
 	character->GetTransform()
 	         .SetScale(Vector3(meshSize, meshSize, meshSize))
 	         .SetPosition(position);
@@ -335,13 +213,12 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
 
 	if (rand() % 2)
 	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
+		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, ShaderManager::GetInstance()->GetShader("default")));
 	}
 	else
 	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, basicShader));
+		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, ShaderManager::GetInstance()->GetShader("default")));
 	}
-	
 	
 	world->AddGameObject(character);
 
@@ -362,7 +239,7 @@ GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position)
 	         .SetScale(Vector3(meshSize, meshSize, meshSize))
 	         .SetPosition(position);
 
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, basicShader));
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, ShaderManager::GetInstance()->GetShader("default")));
 	//character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
 
 	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
@@ -381,7 +258,7 @@ GameObject* NCL::CSC8503::TutorialGame::AddPaint(const Vector3& position)
 		.SetScale(Vector3(4, 0.01f, 4))
 		.SetPosition(position);
 
-	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), AssetManager::GetInstance()->GetMesh("Cylinder.msh"), nullptr, basicShader));
+	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), AssetManager::GetInstance()->GetMesh("Cylinder.msh"), nullptr, ShaderManager::GetInstance()->GetShader("default")));
 	disc->GetRenderObject()->colour_ = Vector4(1, 0, 0, 1);
 
 	world->AddGameObject(disc);
@@ -398,7 +275,7 @@ GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
 	     .SetScale(Vector3(0.25, 0.25, 0.25))
 	     .SetPosition(position);
 
-	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
+	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, ShaderManager::GetInstance()->GetShader("default")));
 	//apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
 
 	//apple->GetPhysicsObject()->SetInverseMass(1.0f);
@@ -439,7 +316,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 		.SetPosition(positon + forward * 15);
 	bullet->InitAllComponent();
 	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), TutorialGame::getMe()->sphereMesh,
-		TutorialGame::getMe()->basicTex, TutorialGame::getMe()->basicShader));
+		AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 
 	TutorialGame::getMe()->world->AddGameObject(bullet);
 
