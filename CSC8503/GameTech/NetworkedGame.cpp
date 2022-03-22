@@ -196,8 +196,10 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		Player* player =(Player*)networkplayers.find(realPacket->playerID)->second;
 		
 		Input input = Input();
+		input.buttons[jump] = realPacket->buttonstates[0];
+		input.buttons[dash] = realPacket->buttonstates[1];
+		input.buttons[reload] = realPacket->buttonstates[2];
 		input.buttons[attack] = realPacket->buttonstates[7];
-		
 		if (realPacket->buttonstates[3] == 1) 
 			input.movement_direction = Vector2(0, 1);
 		if (realPacket->buttonstates[4] == 1)
