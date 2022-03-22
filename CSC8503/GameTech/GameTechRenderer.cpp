@@ -13,50 +13,49 @@ constexpr unsigned shadow_size = 4096;
 
 Matrix4 bias_matrix = Matrix4::Translation(Vector3(0.5, 0.5, 0.5)) * Matrix4::Scale(Vector3(0.5, 0.5, 0.5));
 
-GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), game_world_(world)
+GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), game_world_(world),
+                                                       skybox_mesh_(new OGLMesh()), skybox_tex_(0), shadow_texture_address_(0), shadow_fbo_(0),
+                                                       light_radius_(1000.0f)
 {
 	glEnable(GL_DEPTH_TEST);
 
 	shadow_shader_ = new OGLShader("GameTechShadowVert.glsl", "GameTechShadowFrag.glsl");
-	shadow_tex_ = 0;
-	glGenTextures(1, &shadow_tex_);
-	glBindTexture(GL_TEXTURE_2D, shadow_tex_);
+	glGenTextures(1, &shadow_texture_address_);
+	glBindTexture(GL_TEXTURE_2D, shadow_texture_address_);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 	             shadow_size, shadow_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	shadow_fbo_ = 0;
+
 	glGenFramebuffers(1, &shadow_fbo_);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadow_fbo_);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D, shadow_tex_, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D, shadow_texture_address_, 0);
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	glClearColor(1, 1, 1, 1);
 	
 	light_colour_ = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
-	light_radius_ = 1000.0f;
 	light_position_ = Vector3(-200.0f, 60.0f, -200.0f);
 	
 	skybox_shader_ = new OGLShader("skyboxVertex.glsl", "skyboxFragment.glsl");
-	skybox_mesh_ = new OGLMesh();
 	skybox_mesh_->SetVertexPositions({Vector3(-1, 1, -1), Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(1, 1, -1)});
 	skybox_mesh_->SetVertexIndices({0, 1, 2, 2, 3, 0});
 	skybox_mesh_->UploadToGPU();
-	skybox_tex_ = 0;
+
 	load_skybox();
+
+	shadow_texture_ = new OGLTexture(shadow_texture_address_);
 
 
 }
 
 GameTechRenderer::~GameTechRenderer()
 {
-	glDeleteTextures(1, &shadow_tex_);
+	glDeleteTextures(1, &shadow_texture_address_);
 	glDeleteFramebuffers(1, &shadow_fbo_);
 }
 
@@ -105,6 +104,22 @@ void GameTechRenderer::load_skybox()
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
+void GameTechRenderer::bind_shader_defaults()
+{
+	const float screen_aspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
+	const auto view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
+	const auto proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
+
+	bind_shader_property("cameraPos", game_world_.GetMainCamera()->GetPosition());
+	bind_shader_property("projMatrix", proj_matrix);
+	bind_shader_property("viewMatrix", view_matrix);
+	bind_shader_property("lightPos", light_position_);
+	bind_shader_property("lightColour", light_colour_);
+	bind_shader_property("lightRadius", light_radius_);
+
+	bind_reserved_texture("shadowTex", bound_shadow_tex_);
+}
+
 void GameTechRenderer::RenderFrame()
 {
 	glEnable(GL_CULL_FACE);
@@ -113,11 +128,12 @@ void GameTechRenderer::RenderFrame()
 	render_shadow_map();
 	render_skybox();
 	render_camera();
-	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
+	glDisable(GL_CULL_FACE);
 	if (gameUI)
 	{
 		gameUI->DrawUI();
 	}
+	reset_state_for_next_frame();
 }
 
 void GameTechRenderer::build_object_list()
@@ -148,7 +164,7 @@ void GameTechRenderer::render_shadow_map()
 
 	glCullFace(GL_FRONT);
 
-	BindShader(shadow_shader_);
+	bind_shader(shadow_shader_);
 	const int mvp_location = glGetUniformLocation(shadow_shader_->GetProgramID(), "mvpMatrix");
 
 	const Matrix4 shadow_view_matrix = Matrix4::BuildViewMatrix(light_position_, Vector3(0, 0, 0), Vector3(0, 1, 0));
@@ -163,11 +179,11 @@ void GameTechRenderer::render_shadow_map()
 		Matrix4 model_matrix = (*object).GetTransform()->GetMatrix();
 		Matrix4 mvp_matrix = mv_matrix * model_matrix;
 		glUniformMatrix4fv(mvp_location, 1, false, reinterpret_cast<float*>(&mvp_matrix));
-		BindMesh((*object).GetMesh());
+		bind_mesh((*object).GetMesh());
 		const unsigned layer_count = (*object).GetMesh()->GetSubMeshCount();
 		for (unsigned layer_index = 0; layer_index < layer_count; ++layer_index)
 		{
-			DrawBoundMesh(layer_index);
+			draw_bound_mesh(layer_index);
 		}
 	}
 
@@ -188,7 +204,7 @@ void GameTechRenderer::render_skybox()
 	Matrix4 view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
 	Matrix4 proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
 
-	BindShader(skybox_shader_);
+	bind_shader(skybox_shader_);
 
 	const int proj_location = glGetUniformLocation(skybox_shader_->GetProgramID(), "projMatrix");
 	const int view_location = glGetUniformLocation(skybox_shader_->GetProgramID(), "viewMatrix");
@@ -201,8 +217,8 @@ void GameTechRenderer::render_skybox()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_tex_);
 
-	BindMesh(skybox_mesh_);
-	DrawBoundMesh();
+	bind_mesh(skybox_mesh_);
+	draw_bound_mesh();
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
@@ -211,91 +227,13 @@ void GameTechRenderer::render_skybox()
 
 void GameTechRenderer::render_camera()
 {
-	const float screen_aspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
-	Matrix4 view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
-	Matrix4 proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
-
-	OGLShader* active_shader = nullptr;
-	int model_location = 0;
-	int colour_location = 0;
-	int has_v_col_location = 0;
-	int has_tex_location = 0;
-	int shadow_location = 0;
-
-	bool useMaterial = false;
-
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, shadow_tex_);
+	bound_shadow_tex_ = reserve_texture(*shadow_texture_);
 
 	for (const auto& object : active_objects_)
 	{
-		const auto shader = dynamic_cast<OGLShader*>((*object).GetShader());
-		BindShader(shader);
-		useMaterial = object->GetMaterial() != nullptr;
-
-
-		if (active_shader != shader)
-		{
-			const int proj_location = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-			const int view_location = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-			model_location = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-			shadow_location = glGetUniformLocation(shader->GetProgramID(), "shadowMatrix");
-			colour_location = glGetUniformLocation(shader->GetProgramID(), "objectColour");
-			has_v_col_location = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
-			has_tex_location = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
-
-			const int light_pos_location = glGetUniformLocation(shader->GetProgramID(), "lightPos");
-			const int light_colour_location = glGetUniformLocation(shader->GetProgramID(), "lightColour");
-			const int light_radius_location = glGetUniformLocation(shader->GetProgramID(), "lightRadius");
-
-			const int camera_location = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
-			const auto camera_world_position = game_world_.GetMainCamera()->GetPosition();
-			glUniform3fv(camera_location, 1, reinterpret_cast<const float*>(&camera_world_position));
-
-			glUniformMatrix4fv(proj_location, 1, false, reinterpret_cast<float*>(&proj_matrix));
-			glUniformMatrix4fv(view_location, 1, false, reinterpret_cast<float*>(&view_matrix));
-
-			glUniform3fv(light_pos_location, 1, reinterpret_cast<float*>(&light_position_));
-			glUniform4fv(light_colour_location, 1, reinterpret_cast<float*>(&light_colour_));
-			glUniform1f(light_radius_location, light_radius_);
-
-			const int shadow_tex_location = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
-			glUniform1i(shadow_tex_location, 1);
-
-			active_shader = shader;
-		}
-
-		Matrix4 model_matrix = object->GetTransform()->GetMatrix();
-		model_matrix = model_matrix * object->GetMesh()->GetLocalTransform();
-		glUniformMatrix4fv(model_location, 1, false, reinterpret_cast<float*>(&model_matrix));
-
-		Matrix4 full_shadow_mat = shadow_matrix_ * model_matrix;
-		glUniformMatrix4fv(shadow_location, 1, false, reinterpret_cast<float*>(&full_shadow_mat));
-
-		const auto colour = object->GetColour();
-
-		glUniform4fv(colour_location, 1, reinterpret_cast<const float*>(&colour));
-
-		glUniform1i(has_v_col_location, !(*object).GetMesh()->GetColourData().empty());
-
-		if (!useMaterial)
-		{
-			BindTextureToShader((OGLTexture*)object->GetDefaultTexture(), "mainTex", 0);
-			glUniform1i(has_tex_location, (OGLTexture*)object->GetDefaultTexture() ? 1 : 0);
-		}
-
-		BindMesh(object->GetMesh());
-		int layerCount = object->GetMesh()->GetSubMeshCount();
-		for (int count = 0; count < layerCount; ++count) {
-
-			if (useMaterial)
-			{
-				TextureBase* texture = object->GetMaterial()->GetMaterialForLayer(count)->GetEntry("Diffuse");
-				BindTextureToShader((OGLTexture*)texture, "mainTex", 0);
-				glUniform1i(has_tex_location, (OGLTexture*)texture ? 1 : 0);
-			}
-			DrawBoundMesh(count);
-		}
+		bind_shader_property("shadowMatrix", shadow_matrix_ * object->GetTransform()->GetMatrix());
+		object->render(this);
+		reset_shader_for_next_object();
 	}
 }
 
@@ -317,6 +255,6 @@ void GameTechRenderer::BeginFrame() {
 	gameUI->UpdateUI();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	BindShader(nullptr);
-	BindMesh(nullptr);
+	bind_shader(nullptr);
+	bind_mesh(nullptr);
 }

@@ -66,9 +66,6 @@
     <ClCompile Include="Win32Window.cpp">
       <Filter>Windowing\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="RendererBase.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderBase.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -119,6 +116,9 @@
     </ClCompile>
     <ClCompile Include="MouseAndKeyboardInput.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Asset Handling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="MouseAndKeyboardInput.h">
       <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Asset Handling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

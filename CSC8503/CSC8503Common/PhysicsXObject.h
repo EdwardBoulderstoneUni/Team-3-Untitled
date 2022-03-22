@@ -39,4 +39,3 @@ public:
 	PxRigidActor* rb;
 	PxController* controller;
 };
-		

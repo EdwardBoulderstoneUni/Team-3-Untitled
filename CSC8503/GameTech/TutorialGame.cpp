@@ -5,13 +5,14 @@
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 #include "../../Plugins/OpenGLRendering/OGLShader.h"
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
-#include "../../Plugins/OpenGLRendering/ShaderManager.h"
+#include "../../Common/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
 #include "../GameTech/TutorialMenu.h"
 #include "..//..//Gameplay/ePlayerRole.h"
 #include "../../Gameplay/GameObjects.h"
 #include "../../Gameplay/Bullet.h"
+#include "../../Gameplay/Grenade.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -23,11 +24,10 @@ TutorialGame::TutorialGame()
 	renderer = new GameTechRenderer(*world);
 	physicsX = new PhysicsXSystem(*world);
 
-	DebugMode = false;
-
 	Debug::SetRenderer(renderer);
 	InitialiseUI();
 	InitialiseAssets();
+	AudioManager::Startup();
 }
 
 /*
@@ -51,7 +51,6 @@ void TutorialGame::SetSingleMode()
 
 void TutorialGame::SetMultiMode()
 {
-
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
@@ -112,9 +111,7 @@ void TutorialGame::UpdateGame(float dt)
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 
-	if (DebugMode) {
-		CalculateFrameRate(dt);
-	}
+	
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
 	
@@ -124,7 +121,10 @@ void TutorialGame::UpdateGame(float dt)
 	renderer->Render();
 
 	Debug::FlushRenderables(dt);
-
+#ifdef DEBUG
+	physicsX->DrawCollisionLine();
+	CalculateFrameRate(dt);
+#endif // DEBUG
 }
 
 void TutorialGame::InitAbilityContainer() {
@@ -146,11 +146,12 @@ Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 
 void TutorialGame::InitWorld()
 {
-	InitDefaultFloor(Vector3(0,0,0),Vector4(1,1,1,1));
+	/*InitDefaultFloor(Vector3(0, 0, 0), Vector4(1, 1, 1, 1));
 	InitDefaultFloor(Vector3(150, 0, 0), Vector4(0, 1, 0, 1));
 	InitDefaultFloor(Vector3(-150, 0, 0), Vector4(1, 0, 0, 1));
 	InitDefaultFloor(Vector3(0,0,150), Vector4(0, 0, 1, 1));
-	AudioManager::Startup();
+	*/
+	
 	//AudioManager::GetInstance().Play_Sound();
 }
 
@@ -240,29 +241,32 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	return cube;
 }
 
-void TutorialGame::InitDefaultFloor(Vector3 position, Vector4 color)
+void TutorialGame::InitDefaultFloor()
 {
 	Floor* floor = new Floor();
 
 	floor->GetTransform()
-		.SetScale(Vector3(150, 1, 150))
-		.SetPosition(position);
+		.SetScale(Vector3(500, 1, 500))
+		.SetPosition(Vector3(-250, 10, 0));
 
 	floor->InitAllComponent();
-
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	floor->GetRenderObject()->SetColour(color);
-
 	world->AddGameObject(floor);
+
 }
 
 void TutorialGame::RegisterEventHandles()
 {
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
+
+
+
+	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
 }
 
 void TutorialGame::HUDUpdate(float dt)
@@ -298,6 +302,12 @@ void TutorialGame::HUDUpdate(float dt)
 		renderer->DrawString("Dash CD: " + std::to_string(timeStack->dashCooldown), Vector2(5, 80));
 	else
 		renderer->DrawString("Dash ready!", Vector2(5, 80));
+
+	if (timeStack->grenadeCD > 0)
+		renderer->DrawString("Grenade CD: " + std::to_string(timeStack->grenadeCD), Vector2(5, 60));
+	else
+		renderer->DrawString("Grenade ready!", Vector2(5, 60));
+
 
 	Vector3 position = localPlayer->GetTransform().GetPosition()+Vector3(0,5,0);
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
@@ -351,7 +361,7 @@ GameObject* TutorialGame::AddPaint(const Vector3& position)
 		.SetPosition(position);
 
 	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), AssetManager::GetInstance()->GetMesh("Cylinder.msh"), nullptr, basicShader));
-	disc->GetRenderObject()->SetColour(Vector4(1, 0, 0, 1));
+	//disc->GetRenderObject()->SetColour(Vector4(1, 0, 0, 1));
 
 	world->AddGameObject(disc);
 	return disc;
@@ -388,7 +398,7 @@ void TutorialGame::CalculateFrameRate(float dt) {
 		FPS = framesPerSecond;
 		framesPerSecond = 0;
 	}
-	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
+	renderer->DrawString("FPS: "+std::to_string(FPS), Vector2(60, 90));
 }
 
 
@@ -417,6 +427,32 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	//bullet->SetCollisionFunction(func);
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
+}
+
+void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+
+	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
+	Vector3 position = player->GetTransform().GetPosition() + Vector3(0, 5, 0);
+
+	auto grenade = new Grenade(*player);
+
+	auto cubeSize = Vector3(1.0f, 1.0f, 1.0f);
+	DirectionVec dir = player->GetDirectionVec();
+	grenade->GetTransform()
+		.SetScale(cubeSize)
+		.SetPosition(position + dir.shootDir * 15);
+	grenade->InitAllComponent();
+	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), game->cubeMesh,
+		game->basicTex, game->basicShader));
+
+	game->world->AddGameObject(grenade);
+
+	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	//bullet->SetCollisionFunction(func);
+	game->physicsX->addActor(*grenade);
+	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 60.0f);
 }
 
 void TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
@@ -456,7 +492,7 @@ void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	GameWorld* world = (GameWorld*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
-	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(20,5,10));
+	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
 }
 void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
@@ -481,6 +517,58 @@ void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	}
 	
 }
+void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+
+	string grenadeID = pEvent->vArg[0];
+
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	Player* enemy = nullptr;
+	for (auto i : game->world->GetGameObjects()) {
+		if (i->type == GameObjectType_team2) {
+			enemy = static_cast<Player*>(i);
+
+			Grenade* grenade = static_cast<Grenade*>(game->world->FindObjectbyID(stoi(grenadeID)));
+			if (not grenade)return;
+			int playerID = grenade->GetPlayerID();
+			Player* player = static_cast<Player*>(game->world->FindObjectbyID(playerID));
+
+
+			PlayerPro* playerPro = enemy->GetPlayerPro();
+		
+
+			Vector3 hitobjPos = enemy->GetTransform().GetPosition();
+			Vector3 grenadePos = grenade->GetTransform().GetPosition();
+			Vector3 dis = hitobjPos - grenadePos;
+			float d = dis.Length();//distance between grenade and object
+			if (d < 100.0) // damage range = 5 
+			{
+				PxRaycastBuffer hit;
+				// move the 1.0 to the distance vector.
+				bool status=game->physicsX->raycast(grenadePos + Vector3(0,1,0),dis.Normalised(),d, hit);
+				if (status) {
+					GameObject* obj=(GameObject*)hit.block.actor->userData;
+					if (obj->type == GameObjectType_team2) {
+						playerPro->health -= 25;
+						std::cout << playerPro->health << std::endl;
+						if (playerPro->health <= 0) {
+							playerPro->health = 0;
+							std::cout << (std::to_string(player->GetWorldID()) + " --->" +
+								std::to_string(enemy->GetWorldID())) << std::endl;
+							player->GetPlayerPro()->teamKill++;
+						}
+						YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
+					}
+				}
+				
+			}
+			else
+			{
+				YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
+			}
+		}
+	}	
+}
+
 void TutorialGame::UpdateGameObjects(float dt)
 {
 	world->OperateOnContents(

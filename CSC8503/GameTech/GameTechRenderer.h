@@ -11,13 +11,14 @@ namespace NCL
 	{
 		class RenderObject;
 
-		class GameTechRenderer : public OGLRenderer
+		class GameTechRenderer final : public OGLRenderer
 		{
 		public:
 			explicit GameTechRenderer(GameWorld& world);
 			~GameTechRenderer() override;
-			void SetUI(const GameUI* ui) { gameUI = ui; };
+			void SetUI(const GameUI* ui) { gameUI = ui; }
 		protected:
+			void bind_shader_defaults() override;
 			void RenderFrame() override;
 			void BeginFrame() override;
 
@@ -43,7 +44,9 @@ namespace NCL
 
 			//shadow mapping things
 			OGLShader* shadow_shader_;
-			GLuint shadow_tex_;
+			GLuint shadow_texture_address_;
+			TextureBase* shadow_texture_;
+			unsigned bound_shadow_tex_;
 			GLuint shadow_fbo_;
 			Matrix4 shadow_matrix_;
 

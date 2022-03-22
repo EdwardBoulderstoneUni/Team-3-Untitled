@@ -12,6 +12,7 @@
 #define RESPAWN_DURA 5.0f
 #define JUMP_DURA 3.2f
 #define DOUBLE_DURA 1.5f*3.15f
+#define GRENADE_CD 5.0f
 
 namespace NCL {
 	namespace CSC8503 {
@@ -20,6 +21,7 @@ namespace NCL {
 			float dashingTimeStack=0.0f;
 			float dashCooldown=-1.0f;
 			float respawnCooldown=-1.0f;
+			float grenadeCD = -1.0F;
 			float deathTimeStack=0.0f;
 		};
 		struct DirectionVec {
@@ -56,6 +58,7 @@ namespace NCL {
 			int teamKill = 0;
 			int score = 0;
 			int damage;
+			int grenadeDmg = 10;
 		};
 		class Player : public ComponentGameObject {
 		public:

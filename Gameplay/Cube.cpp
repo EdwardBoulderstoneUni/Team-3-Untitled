@@ -23,3 +23,7 @@ void NCL::CSC8503::Cube::SetUp()
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
 }
+void NCL::CSC8503::Cube::Update(float dt)
+{
+
+}

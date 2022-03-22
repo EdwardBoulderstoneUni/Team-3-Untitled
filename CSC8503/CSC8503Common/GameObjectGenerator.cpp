@@ -9,7 +9,7 @@
 #include "AssetManager.h"
 #include "..//..//Plugins/OpenGLRendering/OGLMesh.h"
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
-#include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
+#include "../../Common/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
 #include "PhysXConvert.h"
 
@@ -37,12 +37,14 @@ void NCL::CSC8503::GameObjectGenerator::SetTransform(GameObject* object, const r
 
 void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, const rapidjson::Value& value)
 {
+	NCL::Maths::Vector3 scale;
 	NCL::Maths::Vector3 dim;
-	NCL::Maths::Vector3 dimoffset;
+	NCL::Maths::Vector3 dimOffset;
 	PxGeometry* volume = nullptr;
 
+	GetVector(value, "scale", scale);
 	GetVector(value, "dimensions", dim);
-	GetVector(value, "dimensionsoff", dimoffset);
+	GetVector(value, "dimensionsOrigin", dimOffset);
 	int objectType = value["objShape"].GetInt();
 
 	switch (objectType)
@@ -51,18 +53,18 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 		volume = new PxSphereGeometry(dim.x);
 		break;
 	case 1:
-		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim));
+		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim * scale / 2));
 		break;
 	case 2:
 		volume = new PxCapsuleGeometry(dim.x,dim.y);
 		break;
 	}
 	PxTransform trans = PhysXConvert::TransformToPxTransform(object->GetTransform());
-	trans.p = trans.p + PhysXConvert::Vector3ToPxVec3(dimoffset);
+	trans.p = trans.p;
 	PhysicsXObject* phyObj = new PhysicsXObject();
-	phyObj->properties.type = PhyProperties::Dynamic;
+	phyObj->properties.type = PhyProperties::Static;
 	phyObj->properties.transform = trans;
-	phyObj->properties.positionOffset =dimoffset;
+	phyObj->properties.positionOffset = dimOffset * scale;
 	phyObj->properties.volume = volume;
 	phyObj->properties.Mass = 10.0f;
 	object->SetPhysicsXObject(phyObj);

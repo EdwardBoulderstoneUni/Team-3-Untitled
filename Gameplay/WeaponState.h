@@ -17,18 +17,23 @@ class Shooting :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (lastInput.buttons[attack])
-		{
-			if (playerPro->ammo > 0) {
-				YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, player->GetWorldID());
-				playerPro->ammo--;
+			if (lastInput.buttons[attack])
+			{
+				if (playerPro->ammo > 0) {
+					YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, player->GetWorldID());
+					playerPro->ammo--;
+				}
 			}
-		}
 		if (lastInput.buttons[reload])
 		{
 			if (playerPro->ammo >= 0 && playerPro->ammo < playerPro->maxAmmo) {
 				playerPro->ammo = playerPro->maxAmmo;
 			}
+		}
+		if (lastInput.buttons[grenade] && timeStack->grenadeCD < 0)
+		{
+			YiEventSystem::GetMe()->PushEvent(PLAYER_THROW_GRENADE, player->GetWorldID());
+			timeStack->grenadeCD = GRENADE_CD;
 		}
 		return PushdownResult::NoChange;
 	}
@@ -38,12 +43,12 @@ class Hold :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (lastInput.buttons[attack])
-		{
-			*newState = new Shooting();
-			(*newState)->userdata = player;
-			return PushdownResult::Push;
-		}
+			if (lastInput.buttons[attack])
+			{
+				*newState = new Shooting();
+				(*newState)->userdata = player;
+				return PushdownResult::Push;
+			}
 		return PushdownResult::NoChange;
 	}
 };

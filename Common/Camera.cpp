@@ -89,7 +89,7 @@ Matrix4 Camera::BuildProjectionMatrix(float currentAspect) const
 }
 
 Camera Camera::BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float nearPlane,
-                                      float farPlane)
+	float farPlane)
 {
 	Camera c;
 	c.camType = CameraType::Perspective;
@@ -105,7 +105,7 @@ Camera Camera::BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw
 }
 
 Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top,
-                                float bottom, float nearPlane, float farPlane)
+	float bottom, float nearPlane, float farPlane)
 {
 	Camera c;
 	c.camType = CameraType::Orthographic;
@@ -124,17 +124,17 @@ Camera Camera::BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, floa
 }
 
 void Camera::ThirdPersonCamera(NCL::CSC8503::GameObject* object, Vector3 offset, float yawoffset) {
-	
+
 	Quaternion quat = object->GetTransform().GetOrientation();
 	Vector3 eular = quat.ToEuler();
-	Vector3 dir = quat*Vector3(0,0,1);
-	Vector3 middle = object->GetTransform().GetPosition()+ offset;
+	Vector3 dir = quat * Vector3(0, 0, 1);
+	Vector3 middle = object->GetTransform().GetPosition() + offset;
 
 	Vector3 direction = middle - object->GetTransform().GetPosition();
 	Vector3 rotatedDirection = quat * direction;
 	Vector3 rotatedPoint = rotatedDirection + object->GetTransform().GetPosition();
 
-	SetPosition(rotatedPoint +dir*10.0f);
+	SetPosition(rotatedPoint + dir * 10.0f);
 	SetPitch(eular.x);
-	SetYaw(eular.y+yawoffset);
+	SetYaw(eular.y + yawoffset);
 }

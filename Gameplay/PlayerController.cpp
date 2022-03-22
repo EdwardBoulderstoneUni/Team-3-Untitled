@@ -34,6 +34,8 @@ void PlayerController::update(const float dt)
           movement_direction = NCL::Maths::Vector2(1, 0);
       if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
           buttons[attack] = true;
+      if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
+          buttons[grenade] = true;
 
        look_direction.x -= Window::GetMouse()->GetRelativePosition().y;
        look_direction.x = std::min(look_direction.x, 90.0f);

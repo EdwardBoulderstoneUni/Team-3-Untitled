@@ -24,7 +24,7 @@ namespace NCL
 
 			void ReloadShader() override;
 
-			bool LoadSuccess() const
+			bool LoadSuccess() const override
 			{
 				return programValid == GL_TRUE;
 			}

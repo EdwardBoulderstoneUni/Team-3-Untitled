@@ -29,7 +29,7 @@ void Player::SetUp()
 	properties.type = PhyProperties::Character;
 	properties.transform = PhysXConvert::TransformToPxTransform(GetTransform());
 	properties.Mass = 10.0f;
-	properties.positionOffset = Vector3(0,4.1,0);
+	properties.positionOffset = Vector3(0, 4.1, 0);
 
 	Vector3 scale = GetTransform().GetScale();
 	properties.volume = new PxCapsuleGeometry(PhysXConvert::Vector3ToPxVec3(scale).x,
@@ -60,7 +60,7 @@ void Player::SetUp()
 
 
 void Player::Respawn() {
-	YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN,GetWorldID());
+	YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN, GetWorldID());
 }
 
 
@@ -124,4 +124,5 @@ void Player::Update(float dt) {
 	weaponState->Update(dt);
 	timeStack->dashCooldown -= dt;
 	timeStack->respawnCooldown -= dt;
+	timeStack->grenadeCD -= dt;
 }

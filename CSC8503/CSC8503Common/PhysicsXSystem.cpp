@@ -26,7 +26,7 @@ PxControllerManager* gManager = NULL;
 
 PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
 	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
-	PxPairFlags & pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
 {
 	PX_UNUSED(attributes0);
 	PX_UNUSED(attributes1);
@@ -47,7 +47,7 @@ PxFilterFlags customizeFilterShader(PxFilterObjectAttributes attributes0, PxFilt
 	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
 	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
 {
-	
+
 	PX_UNUSED(attributes0);
 	PX_UNUSED(attributes1);
 	PX_UNUSED(filterData0);
@@ -118,34 +118,38 @@ class ContackCallback :public PxSimulationEventCallback {
 				PxU32 internalFaceIndex1 = contacts[j].internalFaceIndex1;
 			}
 		}*/
-		_CONTACT_O2OHandle(a,b);
+		_CONTACT_O2OHandle(a, b);
 	}
 	void _CONTACT_O2OHandle(GameObject* a, GameObject* b) {
 		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_floor) {
 			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
 		}
 		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
-			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT,a->GetWorldID(),b->GetWorldID());
+			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT, a->GetWorldID(), b->GetWorldID());
+		}
+		if (a->type == GameObjectType_team1Grenade and b->type == GameObjectType_floor) {
+			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+			YiEventSystem::GetMe()->PushEvent(GRENADE_DAMAGE_RANGE, a->GetWorldID(), b->GetWorldID());
 		}
 	}
 };
-class CharacterCallback :public PxUserControllerHitReport,public PxControllerBehaviorCallback {
+class CharacterCallback :public PxUserControllerHitReport, public PxControllerBehaviorCallback {
 	void onShapeHit(const PxControllerShapeHit& hit) {
 		PX_UNUSED((hit));
 		GameObject* a = (GameObject*)hit.controller->getActor()->userData;
 		GameObject* b = (GameObject*)hit.actor->userData;
-		_CONTACT_P2OHandle(a,b);
+		_CONTACT_P2OHandle(a, b);
 	}
 	void onControllerHit(const PxControllersHit& hit) {
 		GameObject* a = (GameObject*)hit.controller->getActor()->userData;
 		GameObject* b = (GameObject*)hit.other->getActor()->userData;
-		_CONTACT_P2PHandle(a,b);
+		_CONTACT_P2PHandle(a, b);
 	}
-	void onObstacleHit(const PxControllerObstacleHit& hit){}
+	void onObstacleHit(const PxControllerObstacleHit& hit) {}
 
-	PxControllerBehaviorFlags		getBehaviorFlags(const PxShape& shape, const PxActor& actor) { 
+	PxControllerBehaviorFlags		getBehaviorFlags(const PxShape& shape, const PxActor& actor) {
 		//GameObject* a = (GameObject*)actor.userData;
-		return PxControllerBehaviorFlags(0); 
+		return PxControllerBehaviorFlags(0);
 	}
 	PxControllerBehaviorFlags		getBehaviorFlags(const PxController& controller) { return PxControllerBehaviorFlags(0); }
 	PxControllerBehaviorFlags		getBehaviorFlags(const PxObstacle& obstacle) { return PxControllerBehaviorFlags(0); }
@@ -163,10 +167,11 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 			}
 			else if (b->GetRenderObject()->GetColour() == Vector4(0, 0, 1, 1)) {
 				color = 2;
-			}else if (b->GetRenderObject()->GetColour() == Vector4(1, 1, 1, 1)) {
+			}
+			else if (b->GetRenderObject()->GetColour() == Vector4(1, 1, 1, 1)) {
 				color = 3;
 			}
-			YiEventSystem::GetMe()->PushEvent(PLAYER_COLOR_ZONE,player->GetWorldID(),color);
+			YiEventSystem::GetMe()->PushEvent(PLAYER_COLOR_ZONE, player->GetWorldID(), color);
 		}
 	}
 	void _CONTACT_P2PHandle(GameObject* a, GameObject* b)
@@ -181,7 +186,7 @@ class CharacterCallback :public PxUserControllerHitReport,public PxControllerBeh
 ContackCallback* callback = new ContackCallback;
 CharacterCallback* characterCallback = new CharacterCallback;
 
-PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
+PhysicsXSystem::PhysicsXSystem(GameWorld& g) :gameWorld(g)
 {
 	p_self = this;
 	dTOffset = 0.0f;
@@ -226,7 +231,15 @@ void PhysicsXSystem::initPhysics()
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 	gManager = PxCreateControllerManager(*gScene);
-	
+
+	gScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 3.0f);
+	gScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
+
+	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_AABBS, 2.0f);
+	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 2.0f);
+
+
+
 }
 
 void PhysicsXSystem::Update(float dt)
@@ -258,7 +271,7 @@ void PhysicsXSystem::addActor(GameObject& actor)
 	PxRigidDynamic* dynaBody = nullptr;
 	PxRigidStatic* statBody = nullptr;
 	PxShape* shape = nullptr;
-	PxCapsuleControllerDesc* desc=nullptr;
+	PxCapsuleControllerDesc* desc = nullptr;
 	PxCapsuleGeometry* geo = nullptr;
 
 	switch (properties.type)
@@ -273,7 +286,7 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		}
 		dynaBody->attachShape(*shape);
 		dynaBody->setMass(properties.Mass);
-		
+
 		gScene->addActor(*dynaBody);
 		dynaBody->userData = &actor;
 		phyObj->rb = dynaBody;
@@ -293,11 +306,11 @@ void PhysicsXSystem::addActor(GameObject& actor)
 		shape->release();
 		break;
 	case PhyProperties::Character:
-		
+
 		geo = (PxCapsuleGeometry*)properties.volume;
 		trans = properties.transform;
 		desc = new PxCapsuleControllerDesc();
-		desc->radius = geo->radius/2;
+		desc->radius = geo->radius / 2;
 		desc->height = geo->halfHeight;
 		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
 		desc->material = gMaterial;
@@ -329,15 +342,15 @@ void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 		{
 			const PxTransform shapePose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
 			const PxGeometryHolder h = shapes[j]->getGeometry();
-			GameObject* obj=(GameObject*)actors[i]->userData;
-			PhyProperties pro=obj->GetPhysicsXObject()->properties;
-			obj->GetTransform().SetPosition(Vector3(shapePose.p.x,shapePose.p.y, shapePose.p.z)-pro.positionOffset);
+			GameObject* obj = (GameObject*)actors[i]->userData;
+			PhyProperties pro = obj->GetPhysicsXObject()->properties;
+			obj->GetTransform().SetPosition(Vector3(shapePose.p.x, shapePose.p.y, shapePose.p.z) - pro.positionOffset);
 			if (obj->GetPhysicsXObject()->controller)continue;
 			if (h.getType() == PxGeometryType::eCAPSULE) {
-				Quaternion quat=Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
+				Quaternion quat = Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
 					shapePose.q.w);
 				Vector3 temp = quat.ToEuler();
-				quat = Quaternion::EulerAnglesToQuaternion(temp.x,temp.y+180.0f,temp.z-90.0f);
+				quat = Quaternion::EulerAnglesToQuaternion(temp.x, temp.y + 180.0f, temp.z - 90.0f);
 				obj->GetTransform().SetOrientation(quat);
 			}
 			else {
@@ -420,7 +433,7 @@ bool PhysicsXSystem::raycast(Vector3 origin, Vector3 dir, float maxdis, PxRaycas
 	return gScene->raycast(pxori, pxdir, maxdis, hit);
 }
 
-bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit)
+bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis, PxRaycastBuffer& hit)
 {
 	Vector3 camPos = camera.GetPosition();
 	PxVec3 pxCamPos = PhysXConvert::Vector3ToPxVec3(camPos);
@@ -441,7 +454,7 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 	return raycast(camera.GetPosition(), c, maxdis, hit);
 }
 
-Vector3 PhysicsXSystem::ScreenToWorld(Camera& camera,Vector2 pos, bool isNear)
+Vector3 PhysicsXSystem::ScreenToWorld(Camera& camera, Vector2 pos, bool isNear)
 {
 	auto Pos = Vector3();
 	if (isNear) {
@@ -462,13 +475,21 @@ Vector3 PhysicsXSystem::ScreenToWorld(Camera& camera,Vector2 pos, bool isNear)
 
 void PhysicsXSystem::SyncGameObjs()
 {
-	std::vector<GameObject*>& actors=gameWorld.GetGameObjects();
-	for (auto actor:actors)
+	std::vector<GameObject*>& actors = gameWorld.GetGameObjects();
+	for (auto actor : actors)
 	{
 		PhysicsXObject* obj = actor->GetPhysicsXObject();
 		if (not obj)continue;
 		if (obj->rb)continue;
 		addActor(*actor);
+	}
+}
+void PhysicsXSystem::DrawCollisionLine() {
+	const PxRenderBuffer& rb = gScene->getRenderBuffer();
+	for (PxU32 i = 0; i < rb.getNbLines(); i++)
+	{
+		const PxDebugLine& line = rb.getLines()[i];
+		Debug::DrawLine(PhysXConvert::PxVec3ToVector3(line.pos0), PhysXConvert::PxVec3ToVector3(line.pos1));
 	}
 }
 
@@ -489,7 +510,6 @@ void PhysicsXSystem::SyncObjsTransform()
 		}
 	}
 }
-
 
 
 

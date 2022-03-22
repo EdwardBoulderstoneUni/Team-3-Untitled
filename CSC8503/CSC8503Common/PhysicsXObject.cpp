@@ -31,4 +31,3 @@ void PhysicsXObject::CTrans(PxExtendedVec3 pos) {
 }
 
 
-

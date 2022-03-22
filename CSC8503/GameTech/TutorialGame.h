@@ -7,6 +7,8 @@
 #include "GameState.h"
 #include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
+
+#define DEBUG
 namespace NCL {
 	namespace CSC8503 {
 		enum CameraMode {
@@ -28,8 +30,7 @@ namespace NCL {
 
 			void SetSingleMode();
 			void SetMultiMode();
-			float tLeft = 10;
-
+			float tLeft = 900;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
@@ -38,12 +39,12 @@ namespace NCL {
 		
 			void InitWorld();
 
-			void InitDefaultFloor(Vector3 position,Vector4 color);
+			void InitDefaultFloor();
 			void RegisterEventHandles();
 			void HUDUpdate(float dt);
 
 			void CalculateFrameRate(float dt);
-
+		
 			GameObject* AddFloorToWorld(const Vector3& position);
 			GameObject* AddSphereToWorld(const Vector3& position, float radius, float inverseMass = 10.0f);
 			GameObject* AddCubeToWorld(const Vector3& position, Vector3 dimensions, float inverseMass = 10.0f);
@@ -63,8 +64,6 @@ namespace NCL {
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 	
-			bool DebugMode;
-			
 			OGLMesh* capsuleMesh = nullptr;
 			OGLMesh* cubeMesh = nullptr;
 			OGLMesh* sphereMesh = nullptr;
@@ -85,10 +84,12 @@ namespace NCL {
 
 			GameUI* gameUI;
 			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			void UpdateGameObjects(float dt);
 		};
 	}

@@ -20,7 +20,7 @@ if (playerPro->health==0){           \
 return PushdownResult::Push;         \
 }                                    \
 
-						
+
 #define M_STANDINGJUMP                                       \
 if (lastInput.buttons[jump]){								 \
 	*newState = new StandingJump();							 \
@@ -37,7 +37,7 @@ if (lastInput.buttons[jump]){								 \
 	timeStack->jumpingTimeStack = 0.0f;						 \
 	return PushdownResult::Push;							 \
 }															 \
-  
+
 #define M_DASH                                               \
 if (lastInput.buttons[dash] and timeStack->dashCooldown < 0){\
 *newState = new Dash();										 \
@@ -80,28 +80,28 @@ class Die :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if(timeStack->deathTimeStack>RESPAWN_DURA)
-		{
-			timeStack->respawnCooldown = RESPAWN_CD;
-			timeStack->deathTimeStack = 0.0f;
-			playerPro->health = 100.0;
-			YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN, player->GetWorldID());
-			return PushdownResult::Pop;
-		}
+			if (timeStack->deathTimeStack > RESPAWN_DURA)
+			{
+				timeStack->respawnCooldown = RESPAWN_CD;
+				timeStack->deathTimeStack = 0.0f;
+				playerPro->health = 100.0;
+				YiEventSystem::GetMe()->PushEvent(PLAYER_RESPWAN, player->GetWorldID());
+				return PushdownResult::Pop;
+			}
 		timeStack->deathTimeStack += dt;
 		M_GRAVITY
-		return PushdownResult::NoChange;
+			return PushdownResult::NoChange;
 	}
 };
 class Dash :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (timeStack->dashingTimeStack > DASH_DURA)
-		{
-			timeStack->dashCooldown = DASH_CD;
-			return PushdownResult::Pop;
-		}
+			if (timeStack->dashingTimeStack > DASH_DURA)
+			{
+				timeStack->dashCooldown = DASH_CD;
+				return PushdownResult::Pop;
+			}
 		M_DIE
 		if (lastInput.movement_direction == Vector2(0, 1)){
 			if (phyobj)phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * DASH_OFF);
@@ -149,10 +149,10 @@ class StandingJump :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (timeStack->jumpingTimeStack > JUMP_DURA)
-		{
- 			return PushdownResult::Pop;
-		}
+			if (timeStack->jumpingTimeStack > JUMP_DURA)
+			{
+				return PushdownResult::Pop;
+			}
 		M_DOUBLEJUMP
 		M_DASH
 		M_DIE
@@ -167,30 +167,29 @@ class Walk :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-		if (player->GetLastInput().movement_direction == Vector2()) {
-			return PushdownResult::Pop;
-		}
+			if (player->GetLastInput().movement_direction == Vector2()) {
+				return PushdownResult::Pop;
+			}
 		M_STANDINGJUMP
-		M_DASH
-		M_DIE
-		M_PLAYER_MOVE
-		M_GRAVITY
-		return PushdownResult::NoChange;
+			M_DASH
+			M_DIE
+			M_PLAYER_MOVE
+			M_GRAVITY
+			return PushdownResult::NoChange;
 	}
 };
 class Idle :public PushdownState {
 	PushdownResult OnUpdate(float dt,
-		PushdownState **newState) override {
+		PushdownState** newState) override {
 		M_INIT
- 		M_STANDINGJUMP
-		M_DASH
-		M_WALK
-		M_DIE
-		M_GRAVITY
-		return PushdownResult::NoChange;
+			M_STANDINGJUMP
+			M_DASH
+			M_WALK
+			M_DIE
+			M_GRAVITY
+			return PushdownResult::NoChange;
 	}
 };
-
 
 
 
