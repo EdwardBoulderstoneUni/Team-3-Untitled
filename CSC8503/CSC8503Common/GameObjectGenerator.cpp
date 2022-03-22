@@ -9,7 +9,7 @@
 #include "AssetManager.h"
 #include "..//..//Plugins/OpenGLRendering/OGLMesh.h"
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
-#include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
+#include "../../Common/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
 #include "PhysXConvert.h"
 
