@@ -47,9 +47,9 @@ void GameTechRendererOrbis::Update(float dt) {
 	rotation += 30.0f * dt;
 	translation += dt;
 
-	defaultObject[0]->SetLocalTransform(Matrix4::Translation(Vector3(-0.4, 0, 0)) * Matrix4::Rotation(rotation, Vector3(1, 1, 1)));
+//	defaultObject[0]->SetLocalTransform(Matrix4::Translation(Vector3(-0.4, 0, 0)) * Matrix4::Rotation(rotation, Vector3(1, 1, 1)));
 
-	defaultObject[1]->SetLocalTransform(Matrix4::Translation(Vector3(0.4, 0, sin(translation))));
+//	defaultObject[1]->SetLocalTransform(Matrix4::Translation(Vector3(0.4, 0, sin(translation))));
 }
 
 void GameTechRendererOrbis::RenderFrame() {
@@ -95,7 +95,7 @@ void GameTechRendererOrbis::RenderFrame() {
 
 void GameTechRendererOrbis::DrawRenderObject(NCL::CSC8503::RenderObject* o) {
 	Matrix4* modelMat = (Matrix4*)currentGFXContext->allocateFromCommandBuffer(sizeof(Matrix4), Gnm::kEmbeddedDataAlignment4);
-	*modelMat = o->GetLocalTransform();
+	//*modelMat = o->GetLocalTransform();
 
 	Gnm::Buffer constantBuffer;
 	constantBuffer.initAsConstantBuffer(modelMat, sizeof(Matrix4));

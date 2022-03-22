@@ -8,7 +8,7 @@
 
 #include <.\graphics\api_gnm\toolkit\allocators.h>
 #include <.\graphics\api_gnm\toolkit\stack_allocator.h>
-
+#include <..\samples\sample_code\graphics\api_gnm\toolkit\toolkit.h>
 #include "../Common/Matrix4.h"
 
 using namespace sce::Vectormath::Scalar::Aos;

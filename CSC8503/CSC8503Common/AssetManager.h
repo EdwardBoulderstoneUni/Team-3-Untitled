@@ -4,16 +4,16 @@
 
 namespace NCL
 {
+	class MeshGeometry;
 	class MeshMaterial;
 	namespace Rendering {
-		class OGLMesh;
-		class OGLTexture;		
+		class TextureBase;
 	}
 	class AssetManager
 	{
 
-		std::map<std::string, NCL::Rendering::OGLMesh*> m_Meshes;
-		std::map<const char*, NCL::Rendering::OGLTexture*> m_Textures;
+		std::map<std::string, NCL::MeshGeometry*> m_Meshes;
+		std::map<const char*, NCL::Rendering::TextureBase*> m_Textures;
 		std::map<std::string, NCL::MeshMaterial*> m_Materials;
 
 		static AssetManager* m_Instance;
@@ -26,8 +26,8 @@ namespace NCL
 		static AssetManager* GetInstance();
 		static void Init();
 		static void Finish();
-		NCL::Rendering::OGLMesh* GetMesh(const char*) const;
-		NCL::Rendering::OGLTexture* GetTexture(const char*) const;
+		NCL::MeshGeometry* GetMesh(const char*) const;
+		NCL::Rendering::TextureBase* GetTexture(const char*) const;
 		NCL::MeshMaterial* GetMaterial(const char*) const;
 	};
 }

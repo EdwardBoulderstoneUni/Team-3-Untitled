@@ -4,9 +4,18 @@
 #include <String>
 #include <map>
 
-enum GAME_EVENT_ID;
+enum GAME_EVENT_ID {
+	PLAYER_OPEN_FIRE,
+	PLAYER_THROW_GRENADE,
+	OBJECT_DELETE,
+	PLAYER_HIT,
+	PLAYER_RESPWAN,
+	GAME_OVER,
+	PLAYER_COLOR_ZONE,
+	GRENADE_DAMAGE_RANGE
+};
 struct EVENT;
-typedef void(__stdcall* FUNC_EVENT_HANDLE)(const EVENT* pEvent, unsigned long long dwOwnerData);
+typedef void(* FUNC_EVENT_HANDLE)(const EVENT* pEvent, unsigned long long dwOwnerData);
 struct EVENT_DEFINE
 {
 	typedef std::list< std::pair< FUNC_EVENT_HANDLE, unsigned long long > > REGISTER_STRUCT;

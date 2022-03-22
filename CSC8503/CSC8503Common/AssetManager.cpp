@@ -122,12 +122,12 @@ namespace NCL
 		}
 	}
 
-	NCL::Rendering::OGLMesh* AssetManager::GetMesh(const char* name) const
+	NCL::MeshGeometry* AssetManager::GetMesh(const char* name) const
 	{
 		return m_Meshes.at(name);
 	}
 
-	NCL::Rendering::OGLTexture* AssetManager::GetTexture(const char* name) const
+	NCL::Rendering::TextureBase* AssetManager::GetTexture(const char* name) const
 	{
 		return m_Textures.at(name);
 	}

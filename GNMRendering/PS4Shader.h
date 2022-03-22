@@ -49,6 +49,7 @@ namespace NCL {
 
 			bool ShaderIsBinary(const string& name);
 
+			bool LoadSuccess() const { return true; }
 		protected:
 			void* fetchShader;
 

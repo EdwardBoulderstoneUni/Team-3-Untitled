@@ -1,10 +1,13 @@
 #include "TutorialGame.h"
+#ifdef ORBIS
+#include "GameTechRendererOrbis.h"
+#else
+#include "GameTechRenderer.h"
+#endif
 #include "../CSC8503Common/GameWorld.h"
 #include "../CSC8503Common/GameObjectGenerator.h"
 #include "../CSC8503Common/AssetManager.h"
-#include "../../Plugins/OpenGLRendering/OGLMesh.h"
-#include "../../Plugins/OpenGLRendering/OGLShader.h"
-#include "../../Plugins/OpenGLRendering/OGLTexture.h"
+
 #include "../../Common/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
@@ -14,6 +17,7 @@
 #include "../../Gameplay/Bullet.h"
 #include "../../Gameplay/Grenade.h"
 
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -21,10 +25,15 @@ TutorialGame::TutorialGame()
 { 
 	eventSystem = new YiEventSystem();
 	world = new GameWorld();
+#ifndef ORBIS
 	renderer = new GameTechRenderer(*world);
+	Debug::SetRenderer(renderer);
+#else
+	renderer = new NCL::PS4::GameTechRendererOrbis();
+#endif
 	physicsX = new PhysicsXSystem(*world);
 
-	Debug::SetRenderer(renderer);
+
 	InitialiseUI();
 	InitialiseAssets();
 	AudioManager::Startup();
@@ -72,7 +81,9 @@ void TutorialGame::InitialiseAssets() {
 void TutorialGame::InitialiseUI()
 {
 	gameUI = new GameUI();
+#ifndef ORBIS
 	renderer->SetUI(gameUI);
+#endif
 }
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
@@ -99,9 +110,9 @@ void TutorialGame::UpdateGame(float dt)
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 	renderer->Render();
-
+#ifndef ORBIS
 	Debug::FlushRenderables(dt);
-
+#endif
 #ifdef DEBUG
 	physicsX->DrawCollisionLine();
 	CalculateFrameRate(dt);
@@ -146,16 +157,16 @@ void TutorialGame::InitDefaultFloor()
 
 void TutorialGame::RegisterEventHandles()
 {
-	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
-	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
-	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
-	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
-	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
-	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(unsigned long long )this);
+	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (unsigned long long)this);
+	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(unsigned long long)this);
+	eventSystem->RegisterEventHandle("HIT", _HitHandle, (unsigned long long)world);
+	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (unsigned long long)world);
+	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (unsigned long long)world);
 
 
 
-	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
+	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (unsigned long long)this);
 }
 
 #ifndef ORBIS
@@ -216,7 +227,11 @@ void TutorialGame::HUDUpdate(float dt)
 #endif
 
 void TutorialGame::CalculateFrameRate(float dt) {
+#ifndef ORBIS
 	float currentTime = GetTickCount64() * 0.001f;
+#else
+	float currentTime = 4.0f;//TO-DO
+#endif
 	++framesPerSecond;
 	if (currentTime - lastTime > 1.0f)
 	{
@@ -224,10 +239,12 @@ void TutorialGame::CalculateFrameRate(float dt) {
 		FPS = framesPerSecond;
 		framesPerSecond = 0;
 	}
+#ifndef ORBIS
 	renderer->DrawString("FPS: "+std::to_string(FPS), Vector2(60, 90));
+#endif
 }
 
-void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+void TutorialGame::_openFirHandle(const EVENT* pEvent, unsigned long long dwOwnerData)
 {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
@@ -256,7 +273,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
 }
 
-void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+void TutorialGame::_GrenadeHandle(const EVENT* pEvent, unsigned long long dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
 
@@ -271,8 +288,8 @@ void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 		.SetScale(cubeSize)
 		.SetPosition(position + dir.shootDir * 15);
 	grenade->InitAllComponent();
-	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), game->cubeMesh,
-		game->basicTex, game->basicShader));
+	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), AssetManager::GetInstance()->GetMesh("Cube.msh"),
+		AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 
 	game->world->AddGameObject(grenade);
 
@@ -282,7 +299,7 @@ void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 60.0f);
 }
 
-void TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+void TutorialGame::_deleteHandle(const EVENT* pEvent, unsigned long long dwOwnerData)
 {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
@@ -290,38 +307,38 @@ void TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	game->physicsX->deleteActor(*temp);
 	game->world->RemoveGameObject(temp);
 }
-void TutorialGame::_HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+void TutorialGame::_HitHandle(const EVENT* pEvent, unsigned long long dwOwnerData)
 {
 	string bulletID = pEvent->vArg[0];
 	string hitID = pEvent->vArg[1];
 	GameWorld* world = (GameWorld*)dwOwnerData;
 
 	Bullet* bullet = static_cast<Bullet*>(world->FindObjectbyID(stoi(bulletID)));
-	if (not bullet)return;
+	if (! bullet)return;
 	int shooterID = bullet->GetShooterID();
 
 	Player* shooter = static_cast<Player*>(world->FindObjectbyID(shooterID));
 	Player* hitobj = static_cast<Player*>(world->FindObjectbyID(stoi(hitID)));
 	PlayerPro* playerPro = hitobj->GetPlayerPro();
 	int health=hitobj->GetPlayerPro()->health;
-	if (health > 0 and playerPro->health - bullet->GetDamage() <= 0) {
+	if (health > 0 && playerPro->health - bullet->GetDamage() <= 0) {
 		std::cout << (std::to_string(shooter->GetWorldID()) + " --->" +
 			std::to_string(hitobj->GetWorldID())) << std::endl;
 		shooter->GetPlayerPro()->teamKill++;
 	}
-	if (playerPro->health not_eq 0)
+	if (playerPro->health != 0)
 		shooter->GetPlayerPro()->score++;
 	playerPro->health = playerPro->health - bullet->GetDamage() < 0 ? 0 : playerPro->health - bullet->GetDamage();
 	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
 }
-void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+void TutorialGame::_respawnHandle(const EVENT* pEvent, unsigned long long  dwOwnerData)
 {
 	GameWorld* world = (GameWorld*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
 	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
 }
-void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+void TutorialGame::_colorzoneHandle(const EVENT* pEvent, unsigned long long  dwOwnerData)
 {
 	GameWorld* world = (GameWorld*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
@@ -344,7 +361,7 @@ void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	}
 	
 }
-void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+void TutorialGame::_damageRangeHandle(const EVENT* pEvent, unsigned long long  dwOwnerData) {
 	string grenadeID = pEvent->vArg[0];
 
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
@@ -354,7 +371,7 @@ void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) 
 			enemy = static_cast<Player*>(i);
 
 			Grenade* grenade = static_cast<Grenade*>(game->world->FindObjectbyID(stoi(grenadeID)));
-			if (not grenade)return;
+			if (! grenade)return;
 			int playerID = grenade->GetPlayerID();
 			Player* player = static_cast<Player*>(game->world->FindObjectbyID(playerID));
 

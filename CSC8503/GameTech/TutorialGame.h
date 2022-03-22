@@ -1,15 +1,18 @@
 #pragma once
-#include "GameTechRenderer.h"
-#include "OGLTexture.h"
+
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
 #include "../CSC8503Common/PushdownMachine.h"
 #include "GameState.h"
 #include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
-
+#include "GameUI.h"
 #define DEBUG
 namespace NCL {
+	namespace Rendering
+	{
+		class RendererBase;
+	}
 	namespace CSC8503 {
 		enum CameraMode {
 			LockedObject,
@@ -45,24 +48,12 @@ namespace NCL {
 
 			void CalculateFrameRate(float dt);
 
-			GameTechRenderer*	renderer;
+			RendererBase*	renderer;
 			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
 			Player*				player;
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
-	
-			OGLMesh* capsuleMesh = nullptr;
-			OGLMesh* cubeMesh = nullptr;
-			OGLMesh* sphereMesh = nullptr;
-			OGLTexture* basicTex = nullptr;
-			OGLShader* basicShader = nullptr;
-
-			//Coursework Meshes
-			OGLMesh* charMeshA = nullptr;
-			OGLMesh* charMeshB = nullptr;
-			OGLMesh* enemyMesh = nullptr;
-			OGLMesh* bonusMesh = nullptr;
 
 			float FPS = 0.0f;
 			float framesPerSecond = 0.0f;
@@ -71,13 +62,13 @@ namespace NCL {
 			float currentSecond;
 
 			GameUI* gameUI;
-			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
-			static void _damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _openFirHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
+			static void _GrenadeHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
+			static void _deleteHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
+			static void _HitHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
+			static void _respawnHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
+			static void _colorzoneHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
+			static void _damageRangeHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
 			void UpdateGameObjects(float dt);
 		};
 	}

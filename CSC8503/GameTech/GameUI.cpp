@@ -2,10 +2,12 @@
 
 using namespace NCL;
 
+#ifndef ORBIS
 Win32Code::ExInputResult ImguiProcessInput(void* data);
-
+#endif
 GameUI::GameUI()
 {
+#ifndef ORBIS
 	Win32Code::Win32Window* win32_w = dynamic_cast<Win32Code::Win32Window*>(Window::GetWindow());
 	if (!win32_w) return;
 	win32_w->SetExtraMsgFunc(ImguiProcessInput);
@@ -30,16 +32,19 @@ GameUI::GameUI()
 	// Setup Platform/Renderer backends
 	ImGui_ImplWin32_Init(win32_w->GetHandle());
 	ImGui_ImplOpenGL3_Init("#version 400");
+#endif
 
 }
 
 GameUI::~GameUI()
 {
+#ifndef ORBIS
 	if (!IsValid) return;
 
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+#endif
 }
 
 void GameUI::PushMenu(const GameMenuPtr& menu)
@@ -89,7 +94,7 @@ void GameUI::DrawUI() const
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-
+#ifndef ORBIS
 Win32Code::ExInputResult ImguiProcessInput(void* data)
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -135,3 +140,4 @@ Win32Code::ExInputResult ImguiProcessInput(void* data)
 	}
 	return { false, io.WantCaptureKeyboard };
 }
+#endif

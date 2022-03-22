@@ -1,16 +1,7 @@
 #pragma once
 #include "EventSystem.h"
 
-enum GAME_EVENT_ID {
-	PLAYER_OPEN_FIRE,
-	PLAYER_THROW_GRENADE,
-	OBJECT_DELETE,
-	PLAYER_HIT,
-	PLAYER_RESPWAN,
-	GAME_OVER,
-	PLAYER_COLOR_ZONE,
-	GRENADE_DAMAGE_RANGE
-};
+
 class YiEventSystem:public EventSystem 
 {
 public:

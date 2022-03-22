@@ -8,7 +8,7 @@
 
 #include <..\samples\sample_code\graphics\api_gnm\toolkit\allocators.h>
 #include <..\samples\sample_code\graphics\api_gnm\toolkit\stack_allocator.h>
-#include <..\samples\sample_code\graphics\api_gnm\toolkit\toolkit.h>
+//#include <..\samples\sample_code\graphics\api_gnm\toolkit\toolkit.h>
 #include "../Common/RendererBase.h"
 #include "PS4Frame.h"
 #include "PS4Texture.h"

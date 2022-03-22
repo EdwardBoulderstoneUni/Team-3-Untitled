@@ -92,9 +92,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, int iArg0)
 	EVENT event;
 	event.pEventDef = m_mapEventIndex_AsID[id];
 
-	char szTemp[32];
-	_snprintf_s(szTemp, 32, "%d", iArg0);
-	event.vArg.push_back(szTemp);
+	event.vArg.push_back(std::to_string(iArg0).c_str());
 
 	_PushEvent(event);
 }
@@ -106,9 +104,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, float fArg0)
 	EVENT event;
 	event.pEventDef = m_mapEventIndex_AsID[id];
 
-	char szTemp[32];
-	_snprintf_s(szTemp, 32, "%f", fArg0);
-	event.vArg.push_back(szTemp);
+	event.vArg.push_back(std::to_string(fArg0).c_str());
 
 	_PushEvent(event);
 }
@@ -147,9 +143,8 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* 
 
 	event.vArg.push_back(szArg0);
 	event.vArg.push_back(szArg1);
-	char szTemp[32];
-	_snprintf_s(szTemp, 32, "%d", nArg2);
-	event.vArg.push_back(szTemp);
+
+	event.vArg.push_back(std::to_string(nArg2).c_str());
 
 	_PushEvent(event);
 }
@@ -161,12 +156,9 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, int iArg0, int iArg1)
 	EVENT event;
 	event.pEventDef = m_mapEventIndex_AsID[id];
 
-	char szTemp[32];
-
-	_snprintf_s(szTemp, 32, "%d", iArg0);
-	event.vArg.push_back(szTemp);
-	_snprintf_s(szTemp, 32, "%d", iArg1);
-	event.vArg.push_back(szTemp);
+	event.vArg.push_back(std::to_string(iArg0).c_str());
+	
+	event.vArg.push_back(std::to_string(iArg1).c_str());
 
 	_PushEvent(event);
 }
@@ -181,11 +173,9 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* 
 	event.vArg.push_back(szArg0);
 	event.vArg.push_back(szArg1);
 
-	char szTemp[32];
-	_snprintf_s(szTemp, 32, "%d", iArg2);
-	event.vArg.push_back(szTemp);
-	_snprintf_s(szTemp, 32, "%d", iArg3);
-	event.vArg.push_back(szTemp);
+	event.vArg.push_back(std::to_string(iArg2).c_str());
+
+	event.vArg.push_back(std::to_string(iArg3).c_str());
 
 	_PushEvent(event);
 }
