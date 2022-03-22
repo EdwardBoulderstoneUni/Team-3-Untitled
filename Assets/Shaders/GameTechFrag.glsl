@@ -23,46 +23,39 @@ in Vertex
 
 out vec4 fragColor;
 
-void main(void)
-{
-	float shadow = 1.0; // New !
-	
-	if( IN . shadowProj . w > 0.0) { // New !
-		shadow = textureProj ( shadowTex , IN . shadowProj ) * 0.5f;
+vec4 projectTexture(){
+	vec4 albedo = IN.colour;
+	if(hasTexture) {
+		albedo *= texture(mainTex, IN.texCoord);
 	}
+	return albedo;
+}
 
-	vec3  incident = normalize ( lightPos - IN.worldPos );
-	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
-	
-	vec3 viewDir = normalize ( cameraPos - IN . worldPos );
-	vec3 halfDir = normalize ( incident + viewDir );
-
-	float rFactor = max (0.0 , dot ( halfDir , IN.normal ));
+vec4 applyLighting(vec4 albedo){
+	float shadow = 1.0;
+	if( IN.shadowProj.w > 0.0) { 
+		shadow = textureProj(shadowTex, IN.shadowProj) * 0.5f;
+	}
+	vec3  incident = normalize (lightPos - IN.worldPos );
+	float lambert  = max (0.0 , dot (incident, IN.normal)) * 0.9; 
+	vec3 viewDir = normalize (cameraPos - IN.worldPos);
+	vec3 halfDir = normalize (incident + viewDir);
+	float rFactor = max (0.0 , dot ( halfDir, IN.normal ));
 	float sFactor = pow ( rFactor , 80.0 );
 	
-	vec4 albedo = IN.colour;
-	
-	if(hasTexture) {
-	 albedo *= texture(mainTex, IN.texCoord);
-	}
-	
+    vec4 outputColour;
 	albedo.rgb = pow(albedo.rgb, vec3(2.2));
-	
-	fragColor.rgb = albedo.rgb * 0.05f; //ambient
-	
-	fragColor.rgb += albedo.rgb * lightColour.rgb * lambert * shadow; //diffuse light
-	
-	fragColor.rgb += lightColour.rgb * sFactor * shadow; //specular light
-	
-	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
-	
-	fragColor.a = albedo.a;
+	outputColour.rgb = albedo.rgb * 0.05f; //ambient
+	outputColour.rgb += albedo.rgb * lightColour.rgb * lambert * shadow; //diffuse light
+	outputColour.rgb += lightColour.rgb * sFactor * shadow; //specular light
+	outputColour.rgb = pow(outputColour.rgb, vec3(1.0 / 2.2f));
+	outputColour.a = albedo.a;
 
-//fragColor.rgb = IN.normal;
+    return outputColour;
+}
 
-	//fragColor = IN.colour;
-	
-	//fragColor.xy = IN.texCoord.xy;
-	
-	//fragColor = IN.colour;
+void main()
+{
+ vec4 albedo = projectTexture();
+ fragColor = applyLighting(albedo);
 }

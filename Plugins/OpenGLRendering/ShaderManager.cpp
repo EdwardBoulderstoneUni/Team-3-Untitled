@@ -1,4 +1,6 @@
 #include "ShaderManager.h"
+#include "../../Common/Window.h"
+#include "../../Common/RendererBase.h"
 namespace NCL
 {
     namespace Rendering
@@ -6,9 +8,8 @@ namespace NCL
         ShaderManager* ShaderManager::m_Instance = nullptr;
         ShaderManager::ShaderManager()
         {
-            m_Shaders.insert({ "default", new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl") });
-
-            for (auto& shader : m_Shaders)
+            m_Shaders.insert({ "default", Window::GetRenderer()->load_default_shader() });
+            for (const auto& shader : m_Shaders)
             {
                 if (!(shader.second->LoadSuccess()))
                 {
@@ -31,14 +32,19 @@ namespace NCL
             delete m_Instance;
         }
 
-        OGLShader* ShaderManager::GetShader(const char* name)
+        ShaderBase* ShaderManager::GetShader(const char* name) const
         {
             return m_Shaders.at(name);
         }
 
+        void ShaderManager::AddShader(const char* name, ShaderBase* shader)
+        {
+            m_Shaders.insert({ name, shader });
+        }
+
         ShaderManager::~ShaderManager()
         {
-            for (auto& shader : m_Shaders)
+            for (const auto& shader : m_Shaders)
             {
                 delete shader.second;
             }

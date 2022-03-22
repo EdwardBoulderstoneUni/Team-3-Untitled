@@ -20,3 +20,8 @@ Vector3::Vector3(const Vector2& v2, float newZ) : x(v2.x), y(v2.y), z(newZ)
 Vector3::Vector3(const Vector4& v4) : x(v4.x), y(v4.y), z(v4.z)
 {
 }
+
+const float* Vector3::as_float_array() const
+{
+	return array;
+}

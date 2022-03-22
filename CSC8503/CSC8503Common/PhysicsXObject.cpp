@@ -25,10 +25,6 @@ void PhysicsXObject::CMove(PxVec3 disp) {
 	if (not controller)return;
 	controller->move(disp, 0.0001f, 0.2f, PxControllerFilters(), NULL);
 }
-void PhysicsXObject::CTrans(PxExtendedVec3 pos) {
-	if (not controller)return;
-	controller->setPosition(pos);
-}
 
 
 
