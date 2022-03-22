@@ -68,8 +68,8 @@ namespace NCL
 			virtual void reset_state_for_next_shader() {}
 			virtual void reset_state_for_next_frame();
 			virtual void free_reserved_textures() = 0;
-			virtual unsigned reserve_texture(const TextureBase& data) = 0;
-			virtual void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) = 0;
+			virtual void reserve_texture(TextureBase& data) = 0;
+			virtual void bind_reserved_texture(const std::string& shader_property_name, const TextureBase& texture) = 0;
 			template<class ShaderArgs>
 			void bind_shader_property(const std::string& shader_property_name, const ShaderArgs& data) {
 				throw std::logic_error("Class cannot be passed to shader");

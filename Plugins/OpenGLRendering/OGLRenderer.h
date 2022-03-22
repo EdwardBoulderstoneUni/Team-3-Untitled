@@ -22,6 +22,8 @@ https://research.ncl.ac.uk/game/
 
 #include <string>
 #include <vector>
+
+#include "OGLTexture.h"
 #include "glad/glad.h"
 
 namespace NCL
@@ -50,6 +52,8 @@ namespace NCL
 			explicit OGLRenderer(Window& w);
 			~OGLRenderer() override;
 
+
+			static OGLTexture* init_shadow_buffer(unsigned shadow_size, unsigned& fbo_address);
 			void OnWindowResize(int w, int h) override;
 
 			bool HasInitialised() const override
@@ -74,6 +78,9 @@ namespace NCL
 			void bind_shader(ShaderBase* shader) override;
 			void bind_mesh(MeshGeometry* m) override;
 			void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const override;
+			void render_to(TextureBase* texture_base) const override;
+			void blit(TextureBase* source, TextureBase* dest) override;
+
 			ShaderBase* load_default_shader() const override;
 		protected:
 			void BeginFrame() override;
@@ -96,7 +103,7 @@ namespace NCL
 			void reset_shader_for_next_object() override;
 			void reset_state_for_next_frame() override;
 			void free_reserved_textures() override;
-			unsigned reserve_texture(const TextureBase& data) override;
+			unsigned reserve_texture(TextureBase& data) override;
 			void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) override;
 
 			TextureBase* init_blank_texture(unsigned width, unsigned height) const override;
