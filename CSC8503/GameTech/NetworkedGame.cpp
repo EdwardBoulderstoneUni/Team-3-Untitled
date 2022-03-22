@@ -200,6 +200,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		input.buttons[dash] = realPacket->buttonstates[1];
 		input.buttons[reload] = realPacket->buttonstates[2];
 		input.buttons[attack] = realPacket->buttonstates[7];
+
 		if (realPacket->buttonstates[3] == 1) 
 			input.movement_direction = Vector2(0, 1);
 		if (realPacket->buttonstates[4] == 1)
@@ -277,10 +278,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			thisClient->SendPacket(newPacket);
 		}
 		else {
-			EventPacket newPacket;
-			newPacket.eventID = PLAYER_ENTER_WORLD;
-			newPacket.playerID = localPlayerID;
-			thisClient->SendPacket(newPacket);
+			YiEventSystem::GetMe()->PushEvent(PLAYER_ENTER_WORLD, realPacket->playerID);
 		}
 
 		
