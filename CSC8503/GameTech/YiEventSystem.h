@@ -19,15 +19,15 @@ public:
 	void	PushEvent(GAME_EVENT_ID id, const std::vector < std::string > & vParam);
 
 	virtual void	PushEvent(GAME_EVENT_ID id);
-	virtual void	PushEvent(GAME_EVENT_ID id, INT iArg0);
-	virtual void	PushEvent(GAME_EVENT_ID id, FLOAT fArg0);
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0);
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1);
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT nArg2);
-	virtual void	PushEvent(GAME_EVENT_ID id, INT iArg0, INT iArg1);
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT iArg2, INT iArg3);
+	virtual void	PushEvent(GAME_EVENT_ID id, int iArg0);
+	virtual void	PushEvent(GAME_EVENT_ID id, float fArg0);
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0);
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1);
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1, int nArg2);
+	virtual void	PushEvent(GAME_EVENT_ID id, int iArg0, int iArg1);
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1, int iArg2, int iArg3);
 
-	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, DWORD64 uOwnerData = NULL);
+	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, unsigned long long uOwnerData = NULL);
 
 	virtual void	ProcessAllEvent();
 
