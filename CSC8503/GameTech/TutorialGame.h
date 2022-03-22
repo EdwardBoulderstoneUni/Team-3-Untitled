@@ -39,7 +39,7 @@ namespace NCL {
 		
 			void InitWorld();
 
-			void InitDefaultFloor(Vector3 position,Vector4 color);
+			void InitDefaultFloor();
 			void RegisterEventHandles();
 			void HUDUpdate(float dt);
 

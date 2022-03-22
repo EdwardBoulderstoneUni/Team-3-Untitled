@@ -27,6 +27,7 @@ TutorialGame::TutorialGame()
 	Debug::SetRenderer(renderer);
 	InitialiseUI();
 	InitialiseAssets();
+	AudioManager::Startup();
 }
 
 /*
@@ -78,8 +79,9 @@ void TutorialGame::InitialiseAssets() {
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
 
-	InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
-	InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
+	InitPlayer(Vector3(-200, 50, 0), GameObjectType_team2);
+	InitPlayer(Vector3(-200, 50, -20), GameObjectType_team1,true);
+	InitDefaultFloor();
 	RegisterEventHandles();
 }
 
@@ -150,11 +152,12 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
 
 void TutorialGame::InitWorld()
 {
-	InitDefaultFloor(Vector3(0,0,0),Vector4(1,1,1,1));
+	/*InitDefaultFloor(Vector3(0, 0, 0), Vector4(1, 1, 1, 1));
 	InitDefaultFloor(Vector3(150, 0, 0), Vector4(0, 1, 0, 1));
 	InitDefaultFloor(Vector3(-150, 0, 0), Vector4(1, 0, 0, 1));
 	InitDefaultFloor(Vector3(0,0,150), Vector4(0, 0, 1, 1));
-	AudioManager::Startup();
+	*/
+	
 	//AudioManager::GetInstance().Play_Sound();
 }
 
@@ -244,20 +247,18 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 	return cube;
 }
 
-void TutorialGame::InitDefaultFloor(Vector3 position, Vector4 color)
+void TutorialGame::InitDefaultFloor()
 {
 	Floor* floor = new Floor();
 
 	floor->GetTransform()
-		.SetScale(Vector3(150, 1, 150))
-		.SetPosition(position);
+		.SetScale(Vector3(500, 1, 500))
+		.SetPosition(Vector3(-250, 10, 0));
 
 	floor->InitAllComponent();
-
 	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	floor->GetRenderObject()->SetColour(color);
-
 	world->AddGameObject(floor);
+
 }
 
 void TutorialGame::RegisterEventHandles()
@@ -526,7 +527,7 @@ void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	GameWorld* world = (GameWorld*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
-	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(20,5,10));
+	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
 }
 void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
