@@ -1,6 +1,6 @@
 #pragma once
 #include <map>
-#include "../../Common/ShaderBase.h"
+#include "ShaderBase.h"
 namespace NCL
 {
 	namespace Rendering

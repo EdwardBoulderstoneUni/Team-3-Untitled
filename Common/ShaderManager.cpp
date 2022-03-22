@@ -1,6 +1,6 @@
 #include "ShaderManager.h"
-#include "../../Common/Window.h"
-#include "../../Common/RendererBase.h"
+#include "RendererBase.h"
+#include "Window.h"
 namespace NCL
 {
     namespace Rendering
