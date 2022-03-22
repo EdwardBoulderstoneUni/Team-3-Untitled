@@ -98,6 +98,19 @@ OGLRenderer::~OGLRenderer()
 	delete debug_shader_;
 }
 
+OGLTexture* OGLRenderer::init_shadow_buffer(const unsigned shadow_size, unsigned& fbo_address)
+{
+	const auto shadow_texture = new OGLTexture(shadow_size, shadow_size, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	
+	glGenFramebuffers(1, &fbo_address);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_address);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow_texture->GetObjectID(), 0);
+	glDrawBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(1, 1, 1, 1);
+	return shadow_texture;
+}
+
 void OGLRenderer::OnWindowResize(int w, int h)
 {
 	currentWidth = w;
@@ -228,6 +241,14 @@ void OGLRenderer::draw_bound_mesh(const unsigned sub_layer, unsigned num_instanc
 	}
 }
 
+void OGLRenderer::render_to(TextureBase* texture_base) const
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, shadow_fbo_);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	draw_bound_mesh();
+}
+
 ShaderBase* OGLRenderer::load_default_shader() const
 {
 	return new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
@@ -318,8 +339,10 @@ void OGLRenderer::free_reserved_textures()
 		texture_slot = false;
 }
 
-unsigned OGLRenderer::reserve_texture(const TextureBase& data)
+void OGLRenderer::reserve_texture(TextureBase& data)
 {
+	if (data.is_reserved())
+		return;
 	while (reserved_texture_slot_[current_tex_unit_]) {
 		current_tex_unit_++;
 		assert(current_tex_unit_ < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
@@ -334,17 +357,18 @@ unsigned OGLRenderer::reserve_texture(const TextureBase& data)
 		glBindTexture(GL_TEXTURE_2D, tex_id);
 
 		reserved_texture_slot_[current_tex_unit_] = true;
+		data.reserve(current_tex_unit_);
 		current_tex_unit_ += 1;
-		return current_tex_unit_ - 1;
 	}
-	return 0;
 }
 
-void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name, const unsigned texture_address)
+void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name, const TextureBase& texture)
 {
-	glActiveTexture(GL_TEXTURE0 + texture_address);
+	if (!texture.is_reserved())
+		return;
+	glActiveTexture(GL_TEXTURE0 + texture.get_reserved_address());
 	const int ogl_texture_address = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
-	glUniform1i(ogl_texture_address, static_cast<int>(texture_address));
+	glUniform1i(ogl_texture_address, static_cast<GLint>(dynamic_cast<const OGLTexture&>(texture).GetObjectID()));
 }
 
 TextureBase* OGLRenderer::init_blank_texture(const unsigned width, const unsigned height) const
