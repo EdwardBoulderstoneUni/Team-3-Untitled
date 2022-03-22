@@ -2,11 +2,19 @@
 #include "fmod.hpp"
 #include "..//Common/Assets.h"
 
+#if ORBIS
+#include <kernel.h>
+#endif
+
 #define ERRCHECK(_result) 
 FMOD_RESULT m_Result;
 
 AudioManager* AudioManager::m_Instance = nullptr;
 
+#if ORBIS
+SceKernelModule fmodModuleId;
+SceKernelModule fmodStudioModuleId;
+#endif
 void AudioManager::Startup()
 {
 	m_Instance = new AudioManager();
@@ -61,6 +69,9 @@ void AudioManager::Update(float dt)
 
 AudioManager::AudioManager()
 {
+#if ORBIS
+	SceKernelModule fmodModuleId = sceKernelLoadStartModule(FMOD_LIB_PATH, 0, 0, 0, NULL, NULL);
+#endif
 	void* extradriverdata = nullptr;
 	m_Result = System_Create(&m_System);
 	ERRCHECK(m_Result);
@@ -93,4 +104,7 @@ AudioManager::~AudioManager()
 	ERRCHECK(m_Result);
 	m_Result = m_System->release();
 	ERRCHECK(m_Result);
+#ifdef ORBIS
+	sceKernelStopUnloadModule(fmodModuleId, 0, 0, 0, 0, 0);
+#endif
 }
