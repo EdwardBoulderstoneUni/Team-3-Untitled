@@ -114,8 +114,9 @@ void TutorialGame::UpdateGame(float dt)
 		world->GetMainCamera()->SetPitch(angles.x);
 		world->GetMainCamera()->SetYaw(angles.y);
 	}
-	
+#ifndef ORBIS
 	HUDUpdate(dt);
+#endif
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 	renderer->Render();
@@ -136,7 +137,7 @@ void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team, bool islocal)
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
 	player->InitAllComponent();
-	player->SetRenderObject(new RenderObject(&player->GetTransform(), AssetManager::GetInstance()->GetMesh("Female_Guard.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), AssetManager::GetInstance()->GetMesh("Male_Guard.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 	world->SetMainCamera(player->GetComponentCamera()->camera);
 	world->AddGameObject(player);
 }
@@ -156,7 +157,7 @@ void TutorialGame::InitDefaultFloor()
 		.SetPosition(Vector3(-250,10,0));
 
 	floor->InitAllComponent();
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), AssetManager::GetInstance()->GetMesh("Cube.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 	world->AddGameObject(floor);
 }
 
@@ -167,6 +168,7 @@ void NCL::CSC8503::TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("HIT", _HitHandle);
 }
 
+#ifndef ORBIS
 void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 {
 	Player* player = TutorialGame::getMe()->player;
@@ -174,7 +176,6 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 	if (player->GetAmmo() == 0) {
 		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
 	}
-
 	renderer->DrawString("Health: " + std::to_string(player->GetHealth()), Vector2(5, 85));
 
 	if (tLeft >= 0) {
@@ -190,6 +191,7 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 
 	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
 }
+#endif
 
 void TutorialGame::CalculateFrameRate(float dt) {
 	float currentTime = GetTickCount64() * 0.001f;
