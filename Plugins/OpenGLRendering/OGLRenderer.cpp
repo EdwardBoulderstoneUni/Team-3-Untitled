@@ -13,6 +13,7 @@ https://research.ncl.ac.uk/game/
 #include "OGLShader.h"
 #include "OGLMesh.h"
 #include "OGLTexture.h"
+#include "ShaderManager.h"
 
 #include "../../Common/SimpleFont.h"
 #include "../../Common/TextureLoader.h"
@@ -227,6 +228,11 @@ void OGLRenderer::draw_bound_mesh(const unsigned sub_layer, unsigned num_instanc
 	}
 }
 
+ShaderBase* OGLRenderer::load_default_shader() const
+{
+	return new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
+}
+
 GLint OGLRenderer::get_shader_property_location(const std::string& shader_property_name) const
 {
 	return glGetUniformLocation(bound_shader_->GetProgramID(), shader_property_name.c_str());
@@ -339,11 +345,6 @@ void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name,
 	glActiveTexture(GL_TEXTURE0 + texture_address);
 	const int ogl_texture_address = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
 	glUniform1i(ogl_texture_address, static_cast<int>(texture_address));
-}
-
-TextureBase* OGLRenderer::init_blank_texture(const unsigned width, const unsigned height) const
-{
-	return new OGLTexture(width, height);
 }
 
 void OGLRenderer::DrawString(const std::string& text, const Vector2& pos, const Vector4& colour, float size)

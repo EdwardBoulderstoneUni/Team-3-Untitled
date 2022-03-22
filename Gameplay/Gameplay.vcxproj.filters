@@ -51,10 +51,7 @@
     <ClCompile Include="ComponentGameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PaintableSurface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PaintableRenderObject.cpp">
+    <ClCompile Include="Paintable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,10 +110,7 @@
     <ClInclude Include="PlayerState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PaintableSurface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PaintableRenderObject.h">
+    <ClInclude Include="Paintable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

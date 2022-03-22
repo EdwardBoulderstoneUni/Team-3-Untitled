@@ -24,9 +24,19 @@ namespace NCL
 		public:
 			RenderObject(Transform* parent_transform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
 			
-			virtual void bind_shader_values(RendererBase* renderer) const;
+			void bind_shader_values(RendererBase* renderer) const;
 
-			virtual void render(RendererBase* renderer) const;
+			void render(RendererBase* renderer) const;
+
+			void SetDefaultTexture(TextureBase* t)
+			{
+				texture_ = t;
+			}
+
+			TextureBase* GetDefaultTexture() const
+			{
+				return texture_;
+			}
 
 			MeshGeometry* GetMesh() const
 			{

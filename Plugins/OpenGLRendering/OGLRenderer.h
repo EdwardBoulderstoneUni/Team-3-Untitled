@@ -74,6 +74,7 @@ namespace NCL
 			void bind_shader(ShaderBase* shader) override;
 			void bind_mesh(MeshGeometry* m) override;
 			void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const override;
+			ShaderBase* load_default_shader() const override;
 		protected:
 			void BeginFrame() override;
 			void RenderFrame() override {}
@@ -97,8 +98,6 @@ namespace NCL
 			void free_reserved_textures() override;
 			unsigned reserve_texture(const TextureBase& data) override;
 			void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) override;
-
-			TextureBase* init_blank_texture(unsigned width, unsigned height) const override;
 
 #ifdef _WIN32
 			void InitWithWin32(Window& w);

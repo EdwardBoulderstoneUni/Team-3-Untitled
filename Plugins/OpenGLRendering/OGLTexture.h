@@ -21,7 +21,6 @@ namespace NCL
 		public:
 			//friend class OGLRenderer;
 			OGLTexture();
-			OGLTexture(unsigned width, unsigned height, unsigned channels = 4, GLuint* data = nullptr);
 			OGLTexture(GLuint texToOwn);
 			~OGLTexture() override;
 
