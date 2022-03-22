@@ -12,13 +12,18 @@ RenderObject::RenderObject(Transform* parent_transform, MeshGeometry* mesh, Text
 	this->colour_	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
+void RenderObject::bind_mesh(RendererBase* renderer) const
+{
+	renderer->bind_shader_property("modelMatrix", transform_->GetMatrix() * mesh_->GetLocalTransform());
+	renderer->bind_mesh(mesh_);
+}
+
 void RenderObject::bind_shader_values(RendererBase* renderer) const
 {
 	renderer->bind_shader(shader_);
-	renderer->bind_shader_property("modelMatrix", transform_->GetMatrix() * mesh_->GetLocalTransform());
 	renderer->bind_shader_property("objectColour", colour_);
 	renderer->bind_shader_property("hasVertexColours", !mesh_->GetColourData().empty());
-	renderer->bind_mesh(mesh_);
+	bind_mesh(renderer);
 	if (!material_)
 	{
 		renderer->bind_shader_property("mainTex", *texture_);
