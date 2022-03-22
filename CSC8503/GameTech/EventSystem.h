@@ -7,10 +7,10 @@
 
 enum GAME_EVENT_ID;
 struct EVENT;
-typedef void(__stdcall* FUNC_EVENT_HANDLE)(const EVENT* pEvent, UINT dwOwnerData);
+typedef void(__stdcall* FUNC_EVENT_HANDLE)(const EVENT* pEvent, DWORD64 dwOwnerData);
 struct EVENT_DEFINE
 {
-	typedef std::list< std::pair< FUNC_EVENT_HANDLE, UINT > > REGISTER_STRUCT;
+	typedef std::list< std::pair< FUNC_EVENT_HANDLE, DWORD64 > > REGISTER_STRUCT;
 	GAME_EVENT_ID		idEvent;
 	LPCTSTR				szEvent;
 	bool				delayProcess;
@@ -41,10 +41,10 @@ public:
 	virtual void	PushEvent(GAME_EVENT_ID id, INT iArg0, INT iArg1) = 0;
 	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT iArg2, INT iArg3) = 0;
 
-	
 
-			
-	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, UINT dwOwnerData = NULL) = 0;
-			
+
+
+	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, DWORD64 dwOwnerData = NULL) = 0;
+
 	virtual void	ProcessAllEvent(void) = 0;
 };

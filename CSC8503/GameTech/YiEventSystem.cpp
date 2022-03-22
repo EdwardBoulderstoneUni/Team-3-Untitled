@@ -3,8 +3,13 @@
 YiEventSystem* YiEventSystem::p_self = NULL;
 EVENT_DEFINE g_GlobalEvent[] = {
 	{PLAYER_OPEN_FIRE,"OPEN_FIRE"},
+	{PLAYER_THROW_GRENADE, "THROW_GRENADE"},
 	{OBJECT_DELETE,"OBJECT_DELETE"},
 	{PLAYER_HIT,"HIT"},
+	{PLAYER_RESPWAN,"RESPWAN"},
+	{GAME_OVER,"GAME_OVER"},
+	{PLAYER_COLOR_ZONE,"COLOR_ZONE"},
+	{GRENADE_DAMAGE_RANGE,"DAMAGE_RANGE"}
 };
 YiEventSystem::YiEventSystem()
 {
@@ -185,7 +190,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, 
 	_PushEvent(event);
 }
 
-void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, UINT uOwnerData)
+void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, DWORD64 uOwnerData)
 {
 	if (!funHandle) return;
 
@@ -197,7 +202,7 @@ void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT
 
 void YiEventSystem::ProcessAllEvent()
 {
-	if (!(m_delayQueueEvent.empty()))
+	/*if (!(m_delayQueueEvent.empty()))
 	{
 		const UINT WORK_STEP = 2;
 		NCL::GameTimer t;
@@ -213,7 +218,7 @@ void YiEventSystem::ProcessAllEvent()
 
 			m_delayQueueEvent.erase(m_delayQueueEvent.begin());
 		}
-	}
+	}*/
 
 	register std::list< EVENT >::iterator it;
 	for (it = m_queueEvent.begin(); it != m_queueEvent.end(); it++)
@@ -232,7 +237,9 @@ void YiEventSystem::ProcessAllEvent()
 		}
 
 		if (bMultiPushed) continue;
-
+		if (event.pEventDef->idEvent == PLAYER_THROW_GRENADE) {
+			OutputDebugString("%d");
+		}
 		_ProcessEvent(event);
 	}
 	m_queueEvent.clear();

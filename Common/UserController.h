@@ -10,6 +10,7 @@ enum Buttons
 	sprint,
 	quit,
 	dash,
+	grenade,
 	max_input
 };
 

@@ -46,6 +46,15 @@ namespace NCL
 			MeshMaterial* GetMaterial() const {
 				return material_;
 			}
+			void SetColour(const Vector4& c)
+			{
+				colour_ = c;
+			}
+
+			Vector4 GetColour() const
+			{
+				return colour_;
+			}
 			Vector4 colour_;
 			TextureBase* texture_;
 		protected:
