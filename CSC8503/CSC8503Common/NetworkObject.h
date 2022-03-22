@@ -51,6 +51,7 @@ namespace NCL {
 		struct SyncPacket :public GamePacket {
 			int SyncTotalCount = -1;
 			int objectID = -1;
+			GameObjectType objType = GameObjectType::GameObjectType_invalid;
 			NetworkState fullState;
 			SyncPacket() {
 				type = Sync_State;
@@ -77,6 +78,7 @@ namespace NCL {
 
 			int GetNetworkID() { return networkID; }
 			int GetWorldID() { return object.GetWorldID(); }
+			GameObjectType GetObjType() { return object.type; }
 		protected:
 
 			bool GetNetworkState(int frameID, NetworkState& state);

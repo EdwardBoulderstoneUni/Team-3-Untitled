@@ -251,23 +251,22 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	else if (type == Sync_State) {
 		SyncPacket* realPacket = (SyncPacket*)payload;
 		NetworkState state =realPacket->fullState;
-		Player* newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
-	
-
-		newPlayer->RemoveComponetCamera();
-		newPlayer->RemoveComponetInput();
-		newPlayer->RemoveComponetPhysics();
-
-
-		ToggleNetworkState(newPlayer, true);
-		newPlayer->GetTransform().SetPosition(state.position);
-		newPlayer->GetTransform().SetOrientation(state.orientation);
-		if (networkObjects.size() == realPacket->SyncTotalCount) {
-			EventPacket newPacket;
-			newPacket.eventID = PLAYER_ENTER_WORLD;
-			newPacket.networkID = localPlayerID;
-			thisClient->SendPacket(newPacket);
+		if (realPacket->objType == GameObjectType_team1) {
+			Player* newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+			newPlayer->RemoveComponetCamera();
+			newPlayer->RemoveComponetInput();
+			newPlayer->RemoveComponetPhysics();
+			ToggleNetworkState(newPlayer, true);
+			newPlayer->GetTransform().SetPosition(state.position);
+			newPlayer->GetTransform().SetOrientation(state.orientation);
+			if (networkObjects.size() == realPacket->SyncTotalCount) {
+				EventPacket newPacket;
+				newPacket.eventID = PLAYER_ENTER_WORLD;
+				newPacket.networkID = localPlayerID;
+				thisClient->SendPacket(newPacket);
+			}
 		}
+
 	}
 	else if (type == Message) {
 		MessagePacket* realPacket = (MessagePacket*)payload;
@@ -431,6 +430,14 @@ void NetworkedGame::_worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	if (game->thisServer) {
 		for (auto i : game->networkObjects) {
 			SyncPacket newPacket;
+			switch (i->GetObjType())
+			{
+			case GameObjectType_team1:
+				newPacket.objType = GameObjectType_team1;
+				break;
+			default:
+				break;
+			}
 			newPacket.SyncTotalCount = game->networkObjects.size();
 			newPacket.objectID = i->GetNetworkID();
 			newPacket.fullState = i->GetLatestNetworkState();
