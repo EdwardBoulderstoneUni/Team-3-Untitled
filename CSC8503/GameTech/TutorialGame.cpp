@@ -244,7 +244,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 		.SetPosition(position + dir.shootDir * 15);
 	bullet->InitAllComponent();
 
-	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), TutorialGame::getMe()->sphereMesh,
+	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), AssetManager::GetInstance()->GetMesh("Sphere.msh"),
 		AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 
 	game->world->AddGameObject(bullet);
