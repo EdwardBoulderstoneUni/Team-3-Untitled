@@ -117,6 +117,9 @@
     <ClCompile Include="MouseAndKeyboardInput.cpp">
       <Filter>Input</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Asset Handling</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -211,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="MouseAndKeyboardInput.h">
       <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Asset Handling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
