@@ -487,7 +487,9 @@ void PhysicsXSystem::DrawCollisionLine() {
 	for (PxU32 i = 0; i < rb.getNbLines(); i++)
 	{
 		const PxDebugLine& line = rb.getLines()[i];
+#ifndef PLATFORM_ORBIS
 		Debug::DrawLine(PhysXConvert::PxVec3ToVector3(line.pos0), PhysXConvert::PxVec3ToVector3(line.pos1));
+#endif
 	}
 }
 

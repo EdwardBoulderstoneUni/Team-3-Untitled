@@ -14,7 +14,7 @@ namespace NCL {
 			~MainMenuState() {}
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 
-			void OnAwake() override;
+			void OnAwake() override {}
 
 		private:
 			GameTechRenderer* renderer;

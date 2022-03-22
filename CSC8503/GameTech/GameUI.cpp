@@ -74,7 +74,7 @@ void GameUI::ClearMenus()
 void GameUI::UpdateUI() const
 {
 	if (!IsValid) return;
-
+#ifndef ORBIS
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -85,13 +85,15 @@ void GameUI::UpdateUI() const
 	}
 
 	ImGui::Render();
+#endif
 }
 
 void GameUI::DrawUI() const
 {
 	if (!IsValid) return;
-
+#ifndef ORBIS
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
 }
 
 #ifndef ORBIS

@@ -48,7 +48,9 @@ for this module, even in the coursework, but you can add it if you like!
 */
 void TutorialGame::UpdateRender(float dt)
 {
+#ifndef ORBIS
 	Debug::FlushRenderables(dt);
+#endif
 	renderer->Update(dt);
 	renderer->Render();
 }

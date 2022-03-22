@@ -6,9 +6,9 @@ using namespace CSC8503;
 
 void MainMenu::Draw()
 {
-
+#ifndef ORBIS
 	Debug::Print("YIANSER Game Menu", Vector2(35, 25));
-
+#endif
 	const ImGuiViewport* mainVp = ImGui::GetMainViewport();
 
 	//Draw background
