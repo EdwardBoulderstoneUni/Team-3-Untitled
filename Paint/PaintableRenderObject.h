@@ -9,6 +9,8 @@ class PaintableRenderObject :
 public:
 	PaintableRenderObject(NCL::CSC8503::Transform* parent_transform, NCL::MeshGeometry* mesh, NCL::TextureBase* tex, NCL::MeshMaterial* mat = nullptr);
 	~PaintableRenderObject();
+	NCL::TextureBase* get_paint_dest() const;
+	NCL::TextureBase* get_mask() const;
 protected:
 	NCL::TextureBase* paint_instance_texture_;
 	NCL::TextureBase* mask_;

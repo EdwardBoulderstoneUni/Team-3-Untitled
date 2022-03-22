@@ -1,19 +1,15 @@
 #pragma once
+#include "PaintableRenderObject.h"
 #include "PaintableSurface.h"
-
-
-namespace NCL
-{
-	namespace Rendering {
-		class ShaderBase;
-	}
-}
+#include "../Common/ShaderBase.h"
+#include "../Common/ShaderManager.h"
+#include "../Common/Window.h"
 
 class PaintManager
 {
 public:
-	PaintManager* init();
-	void paint(PaintableSurface surface, NCL::Maths::Vector3 position, float radius = 1.0f, float hardness = 0.5f, float strength = 0.5f, NCL::Maths::Vector3 colour = NCL::Maths::Vector3(1, 0, 0));
+	static PaintManager* init();
+	static void paint(PaintableSurface surface, NCL::Maths::Vector3 position, float radius = 1.0f, float hardness = 0.5f, float strength = 0.5f, NCL::Maths::Vector3 colour = NCL::Maths::Vector3(1, 0, 0));
 	static NCL::Rendering::ShaderBase* GetPaintableObjectShader();
 protected:
 	static PaintManager* instance_;
