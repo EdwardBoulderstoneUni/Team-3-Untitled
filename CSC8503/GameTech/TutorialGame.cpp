@@ -56,12 +56,6 @@ void TutorialGame::SetMultiMode()
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
-	auto loadFunc = [](const string& name, OGLMesh** into) {
-		*into = new OGLMesh(name);
-		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
-		(*into)->UploadToGPU();
-	};
-
 	//Loading Screen start
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
@@ -133,21 +127,17 @@ void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team,bool islocal)
+void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team, bool islocal)
 {
-	player = new Player(PlayerRole_blue, abilityContainer, team,islocal);
+	player = new Player(PlayerRole_blue, abilityContainer, team, islocal);
 	camFollowPlayer = true;
 
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
-	
 	player->InitAllComponent();
-
-	player->SetRenderObject(new RenderObject(&player->GetTransform(), charMeshA, AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
-
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), AssetManager::GetInstance()->GetMesh("Female_Guard.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 	world->SetMainCamera(player->GetComponentCamera()->camera);
-	
 	world->AddGameObject(player);
 }
 
@@ -201,92 +191,6 @@ void NCL::CSC8503::TutorialGame::HUDUpdate(float dt)
 	renderer->DrawString("Score: " + std::to_string(player->GetScore()), Vector2(70, 85));
 }
 
-GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position)
-{
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
-	auto character = new Player(PlayerRole::PlayerRole_blue, abilityContainer, GameObjectType_team1);
-	character->GetTransform()
-	         .SetScale(Vector3(meshSize, meshSize, meshSize))
-	         .SetPosition(position);
-	character->InitAllComponent();
-
-	if (rand() % 2)
-	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, ShaderManager::GetInstance()->GetShader("default")));
-	}
-	else
-	{
-		character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, ShaderManager::GetInstance()->GetShader("default")));
-	}
-	
-	world->AddGameObject(character);
-
-	return character;
-}
-
-GameObject* TutorialGame::AddEnemyToWorld(const Vector3& position)
-{
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
-
-	auto character = new GameObject();
-
-	//auto volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
-	//character->SetBoundingVolume((CollisionVolume*)volume);
-
-	character->GetTransform()
-	         .SetScale(Vector3(meshSize, meshSize, meshSize))
-	         .SetPosition(position);
-
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, ShaderManager::GetInstance()->GetShader("default")));
-	//character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
-	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//character->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(character);
-
-	return character;
-}
-
-GameObject* NCL::CSC8503::TutorialGame::AddPaint(const Vector3& position)
-{
-	GameObject* disc = new GameObject();
-
-	disc->GetTransform()
-		.SetScale(Vector3(4, 0.01f, 4))
-		.SetPosition(position);
-
-	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), AssetManager::GetInstance()->GetMesh("Cylinder.msh"), nullptr, ShaderManager::GetInstance()->GetShader("default")));
-	disc->GetRenderObject()->colour_ = Vector4(1, 0, 0, 1);
-
-	world->AddGameObject(disc);
-	return disc;
-}
-
-GameObject* TutorialGame::AddBonusToWorld(const Vector3& position)
-{
-	auto apple = new GameObject();
-
-	//auto volume = new SphereVolume(0.25f);
-	//apple->SetBoundingVolume((CollisionVolume*)volume);
-	apple->GetTransform()
-	     .SetScale(Vector3(0.25, 0.25, 0.25))
-	     .SetPosition(position);
-
-	apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, ShaderManager::GetInstance()->GetShader("default")));
-	//apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
-
-	//apple->GetPhysicsObject()->SetInverseMass(1.0f);
-	//apple->GetPhysicsObject()->InitSphereInertia();
-
-	world->AddGameObject(apple);
-
-	return apple;
-}
-
-
 void TutorialGame::CalculateFrameRate(float dt) {
 	float currentTime = GetTickCount64() * 0.001f;
 	++framesPerSecond;
@@ -298,7 +202,6 @@ void TutorialGame::CalculateFrameRate(float dt) {
 	}
 	renderer->DrawString(std::to_string(FPS), Vector2(20, 80));
 }
-
 
 void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 {
@@ -320,8 +223,8 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, UINT dwOwnerData)
 
 	TutorialGame::getMe()->world->AddGameObject(bullet);
 
-	auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	bullet->SetCollisionFunction(func);
+	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	//bullet->SetCollisionFunction(func);
 	TutorialGame::getMe()->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(forward * 50.0f);
 }
