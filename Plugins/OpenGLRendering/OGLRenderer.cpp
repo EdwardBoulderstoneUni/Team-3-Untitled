@@ -13,6 +13,7 @@ https://research.ncl.ac.uk/game/
 #include "OGLShader.h"
 #include "OGLMesh.h"
 #include "OGLTexture.h"
+#include "ShaderManager.h"
 
 #include "../../Common/SimpleFont.h"
 #include "../../Common/TextureLoader.h"
@@ -225,6 +226,11 @@ void OGLRenderer::draw_bound_mesh(const unsigned sub_layer, unsigned num_instanc
 	{
 		glDrawArrays(mode, 0, static_cast<int>(count));
 	}
+}
+
+ShaderBase* OGLRenderer::load_default_shader() const
+{
+	return new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 }
 
 GLint OGLRenderer::get_shader_property_location(const std::string& shader_property_name) const
