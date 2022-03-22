@@ -113,12 +113,6 @@
     <ClInclude Include="PlayerState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PaintableSurface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PaintableRenderObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Ability.json">
