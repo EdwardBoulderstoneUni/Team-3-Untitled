@@ -22,6 +22,7 @@ https://research.ncl.ac.uk/game/
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "OGLTexture.h"
 #include "glad/glad.h"
@@ -78,7 +79,9 @@ namespace NCL
 			void bind_shader(ShaderBase* shader) override;
 			void bind_mesh(MeshGeometry* m) override;
 			void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const override;
-			void render_to(TextureBase* texture_base) const override;
+			static void generate_fbo(TextureBase* texture, unsigned& fbo_address);
+			static unsigned* generate_fbo(TextureBase* texture);
+			void render_to(TextureBase* texture) override;
 			void blit(TextureBase* source, TextureBase* dest) override;
 
 			ShaderBase* load_default_shader() const override;
@@ -103,8 +106,8 @@ namespace NCL
 			void reset_shader_for_next_object() override;
 			void reset_state_for_next_frame() override;
 			void free_reserved_textures() override;
-			unsigned reserve_texture(TextureBase& data) override;
-			void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) override;
+			void reserve_texture(TextureBase& data) override;
+			void bind_reserved_texture(const std::string& shader_property_name, const TextureBase& texture) override;
 
 			TextureBase* init_blank_texture(unsigned width, unsigned height) const override;
 
@@ -147,6 +150,8 @@ namespace NCL
 			unsigned current_tex_unit_;
 
 			bool reserved_texture_slot_[GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS] = { false };
+
+			std::map<TextureBase*, unsigned*> associated_fbo_;
 		};
 	}
 }

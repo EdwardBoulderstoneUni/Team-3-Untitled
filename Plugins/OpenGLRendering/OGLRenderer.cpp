@@ -87,6 +87,7 @@ OGLRenderer::OGLRenderer(Window& w) : RendererBase(w), bound_mesh_(nullptr), bou
 	debug_lines_mesh_->UploadToGPU();
 
 	debug_lines_mesh_->SetPrimitiveType(Lines);
+	associated_fbo_ = std::map<TextureBase*, unsigned*>();
 }
 
 OGLRenderer::~OGLRenderer()
@@ -101,13 +102,7 @@ OGLRenderer::~OGLRenderer()
 OGLTexture* OGLRenderer::init_shadow_buffer(const unsigned shadow_size, unsigned& fbo_address)
 {
 	const auto shadow_texture = new OGLTexture(shadow_size, shadow_size, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
-	
-	glGenFramebuffers(1, &fbo_address);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo_address);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadow_texture->GetObjectID(), 0);
-	glDrawBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(1, 1, 1, 1);
+	generate_fbo(shadow_texture, fbo_address);
 	return shadow_texture;
 }
 
@@ -241,9 +236,36 @@ void OGLRenderer::draw_bound_mesh(const unsigned sub_layer, unsigned num_instanc
 	}
 }
 
-void OGLRenderer::render_to(TextureBase* texture_base) const
+void OGLRenderer::generate_fbo(TextureBase* texture, unsigned& fbo_address)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, shadow_fbo_);
+	glGenFramebuffers(1, &fbo_address);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo_address);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, dynamic_cast<OGLTexture*>(texture)->GetObjectID(), 0);
+	glDrawBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(1, 1, 1, 1);
+}
+
+unsigned* OGLRenderer::generate_fbo(TextureBase* texture)
+{
+	const auto fbo_address = new unsigned();
+	glGenFramebuffers(1, fbo_address);
+	glBindFramebuffer(GL_FRAMEBUFFER, *fbo_address);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, dynamic_cast<OGLTexture*>(texture)->GetObjectID(), 0);
+	glDrawBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(1, 1, 1, 1);
+	return fbo_address;
+}
+
+void OGLRenderer::render_to(TextureBase* texture)
+{
+	if (associated_fbo_.find(texture) == associated_fbo_.end())
+	{
+		associated_fbo_[texture] = generate_fbo(texture);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, *associated_fbo_.at(texture));
+	glViewport(0, 0, static_cast<int>(texture->get_width()), static_cast<int>(texture->get_height()));
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	draw_bound_mesh();
