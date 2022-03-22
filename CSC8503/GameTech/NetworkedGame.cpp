@@ -85,39 +85,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		thisServer->Shutdown();
 	}
 	
-	//TutorialGame::UpdateGame(dt);
-	if (thisServer) {
-		eventSystem->ProcessAllEvent();
-		AudioManager::GetInstance().Play_Sound();
-		AudioManager::GetInstance().Update(dt);
-
-		
-		UpdateGameObjects(dt);
-		physicsX->Update(dt);
-
-		HUDUpdate(dt);
-		world->UpdateWorld(dt);
-		renderer->Update(dt);
-		renderer->Render();
-
-		Debug::FlushRenderables(dt);
-	}
-	else {
-		eventSystem->ProcessAllEvent();
-		AudioManager::GetInstance().Play_Sound();
-		AudioManager::GetInstance().Update(dt);
-
-		
-		UpdateGameObjects(dt);
-		//physicsX->Update(dt);
-
-		HUDUpdate(dt);
-		world->UpdateWorld(dt);
-		renderer->Update(dt);
-		renderer->Render();
-
-		Debug::FlushRenderables(dt);
-	}
+	TutorialGame::UpdateGame(dt);
 }
 
 void NetworkedGame::UpdateAsServer(float dt) {
@@ -411,7 +379,7 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	auto game = (NetworkedGame*)dwOwnerData;
 	int playerID = stoi(pEvent->vArg[0]);
 	if (game->localPlayer) {
-		Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		Player* newPlayer = game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team1);
 		newPlayer->RemoveComponetCamera();
 		newPlayer->RemoveComponetInput();
 		game->ToggleNetworkState(newPlayer, true);
@@ -429,7 +397,7 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 		}
 	}
 	else {
-		Player* newPlayer = game->InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		Player* newPlayer = game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team1);
 		game->localPlayer = newPlayer;
 		game->ToggleNetworkState(newPlayer, true);
 		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
