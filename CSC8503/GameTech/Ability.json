@@ -1,0 +1,68 @@
+{
+  "Red": [
+    {
+      "cooldown": 5.0,
+      "range": 5.0,
+      "size": {
+        "x": 5.0,
+        "y": 1.0
+      },
+      "startUp": 5.0,
+      "endLag": 5.0
+    },
+    {
+      "cooldown": 5.0,
+      "range": 5.0,
+      "size": {
+        "x": 5.0,
+        "y": 1.0
+      },
+      "startUp": 5.0,
+      "endLag": 5.0
+    }
+  ],
+  "Green": [
+    {
+      "cooldown": 5.0,
+      "range": 5.0,
+      "size": {
+        "x": 5.0,
+        "y": 1.0
+      },
+      "startUp": 5.0,
+      "endLag": 5.0
+    },
+    {
+      "cooldown": 5.0,
+      "range": 5.0,
+      "size": {
+        "x": 5.0,
+        "y": 1.0
+      },
+      "startUp": 5.0,
+      "endLag": 5.0
+    }
+  ],
+  "Blue": [
+    {
+      "cooldown": 5.0,
+      "range": 5.0,
+      "size": {
+        "x": 5.0,
+        "y": 1.0
+      },
+      "startUp": 5.0,
+      "endLag": 5.0
+    },
+    {
+      "cooldown": 5.0,
+      "range": 5.0,
+      "size": {
+        "x": 5.0,
+        "y": 1.0
+      },
+      "startUp": 5.0,
+      "endLag": 5.0
+    }
+  ]
+}

@@ -262,7 +262,6 @@
     <ClCompile Include="PhysicsXObject.cpp" />
     <ClCompile Include="PhysicsXSystem.cpp" />
     <ClCompile Include="PushdownMachine.cpp" />
-    <ClCompile Include="PushdownState.cpp" />
     <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="StateMachine.cpp" />

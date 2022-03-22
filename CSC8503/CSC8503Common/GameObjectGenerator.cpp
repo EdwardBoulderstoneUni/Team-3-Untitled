@@ -9,7 +9,7 @@
 #include "AssetManager.h"
 #include "..//..//Plugins/OpenGLRendering/OGLMesh.h"
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
-#include "..//..//Plugins/OpenGLRendering/ShaderManager.h"
+#include "../../Common/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
 #include "PhysXConvert.h"
 
@@ -37,10 +37,14 @@ void NCL::CSC8503::GameObjectGenerator::SetTransform(GameObject* object, const r
 
 void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, const rapidjson::Value& value)
 {
+	NCL::Maths::Vector3 scale;
 	NCL::Maths::Vector3 dim;
+	NCL::Maths::Vector3 dimOffset;
 	PxGeometry* volume = nullptr;
 
+	GetVector(value, "scale", scale);
 	GetVector(value, "dimensions", dim);
+	GetVector(value, "dimensionsOrigin", dimOffset);
 	int objectType = value["objShape"].GetInt();
 
 	switch (objectType)
@@ -49,10 +53,21 @@ void NCL::CSC8503::GameObjectGenerator::SetPhysicsObject(GameObject* object, con
 		volume = new PxSphereGeometry(dim.x);
 		break;
 	case 1:
-		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim));
+		volume =new PxBoxGeometry(PhysXConvert::Vector3ToPxVec3(dim * scale / 2));
+		break;
+	case 2:
+		volume = new PxCapsuleGeometry(dim.x,dim.y);
 		break;
 	}
-	object->SetPhysicsXObject(new PhysicsXObject(object->GetTransform(),volume));
+	PxTransform trans = PhysXConvert::TransformToPxTransform(object->GetTransform());
+	trans.p = trans.p;
+	PhysicsXObject* phyObj = new PhysicsXObject();
+	phyObj->properties.type = PhyProperties::Static;
+	phyObj->properties.transform = trans;
+	phyObj->properties.positionOffset = dimOffset * scale;
+	phyObj->properties.volume = volume;
+	phyObj->properties.Mass = 10.0f;
+	object->SetPhysicsXObject(phyObj);
 }
 
 void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, const rapidjson::Value& value)
@@ -68,7 +83,6 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 	{
 		material = AssetManager::GetInstance()->GetMaterial(value["meshPath"].GetString());
 	}
-
 	switch (objectType)
 	{
 	case 0:
@@ -83,13 +97,19 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
 			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
 		break;
+	case 2:
+
+		object->SetRenderObject(new RenderObject
+		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
+			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
+		break;
 	}
 #endif
 }
 
 
 
-void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, std::vector<GameObject*>& outobjects) 
+void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, GameWorld& world)
 {
 	std::ifstream file(fileName);
 	std::stringstream buffer;
@@ -102,7 +122,6 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, std::vect
 	{
 		rapidjson::Value& objects = document["Objects"];
 		GameObject* object;
-		outobjects.clear();
 		for (auto i = 0; i < objects.Size(); i++)
 		{			
 			object = new GameObject();
@@ -111,8 +130,7 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, std::vect
 			SetPhysicsObject(object, objects[i]);
 			SetRenderObject(object, objects[i]);
 			
-			outobjects.push_back(object);
-			
+			world.AddGameObject(object);
 		}
 	}
 }

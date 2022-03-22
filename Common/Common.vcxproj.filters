@@ -66,9 +66,6 @@
     <ClCompile Include="Win32Window.cpp">
       <Filter>Windowing\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="RendererBase.cpp">
-      <Filter>Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderBase.cpp">
       <Filter>Rendering</Filter>
     </ClCompile>
@@ -128,6 +125,8 @@
     </ClCompile>
     <ClCompile Include="ControllerInput.cpp">
       <Filter>Input</Filter>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Asset Handling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +228,8 @@
     </ClInclude>
     <ClInclude Include="PS4Input.h">
       <Filter>Input</Filter>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Asset Handling</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

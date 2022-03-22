@@ -1,24 +1,42 @@
 #include "RenderObject.h"
+
+#include "Transform.h"
 #include "../../Common/MeshGeometry.h"
+#include "../../OpenGLRendering/OGLRenderer.h"
 
 using namespace NCL::CSC8503;
-using namespace NCL;
 
-RenderObject::RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial *mat) {
-	this->transform	= parentTransform;
-	this->mesh		= mesh;
-	this->texture	= tex;
-	this->shader	= shader;
-	this->colour	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-	this->material = mat;
-	this->localTransform = Matrix4();
+RenderObject::RenderObject(Transform* parent_transform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat) :
+	texture_(tex), mesh_(mesh), shader_(shader), transform_(parent_transform), material_(mat)
+{
+	this->colour_	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-RenderObject::~RenderObject()
+void RenderObject::bind_shader_values(RendererBase* renderer) const
 {
+	renderer->bind_shader(shader_);
+	renderer->bind_shader_property("modelMatrix", transform_->GetMatrix() * mesh_->GetLocalTransform());
+	renderer->bind_shader_property("objectColour", colour_);
+	renderer->bind_shader_property("hasVertexColours", !mesh_->GetColourData().empty());
+	renderer->bind_mesh(mesh_);
+	if (!material_)
+	{
+		renderer->bind_shader_property("mainTex", *texture_);
+		renderer->bind_shader_property("hasTexture", texture_ ? 1 : 0);
+	}
 }
 
-void NCL::CSC8503::RenderObject::SetLocalTransform(const Maths::Matrix4& mat)
+void RenderObject::render(RendererBase* renderer) const
 {
-	localTransform = mat;
+	bind_shader_values(renderer);
+	for (unsigned count = 0; count < mesh_->GetSubMeshCount(); ++count) {
+
+		if (material_)
+		{
+			TextureBase* texture = material_->GetMaterialForLayer(count)->GetEntry("Diffuse");
+			renderer->bind_shader_property("mainTex", *texture);
+			renderer->bind_shader_property("hasTexture", texture ? 1 : 0);
+		}
+		renderer->draw_bound_mesh(count);
+	}
 }

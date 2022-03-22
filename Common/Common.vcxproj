@@ -111,10 +111,10 @@
     <IncludePath>./../include/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)\include;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)$(Platform)\$(Configuration)\;$(SolutionDir)\include;$(SolutionDir)\include\PhysX;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -191,7 +191,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -199,6 +199,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Assets.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ControllerInput.cpp" />
@@ -217,7 +218,6 @@
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="PS4Input.cpp" />
     <ClCompile Include="Quaternion.cpp" />
-    <ClCompile Include="RendererBase.cpp" />
     <ClCompile Include="ShaderBase.cpp" />
     <ClCompile Include="SimpleFont.cpp" />
     <ClCompile Include="TextureBase.cpp" />
@@ -236,6 +236,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Assets.h" />
     <ClInclude Include="ControllerInput.h" />

@@ -1,38 +1,33 @@
-﻿#include "TutorialGame.h"
-#include "GameTechRendererOrbis.h"
+#include "TutorialGame.h"
 #include "../CSC8503Common/GameWorld.h"
 #include "../CSC8503Common/GameObjectGenerator.h"
 #include "../CSC8503Common/AssetManager.h"
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 #include "../../Plugins/OpenGLRendering/OGLShader.h"
 #include "../../Plugins/OpenGLRendering/OGLTexture.h"
-#include "../../Plugins/OpenGLRendering/ShaderManager.h"
+#include "../../Common/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
-
-#include "../CSC8503Common/PhysicsXSystem.h"
+#include "../GameTech/TutorialMenu.h"
+#include "..//..//Gameplay/ePlayerRole.h"
+#include "../../Gameplay/GameObjects.h"
+#include "../../Gameplay/Bullet.h"
+#include "../../Gameplay/Grenade.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 TutorialGame::TutorialGame()
-{
+{ 
+	eventSystem = new YiEventSystem();
 	world = new GameWorld();
-#ifndef ORBIS
 	renderer = new GameTechRenderer(*world);
-#else
-	renderer = new NCL::PS4::GameTechRendererOrbis();
-
-#endif
-	//physics = new PhysicsSystem(*world);
 	physicsX = new PhysicsXSystem(*world);
-	forceMagnitude = 10.0f;
-	useGravity = false;
-	inSelectionMode = false;
-#ifndef ORBIS
+
 	Debug::SetRenderer(renderer);
-#endif
+	InitialiseUI();
 	InitialiseAssets();
+	AudioManager::Startup();
 }
 
 /*
@@ -42,674 +37,374 @@ and the same texture and shader. There's no need to ever load in anything else
 for this module, even in the coursework, but you can add it if you like!
 
 */
-void TutorialGame::InitialiseAssets() {
-#ifndef ORBIS
-	ShaderManager::GetInstance()->Init();
-#endif // !ORBIS	
-	AssetManager::GetInstance()->Init();
-	InitCamera();
+void TutorialGame::UpdateRender(float dt)
+{
+	Debug::FlushRenderables(dt);
+	renderer->Update(dt);
+	renderer->Render();
+}
+void TutorialGame::SetSingleMode()
+{
+	InitialiseAssets();
+}
+
+void TutorialGame::SetMultiMode()
+{
 	InitWorld();
+}
+void TutorialGame::InitialiseAssets() {
+	//Loading Screen start
+	ShaderManager::GetInstance()->Init();
+	AssetManager::GetInstance()->Init();
+	//Loading End
+	InitAbilityContainer();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
-	g.Generate(worldFilePath.c_str(), world->GetGameObjects());
+	g.Generate(worldFilePath.c_str(), *world);
 
-	physicsX->SyncGameObjs();
-	world->GetGameObjects().at(0)->GetPhysicsXObject()->SetGravity(false);
+	InitPlayer(Vector3(-200, 50, 0), GameObjectType_team2);
+	InitPlayer(Vector3(-200, 50, -20), GameObjectType_team1,true);
+	InitDefaultFloor();
+	RegisterEventHandles();
 }
-	
 
+void TutorialGame::InitialiseUI()
+{
+	gameUI = new GameUI();
+	renderer->SetUI(gameUI);
+}
 TutorialGame::~TutorialGame()	{
 	AudioManager::Cleanup();
-
 	delete physicsX;
 	delete renderer;
 	delete world;
+	delete gameUI;
+	delete player;
+	delete abilityContainer;
 }
 
 void TutorialGame::UpdateGame(float dt)
 {
-	if (!inSelectionMode)
-	{
-		world->GetMainCamera()->UpdateCamera(dt);
-	}
-
-	UpdateKeys();
+	eventSystem->ProcessAllEvent();
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
-#ifndef ORBIS
-	if (useGravity) {
-		Debug::Print("(G)ravity on", Vector2(5, 95));
-	}
-	else
-	{
-		Debug::Print("(G)ravity off", Vector2(5, 95));
-	}
-#endif
-	//SelectObject();
-	SelectXObject();
-	MoveSelectedObject();
+
+	
+	UpdateGameObjects(dt);
 	physicsX->Update(dt);
-
-	if (lockedObject != nullptr)
-	{
-		Vector3 objPos = lockedObject->GetTransform().GetPosition();
-		Vector3 camPos = objPos + lockedOffset;
-
-		Matrix4 temp = Matrix4::BuildViewMatrix(camPos, objPos, Vector3(0, 1, 0));
-
-		Matrix4 modelMat = temp.Inverse();
-
-		Quaternion q(modelMat);
-		Vector3 angles = q.ToEuler(); //nearly there now!
-
-		world->GetMainCamera()->SetPosition(camPos);
-		world->GetMainCamera()->SetPitch(angles.x);
-		world->GetMainCamera()->SetYaw(angles.y);
-
-		//Debug::DrawAxisLines(lockedObject->GetTransform().GetMatrix(), 2.0f);
-	}
-
+#ifndef ORBIS
+	HUDUpdate(dt);
+#endif
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
-#ifndef ORBIS
-	Debug::FlushRenderables(dt);
-#endif
 	renderer->Render();
+
+	Debug::FlushRenderables(dt);
+
+#ifdef DEBUG
+	physicsX->DrawCollisionLine();
+	CalculateFrameRate(dt);
+#endif // DEBUG
 }
 
-void TutorialGame::UpdateKeys()
-{
-	/*
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F1))
-	{
-		InitWorld(); //We can reset the simulation at any time with F1
-		selectionObject = nullptr;
-		lockedObject = nullptr;
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F2))
-	{
-		InitCamera(); //F2 will reset the camera to a specific default place
-	}
-
-	//if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::G))
-	//{
-	//	useGravity = !useGravity; //Toggle gravity!
-	//	physics->UseGravity(useGravity);
-	//}
-	//Running certain physics updates in a consistent order might cause some
-	//bias in the calculations - the same objects might keep 'winning' the constraint
-	//allowing the other one to stretch too much etc. Shuffling the order so that it
-	//is random every frame can help reduce such bias.
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9))
-	{
-		world->ShuffleConstraints(true);
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10))
-	{
-		world->ShuffleConstraints(false);
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F7))
-	{
-		world->ShuffleObjects(true);
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8))
-	{
-		world->ShuffleObjects(false);
-	}
-
-	if (lockedObject)
-	{
-		LockedObjectMovement();
-	}
-	else
-	{
-		DebugObjectMovement();
-	}
-	*/
+void TutorialGame::InitAbilityContainer() {
+	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::LockedObjectMovement()
+void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team, bool islocal)
 {
-	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
-	Matrix4 camWorld = view.Inverse();
-
-	auto rightAxis = Vector3(camWorld.GetColumn(0)); //view is inverse of model!
-
-	//forward is more tricky -  camera forward is 'into' the screen...
-	//so we can take a guess, and use the cross of straight up, and
-	//the right axis, to hopefully get a vector that's good enough!
-
-	Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
-	fwdAxis.y = 0.0f;
-	fwdAxis.Normalise();
-
-	Vector3 charForward = lockedObject->GetTransform().GetOrientation() * Vector3(0, 0, 1);
-	Vector3 charForward2 = lockedObject->GetTransform().GetOrientation() * Vector3(0, 0, 1);
-
-	float force = 100.0f;
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(-rightAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
-	{
-		Vector3 worldPos = selectionObject->GetTransform().GetPosition();
-		lockedObject->GetPhysicsXObject()->AddForce(rightAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(fwdAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(-fwdAxis * force);
-	}
-
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT))
-	{
-		lockedObject->GetPhysicsXObject()->AddForce(Vector3(0, -10, 0));
-	}
-}
-
-void TutorialGame::DebugObjectMovement()
-{
-	/*
-	//If we've selected an object, we can manipulate it with some key presses
-	if (inSelectionMode && selectionObject)
-	{
-		//Twist the selected object!
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(-10, 0, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(10, 0, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM7))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(0, 10, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM8))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(0, -10, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT))
-		{
-			selectionObject->GetPhysicsXObject()->AddTorque(Vector3(10, 0, 0));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP))
-		{
-			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, 0, -10));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN))
-		{
-			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, 0, 10));
-		}
-
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NUM5))
-		{
-			selectionObject->GetPhysicsXObject()->AddForce(Vector3(0, -10, 0));
-		}
-	}
-	*/
-}
-
-void TutorialGame::InitCamera()
-{
-	world->GetMainCamera()->SetNearPlane(0.1f);
-	world->GetMainCamera()->SetFarPlane(500.0f);
-	world->GetMainCamera()->SetPitch(-15.0f);
-	world->GetMainCamera()->SetYaw(315.0f);
-	world->GetMainCamera()->SetPosition(Vector3(-60, 40, 60));
-	lockedObject = nullptr;
+	player = new Player(PlayerRole_blue, abilityContainer, team,islocal);
+	player->GetTransform()
+		.SetScale(Vector3(4, 4, 4))
+		.SetPosition(pos);
+	player->InitAllComponent();
+	player->SetRenderObject(new RenderObject(&player->GetTransform(), AssetManager::GetInstance()->GetMesh("Male_Guard.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+	world->SetMainCamera(player->GetComponentCamera()->camera);
+	world->AddGameObject(player);
 }
 
 void TutorialGame::InitWorld()
 {
-	world->ClearAndErase();
-
-	InitMixedGridWorld(5, 5, 3.5f, 3.5f);
-	InitGameExamples();
 	InitDefaultFloor();
 	AudioManager::Startup();
-	//AudioManager::GetInstance().Play_Sound();
-}
-
-void TutorialGame::BridgeConstraintTest()
-{
-}
-
-/*
-
-A single function to add a large immoveable cube to the bottom of our world
-
-*/
-GameObject* TutorialGame::AddFloorToWorld(const NCL::Maths::Vector3& position)
-{
-	auto floor = new GameObject();
-
-	//auto floorSize = Vector3(100, 2, 100);
-	//
-	//floor->GetTransform()
-	//     .SetScale(floorSize * 2)
-	//     .SetPosition(position);
-
-	//floor->SetRenderObject(new RenderObject(&floor->GetTransform(), cubeMesh, basicTex, basicShader));
-	//
-	//world->AddGameObject(floor);
-
-	return floor;
-}
-
-/*
-
-Builds a game object that uses a sphere mesh for its graphics, and a bounding sphere for its
-rigid body representation. This and the cube function will let you build a lot of 'simple' 
-physics worlds. You'll probably need another function for the creation of OBB cubes too.
-
-*/
-GameObject* TutorialGame::AddSphereToWorld(const NCL::Maths::Vector3& position, float radius, float inverseMass)
-{
-	auto sphere = new GameObject();
-
-	//auto sphereSize = Vector3(radius, radius, radius);
-	////auto volume = new SphereVolume(radius);
-	////sphere->SetBoundingVolume((CollisionVolume*)volume);
-
-	//sphere->GetTransform()
-	//      .SetScale(sphereSize)
-	//      .SetPosition(position);
-
-	//sphere->SetRenderObject(new RenderObject(&sphere->GetTransform(), sphereMesh, basicTex, basicShader));
-	///*sphere->SetPhysicsObject(new PhysicsObject(&sphere->GetTransform(), sphere->GetBoundingVolume()));
-
-	//sphere->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//sphere->GetPhysicsObject()->InitSphereInertia();*/
-
-	//world->AddGameObject(sphere);
-
-	return sphere;
-}
-
-GameObject* TutorialGame::AddCapsuleToWorld(const NCL::Maths::Vector3& position, float halfHeight, float radius, float inverseMass)
-{
-	auto capsule = new GameObject();
-
-	//auto volume = new CapsuleVolume(halfHeight, radius);
-	//capsule->SetBoundingVolume(volume);
-
-	//capsule->GetTransform()
-	//       .SetScale(Vector3(radius * 2, halfHeight, radius * 2))
-	//       .SetPosition(position);
-
-	//capsule->SetRenderObject(new RenderObject(&capsule->GetTransform(), capsuleMesh, basicTex, basicShader));
-	////capsule->SetPhysicsObject(new PhysicsObject(&capsule->GetTransform(), capsule->GetBoundingVolume()));
-
-	////capsule->GetPhysicsObject()->SetInverseMass(inverseMass);
-	////capsule->GetPhysicsObject()->InitCubeInertia();
-
-	//world->AddGameObject(capsule);
-
-	return capsule;
-}
-
-GameObject* TutorialGame::AddCubeToWorld(const NCL::Maths::Vector3& position, NCL::Maths::Vector3 dimensions, float inverseMass)
-{
-	auto cube = new GameObject();
-
-	//auto volume = new AABBVolume(dimensions);
-
-	//cube->SetBoundingVolume(reinterpret_cast<CollisionVolume*>(volume));
-
-	//cube->GetTransform()
-	//    .SetPosition(position)
-	//    .SetScale(dimensions * 2);
-
-	//cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, basicTex, basicShader));
-	///*cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
-
-	//cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//cube->GetPhysicsObject()->InitCubeInertia();*/
-
-	//world->AddGameObject(cube);
-
-	return cube;
-}
-
-void TutorialGame::InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius)
-{
-	for (int x = 0; x < numCols; ++x)
-	{
-		for (int z = 0; z < numRows; ++z)
-		{
-			auto position = NCL::Maths::Vector3(x * colSpacing, 10.0f, z * rowSpacing);
-			AddSphereToWorld(position, radius, 1.0f);
-		}
-	}
-	AddFloorToWorld(NCL::Maths::Vector3(0, -2, 0));
-}
-
-void TutorialGame::InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing)
-{
-	float sphereRadius = 1.0f;
-	auto cubeDims = NCL::Maths::Vector3(1, 1, 1);
-
-	for (int x = 0; x < numCols; ++x)
-	{
-		for (int z = 0; z < numRows; ++z)
-		{
-			auto position = NCL::Maths::Vector3(x * colSpacing, 10.0f, z * rowSpacing);
-
-			if (rand() % 2)
-			{
-				AddCubeToWorld(position, cubeDims);
-			}
-			else
-			{
-				AddSphereToWorld(position, sphereRadius);
-			}
-		}
-	}
-}
-
-void TutorialGame::InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing,
-                                     const NCL::Maths::Vector3& cubeDims)
-{
-	for (int x = 1; x < numCols + 1; ++x)
-	{
-		for (int z = 1; z < numRows + 1; ++z)
-		{
-			auto position = NCL::Maths::Vector3(x * colSpacing, 10.0f, z * rowSpacing);
-			AddCubeToWorld(position, cubeDims, 1.0f);
-		}
-	}
 }
 
 void TutorialGame::InitDefaultFloor()
 {
-	AddFloorToWorld(NCL::Maths::Vector3(0, -2, 0));
+	Floor* floor = new Floor();
+
+	floor->GetTransform()
+		.SetScale(Vector3(500, 1, 500))
+		.SetPosition(Vector3(-250, 10, 0));
+
+	floor->InitAllComponent();
+	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), AssetManager::GetInstance()->GetMesh("Cube.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+	world->AddGameObject(floor);
+
 }
 
-void TutorialGame::InitGameExamples()
+void TutorialGame::RegisterEventHandles()
 {
-	AddPlayerToWorld(NCL::Maths::Vector3(0, 5, 0));
-	AddEnemyToWorld(NCL::Maths::Vector3(5, 5, 0));
-	AddBonusToWorld(NCL::Maths::Vector3(10, 5, 0));
+	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
+	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
+
+
+
+	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
 }
 
-GameObject* TutorialGame::AddPlayerToWorld(const NCL::Maths::Vector3& position)
+#ifndef ORBIS
+void TutorialGame::HUDUpdate(float dt)
 {
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
+	PlayerPro* playerPro = player->GetPlayerPro();
+	TimeStack* timeStack = player->GetTimeStack();
+	renderer->DrawString("Damage :" + std::to_string(playerPro->damage), Vector2(5, 95));
+	renderer->DrawString("Ammo Left: " + std::to_string(playerPro->ammo), Vector2(5, 90));
+	if (playerPro->ammo == 0) {
+		renderer->DrawString("Press R to reload. ", Vector2(30, 40));
+	}
+	int health = playerPro->health;
+	renderer->DrawString("Health: " + std::to_string(health), Vector2(5, 85));
+	renderer->DrawString("Speed : " + std::to_string(playerPro->speed), Vector2(5, 100));
 
-	auto character = new GameObject();
+	//World timer
+	if (tLeft >= 0) {
+		tLeft -= dt;
+		int m = tLeft / 60;
+		int s = int(tLeft) % 60;
+		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
+	}
+	else {
+		YiEventSystem::GetMe()->PushEvent(GAME_OVER);
+	}
 
-	//auto volume = new AABBVolume(Vector3(0.3f, 0.85f, 0.3f) * meshSize);
+	renderer->DrawString("Score: " + std::to_string(playerPro->score), Vector2(70, 85));
+	renderer->DrawString("TeamKill: " + std::to_string(playerPro->teamKill), Vector2(70, 20));
 
-	//character->SetBoundingVolume((CollisionVolume*)volume);
+	if(timeStack->dashCooldown>0)
+		renderer->DrawString("Dash CD: " + std::to_string(timeStack->dashCooldown), Vector2(5, 80));
+	else
+		renderer->DrawString("Dash ready!", Vector2(5, 80));
 
-	//character->GetTransform()
-	//         .SetScale(Vector3(meshSize, meshSize, meshSize))
-	//         .SetPosition(position);
+	if (timeStack->grenadeCD > 0)
+		renderer->DrawString("Grenade CD: " + std::to_string(timeStack->grenadeCD), Vector2(5, 60));
+	else
+		renderer->DrawString("Grenade ready!", Vector2(5, 60));
 
-	//if (rand() % 2)
-	//{
-	//	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshA, nullptr, basicShader));
-	//}
-	//else
-	//{
-	//	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMeshB, nullptr, basicShader));
-	//}
-	//character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
+	Vector3 position = player->GetTransform().GetPosition()+Vector3(0,5,0);
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
-	//character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	//character->GetPhysicsObject()->InitSphereInertia();
+#define TARGET_OFF 20.0f
+	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, screenSize / 2.0f);
+	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, 
+		screenSize / 2.0f+Vector2(-TARGET_OFF,0));
+	Vector3 targetright = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(TARGET_OFF, 0));
+	Vector3 targettop = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(0, TARGET_OFF));
+	Vector3 targetbot = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+		screenSize / 2.0f + Vector2(0, -TARGET_OFF));
+	renderer->DrawLine(position, target, Vector4(0,1,0,1));
+	renderer->DrawLine(targetleft, targetright, Vector4(0, 1, 0, 1));
+	renderer->DrawLine(targettop, targetbot, Vector4(0, 1, 0, 1));
+}
+#endif
+
+void TutorialGame::CalculateFrameRate(float dt) {
+	float currentTime = GetTickCount64() * 0.001f;
+	++framesPerSecond;
+	if (currentTime - lastTime > 1.0f)
+	{
+		lastTime = currentTime;
+		FPS = framesPerSecond;
+		framesPerSecond = 0;
+	}
+	renderer->DrawString("FPS: "+std::to_string(FPS), Vector2(60, 90));
+}
+
+void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+
+	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
+	Vector3 position = player->GetTransform().GetPosition() + Vector3(0,5,0);
+
+	auto bullet = new Bullet(*player);
+
+	auto sphereSize = Vector3(1.0f, 1.0f, 1.0f);
+	DirectionVec dir = player->GetDirectionVec();
+	bullet->GetTransform()
+		.SetScale(sphereSize)
+		.SetPosition(position + dir.shootDir * 15);
+	bullet->InitAllComponent();
+
+	bullet->SetRenderObject(new RenderObject(&bullet->GetTransform(), AssetManager::GetInstance()->GetMesh("Sphere.msh"),
+		AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+
+	game->world->AddGameObject(bullet);
+
+	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	//bullet->SetCollisionFunction(func);
+
+	game->physicsX->addActor(*bullet);
+	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
+}
+
+void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+
+	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
+	Vector3 position = player->GetTransform().GetPosition() + Vector3(0, 5, 0);
+
+	auto grenade = new Grenade(*player);
+
+	auto cubeSize = Vector3(1.0f, 1.0f, 1.0f);
+	DirectionVec dir = player->GetDirectionVec();
+	grenade->GetTransform()
+		.SetScale(cubeSize)
+		.SetPosition(position + dir.shootDir * 15);
+	grenade->InitAllComponent();
+	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), game->cubeMesh,
+		game->basicTex, game->basicShader));
+
+	game->world->AddGameObject(grenade);
+
+	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
+	//bullet->SetCollisionFunction(func);
+	game->physicsX->addActor(*grenade);
+	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 60.0f);
+}
+
+void TutorialGame::_deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+	GameObject* temp= game->world->FindObjectbyID(stoi(worldID));
+	game->physicsX->deleteActor(*temp);
+	game->world->RemoveGameObject(temp);
+}
+void TutorialGame::_HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	string bulletID = pEvent->vArg[0];
+	string hitID = pEvent->vArg[1];
+	GameWorld* world = (GameWorld*)dwOwnerData;
+
+	Bullet* bullet = static_cast<Bullet*>(world->FindObjectbyID(stoi(bulletID)));
+	if (not bullet)return;
+	int shooterID = bullet->GetShooterID();
+
+	Player* shooter = static_cast<Player*>(world->FindObjectbyID(shooterID));
+	Player* hitobj = static_cast<Player*>(world->FindObjectbyID(stoi(hitID)));
+	PlayerPro* playerPro = hitobj->GetPlayerPro();
+	int health=hitobj->GetPlayerPro()->health;
+	if (health > 0 and playerPro->health - bullet->GetDamage() <= 0) {
+		std::cout << (std::to_string(shooter->GetWorldID()) + " --->" +
+			std::to_string(hitobj->GetWorldID())) << std::endl;
+		shooter->GetPlayerPro()->teamKill++;
+	}
+	if (playerPro->health not_eq 0)
+		shooter->GetPlayerPro()->score++;
+	playerPro->health = playerPro->health - bullet->GetDamage() < 0 ? 0 : playerPro->health - bullet->GetDamage();
+	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(bulletID));
+}
+void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	GameWorld* world = (GameWorld*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+ 	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
+	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
+}
+void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
+{
+	GameWorld* world = (GameWorld*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+	string color = pEvent->vArg[1];
+	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
+	float currenthealth = player->GetPlayerPro()->health;
+
+	switch (stoi(color))
+	{case 0:
+		player->GetPlayerPro()->health = currenthealth + 0.1 > 100 ? 100 : currenthealth + 0.1;
+		break;
+	case 1:
+		player->GetPlayerPro()->damage = 100.0f;
+		break;
+	case 2:
+		player->GetPlayerPro()->speed = 1.5f;
+		break;
+	case 3:
+		player->GetPlayerPro()->Reset(player->GetRole());
+	}
 	
-	world->AddGameObject(character);
-	//lockedObject = character;
-
-	return character;
 }
+void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	string grenadeID = pEvent->vArg[0];
 
-GameObject* TutorialGame::AddEnemyToWorld(const NCL::Maths::Vector3& position)
-{
-	float meshSize = 3.0f;
-	float inverseMass = 0.5f;
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	Player* enemy = nullptr;
+	for (auto i : game->world->GetGameObjects()) {
+		if (i->type == GameObjectType_team2) {
+			enemy = static_cast<Player*>(i);
 
-	auto character = new GameObject();
+			Grenade* grenade = static_cast<Grenade*>(game->world->FindObjectbyID(stoi(grenadeID)));
+			if (not grenade)return;
+			int playerID = grenade->GetPlayerID();
+			Player* player = static_cast<Player*>(game->world->FindObjectbyID(playerID));
 
-	////auto volume = new AABBVolume(Vector3(0.3f, 0.9f, 0.3f) * meshSize);
-	////character->SetBoundingVolume((CollisionVolume*)volume);
 
-	//character->GetTransform()
-	//         .SetScale(Vector3(meshSize, meshSize, meshSize))
-	//         .SetPosition(position);
+			PlayerPro* playerPro = enemy->GetPlayerPro();
+		
 
-	//character->SetRenderObject(new RenderObject(&character->GetTransform(), enemyMesh, nullptr, basicShader));
-	////character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
-	////character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	////character->GetPhysicsObject()->InitSphereInertia();
-
-	//world->AddGameObject(character);
-
-	return character;
-}
-
-GameObject* TutorialGame::AddBonusToWorld(const NCL::Maths::Vector3& position)
-{
-	auto apple = new GameObject();
-
-	//auto volume = new SphereVolume(0.25f);
-	//apple->SetBoundingVolume((CollisionVolume*)volume);
-	//apple->GetTransform()
-	//     .SetScale(Vector3(0.25, 0.25, 0.25))
-	//     .SetPosition(position);
-
-	//apple->SetRenderObject(new RenderObject(&apple->GetTransform(), bonusMesh, nullptr, basicShader));
-	////apple->SetPhysicsObject(new PhysicsObject(&apple->GetTransform(), apple->GetBoundingVolume()));
-
-	////apple->GetPhysicsObject()->SetInverseMass(1.0f);
-	////apple->GetPhysicsObject()->InitSphereInertia();
-
-	//world->AddGameObject(apple);
-
-	return apple;
-}
-
-/*
-
-Every frame, this code will let you perform a raycast, to see if there's an object
-underneath the cursor, and if so 'select it' into a pointer, so that it can be 
-manipulated later. Pressing Q will let you toggle between this behaviour and instead
-letting you move the camera around. 
-
-*/
-bool TutorialGame::SelectObject()
-{
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
-	{
-		inSelectionMode = !inSelectionMode;
-		if (inSelectionMode)
-		{
-			Window::GetWindow()->ShowOSPointer(true);
-			Window::GetWindow()->LockMouseToWindow(false);
-		}
-		else
-		{
-			Window::GetWindow()->ShowOSPointer(false);
-			Window::GetWindow()->LockMouseToWindow(true);
-		}
-	}
-	if (inSelectionMode)
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press Q to change to camera mode!", Vector2(5, 85));
-#endif
-		if (Window::GetInterface()->button_down(attack))
-		{
-			if (selectionObject)
+			Vector3 hitobjPos = enemy->GetTransform().GetPosition();
+			Vector3 grenadePos = grenade->GetTransform().GetPosition();
+			Vector3 dis = hitobjPos - grenadePos;
+			float d = dis.Length();//distance between grenade and object
+			if (d < 100.0) // damage range = 5 
 			{
-				//set colour to deselected;
-				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-				selectionObject = nullptr;
-				lockedObject = nullptr;
-			}
-
-			Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
-
-			RayCollision closestCollision;
-			if (world->Raycast(ray, closestCollision, true))
-			{
-				selectionObject = static_cast<GameObject*>(closestCollision.node);
-				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
-				return true;
-			}
-			return false;
-		}
-	}
-	else
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press Q to change to select mode!", Vector2(5, 85));
-#endif
-	}
-
-	if (lockedObject)
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press L to unlock object!", Vector2(5, 80));
-#endif
-	}
-
-	else if (selectionObject)
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
-#endif
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L))
-	{
-		if (selectionObject)
-		{
-			if (lockedObject == selectionObject)
-			{
-				lockedObject = nullptr;
+				PxRaycastBuffer hit;
+				// move the 1.0 to the distance vector.
+				bool status=game->physicsX->raycast(grenadePos + Vector3(0,1,0),dis.Normalised(),d, hit);
+				if (status) {
+					GameObject* obj=(GameObject*)hit.block.actor->userData;
+					if (obj->type == GameObjectType_team2) {
+						playerPro->health -= 25;
+						std::cout << playerPro->health << std::endl;
+						if (playerPro->health <= 0) {
+							playerPro->health = 0;
+							std::cout << (std::to_string(player->GetWorldID()) + " --->" +
+								std::to_string(enemy->GetWorldID())) << std::endl;
+							player->GetPlayerPro()->teamKill++;
+						}
+						YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
+					}
+				}
+				
 			}
 			else
 			{
-				lockedObject = selectionObject;
+				YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
 			}
 		}
-	}
-
-	return false;
+	}	
 }
-bool TutorialGame::SelectXObject() {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
-	{
-		inSelectionMode = !inSelectionMode;
-		if (inSelectionMode)
-		{
-			Window::GetWindow()->ShowOSPointer(true);
-			Window::GetWindow()->LockMouseToWindow(false);
-		}
-		else
-		{
-			Window::GetWindow()->ShowOSPointer(false);
-			Window::GetWindow()->LockMouseToWindow(true);
-		}
-	}
-	if (inSelectionMode)
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press Q to change to camera mode!", Vector2(5, 85));
-#endif
-		if (Window::GetMouse()->ButtonDown(MouseButtons::LEFT))
-		{
-			if (selectionObject)
-			{
-				//set colour to deselected;
-				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
-				selectionObject = nullptr;
-				lockedObject = nullptr;
-			}
-			PxRaycastBuffer  hit;
-			bool status = physicsX->raycastCam(*world->GetMainCamera(),1000.0f,hit);
-			if (status) {
-				selectionObject = (GameObject*)hit.block.actor->userData;
-				selectionObject->GetRenderObject()->SetColour(Vector4(0, 1, 0, 1));
-				return true;
-			}
-			return false;
-		}
-	}
-	else
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press Q to change to select mode!", Vector2(5, 85));
-#endif
-	}
 
-	if (lockedObject)
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press L to unlock object!", Vector2(5, 80));
-#endif
-	}
-
-	else if (selectionObject)
-	{
-#ifndef ORBIS
-		renderer->DrawString("Press L to lock selected object object!", Vector2(5, 80));
-#endif
-	}
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L))
-	{
-		if (selectionObject)
-		{
-			if (lockedObject == selectionObject)
-			{
-				lockedObject = nullptr;
-			}
-			else
-			{
-				lockedObject = selectionObject;
-			}
-		}
-	}
-
-	return false;
-}
-/*
-If an object has been clicked, it can be pushed with the right mouse button, by an amount
-determined by the scroll wheel. In the first tutorial this won't do anything, as we haven't
-added linear motion into our physics system. After the second tutorial, objects will move in a straight
-line - after the third, they'll be able to twist under torque aswell.
-*/
-void TutorialGame::MoveSelectedObject()
+void TutorialGame::UpdateGameObjects(float dt)
 {
-	if (selectionObject == nullptr)return;
-	PhysicsXObject* obj= selectionObject->GetPhysicsXObject();
-	if (!obj->isDynamic())return;
-	Vector3 position=selectionObject->GetTransform().GetPosition();
-	Vector3 camPos = world->GetMainCamera()->GetPosition();
-	Vector3 dir = position - camPos;
-	obj->AddForce(dir.Normalised()*1500.0f);
+	world->OperateOnContents(
+		[&](GameObject* o)
+		{
+			if (o->IsActive())
+			{
+				o->Update(dt);
+			}
+		}
+	);
 }
+

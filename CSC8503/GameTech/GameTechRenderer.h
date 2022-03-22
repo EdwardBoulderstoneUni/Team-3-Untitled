@@ -3,6 +3,7 @@
 #include "../../Plugins/OpenGLRendering/OGLMesh.h"
 #include "OGLShader.h"
 #include "../CSC8503Common/GameWorld.h"
+#include "../GameTech/GameUI.h"
 
 namespace NCL
 {
@@ -10,24 +11,28 @@ namespace NCL
 	{
 		class RenderObject;
 
-		class GameTechRenderer : public OGLRenderer
+		class GameTechRenderer final : public OGLRenderer
 		{
 		public:
 			explicit GameTechRenderer(GameWorld& world);
 			~GameTechRenderer() override;
-
+			void SetUI(const GameUI* ui) { gameUI = ui; }
 		protected:
+			void bind_shader_defaults() override;
 			void RenderFrame() override;
+			void BeginFrame() override;
 
 			Matrix4 SetupDebugLineMatrix() const override;
 			Matrix4 SetupDebugStringMatrix() const override;
 
 			GameWorld& game_world_;
+	
 
 			void build_object_list();
 			void render_shadow_map();
 			void render_camera();
 			void render_skybox();
+			
 
 			void load_skybox();
 
@@ -39,13 +44,17 @@ namespace NCL
 
 			//shadow mapping things
 			OGLShader* shadow_shader_;
-			GLuint shadow_tex_;
+			GLuint shadow_texture_address_;
+			TextureBase* shadow_texture_;
+			unsigned bound_shadow_tex_;
 			GLuint shadow_fbo_;
 			Matrix4 shadow_matrix_;
 
 			Vector4 light_colour_;
 			float light_radius_;
 			Vector3 light_position_;
+
+			const GameUI* gameUI = nullptr;
 		};
 	}
 }

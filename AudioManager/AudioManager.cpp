@@ -83,7 +83,7 @@ AudioManager::AudioManager()
 
 	//temp
 	std::string testSoundFilePath = NCL::Assets::SOUNDSDIR;
-	testSoundFilePath.append("drumloop.wav");
+	testSoundFilePath.append("fightmusic.mp3");
 	m_Result = m_System->createSound(testSoundFilePath.c_str(),
 		FMOD_2D, nullptr, &m_Sound);
 	ERRCHECK(m_Result);

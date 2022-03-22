@@ -3,7 +3,9 @@
 #include "../../Common/Maths.h"
 #include <vector>
 #include "../../include/PhysX/PxPhysicsAPI.h"
+#include "../../Gameplay/Player.h"
 
+PhysicsXSystem* PhysicsXSystem::p_self = nullptr;
 
 #define PVD_HOST "127.0.0.1"
 #define PX_RELEASE(x)	if(x)	{ x->release(); x = NULL;	}
@@ -20,41 +22,8 @@ PxDefaultCpuDispatcher* gDispatcher = NULL;
 PxScene* gScene = NULL;
 PxMaterial* gMaterial = NULL;
 PxPvd* gPvd = NULL;
+PxControllerManager* gManager = NULL;
 
-
-class ContackCallback :public PxSimulationEventCallback {
-	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
-	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
-	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
-	void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
-	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) {}
-	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
-	{
-		PX_UNUSED((pairHeader));
-		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
-		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
-		a->OnCollisionBegin(b);
-	}
-};
-PhysicsXSystem::PhysicsXSystem(GameWorld & g):gameWorld(g)
-{
-	dTOffset = 0.0f;
-	initPhysics();
-}
-
-PhysicsXSystem::~PhysicsXSystem()
-{
-	PX_RELEASE(gScene);
-	PX_RELEASE(gDispatcher);
-	PX_RELEASE(gPhysics);
-	if (gPvd)
-	{
-		PxPvdTransport* transport = gPvd->getTransport();
-		gPvd->release();	gPvd = NULL;
-		PX_RELEASE(transport);
-	}
-	PX_RELEASE(gFoundation);
-}
 PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
 	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
 	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
@@ -73,6 +42,172 @@ PxFilterFlags contactReportFilterShader(PxFilterObjectAttributes attributes0, Px
 		| PxPairFlag::eNOTIFY_CONTACT_POINTS;
 	return PxFilterFlag::eDEFAULT;
 }
+
+PxFilterFlags customizeFilterShader(PxFilterObjectAttributes attributes0, PxFilterData filterData0,
+	PxFilterObjectAttributes attributes1, PxFilterData filterData1,
+	PxPairFlags& pairFlags, const void* constantBlock, PxU32 constantBlockSize)
+{
+
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(filterData0);
+	PX_UNUSED(filterData1);
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
+
+
+	//// 默认对所有为过滤的碰撞产生默认回调
+	//pairFlags = PxPairFlag::eCONTACT_DEFAULT;
+
+	//// 如果两个物体的filterData均包含对方的ID，则需要触发eNOTIFY_TOUCH_FOUND回调
+	//if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+	//{
+	//	pairFlags |= PxPairFlag::eNOTIFY_TOUCH_FOUND;
+	//}
+
+	//// 如果某个物体可以吸收(Drain)粒子，那么只允许它跟粒子有碰撞，忽略它与其他物体的碰撞
+	//if (isDrainGroup(filterData0) || isDrainGroup(filterData1))
+	//{
+	//	PxFilterData filterDataOther = isDrainGroup(filterData0) ? filterData1 : filterData0;
+	//	if (!isParticleGroup(filterDataOther))
+	//		return PxFilterFlag::eKILL;
+	//}
+
+	//// 属于force0组的物体，只与smoke碰撞
+	//if (isForce0Group(filterData0) || isForce0Group(filterData1))
+	//{
+	//	PxFilterData filterDataOther = isForce0Group(filterData0) ? filterData1 : filterData0;
+	//	if (filterDataOther != collisionGroupSmoke)
+	//		return PxFilterFlag::eKILL;
+	//}
+
+	//// 属于force1组的物体，只与waterfall碰撞
+	//if (isForce1Group(filterData0) || isForce1Group(filterData1))
+	//{
+	//	PxFilterData filterDataOther = isForce1Group(filterData0) ? filterData1 : filterData0;
+	//	if (filterDataOther != collisionGroupWaterfall)
+	//		return PxFilterFlag::eKILL;
+
+	return PxFilterFlag::eDEFAULT;
+}
+
+class ContackCallback :public PxSimulationEventCallback {
+	void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) { PX_UNUSED(constraints); PX_UNUSED(count); }
+	void onWake(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onSleep(PxActor** actors, PxU32 count) { PX_UNUSED(actors); PX_UNUSED(count); }
+	void onTrigger(PxTriggerPair* pairs, PxU32 count) { PX_UNUSED(pairs); PX_UNUSED(count); }
+	void onAdvance(const PxRigidBody* const*, const PxTransform*, const PxU32) {}
+	void onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs)
+	{
+		PX_UNUSED((pairHeader));
+		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
+		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
+		const PxU32 bufferSize = 64;
+		//TODO写一个队列来存这些碰撞数据
+		/*PxContactPairPoint contacts[bufferSize];
+		for (PxU32 i = 0; i < nbPairs; i++)
+		{
+			const PxContactPair& cp = pairs[i];
+
+			PxU32 nbContacts = pairs[i].extractContacts(contacts, bufferSize);
+			for (PxU32 j = 0; j < nbContacts; j++)
+			{
+				PxVec3 point = contacts[j].position;
+				PxVec3 impulse = contacts[j].impulse;
+				PxU32 internalFaceIndex0 = contacts[j].internalFaceIndex0;
+				PxU32 internalFaceIndex1 = contacts[j].internalFaceIndex1;
+			}
+		}*/
+		_CONTACT_O2OHandle(a, b);
+	}
+	void _CONTACT_O2OHandle(GameObject* a, GameObject* b) {
+		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_floor) {
+			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+		}
+		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
+			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT, a->GetWorldID(), b->GetWorldID());
+		}
+		if (a->type == GameObjectType_team1Grenade and b->type == GameObjectType_floor) {
+			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
+			YiEventSystem::GetMe()->PushEvent(GRENADE_DAMAGE_RANGE, a->GetWorldID(), b->GetWorldID());
+		}
+	}
+};
+class CharacterCallback :public PxUserControllerHitReport, public PxControllerBehaviorCallback {
+	void onShapeHit(const PxControllerShapeHit& hit) {
+		PX_UNUSED((hit));
+		GameObject* a = (GameObject*)hit.controller->getActor()->userData;
+		GameObject* b = (GameObject*)hit.actor->userData;
+		_CONTACT_P2OHandle(a, b);
+	}
+	void onControllerHit(const PxControllersHit& hit) {
+		GameObject* a = (GameObject*)hit.controller->getActor()->userData;
+		GameObject* b = (GameObject*)hit.other->getActor()->userData;
+		_CONTACT_P2PHandle(a, b);
+	}
+	void onObstacleHit(const PxControllerObstacleHit& hit) {}
+
+	PxControllerBehaviorFlags		getBehaviorFlags(const PxShape& shape, const PxActor& actor) {
+		//GameObject* a = (GameObject*)actor.userData;
+		return PxControllerBehaviorFlags(0);
+	}
+	PxControllerBehaviorFlags		getBehaviorFlags(const PxController& controller) { return PxControllerBehaviorFlags(0); }
+	PxControllerBehaviorFlags		getBehaviorFlags(const PxObstacle& obstacle) { return PxControllerBehaviorFlags(0); }
+	void _CONTACT_P2OHandle(GameObject* a, GameObject* b)
+	{
+		if (a->type == GameObjectType_team1 and b->type == GameObjectType_floor) {
+			Player* player = dynamic_cast<Player*>(a);
+			player->GetPlayerPro()->isGrounded = true;
+			int color;
+			if (b->GetRenderObject()->GetColour() == Vector4(0, 1, 0, 1)) {
+				color = 0;
+			}
+			else if (b->GetRenderObject()->GetColour() == Vector4(1, 0, 0, 1)) {
+				color = 1;
+			}
+			else if (b->GetRenderObject()->GetColour() == Vector4(0, 0, 1, 1)) {
+				color = 2;
+			}
+			else if (b->GetRenderObject()->GetColour() == Vector4(1, 1, 1, 1)) {
+				color = 3;
+			}
+			YiEventSystem::GetMe()->PushEvent(PLAYER_COLOR_ZONE, player->GetWorldID(), color);
+		}
+	}
+	void _CONTACT_P2PHandle(GameObject* a, GameObject* b)
+	{
+		if (a->type == GameObjectType_team1 and b->type == GameObjectType_team2) {
+			Player* player = dynamic_cast<Player*>(a);
+			player->GetPlayerPro()->isGrounded = true;
+		}
+	}
+};
+
+ContackCallback* callback = new ContackCallback;
+CharacterCallback* characterCallback = new CharacterCallback;
+
+PhysicsXSystem::PhysicsXSystem(GameWorld& g) :gameWorld(g)
+{
+	p_self = this;
+	dTOffset = 0.0f;
+	initPhysics();
+}
+
+PhysicsXSystem::~PhysicsXSystem()
+{
+	PX_RELEASE(gScene);
+	PX_RELEASE(gDispatcher);
+	PX_RELEASE(gPhysics);
+	PX_RELEASE(gFoundation);
+
+	if (gPvd)
+	{
+		PxPvdTransport* transport = gPvd->getTransport();
+		gPvd->release();	gPvd = NULL;
+		PX_RELEASE(transport);
+	}
+}
+
 void PhysicsXSystem::initPhysics()
 {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
@@ -84,12 +219,9 @@ void PhysicsXSystem::initPhysics()
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
-	//sceneDesc.filterShader = PxDefaultSimulationFilterShader;
 	sceneDesc.filterShader = contactReportFilterShader;
-	ContackCallback* callback = new ContackCallback;
 	sceneDesc.simulationEventCallback = callback;
 	gScene = gPhysics->createScene(sceneDesc);
-	
 	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
 	if (pvdClient)
 	{
@@ -98,6 +230,16 @@ void PhysicsXSystem::initPhysics()
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+	gManager = PxCreateControllerManager(*gScene);
+
+	gScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 3.0f);
+	gScene->setVisualizationParameter(PxVisualizationParameter::eACTOR_AXES, 2.0f);
+
+	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_AABBS, 2.0f);
+	gScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 2.0f);
+
+
+
 }
 
 void PhysicsXSystem::Update(float dt)
@@ -116,41 +258,77 @@ void PhysicsXSystem::Update(float dt)
 	{
 		std::vector<PxRigidActor*> actors(nbActors);
 		scene->getActors(PxActorTypeFlag::eRIGID_DYNAMIC | PxActorTypeFlag::eRIGID_STATIC, reinterpret_cast<PxActor**>(&actors[0]), nbActors);
-		getActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
+		SynActorsPose(&actors[0], static_cast<PxU32>(actors.size()));
 	}
 }
 
-void PhysicsXSystem::addDynamicActor(GameObject& actor)
+void PhysicsXSystem::addActor(GameObject& actor)
 {
-	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
-	PxTransform localTm(actor.GetTransform().GetPosition().x,
-		actor.GetTransform().GetPosition().y, 
-		actor.GetTransform().GetPosition().z);
-	PxRigidDynamic* body = gPhysics->createRigidDynamic(localTm);
-	PxRigidBodyExt::updateMassAndInertia(*body,10.0f);
-	body->attachShape(*shape);
-	gScene->addActor(*body);
-	body->userData = &actor;
-	actor.GetPhysicsXObject()->SetRigActor(body);
-	shape->release();
-}
+	PhysicsXObject* phyObj = actor.GetPhysicsXObject();
+	PhyProperties properties = phyObj->properties;
+	PxTransform trans = PxTransform();
+	PxRigidDynamic* dynaBody = nullptr;
+	PxRigidStatic* statBody = nullptr;
+	PxShape* shape = nullptr;
+	PxCapsuleControllerDesc* desc = nullptr;
+	PxCapsuleGeometry* geo = nullptr;
 
-void PhysicsXSystem::addStaticActor(GameObject& actor)
+	switch (properties.type)
+	{
+	case PhyProperties::Dynamic:
+		dynaBody = gPhysics->createRigidDynamic(properties.transform);
+		shape = gPhysics->createShape(*properties.volume, *gMaterial);
+		if (properties.volume->getType() == PxGeometryType::eCAPSULE) {
+			PxTransform  relativePose(PxQuat(PxHalfPi, PxVec3(0, 0, 1)));
+			shape->setLocalPose(relativePose);
+			//For some reason, when the capsule rotates, so does the character
+		}
+		dynaBody->attachShape(*shape);
+		dynaBody->setMass(properties.Mass);
+
+		gScene->addActor(*dynaBody);
+		dynaBody->userData = &actor;
+		phyObj->rb = dynaBody;
+		shape->release();
+		break;
+	case PhyProperties::Static:
+		statBody = gPhysics->createRigidStatic(properties.transform);
+
+		shape = gPhysics->createShape(*properties.volume, *gMaterial);
+		statBody->attachShape(*shape);
+
+		gScene->addActor(*statBody);
+
+		statBody->userData = &actor;
+		phyObj->rb = statBody;
+
+		shape->release();
+		break;
+	case PhyProperties::Character:
+
+		geo = (PxCapsuleGeometry*)properties.volume;
+		trans = properties.transform;
+		desc = new PxCapsuleControllerDesc();
+		desc->radius = geo->radius / 2;
+		desc->height = geo->halfHeight;
+		desc->position.set(trans.p.x, trans.p.y, trans.p.z);
+		desc->material = gMaterial;
+		desc->density = 10;
+		desc->reportCallback = characterCallback;
+		desc->behaviorCallback = characterCallback;
+
+		phyObj->controller = gManager->createController(*desc);
+		phyObj->controller->getActor()->userData = &actor;
+		phyObj->rb = phyObj->controller->getActor();
+		break;
+	}
+}
+void PhysicsXSystem::deleteActor(GameObject& actor)
 {
-	PxShape* shape = gPhysics->createShape(*actor.GetPhysicsXObject()->GetVolume(), *gMaterial);
-	PxTransform localTm(actor.GetTransform().GetPosition().x,
-		actor.GetTransform().GetPosition().y,
-		actor.GetTransform().GetPosition().z);
-	PxRigidStatic* body = gPhysics->createRigidStatic(localTm);
-
-	body->attachShape(*shape);
-	gScene->addActor(*body);
-	body->userData = &actor;
-	actor.GetPhysicsXObject()->SetRigActor(body);
-	shape->release();
+	PxActor* temp = actor.GetPhysicsXObject()->rb;
+	gScene->removeActor(*temp);
 }
-
-void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
+void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 {
 	PxShape* shapes[MAX_NUM_ACTOR_SHAPES];
 	for (PxU32 i = 0; i < numActors; i++)
@@ -163,15 +341,26 @@ void PhysicsXSystem::getActorsPose(PxRigidActor** actors, const PxU32 numActors)
 		{
 			const PxTransform shapePose(PxShapeExt::getGlobalPose(*shapes[j], *actors[i]));
 			const PxGeometryHolder h = shapes[j]->getGeometry();
-			GameObject* obj=(GameObject*)actors[i]->userData;
-			obj->GetTransform().SetPosition(Vector3(shapePose.p.x, shapePose.p.y, shapePose.p.z));
-			obj->GetTransform().SetOrientation(Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
-				shapePose.q.w));
+			GameObject* obj = (GameObject*)actors[i]->userData;
+			PhyProperties pro = obj->GetPhysicsXObject()->properties;
+			obj->GetTransform().SetPosition(Vector3(shapePose.p.x, shapePose.p.y, shapePose.p.z) - pro.positionOffset);
+			if (obj->GetPhysicsXObject()->controller)continue;
+			if (h.getType() == PxGeometryType::eCAPSULE) {
+				Quaternion quat = Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
+					shapePose.q.w);
+				Vector3 temp = quat.ToEuler();
+				quat = Quaternion::EulerAnglesToQuaternion(temp.x, temp.y + 180.0f, temp.z - 90.0f);
+				obj->GetTransform().SetOrientation(quat);
+			}
+			else {
+				obj->GetTransform().SetOrientation(Quaternion(shapePose.q.x, shapePose.q.y, shapePose.q.z,
+					shapePose.q.w));
+			}
 		}
 	}
 }
 
-Vector3 PhysicsXSystem::Unproject(const NCL::Maths::Vector3& screenPos, const Camera& cam)
+Vector3 PhysicsXSystem::Unproject(const Vector3& screenPos, const Camera& cam)
 {
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
@@ -180,35 +369,26 @@ Vector3 PhysicsXSystem::Unproject(const NCL::Maths::Vector3& screenPos, const Ca
 	float nearPlane = cam.GetNearPlane();
 	float farPlane = cam.GetFarPlane();
 
-	//Create our inverted matrix! Note how that to get a correct inverse matrix,
-	//the order of matrices used to form it are inverted, too.
-	NCL::Maths::Matrix4 invVP = GenerateInverseView(cam) * GenerateInverseProjection(aspect, fov, nearPlane, farPlane);
 
-	//Our mouse position x and y values are in 0 to screen dimensions range,
-	//so we need to turn them into the -1 to 1 axis range of clip space.
-	//We can do that by dividing the mouse values by the width and height of the
-	//screen (giving us a range of 0.0 to 1.0), multiplying by 2 (0.0 to 2.0)
-	//and then subtracting 1 (-1.0 to 1.0).
-	auto clipSpace = NCL::Maths::Vector4(
+	Matrix4 invVP = GenerateInverseView(cam) * GenerateInverseProjection(aspect, fov, nearPlane, farPlane);
+
+	auto clipSpace = Vector4(
 		(screenPos.x / screenSize.x) * 2.0f - 1.0f,
 		(screenPos.y / screenSize.y) * 2.0f - 1.0f,
 		(screenPos.z),
 		1.0f
 	);
 
-	//Then, we multiply our clipspace coordinate by our inverted matrix
-	NCL::Maths::Vector4 transformed = invVP * clipSpace;
+	Vector4 transformed = invVP * clipSpace;
 
-	//our transformed w coordinate is now the 'inverse' perspective divide, so
-	//we can reconstruct the final world space by dividing x,y,and z by w.
-	return NCL::Maths::Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
+	return Vector3(transformed.x / transformed.w, transformed.y / transformed.w, transformed.z / transformed.w);
 }
 
 Matrix4 PhysicsXSystem::GenerateInverseView(const Camera& c)
 {
 	float pitch = c.GetPitch();
 	float yaw = c.GetYaw();
-	NCL::Maths::Vector3 position = c.GetPosition();
+	Vector3 position = c.GetPosition();
 
 	Matrix4 iview =
 		Matrix4::Translation(position) *
@@ -252,7 +432,7 @@ bool PhysicsXSystem::raycast(Vector3 origin, Vector3 dir, float maxdis, PxRaycas
 	return gScene->raycast(pxori, pxdir, maxdis, hit);
 }
 
-bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hit)
+bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis, PxRaycastBuffer& hit)
 {
 	Vector3 camPos = camera.GetPosition();
 	PxVec3 pxCamPos = PhysXConvert::Vector3ToPxVec3(camPos);
@@ -273,16 +453,46 @@ bool PhysicsXSystem::raycastCam(Camera& camera, float maxdis,PxRaycastBuffer& hi
 	return raycast(camera.GetPosition(), c, maxdis, hit);
 }
 
+Vector3 PhysicsXSystem::ScreenToWorld(Camera& camera, Vector2 pos, bool isNear)
+{
+	auto Pos = Vector3();
+	if (isNear) {
+		Pos = Vector3(pos.x,
+			pos.y,
+			-0.99999f
+		);
+	}
+	else {
+		Pos = Vector3(pos.x,
+			pos.y,
+			0.99999f
+		);
+	}
+	Vector3 a = Unproject(Pos, camera);
+	return a;
+}
+
 void PhysicsXSystem::SyncGameObjs()
 {
-	std::vector<GameObject*>& actors=gameWorld.GetGameObjects();
-	for (int i = 0; i < actors.size();i++) {
-		PhysicsXObject* obj = actors[i]->GetPhysicsXObject();
-		if (obj == nullptr)continue;
-		if (obj->isInScene())continue;
-		if (obj->isDynamic())addDynamicActor(*actors[i]);
-		else addStaticActor(*actors[i]);
+	std::vector<GameObject*>& actors = gameWorld.GetGameObjects();
+	for (auto actor : actors)
+	{
+		PhysicsXObject* obj = actor->GetPhysicsXObject();
+		if (obj->rb)continue;
+		addActor(*actor);
 	}
 }
+void PhysicsXSystem::DrawCollisionLine() {
+	const PxRenderBuffer& rb = gScene->getRenderBuffer();
+	for (PxU32 i = 0; i < rb.getNbLines(); i++)
+	{
+		const PxDebugLine& line = rb.getLines()[i];
+		Debug::DrawLine(PhysXConvert::PxVec3ToVector3(line.pos0), PhysXConvert::PxVec3ToVector3(line.pos1));
+	}
+}
+
+
+
+
 
 

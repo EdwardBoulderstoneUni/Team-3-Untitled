@@ -1,76 +1,84 @@
 #pragma once
-
+#include "GameTechRenderer.h"
+#include "OGLTexture.h"
+#include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
-#include "../../Common/Vector3.h"
-#include"../../Common/RendererBase.h"
+#include "../CSC8503Common/PushdownMachine.h"
+#include "GameState.h"
+#include "YiEventSystem.h"
+#include "../../Gameplay/Player.h"
 
-class PhysicsXSystem;
+#define DEBUG
 namespace NCL {
-	
 	namespace CSC8503 {
-		class GameObject;
-		class GameWorld;
+		enum CameraMode {
+			LockedObject,
+			DebugObject,
+			PlayerLock
+		};
+
 		class TutorialGame		{
 		public:
 			TutorialGame();
 			~TutorialGame();
 
 			virtual void UpdateGame(float dt);
+			virtual void UpdateRender(float dt);
 
+			GameUI* GetUI()const { return gameUI; }
+			void StartRender()const { renderer->Render(); }
+
+			void SetSingleMode();
+			void SetMultiMode();
+			float tLeft = 900;
 		protected:
 			void InitialiseAssets();
-
-			void InitCamera();
-			void UpdateKeys();
-
+			void InitialiseUI();
+			void InitAbilityContainer();
+			void InitPlayer(Vector3 pos, GameObjectType team, bool islocal=false);
+		
 			void InitWorld();
 
-			void InitGameExamples();
-
-			void InitSphereGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, float radius);
-			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
-			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing,
-			                       const NCL::Maths::Vector3& cubeDims);
 			void InitDefaultFloor();
-			void BridgeConstraintTest();
+			void RegisterEventHandles();
+			void HUDUpdate(float dt);
 
-			bool SelectObject();
-			bool SelectXObject();
+			void CalculateFrameRate(float dt);
 
-			void MoveSelectedObject();
-			void DebugObjectMovement();
-			void LockedObjectMovement();
-
-			GameObject* AddFloorToWorld(const NCL::Maths::Vector3& position);
-			GameObject* AddSphereToWorld(const NCL::Maths::Vector3& position, float radius, float inverseMass = 10.0f);
-			GameObject* AddCubeToWorld(const NCL::Maths::Vector3& position, NCL::Maths::Vector3 dimensions, float inverseMass = 10.0f);
-
-			GameObject* AddCapsuleToWorld(const NCL::Maths::Vector3& position, float halfHeight, float radius,
-			                              float inverseMass = 10.0f);
-
-			GameObject* AddPlayerToWorld(const NCL::Maths::Vector3& position);
-			GameObject* AddEnemyToWorld(const NCL::Maths::Vector3& position);
-			GameObject* AddBonusToWorld(const NCL::Maths::Vector3& position);
-
-			RendererBase*	renderer;
+			GameTechRenderer*	renderer;
 			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
+			Player*				player;
+			AbilityContainer*	abilityContainer;
+			YiEventSystem* eventSystem;
 	
-			bool useGravity;
-			bool inSelectionMode;
+			OGLMesh* capsuleMesh = nullptr;
+			OGLMesh* cubeMesh = nullptr;
+			OGLMesh* sphereMesh = nullptr;
+			OGLTexture* basicTex = nullptr;
+			OGLShader* basicShader = nullptr;
 
-			float forceMagnitude;
+			//Coursework Meshes
+			OGLMesh* charMeshA = nullptr;
+			OGLMesh* charMeshB = nullptr;
+			OGLMesh* enemyMesh = nullptr;
+			OGLMesh* bonusMesh = nullptr;
 
-			GameObject* selectionObject = nullptr;
+			float FPS = 0.0f;
+			float framesPerSecond = 0.0f;
+			float lastTime = 0.0f;
+			float previousSecond;
+			float currentSecond;
 
-			//Coursework Additional functionality	
-			GameObject* lockedObject = nullptr;
-			NCL::Maths::Vector3 lockedOffset = NCL::Maths::Vector3(0, 14, 20);
-
-			void LockCameraToObject(GameObject* o)
-			{
-				lockedObject = o;
-			}
+			GameUI* gameUI;
+			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			void UpdateGameObjects(float dt);
 		};
 	}
 }

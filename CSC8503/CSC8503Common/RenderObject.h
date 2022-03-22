@@ -1,12 +1,15 @@
 #pragma once
-#include "../../Common/Matrix4.h"
-#include "../../Common/TextureBase.h"
-#include "../../Common/ShaderBase.h"
-#include "../../Common/Vector4.h"
 #include "../../Common/MeshMaterial.h"
+#include "../../Common/ShaderBase.h"
+#include "../../Common/TextureBase.h"
+#include "../../Common/Vector4.h"
 
 namespace NCL
 {
+	namespace Rendering {
+		class RendererBase;
+	}
+
 	using namespace Rendering;
 
 	class MeshGeometry;
@@ -19,61 +22,46 @@ namespace NCL
 		class RenderObject
 		{
 		public:
-			RenderObject(Transform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
-			~RenderObject();
+			RenderObject(Transform* parent_transform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
+			
+			virtual void bind_shader_values(RendererBase* renderer) const;
 
-			void SetDefaultTexture(TextureBase* t)
-			{
-				texture = t;
-			}
-
-			TextureBase* GetDefaultTexture() const
-			{
-				return texture;
-			}
+			virtual void render(RendererBase* renderer) const;
 
 			MeshGeometry* GetMesh() const
 			{
-				return mesh;
+				return mesh_;
 			}
 
 			Transform* GetTransform() const
 			{
-				return transform;
+				return transform_;
 			}
 
 			ShaderBase* GetShader() const
 			{
-				return shader;
+				return shader_;
 			}
 
+			MeshMaterial* GetMaterial() const {
+				return material_;
+			}
 			void SetColour(const Vector4& c)
 			{
-				colour = c;
+				colour_ = c;
 			}
 
 			Vector4 GetColour() const
 			{
-				return colour;
+				return colour_;
 			}
-
-			MeshMaterial* GetMaterial() const {
-				return material;
-			}
-
-			const Maths::Matrix4& GetLocalTransform() const {
-				return localTransform;
-			}
-			void	SetLocalTransform(const Maths::Matrix4& mat);
-
+			Vector4 colour_;
+			TextureBase* texture_;
 		protected:
-			MeshGeometry*	mesh;
-			TextureBase*	texture;
-			ShaderBase*		shader;
-			Transform*		transform;
-			Vector4			colour;
-			MeshMaterial*	material;
-			Maths::Matrix4	localTransform;
+			MeshGeometry*	mesh_;
+			ShaderBase*		shader_;
+			Transform*		transform_;
+			MeshMaterial*	material_;
 		};
 	}
 }

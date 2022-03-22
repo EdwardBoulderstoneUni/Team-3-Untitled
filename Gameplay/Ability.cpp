@@ -6,6 +6,14 @@
 namespace NCL {
 	namespace CSC8503 {
 		Ability::Ability(const char* colourName, int abilityNumber) {
+
+			cooldown = 0.f;
+			range = 0.f;
+			size = Vector2(0,0);
+			startUp = 0.f;
+			endLag = 0.f;
+
+			isFiring = false;
 			std::ifstream file("Ability.json");
 			std::stringstream buffer;
 			buffer << file.rdbuf();
@@ -23,6 +31,9 @@ namespace NCL {
 				startUp = objects[abilityNumber]["cooldown"].GetFloat();
 				endLag = objects[abilityNumber]["cooldown"].GetFloat();
 			}
+			file.close();
 		}
+
+		Ability::~Ability() {}
 	}
 }

@@ -3,7 +3,7 @@
 #include "..//..//include/rapidjson/document.h"
 #include "../../Common/Vector3.h"
 #include "../../Common/Vector4.h"
-
+#include "../CSC8503Common/GameWorld.h"
 namespace NCL {
 
 	namespace CSC8503 {
@@ -15,7 +15,7 @@ namespace NCL {
 		public:
 			GameObjectGenerator() = default;
 			~GameObjectGenerator();
-			void Generate(const char* fileName, std::vector<GameObject*>& objects) ;
+			void Generate(const char* fileName, GameWorld& world) ;
 			void SetTransform(GameObject*, const rapidjson::Value&);
 
 			void SetPhysicsObject(GameObject*, const rapidjson::Value&);
@@ -34,6 +34,9 @@ namespace NCL {
 				vector.z = value[attribute]["z"].GetFloat();
 				vector.w = value[attribute]["w"].GetFloat();
 			}
+
+		private:
+			float multiplier = 5.0f;
 		};
 	}
 }
