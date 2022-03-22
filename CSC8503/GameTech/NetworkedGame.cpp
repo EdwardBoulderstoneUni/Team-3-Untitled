@@ -110,7 +110,7 @@ void NetworkedGame::UpdateGame(float dt) {
 			CalculateFrameRate(dt);
 		}
 		UpdateGameObjects(dt);
-		//physicsX->Update(dt);
+		physicsX->Update(dt);
 
 		HUDUpdate(dt);
 		world->UpdateWorld(dt);
@@ -266,6 +266,9 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		Player* newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
 		newPlayer->RemoveComponetCamera();
 		newPlayer->RemoveComponetInput();
+		newPlayer->RemoveComponetPhysics();
+
+
 		ToggleNetworkState(newPlayer, true);
 		newPlayer->GetTransform().SetPosition(state.position);
 		newPlayer->GetTransform().SetOrientation(state.orientation);
@@ -405,7 +408,7 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 		game->networkplayers.insert(std::pair<int, GameObject*>(playerID, newPlayer));
 
 		if (game->thisClient) {
-			
+			newPlayer->RemoveComponetPhysics();
 		}
 		if (game->thisServer) {
 
@@ -423,6 +426,7 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 		game->world->SetMainCamera(newPlayer->GetComponentCamera()->camera);
 		if (game->thisClient) {
 			newPlayer->RemoveComponetInput();
+			newPlayer->RemoveComponetPhysics();
 		}
 		if (game->thisServer) {
 		
