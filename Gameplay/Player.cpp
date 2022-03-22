@@ -102,13 +102,14 @@ void Player::SetupStateMachine()
 }
 void Player::Update(float dt) {
 	ComponentGameObject::Update(dt);
-
+	dirVec.forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
 	if (GetComponentCamera()) {
+		dirVec.forward = GetComponentCamera()->camera->GetThirdPersonOrientation() * Vector3(0, 0, -1);
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f, false);
 		dirVec.shootDir = (target - transform.GetPosition()).Normalised();
 	}
-	dirVec.forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
+	
 	dirVec.CaculateRight();
 
 	if (GetComponentInput()) {
