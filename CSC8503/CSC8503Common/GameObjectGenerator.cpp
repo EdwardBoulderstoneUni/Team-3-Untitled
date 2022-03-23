@@ -12,6 +12,7 @@
 #include "../../Common/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
 #include "PhysXConvert.h"
+#include "../Paint/PaintableRenderObject.h"
 
 
 NCL::CSC8503::GameObjectGenerator::~GameObjectGenerator()
@@ -92,9 +93,9 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 		break;
 	case 1:
 		
-		object->SetRenderObject(new RenderObject
+		object->SetRenderObject(new PaintableRenderObject
 		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
-			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
+			AssetManager::GetInstance()->GetTexture("checkerboard"), material));
 		break;
 	case 2:
 
