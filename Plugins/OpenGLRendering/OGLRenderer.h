@@ -79,8 +79,8 @@ namespace NCL
 			void bind_shader(ShaderBase* shader) override;
 			void bind_mesh(MeshGeometry* m) override;
 			void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const override;
-			static void generate_fbo(TextureBase* texture, unsigned& fbo_address);
-			static unsigned* generate_fbo(TextureBase* texture);
+			static void generate_fbo(TextureBase* texture, unsigned& fbo_address, GLenum attachment = GL_TEXTURE_2D);
+			static unsigned* generate_fbo(TextureBase* texture, GLenum attachment = GL_TEXTURE_2D);
 			void render_to(TextureBase* texture) override;
 			void blit(TextureBase* source, TextureBase* dest) override;
 
@@ -104,7 +104,6 @@ namespace NCL
 			void bind_texture_to_shader(const std::string& shader_property_name, const TextureBase& data) override;
 			
 			void reset_shader_for_next_object() override;
-			void reset_state_for_next_frame() override;
 			void free_reserved_textures() override;
 			void reserve_texture(TextureBase& data) override;
 			void bind_reserved_texture(const std::string& shader_property_name, const TextureBase& texture) override;
@@ -149,7 +148,7 @@ namespace NCL
 			bool force_valid_debug_state_;
 			unsigned current_tex_unit_;
 
-			bool reserved_texture_slot_[GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS] = { false };
+			TextureBase* reserved_texture_slot_[GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS] = { nullptr };
 
 			std::map<TextureBase*, unsigned*> associated_fbo_;
 		};

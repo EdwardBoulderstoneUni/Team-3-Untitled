@@ -102,7 +102,7 @@ OGLRenderer::~OGLRenderer()
 OGLTexture* OGLRenderer::init_shadow_buffer(const unsigned shadow_size, unsigned& fbo_address)
 {
 	const auto shadow_texture = new OGLTexture(shadow_size, shadow_size, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
-	generate_fbo(shadow_texture, fbo_address);
+	generate_fbo(shadow_texture, fbo_address, GL_DEPTH_ATTACHMENT);
 	return shadow_texture;
 }
 
@@ -123,6 +123,7 @@ void OGLRenderer::BeginFrame()
 
 void OGLRenderer::EndFrame()
 {
+	RendererBase::EndFrame();
 	DrawDebugData();
 }
 
@@ -236,22 +237,22 @@ void OGLRenderer::draw_bound_mesh(const unsigned sub_layer, unsigned num_instanc
 	}
 }
 
-void OGLRenderer::generate_fbo(TextureBase* texture, unsigned& fbo_address)
+void OGLRenderer::generate_fbo(TextureBase* texture, unsigned& fbo_address, const GLenum attachment)
 {
 	glGenFramebuffers(1, &fbo_address);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo_address);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, dynamic_cast<OGLTexture*>(texture)->GetObjectID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, dynamic_cast<OGLTexture*>(texture)->GetObjectID(), 0);
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1, 1, 1, 1);
 }
 
-unsigned* OGLRenderer::generate_fbo(TextureBase* texture)
+unsigned* OGLRenderer::generate_fbo(TextureBase* texture, const GLenum attachment)
 {
 	const auto fbo_address = new unsigned();
 	glGenFramebuffers(1, fbo_address);
 	glBindFramebuffer(GL_FRAMEBUFFER, *fbo_address);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, dynamic_cast<OGLTexture*>(texture)->GetObjectID(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, dynamic_cast<OGLTexture*>(texture)->GetObjectID(), 0);
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1, 1, 1, 1);
@@ -364,16 +365,12 @@ void OGLRenderer::reset_shader_for_next_object()
 	current_tex_unit_ = 0;
 }
 
-void OGLRenderer::reset_state_for_next_frame()
-{
-	RendererBase::reset_state_for_next_frame();
-	bound_shader_ = nullptr;
-}
-
 void OGLRenderer::free_reserved_textures()
 {
-	for (bool& texture_slot : reserved_texture_slot_)
-		texture_slot = false;
+	for (TextureBase* texture : reserved_texture_slot_) {
+		texture->unreserve();
+		texture = nullptr;
+	}
 }
 
 void OGLRenderer::reserve_texture(TextureBase& data)
@@ -393,7 +390,7 @@ void OGLRenderer::reserve_texture(TextureBase& data)
 		glActiveTexture(GL_TEXTURE0 + current_tex_unit_);
 		glBindTexture(GL_TEXTURE_2D, tex_id);
 
-		reserved_texture_slot_[current_tex_unit_] = true;
+		reserved_texture_slot_[current_tex_unit_] = &data;
 		data.reserve(current_tex_unit_);
 		current_tex_unit_ += 1;
 	}
