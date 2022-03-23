@@ -12,6 +12,11 @@ void PaintableRenderObject::bind_shader_values(NCL::RendererBase* renderer) cons
 	renderer->bind_shader_property("mask", *mask_);
 }
 
+NCL::Vector4 PaintableRenderObject::get_colour_at(const NCL::Maths::Vector3& local_pos)
+{
+	throw std::logic_error("Not yet implemented");
+}
+
 NCL::TextureBase* PaintableRenderObject::get_paint_dest() const
 {
 	return paint_instance_texture_;
