@@ -3,6 +3,7 @@
 enum GameObjectType {
 	GameObjectType_null,
 	GameObjectType_floor,
+	GameObjectType_wall,
 	GameObjectType_team1,
 	GameObjectType_team1Bullet,
 	GameObjectType_team1Grenade,
@@ -10,5 +11,5 @@ enum GameObjectType {
 	GameObjectType_team2Bullet,
 	GameObjectType_team2Grenade,
 	GameObjectType_max_size,
-	GameObjectType_invalid = 1
+	GameObjectType_invalid
 };
