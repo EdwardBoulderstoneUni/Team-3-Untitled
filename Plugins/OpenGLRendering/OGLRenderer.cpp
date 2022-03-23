@@ -291,6 +291,16 @@ ShaderBase* OGLRenderer::load_default_shader() const
 	return new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl");
 }
 
+ShaderBase* NCL::Rendering::OGLRenderer::get_paintable_object_shader() const
+{
+	return new OGLShader("GameTechVert.glsl", "PaintableFrag.glsl");
+}
+
+ShaderBase* NCL::Rendering::OGLRenderer::get_paintable_instance_shader() const
+{
+	return new OGLShader("TexturePainterVert.glsl", "TexturePainterFrag.glsl");
+}
+
 GLint OGLRenderer::get_shader_property_location(const std::string& shader_property_name) const
 {
 	return glGetUniformLocation(bound_shader_->GetProgramID(), shader_property_name.c_str());

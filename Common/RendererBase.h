@@ -76,6 +76,8 @@ namespace NCL
 			virtual void bind_mesh(MeshGeometry* m) = 0;
 			virtual void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const = 0;
 			virtual ShaderBase* load_default_shader() const = 0;
+			virtual ShaderBase* get_paintable_object_shader() const = 0;
+			virtual ShaderBase* get_paintable_instance_shader() const = 0;
 			virtual TextureBase* init_blank_texture(unsigned width, unsigned height) const = 0;
 			virtual void render_to(TextureBase* texture_base) = 0;
 			virtual void blit(TextureBase* source, TextureBase* dest) = 0;

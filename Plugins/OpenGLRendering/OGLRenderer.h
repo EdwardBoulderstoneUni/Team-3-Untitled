@@ -85,6 +85,8 @@ namespace NCL
 			void blit(TextureBase* source, TextureBase* dest) override;
 
 			ShaderBase* load_default_shader() const override;
+			ShaderBase* get_paintable_object_shader() const override;
+			ShaderBase* get_paintable_instance_shader() const override;
 		protected:
 			void BeginFrame() override;
 			void RenderFrame() override {}
