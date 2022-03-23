@@ -138,13 +138,7 @@
     <ClCompile Include="ComponentGameObject.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Floor.cpp" />
-
     <ClCompile Include="Grenade.cpp" />
-    <ClCompile Include="Paintable.cpp" />
-
-    <ClCompile Include="PaintableRenderObject.cpp" />
-    <ClCompile Include="PaintableSurface.cpp" />
-
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -163,13 +157,7 @@
     <ClInclude Include="ePlayerRole.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="GameObjects.h" />
-
     <ClInclude Include="Grenade.h" />
-    <ClInclude Include="Paintable.h" />
-
-    <ClInclude Include="PaintableRenderObject.h" />
-    <ClInclude Include="PaintableSurface.h" />
-
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerController.h" />
     <ClInclude Include="PlayerState.h" />
