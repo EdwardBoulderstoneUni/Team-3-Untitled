@@ -77,7 +77,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsServer();
 	}
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
-		StartAsClient(10,70,33, 127);
+		StartAsClient(10,70,33,127);
 	}
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 		EventPacket newPacket;
@@ -115,7 +115,9 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 	pc->update(dt);
 	Input lastinput = pc->get_inputs();
 	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
-		YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE,localPlayer->GetWorldID());
+		if (localPlayer->GetPlayerPro()->ammo > 0) {
+			YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, localPlayer->GetWorldID());
+		}
 		newPacket.buttonstates[7] = 1;
 	}
 	if (lastinput.buttons[jump]) {
