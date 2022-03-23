@@ -62,7 +62,7 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 }
 
 bool NetworkObject::ReadFullPacket(FullPacket& p) {
-	if (p.fullState.stateID <= lastFullState.stateID) {
+	if (p.fullState.stateID < lastFullState.stateID) {
 		return false; // received an 'old' packet, ignore!
 	}
 	lastFullState = p.fullState;
@@ -110,7 +110,7 @@ bool NetworkObject::WriteFullPacket(GamePacket** p, int stateID) {
 	if (!GetNetworkState(stateID + 1, state)) {
 		fp->fullState.position = object.GetTransform().GetPosition();
 		fp->fullState.orientation = object.GetTransform().GetOrientation();
-		fp->fullState.stateID = lastFullState.stateID++;//�Զ����ӵİ������ʶ��
+		fp->fullState.stateID = lastFullState.stateID++;
 		stateHistory.emplace_back(fp->fullState);
 	}
 	else {

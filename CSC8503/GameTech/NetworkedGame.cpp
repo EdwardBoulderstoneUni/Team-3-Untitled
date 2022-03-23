@@ -69,7 +69,7 @@ void NetworkedGame::UpdateGame(float dt) {
 	}
 	if (thisServer && timeToUpdateMiniState < 0) {
 		UpdateMinimumState();
-		timeToUpdateMiniState += 10.0f;
+		timeToUpdateMiniState += 30.0f;
 	}
 
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9)) {
@@ -88,7 +88,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		thisServer->Shutdown();
 		YiEventSystem::GetMe()->PushEvent(SERVER_SHUT_DOWN);
 	}
-	
+
 	TutorialGame::UpdateGame(dt);
 }
 
