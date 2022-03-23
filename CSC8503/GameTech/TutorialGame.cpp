@@ -323,7 +323,8 @@ void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	GameWorld* world = (GameWorld*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
-	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
+	if(player->GetPhysicsXObject())
+		player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
 }
 void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
