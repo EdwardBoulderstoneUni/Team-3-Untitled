@@ -13,6 +13,7 @@
 #include "../../Gameplay/GameObjects.h"
 #include "../../Gameplay/Bullet.h"
 #include "../../Gameplay/Grenade.h"
+#include "../GameTech/DebugMode.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -86,10 +87,32 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt)
 {
+	#ifndef DEBUG
+	TIMER_START(x);
+    eventSystem->ProcessAllEvent();
+    TIMER_STOP(x);
+    Debug::Print("EventSystem:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 95));
+	
+	TIMER_RESET(x);
+	AudioManager::GetInstance().Play_Sound();
+	AudioManager::GetInstance().Update(dt);
+	TIMER_STOP(x);
+	Debug::Print("AudioManager:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 100));
+
+	TIMER_RESET(x);
+	UpdateGameObjects(dt);
+	TIMER_STOP(x);
+	Debug::Print("GameObject:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 90));
+
+	TIMER_RESET(x);
+	physicsX->Update(dt);
+	TIMER_STOP(x);
+	Debug::Print("PhysicsX:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 85));
+	#endif
+
 	eventSystem->ProcessAllEvent();
 	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
-
 	
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
@@ -102,9 +125,10 @@ void TutorialGame::UpdateGame(float dt)
 
 	Debug::FlushRenderables(dt);
 
-#ifdef DEBUG
+#ifndef DEBUG
 	physicsX->DrawCollisionLine();
 	CalculateFrameRate(dt);
+	Memoryfootprint();
 #endif // DEBUG
 }
 
@@ -185,7 +209,7 @@ void TutorialGame::HUDUpdate(float dt)
 	//	YiEventSystem::GetMe()->PushEvent(GAME_OVER);
 	}
 
-	renderer->DrawString("Score: " + std::to_string(playerPro->score), Vector2(70, 85));
+	renderer->DrawString("Score: " + std::to_string(playerPro->score), Vector2(70, 80));
 	renderer->DrawString("TeamKill: " + std::to_string(playerPro->teamKill), Vector2(70, 20));
 
 	if(timeStack->dashCooldown>0)
@@ -227,7 +251,7 @@ void TutorialGame::CalculateFrameRate(float dt) {
 		FPS = framesPerSecond;
 		framesPerSecond = 0;
 	}
-	renderer->DrawString("FPS: "+std::to_string(FPS), Vector2(60, 90));
+	renderer->DrawString("FPS: "+std::to_string(int(FPS)), Vector2(55, 65));
 }
 
 void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
