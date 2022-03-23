@@ -32,10 +32,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gameplay", "Gameplay\Gameplay.vcxproj", "{E01D4478-7B03-4F39-892C-462C38856EA3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Paint", "Paint\Paint.vcxproj", "{1E33630E-9F56-4019-8AC6-90CE8E1EB7C3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{F93B1523-C80E-4CFC-8A88-660866D29C10} = {F93B1523-C80E-4CFC-8A88-660866D29C10}
-		{7A22CD41-A2EE-49F0-8B06-E01B4526CA41} = {7A22CD41-A2EE-49F0-8B06-E01B4526CA41}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
