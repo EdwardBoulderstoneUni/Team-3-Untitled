@@ -23,6 +23,7 @@ namespace NCL
 			OGLTexture();
 			OGLTexture(unsigned width, unsigned height, unsigned channels = 4, GLuint* data = nullptr);
 			OGLTexture(unsigned width, unsigned height, GLint internal_format, GLint pixel_format, GLint pixel_type, GLuint* data = nullptr);
+			static OGLTexture* init_shadow_texture(unsigned shadow_size);
 			explicit OGLTexture(GLuint tex_to_own);
 			~OGLTexture() override;
 

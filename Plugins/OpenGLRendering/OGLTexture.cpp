@@ -78,6 +78,23 @@ OGLTexture::OGLTexture(const unsigned width, const unsigned height, const GLint 
 	init_texture(internal_format, pixel_format, pixel_type, data);
 }
 
+OGLTexture* OGLTexture::init_shadow_texture(const unsigned shadow_size)
+{
+	const auto shadow_tex = new OGLTexture();
+	shadow_tex->width_ = shadow_size;
+	shadow_tex->height_ = shadow_size;
+	glBindTexture(GL_TEXTURE_2D, shadow_tex->tex_id_);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, static_cast<int>(shadow_size), static_cast<int>(shadow_size), 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return shadow_tex;
+}
+
 OGLTexture::OGLTexture(const GLuint tex_to_own) : tex_id_(tex_to_own)
 {
 	width_ = 0;
