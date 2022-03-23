@@ -66,10 +66,9 @@ namespace NCL
 			virtual void bind_shader_defaults() {}
 			virtual void reset_shader_for_next_object() {}
 			virtual void reset_state_for_next_shader() {}
-			virtual void reset_state_for_next_frame();
 			virtual void free_reserved_textures() = 0;
-			virtual unsigned reserve_texture(const TextureBase& data) = 0;
-			virtual void bind_reserved_texture(const std::string& shader_property_name, unsigned texture_address) = 0;
+			virtual void reserve_texture(TextureBase& data) = 0;
+			virtual void bind_reserved_texture(const std::string& shader_property_name, const TextureBase& texture) = 0;
 			template<class ShaderArgs>
 			void bind_shader_property(const std::string& shader_property_name, const ShaderArgs& data) {
 				throw std::logic_error("Class cannot be passed to shader");
@@ -77,7 +76,11 @@ namespace NCL
 			virtual void bind_mesh(MeshGeometry* m) = 0;
 			virtual void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const = 0;
 			virtual ShaderBase* load_default_shader() const = 0;
+			virtual ShaderBase* get_paintable_object_shader() const = 0;
+			virtual ShaderBase* get_paintable_instance_shader() const = 0;
 			virtual TextureBase* init_blank_texture(unsigned width, unsigned height) const = 0;
+			virtual void render_to(TextureBase* texture_base) = 0;
+			virtual void blit(TextureBase* source, TextureBase* dest) = 0;
 		protected:
 			virtual void bind_int_to_shader(const std::string& shader_property_name, const int& data) = 0;
 			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data) = 0;
@@ -98,10 +101,6 @@ namespace NCL
 			int currentHeight;
 		};
 
-		inline void RendererBase::reset_state_for_next_frame()
-		{
-			free_reserved_textures();
-		}
 		template <>
 		inline void RendererBase::bind_shader_property<int>(const std::string& shader_property_name, const int& data) {
 			bind_int_to_shader(shader_property_name, data);

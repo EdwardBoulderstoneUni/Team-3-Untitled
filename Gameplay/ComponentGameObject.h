@@ -16,7 +16,7 @@ namespace NCL {
 			void RemoveComponetCamera();
 			void RemoveComponetInput();
 			void RemoveComponetPhysics();
-			virtual void SetUp() = 0;
+			virtual void SetUp() {};
 			virtual void Update(float dt);
 			void InitAllComponent();
 			void PushComponent(Component* newCom);

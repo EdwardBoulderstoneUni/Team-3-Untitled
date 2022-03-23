@@ -5,14 +5,14 @@
 #include "../../Common/Quaternion.h"
 #include "../CSC8503Common/SphereVolume.h"
 #include "../CSC8503Common/AABBVolume.h"
-#include "../CSC8503Common/GameObject.h"
+#include "../Gameplay/ComponentGameObject.h"
 #include "AssetManager.h"
 #include "..//..//Plugins/OpenGLRendering/OGLMesh.h"
 #include "..//..//Plugins/OpenGLRendering/OGLTexture.h"
 #include "../../Common/ShaderManager.h"
 #include "../../Common/MeshMaterial.h"
 #include "PhysXConvert.h"
-
+#include "../Paint/PaintableSurface.h"
 
 NCL::CSC8503::GameObjectGenerator::~GameObjectGenerator()
 {
@@ -92,9 +92,9 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 		break;
 	case 1:
 		
-		object->SetRenderObject(new RenderObject
+		object->SetRenderObject(new PaintableRenderObject
 		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
-			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
+			AssetManager::GetInstance()->GetTexture("checkerboard"), material));
 		break;
 	case 2:
 
@@ -119,15 +119,15 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, GameWorld
 	if (document.HasMember("Objects"))
 	{
 		rapidjson::Value& objects = document["Objects"];
-		GameObject* object;
+		ComponentGameObject* object;
 		for (auto i = 0; i < objects.Size(); i++)
 		{			
-			object = new GameObject();
+			object = new ComponentGameObject();
 
 			SetTransform(object, objects[i]);
 			SetPhysicsObject(object, objects[i]);
 			SetRenderObject(object, objects[i]);
-			
+			object->PushComponent(new PaintableSurface(object));
 			world.AddGameObject(object);
 		}
 	}
