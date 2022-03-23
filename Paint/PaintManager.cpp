@@ -9,10 +9,10 @@ PaintManager* PaintManager::init()
 	return instance_;
 }
 
-void PaintManager::paint(PaintableSurface surface, const NCL::Maths::Vector3& position, const float radius, const float hardness,
+void PaintManager::paint(PaintableSurface* surface, const NCL::Maths::Vector3& position, const float radius, const float hardness,
                          const float strength, const NCL::Maths::Vector3& colour)
 {
-	const auto paint_render_object = surface.GetRenderObject();
+	const auto paint_render_object = surface->GetRenderObject();
 	const auto renderer = NCL::Window::GetRenderer();
 
 	const auto paint_dest = paint_render_object->get_paint_dest();
