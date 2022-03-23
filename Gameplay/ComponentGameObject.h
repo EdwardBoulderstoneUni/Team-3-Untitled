@@ -13,7 +13,7 @@ namespace NCL {
 			ComponentCamera* GetComponentCamera();
 			ComponentInput* GetComponentInput();
 			ComponentPhysics* GetComponentPhysics();
-			virtual void SetUp() = 0;
+			virtual void SetUp() {};
 			virtual void Update(float dt);
 			void InitAllComponent();
 			void PushComponent(Component* newCom);
