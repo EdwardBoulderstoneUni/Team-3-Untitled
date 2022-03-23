@@ -4,8 +4,10 @@ using namespace Rendering;
 
 void TextureBase::reserve(const unsigned address)
 {
-	reserved_ = true;
-	reserved_address_ = address;
+	if (!reserved_) {
+		reserved_ = true;
+		reserved_address_ = address;
+	}
 }
 
 
