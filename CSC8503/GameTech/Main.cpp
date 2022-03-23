@@ -39,7 +39,7 @@ int main() {
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
 	//auto g = new TutorialGame();
-	auto g = new NetworkedGame()
+	auto g = new NetworkedGame();
 
 	PushdownMachine machine(new StartState(g));
 
