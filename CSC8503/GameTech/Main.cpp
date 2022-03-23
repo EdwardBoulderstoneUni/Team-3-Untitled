@@ -27,12 +27,14 @@ hide or show the
 int main() {
 	srand(time(0));
 
-	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
+	Window* w = Window::CreateGameWindow("Yianser", 1920, 1080, true/*fullscreen*/);
 
 	if (!w->HasInitialised()) {
 		return -1;
 	}
-
+#ifndef DEBUG_MODE
+	std::cout.setstate(std::ios_base::failbit);
+#endif
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
 
