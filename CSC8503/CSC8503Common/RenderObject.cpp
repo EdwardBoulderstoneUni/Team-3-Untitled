@@ -38,6 +38,7 @@ void RenderObject::render(RendererBase* renderer) const
 
 		if (material_)
 		{
+			renderer->reset_shader_for_next_object();
 			TextureBase* texture = material_->GetMaterialForLayer(count)->GetEntry("Diffuse");
 			renderer->bind_shader_property("mainTex", *texture);
 			renderer->bind_shader_property("hasTexture", texture ? 1 : 0);
