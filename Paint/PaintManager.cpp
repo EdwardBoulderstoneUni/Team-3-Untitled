@@ -9,7 +9,7 @@ PaintManager* PaintManager::init()
 	return instance_;
 }
 
-void PaintManager::paint(PaintableSurface* surface, const NCL::Maths::Vector3& position, const float radius, const float hardness,
+void PaintManager::paint(const PaintableSurface* surface, const NCL::Maths::Vector3& position, const float radius, const float hardness,
                          const float strength, const NCL::Maths::Vector3& colour)
 {
 	const auto paint_render_object = surface->GetRenderObject();
@@ -17,9 +17,11 @@ void PaintManager::paint(PaintableSurface* surface, const NCL::Maths::Vector3& p
 
 	const auto paint_dest = paint_render_object->get_paint_dest();
 	const auto mask = paint_render_object->get_mask();
+	if (!instance_)
+		init();
 	renderer->bind_shader(instance_->paint_instance_shader_);
 	paint_render_object->bind_mesh(renderer);
-	renderer->bind_shader_property("mainTex", mask);
+	renderer->bind_shader_property("mainTex", *mask);
 	renderer->bind_shader_property("paintCenter;", position);
 	renderer->bind_shader_property("radius", radius);
 	renderer->bind_shader_property("hardness", hardness);
