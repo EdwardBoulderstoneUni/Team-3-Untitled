@@ -46,6 +46,6 @@ float paintedFlag(){
 void main()
 {
  vec4 albedo = projectTexture();
- albedo = mix(albedo, texture(mask, IN.texCoord), generatePaintedMap());
+ albedo = mix(albedo, texture(mask, IN.texCoord), paintedFlag());
  fragColor = applyLighting(albedo);
 }
