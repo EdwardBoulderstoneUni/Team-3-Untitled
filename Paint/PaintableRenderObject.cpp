@@ -9,7 +9,7 @@ PaintableRenderObject::PaintableRenderObject(NCL::CSC8503::Transform* parent_tra
 void PaintableRenderObject::bind_shader_values(NCL::RendererBase* renderer) const
 {
 	RenderObject::bind_shader_values(renderer);
-	renderer->bind_shader_property("mask", mask_);
+	renderer->bind_shader_property("mask", *mask_);
 }
 
 NCL::TextureBase* PaintableRenderObject::get_paint_dest() const
