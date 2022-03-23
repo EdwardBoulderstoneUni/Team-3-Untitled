@@ -27,20 +27,24 @@ hide or show the
 int main() {
 	srand(time(0));
 
-	Window* w = Window::CreateGameWindow("CSC8503 Game technology!", 1280, 720);
+	Window* w = Window::CreateGameWindow("Yianser", 1920, 1080, true/*fullscreen*/);
 
 	if (!w->HasInitialised()) {
 		return -1;
 	}
 
+#ifndef DEBUG_MODE
+	std::cout.setstate(std::ios_base::failbit);
+#endif
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
+	//auto g = new TutorialGame();
+	auto g = new NetworkedGame();
 
-	auto g = new TutorialGame();
 	PushdownMachine machine(new StartState(g));
 
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	while (w->UpdateWindow() && !Window::GetInterface()->button_down(quit)) {
+	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;

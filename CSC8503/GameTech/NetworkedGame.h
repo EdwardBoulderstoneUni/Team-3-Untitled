@@ -1,7 +1,7 @@
 #pragma once
 #include "TutorialGame.h"
 #include "../CSC8503Common/NetworkObject.h"
-
+#include "../../Gameplay/PlayerController.h"
 namespace NCL {
 	namespace CSC8503 {
 		class GameServer;
@@ -18,8 +18,6 @@ namespace NCL {
 
 			void UpdateGame(float dt) override;
 
-			GameObject* SpawnPlayer(Vector3 position);
-
 			void StartLevel();
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
@@ -33,42 +31,25 @@ namespace NCL {
 			/// <returns>Client's state ID/-1</returns>
 			int GetClientStateID(int clientID);
 
-			bool MovePlayerAndFire(GameObject* player, char buttonstates[8], int angle[3]);
-
-			void UpdatePlayer(float dt);
-
-			void InitialiseAssets();
+			
 
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
+
 			void BroadcastSnapshot(bool deltaFrame);
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="strOutputString"></param>
-			/// <param name=""></param>
-			/// <returns></returns>
+		
 			void ToggleNetworkState(GameObject* object, bool state);
-			/// <summary>
-			/// 
-			/// </summary>
-			/// <param name="strOutputString"></param>
-			/// <param name=""></param>
+		
 			void OutputDebug(const char* strOutputString, ...);
 
-			/// <summary>
-			/// Distribute state packages based on client state
-			/// </summary>
-			/// <param name="o">NetworkObject pointer</param>
-			/// <param name="deltaFrame">isDeltaFrame?</param>
 			void DistributeSnapshot(NetworkObject* o, bool deltaFrame);
 
-			void UpdateMinimumState();//
+			void UpdateMinimumState();
 
 			void UpdateStateIDs(ClientPacket* realPacket);
 
-
+			void RegisterHandlers();
 			std::map<int, int> stateIDs;
 
 			GameServer* thisServer;
@@ -80,12 +61,17 @@ namespace NCL {
 
 			std::vector<NetworkObject*> networkObjects;
 
-			std::map<int, GameObject*> serverPlayers;
+			std::map<int, GameObject*> networkplayers;
 
-			GameObject* localPlayer = nullptr;
-			int localPlayerID = -1;
-			int localLastID = -1;
+			int localLastID =0;
+			int localPlayerID;
 
+			PlayerController* pc;
+
+			static void _enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _exitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _serverShutdownHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 		};
 	}
 }
