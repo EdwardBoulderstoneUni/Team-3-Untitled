@@ -140,7 +140,6 @@ void TutorialGame::InitDefaultFloor()
 		.SetPosition(Vector3(-250, 10, 0));
 
 	floor->InitAllComponent();
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), AssetManager::GetInstance()->GetMesh("Cube.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 	world->AddGameObject(floor);
 
 }

@@ -1,5 +1,4 @@
 #include "Floor.h"
-#include "../Paint/PaintableSurface.h"
 NCL::CSC8503::Floor::Floor()
 {
 
@@ -25,5 +24,8 @@ void NCL::CSC8503::Floor::SetUp()
 
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
+	SetRenderObject(new PaintableRenderObject(&transform, AssetManager::GetInstance()->GetMesh("Cube.msh"),
+		AssetManager::GetInstance()->GetTexture("checkerboard")));
+
 	this->PushComponent(new PaintableSurface(this));
 }
