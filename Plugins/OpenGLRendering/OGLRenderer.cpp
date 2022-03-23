@@ -368,8 +368,10 @@ void OGLRenderer::reset_shader_for_next_object()
 void OGLRenderer::free_reserved_textures()
 {
 	for (TextureBase* texture : reserved_texture_slot_) {
-		texture->unreserve();
-		texture = nullptr;
+		if (texture) {
+			texture->unreserve();
+			texture = nullptr;
+		}
 	}
 }
 
