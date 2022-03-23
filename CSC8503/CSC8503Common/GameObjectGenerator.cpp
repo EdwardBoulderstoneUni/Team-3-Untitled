@@ -128,6 +128,7 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, GameWorld
 			SetPhysicsObject(object, objects[i]);
 			SetRenderObject(object, objects[i]);
 			object->PushComponent(new PaintableSurface(object));
+			object->type = GameObjectType_wall;
 			world.AddGameObject(object);
 		}
 	}
