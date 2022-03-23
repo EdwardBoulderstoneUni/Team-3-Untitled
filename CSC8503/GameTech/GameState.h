@@ -6,6 +6,7 @@
 #include "TutorialGame.h"
 #include "../GameTech/MainMenu.h"
 #include "TutorialMenu.h"
+#include "../GameTech/EndingMenu.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -53,4 +54,19 @@ private:
 	TutorialGame* game;
 
 	std::shared_ptr<MainMenu> start_menu;
+};
+
+class EndState : public PushdownState {
+public:
+	EndState(TutorialGame* tg) : game(tg) { end_menu.reset(new EndingMenu(game)); }
+	~EndState() {}
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+
+	void OnAwake() override;
+	void OnSleep() override;
+
+private:
+	TutorialGame* game;
+
+	std::shared_ptr<EndingMenu> end_menu;
 };

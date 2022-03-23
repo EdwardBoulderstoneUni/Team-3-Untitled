@@ -46,6 +46,12 @@ PushdownState::PushdownResult GamingState::OnUpdate(float dt, PushdownState** ne
 		return PushdownResult::Push;
 	}
 	
+	if (game->tLeft <= 0)
+	{
+		*newState = new EndState(game);
+		return PushdownResult::Push;
+	}
+	
 	game->UpdateGame(dt);
 	return PushdownResult::NoChange;
 }
@@ -65,7 +71,7 @@ void PauseState::OnSleep() {
 PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** newState) {
 	if (pause_menu->EnterGame) {
 		game->SetMultiMode();
-		game->tLeft = 900.0f;
+		game->tLeft =30.0f;
 		*newState = new GamingState(game);
 		return PushdownResult::Pop;
 	}
@@ -74,6 +80,31 @@ PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** new
 	}
 	if (pause_menu->Cancel) {
 		return PushdownResult::Pop;
+	}
+
+	game->StartRender();
+	return PushdownResult::NoChange;
+}
+
+#pragma endregion
+
+
+#pragma region End State
+void EndState::OnAwake() {
+	game->GetUI()->PushMenu(end_menu);
+	Window::GetWindow()->ShowOSPointer(true);
+	Window::GetWindow()->LockMouseToWindow(true);
+}
+
+void EndState::OnSleep() {
+	game->GetUI()->RemoveMenu(end_menu);
+}
+
+PushdownState::PushdownResult EndState::OnUpdate(float dt, PushdownState** newState)
+{
+
+	if (end_menu->QuitGame) {
+		exit(0);
 	}
 
 	game->StartRender();

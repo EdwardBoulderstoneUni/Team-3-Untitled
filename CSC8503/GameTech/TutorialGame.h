@@ -28,9 +28,14 @@ namespace NCL {
 			GameUI* GetUI()const { return gameUI; }
 			void StartRender()const { renderer->Render(); }
 
+			int GetTeamKill();
 			void SetSingleMode();
 			void SetMultiMode();
-			float tLeft = 900;
+			float tLeft = 3;
+
+			int team1Kill = 1;
+			int team2Kill = 0;
+
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
@@ -69,6 +74,7 @@ namespace NCL {
 			float lastTime = 0.0f;
 			float previousSecond;
 			float currentSecond;
+
 
 			GameUI* gameUI;
 			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);

@@ -144,6 +144,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EndingMenu.cpp" />
     <ClCompile Include="GameTechRenderer.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventSystem.h" />
+    <ClInclude Include="EndingMenu.h" />
     <ClInclude Include="YiEventSystem.h" />
   </ItemGroup>
   <ItemGroup>
