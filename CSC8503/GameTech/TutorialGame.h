@@ -1,11 +1,11 @@
 #pragma once
+#include "GameState.h"
 #include "GameTechRenderer.h"
 #include "OGLTexture.h"
+#include "YiEventSystem.h"
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
 #include "../CSC8503Common/PushdownMachine.h"
-#include "GameState.h"
-#include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
 
 #define DEBUG
@@ -31,6 +31,8 @@ namespace NCL {
 			void SetSingleMode();
 			void SetMultiMode();
 			float tLeft = 900;
+
+			bool loadingGame = false;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
@@ -51,6 +53,7 @@ namespace NCL {
 			Player*				player;
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
+
 	
 			OGLMesh* capsuleMesh = nullptr;
 			OGLMesh* cubeMesh = nullptr;

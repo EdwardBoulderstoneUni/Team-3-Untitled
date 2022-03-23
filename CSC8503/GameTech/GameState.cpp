@@ -1,4 +1,7 @@
 #include "../GameTech/GameState.h"
+#include "../CSC8503Common/AssetManager.h"
+#include "../../Common/ShaderManager.h"
+#include "../../Common/TextureLoader.cpp"
 
 #pragma region Start State
 PushdownState::PushdownResult StartState::OnUpdate(float dt, PushdownState** newState)
@@ -77,6 +80,50 @@ PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** new
 	}
 
 	game->StartRender();
+	return PushdownResult::NoChange;
+}
+
+#pragma endregion
+
+#pragma region Load State
+LoadState::LoadState() {}
+
+LoadState::~LoadState() {
+	delete mesh;
+	delete world;
+	delete renderer;
+	delete object;
+}
+
+void LoadState::OnAwake() {
+	mesh = new OGLMesh();
+	mesh->GenerateSquare(mesh);
+
+	world = new GameWorld();
+	renderer = new GameTechRenderer(*world);
+	object = new GameObject();
+
+
+	object->SetRenderObject(new RenderObject(&object->GetTransform(),
+		mesh, 
+		(OGLTexture*)TextureLoader::LoadAPITexture("Logo.png"), 
+		new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl")));
+
+	ShaderManager::GetInstance()->Init();
+	AssetManager::GetInstance()->Init();
+
+	loadingGame = false;
+}
+
+void LoadState::OnSleep() {
+}
+
+PushdownState::PushdownResult LoadState::OnUpdate(float dt, PushdownState** newState) {
+	if (!loadingGame) {
+		return PushdownResult::Pop;
+	}
+	renderer->Update(dt);
+
 	return PushdownResult::NoChange;
 }
 

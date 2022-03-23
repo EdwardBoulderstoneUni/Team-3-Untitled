@@ -1,10 +1,9 @@
 #pragma once
-
 #include "../../Common/Window.h"
 #include "../CSC8503Common/PushdownState.h"
 #include "../CSC8503Common/PushdownMachine.h"
-#include "TutorialGame.h"
 #include "../GameTech/MainMenu.h"
+#include "TutorialGame.h"
 #include "TutorialMenu.h"
 
 using namespace NCL;
@@ -53,4 +52,22 @@ private:
 	TutorialGame* game;
 
 	std::shared_ptr<MainMenu> start_menu;
+};
+
+class LoadState : public PushdownState {
+public:
+	LoadState();
+	~LoadState();
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+
+	void OnAwake() override;
+	void OnSleep() override;
+private:
+	bool loadingGame = true;
+
+	OGLMesh* mesh;
+
+	GameWorld* world;
+	GameTechRenderer* renderer;
+	GameObject* object;
 };

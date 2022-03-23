@@ -9,7 +9,7 @@
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
 #include "../GameTech/TutorialMenu.h"
-#include "..//..//Gameplay/ePlayerRole.h"
+#include "../../Gameplay/ePlayerRole.h"
 #include "../../Gameplay/GameObjects.h"
 #include "../../Gameplay/Bullet.h"
 #include "../../Gameplay/Grenade.h"
@@ -53,16 +53,14 @@ void TutorialGame::SetMultiMode()
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
-	//Loading Screen start
+
 	ShaderManager::GetInstance()->Init();
 	AssetManager::GetInstance()->Init();
-	//Loading End
 	InitAbilityContainer();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
-
 	InitPlayer(Vector3(-200, 50, 0), GameObjectType_team2);
 	InitPlayer(Vector3(-200, 50, -20), GameObjectType_team1,true);
 	InitDefaultFloor();
@@ -152,9 +150,6 @@ void TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
-
-
-
 	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
 }
 

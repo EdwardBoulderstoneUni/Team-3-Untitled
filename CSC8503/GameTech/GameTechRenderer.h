@@ -32,8 +32,6 @@ namespace NCL
 			void render_shadow_map();
 			void render_camera();
 			void render_skybox();
-			
-
 			void load_skybox();
 
 			vector<const RenderObject*> active_objects_;

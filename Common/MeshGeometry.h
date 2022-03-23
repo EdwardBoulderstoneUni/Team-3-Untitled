@@ -169,6 +169,7 @@ namespace NCL
 		virtual void UploadToGPU(Rendering::RendererBase* renderer = nullptr) = 0;
 
 		static MeshGeometry* GenerateTriangle(MeshGeometry* input);
+		static MeshGeometry* GenerateSquare(MeshGeometry* input);
 		void AddSubMeshFromFBXData(const void* meshData);
 
 	protected:
