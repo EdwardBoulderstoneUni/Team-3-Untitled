@@ -208,7 +208,7 @@ void GameTechRenderer::render_skybox()
 void GameTechRenderer::render_camera()
 {
 	reserve_texture(*shadow_texture_);
-
+	glEnable(GL_DEPTH_TEST);
 	for (const auto& object : active_objects_)
 	{
 		bind_shader_property("shadowMatrix", shadow_matrix_ * object->GetTransform()->GetMatrix());
