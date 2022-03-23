@@ -7,7 +7,7 @@ class PaintManager
 	class PaintableRenderObject;
 public:
 	static PaintManager* init();
-	static void paint(PaintableSurface* surface, const NCL::Maths::Vector3& position, float radius = 1.0f, float hardness = 0.5f, float strength = 0.5f,
+	static void paint(const PaintableSurface* surface, const NCL::Maths::Vector3& position, float radius = 1.0f, float hardness = 0.5f, float strength = 0.5f,
 	                  const NCL::Maths::Vector3& colour = NCL::Maths::Vector3(1, 0, 0));
 protected:
 	static PaintManager* instance_;
