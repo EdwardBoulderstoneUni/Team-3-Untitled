@@ -55,7 +55,7 @@ namespace NCL {
 			float speed = 1.0f;
 			int maxAmmo = 20;
 			int ammo = 20;
-			int teamKill = 0;
+			int playerKill = 0;
 			int score = 0;
 			int damage;
 			int grenadeDmg = 10;

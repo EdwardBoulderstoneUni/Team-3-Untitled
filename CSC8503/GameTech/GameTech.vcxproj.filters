@@ -11,6 +11,7 @@
     <ClCompile Include="TutorialGame.cpp" />
     <ClCompile Include="TutorialMenu.cpp" />
     <ClCompile Include="YiEventSystem.cpp" />
+    <ClCompile Include="EndingMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventSystem.h" />
@@ -24,5 +25,6 @@
     <ClInclude Include="TutorialGame.h" />
     <ClInclude Include="TutorialMenu.h" />
     <ClInclude Include="YiEventSystem.h" />
+    <ClInclude Include="EndingMenu.h" />
   </ItemGroup>
 </Project>
