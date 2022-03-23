@@ -10,7 +10,7 @@ class PaintableSurface : Component
 public:
 	PaintableSurface();
 
-	Colour GetColour();
+	Colour GetColour(NCL::Maths::Vector2 local_pos);
 	PaintableRenderObject* GetRenderObject();
 protected:
 	NCL::Maths::Vector3 colour_;
