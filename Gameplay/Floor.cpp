@@ -1,5 +1,5 @@
 #include "Floor.h"
-
+#include "../Paint/PaintableSurface.h"
 NCL::CSC8503::Floor::Floor()
 {
 
@@ -25,4 +25,5 @@ void NCL::CSC8503::Floor::SetUp()
 
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
+	this->PushComponent(new PaintableSurface(this));
 }
