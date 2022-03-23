@@ -101,7 +101,8 @@ OGLRenderer::~OGLRenderer()
 
 OGLTexture* OGLRenderer::init_shadow_buffer(const unsigned shadow_size, unsigned& fbo_address)
 {
-	const auto shadow_texture = new OGLTexture(shadow_size, shadow_size, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT);
+	glEnable(GL_DEPTH_TEST);
+	auto shadow_texture = OGLTexture::init_shadow_texture(shadow_size);
 	generate_fbo(shadow_texture, fbo_address, GL_DEPTH_ATTACHMENT);
 	return shadow_texture;
 }
@@ -366,10 +367,11 @@ void OGLRenderer::reset_shader_for_next_object()
 
 void OGLRenderer::free_reserved_textures()
 {
-	for (TextureBase* texture : reserved_texture_slot_) {
-		if (texture) {
-			texture->unreserve();
-			texture = nullptr;
+	for (auto& texture_slot : reserved_texture_slot_)
+	{
+		if (texture_slot) {
+			texture_slot->unreserve();
+			texture_slot = nullptr;
 		}
 	}
 	current_tex_unit_ = 0;
@@ -404,7 +406,7 @@ void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name,
 		bind_shader_property(shader_property_name, texture);
 	glActiveTexture(GL_TEXTURE0 + texture.get_reserved_address());
 	const int ogl_texture_address = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
-	glUniform1i(ogl_texture_address, static_cast<GLint>(dynamic_cast<const OGLTexture&>(texture).GetObjectID()));
+	glUniform1i(ogl_texture_address, static_cast<GLint>(texture.get_reserved_address()));
 }
 
 TextureBase* OGLRenderer::init_blank_texture(const unsigned width, const unsigned height) const
