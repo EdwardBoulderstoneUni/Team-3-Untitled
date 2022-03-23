@@ -91,18 +91,13 @@ namespace NCL
 
 			virtual void BeginFrame() = 0;
 			virtual void RenderFrame() = 0;
-			virtual void EndFrame();
+			virtual void EndFrame() = 0;
 			virtual void SwapBuffers() = 0;
 			Window& hostWindow;
 
 			int currentWidth;
 			int currentHeight;
 		};
-
-		inline void RendererBase::EndFrame()
-		{
-			free_reserved_textures();
-		}
 
 		template <>
 		inline void RendererBase::bind_shader_property<int>(const std::string& shader_property_name, const int& data) {
