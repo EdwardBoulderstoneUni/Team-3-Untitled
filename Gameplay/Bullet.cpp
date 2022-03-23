@@ -1,5 +1,6 @@
 #include "Bullet.h"
 #include "../CSC8503/GameTech/YiEventSystem.h"
+#include "../Paint/PaintableSurface.h"
 Bullet::Bullet(Player& player) {
 	if(player.type==GameObjectType::GameObjectType_team1)
 		this->type = GameObjectType::GameObjectType_team1Bullet;
@@ -32,4 +33,13 @@ void Bullet::Update(float dt)
 	timeStack += dt;
 	if(timeStack>1.0f)
 		YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE,GetWorldID());
+}
+
+void Bullet::OnCollisionBegin(GameObject* otherObject, Vector3 point)
+{
+	if (otherObject->type == GameObjectType_floor || otherObject->type == GameObjectType_wall)
+	{
+		const auto floor_or_wall = dynamic_cast<ComponentGameObject*>(otherObject);
+		dynamic_cast<PaintableSurface*>(floor_or_wall->GetComponent(Component::Paint))->Paint(point);
+	}
 }
