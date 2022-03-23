@@ -2,7 +2,7 @@
 
 #include "Transform.h"
 #include "../../Common/MeshGeometry.h"
-#include "../../OpenGLRendering/OGLRenderer.h"
+
 
 using namespace NCL::CSC8503;
 

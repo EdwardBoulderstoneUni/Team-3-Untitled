@@ -3,6 +3,7 @@
 #include "../../Common/ShaderBase.h"
 #include "../../Common/TextureBase.h"
 #include "../../Common/Vector4.h"
+#include "../../Common/RendererBase.h"
 
 namespace NCL
 {
