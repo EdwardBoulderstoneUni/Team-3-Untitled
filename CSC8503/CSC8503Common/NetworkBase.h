@@ -14,6 +14,7 @@ enum BasicNetworkMessages {
 	Player_Connected,
 	Player_Disconnected,
 	Event_State,
+	Sync_Obj,
 	Sync_State,
 	Shutdown
 };

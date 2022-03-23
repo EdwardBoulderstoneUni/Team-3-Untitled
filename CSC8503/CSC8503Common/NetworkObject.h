@@ -3,6 +3,7 @@
 #include "NetworkBase.h"
 #include "NetworkState.h"
 #include "../GameTech/YiEventSystem.h"
+#include "../../Gameplay/Player.h"
 namespace NCL {
 	namespace CSC8503 {
 
@@ -54,11 +55,19 @@ namespace NCL {
 			GameObjectType objType = GameObjectType::GameObjectType_invalid;
 			NetworkState fullState;
 			SyncPacket() {
-				type = Sync_State;
+				type = Sync_Obj;
 				size = sizeof(SyncPacket);
 			}
 		};
 
+		struct SyncStatePacket :public GamePacket {
+			PlayerPro state;
+			SyncStatePacket() {
+				type = Sync_State;
+				size = sizeof(SyncStatePacket);
+			}
+
+		};
 
 		class NetworkObject {
 		public:

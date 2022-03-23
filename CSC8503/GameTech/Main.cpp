@@ -27,7 +27,7 @@ hide or show the
 int main() {
 	srand(time(0));
 
-	Window* w = Window::CreateGameWindow("Yianser", 1920, 1080, true/*fullscreen*/);
+	Window* w = Window::CreateGameWindow("Yianser", 800,600, false/*fullscreen*/);
 
 	if (!w->HasInitialised()) {
 		return -1;

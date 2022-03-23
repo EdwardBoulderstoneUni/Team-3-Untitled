@@ -236,7 +236,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	string worldID = pEvent->vArg[0];
 
 	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
-	player->GetPlayerPro()->ammo--;
+
 	Vector3 position = player->GetTransform().GetPosition() + Vector3(0,5,0);
 
 	auto bullet = new Bullet(*player);
