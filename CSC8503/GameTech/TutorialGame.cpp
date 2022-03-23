@@ -63,9 +63,9 @@ void TutorialGame::InitialiseAssets() {
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
 
-	InitPlayer(Vector3(-200, 50, 0), GameObjectType_team2);
-	InitPlayer(Vector3(-200, 50, -20), GameObjectType_team1,true);
-	InitDefaultFloor();
+	InitWorld();
+	//InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
+	//InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
 	RegisterEventHandles();
 }
 
@@ -80,7 +80,7 @@ TutorialGame::~TutorialGame()	{
 	delete renderer;
 	delete world;
 	delete gameUI;
-	delete player;
+	delete localPlayer;
 	delete abilityContainer;
 }
 
@@ -112,16 +112,17 @@ void TutorialGame::InitAbilityContainer() {
 	abilityContainer = new AbilityContainer();
 }
 
-void TutorialGame::InitPlayer(Vector3 pos, GameObjectType team, bool islocal)
+Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 {
-	player = new Player(PlayerRole_blue, abilityContainer, team,islocal);
+	auto player = new Player(PlayerRole_blue, abilityContainer, team);
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
 	player->InitAllComponent();
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), AssetManager::GetInstance()->GetMesh("Male_Guard.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
-	world->SetMainCamera(player->GetComponentCamera()->camera);
+
 	world->AddGameObject(player);
+	return player;
 }
 
 void TutorialGame::InitWorld()
@@ -161,8 +162,9 @@ void TutorialGame::RegisterEventHandles()
 #ifndef ORBIS
 void TutorialGame::HUDUpdate(float dt)
 {
-	PlayerPro* playerPro = player->GetPlayerPro();
-	TimeStack* timeStack = player->GetTimeStack();
+	if (not localPlayer)return;
+	PlayerPro* playerPro = localPlayer->GetPlayerPro();
+	TimeStack* timeStack = localPlayer->GetTimeStack();
 	renderer->DrawString("Damage :" + std::to_string(playerPro->damage), Vector2(5, 95));
 	renderer->DrawString("Ammo Left: " + std::to_string(playerPro->ammo), Vector2(5, 90));
 	if (playerPro->ammo == 0) {
@@ -180,7 +182,7 @@ void TutorialGame::HUDUpdate(float dt)
 		renderer->DrawString("Time Remaining: " + std::to_string(m) + "m" + std::to_string(s) + "s", Vector2(30, 10));
 	}
 	else {
-		YiEventSystem::GetMe()->PushEvent(GAME_OVER);
+	//	YiEventSystem::GetMe()->PushEvent(GAME_OVER);
 	}
 
 	renderer->DrawString("Score: " + std::to_string(playerPro->score), Vector2(70, 85));
@@ -196,18 +198,19 @@ void TutorialGame::HUDUpdate(float dt)
 	else
 		renderer->DrawString("Grenade ready!", Vector2(5, 60));
 
-	Vector3 position = player->GetTransform().GetPosition()+Vector3(0,5,0);
+
+	Vector3 position = localPlayer->GetTransform().GetPosition()+Vector3(0,5,0);
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 
 #define TARGET_OFF 20.0f
-	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, screenSize / 2.0f);
-	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera, 
+	Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera, screenSize / 2.0f);
+	Vector3 targetleft= PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera, 
 		screenSize / 2.0f+Vector2(-TARGET_OFF,0));
-	Vector3 targetright = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+	Vector3 targetright = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera,
 		screenSize / 2.0f + Vector2(TARGET_OFF, 0));
-	Vector3 targettop = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+	Vector3 targettop = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera,
 		screenSize / 2.0f + Vector2(0, TARGET_OFF));
-	Vector3 targetbot = PhysicsXSystem::getMe()->ScreenToWorld(*player->GetComponentCamera()->camera,
+	Vector3 targetbot = PhysicsXSystem::getMe()->ScreenToWorld(*localPlayer->GetComponentCamera()->camera,
 		screenSize / 2.0f + Vector2(0, -TARGET_OFF));
 	renderer->DrawLine(position, target, Vector4(0,1,0,1));
 	renderer->DrawLine(targetleft, targetright, Vector4(0, 1, 0, 1));
@@ -233,6 +236,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	string worldID = pEvent->vArg[0];
 
 	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
+	player->GetPlayerPro()->ammo--;
 	Vector3 position = player->GetTransform().GetPosition() + Vector3(0,5,0);
 
 	auto bullet = new Bullet(*player);

@@ -32,13 +32,15 @@ int main() {
 	if (!w->HasInitialised()) {
 		return -1;
 	}
+
 #ifndef DEBUG_MODE
 	std::cout.setstate(std::ios_base::failbit);
 #endif
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
+	//auto g = new TutorialGame();
+	auto g = new NetworkedGame();
 
-	auto g = new TutorialGame();
 	PushdownMachine machine(new StartState(g));
 
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!

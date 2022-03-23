@@ -8,7 +8,7 @@
 #include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
 
-#define DEBUG
+//#define DEBUG
 namespace NCL {
 	namespace CSC8503 {
 		enum CameraMode {
@@ -35,7 +35,7 @@ namespace NCL {
 			void InitialiseAssets();
 			void InitialiseUI();
 			void InitAbilityContainer();
-			void InitPlayer(Vector3 pos, GameObjectType team, bool islocal=false);
+			Player* InitPlayer(Vector3 pos, GameObjectType team);
 		
 			void InitWorld();
 
@@ -48,7 +48,7 @@ namespace NCL {
 			GameTechRenderer*	renderer;
 			PhysicsXSystem*		physicsX;
 			GameWorld*			world;
-			Player*				player;
+			Player*				localPlayer;
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 	

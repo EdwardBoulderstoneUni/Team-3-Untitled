@@ -3,14 +3,14 @@
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "PlayerState.h"
 #include "WeaponState.h"
-Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type, bool localplayer)
+Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
 {
 	dirVec.forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 	dirVec.CaculateRight();
 	pColour = colour;
-	isLocalPlayer = localplayer;
 	playerPro = new PlayerPro();
 	timeStack = new TimeStack();
+	networkInput = false;
 	AssignRole(aCont);
 	this->type = type;
 	SetupStateMachine();
@@ -38,22 +38,22 @@ void Player::SetUp()
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
 
-	if (isLocalPlayer) {
-		const auto input = new ComponentInput();
-		input->user_interface = new PlayerController();
+	
+	const auto input = new ComponentInput();
+	input->user_interface = new PlayerController();
 
-		PushComponent(input);
+	PushComponent(input);
 
-		auto camera = new ComponentCamera();
-		camera->gO = this;
+	auto camera = new ComponentCamera();
+	camera->gO = this;
 
-		camera->camera = new Camera();
-		camera->camera->SetNearPlane(0.1f);
-		camera->camera->SetFarPlane(500.0f);
-		camera->camera->SetPitch(-15.0f);
+	camera->camera = new Camera();
+	camera->camera->SetNearPlane(0.1f);
+	camera->camera->SetFarPlane(500.0f);
+	camera->camera->SetPitch(-15.0f);
 
-		PushComponent(camera);
-	}
+	PushComponent(camera);
+	
 }
 
 
@@ -102,17 +102,25 @@ void Player::SetupStateMachine()
 }
 void Player::Update(float dt) {
 	ComponentGameObject::Update(dt);
-	transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
-		lastInput.look_direction.y, 0));
+	dirVec.forward = GetTransform().GetOrientation() * Vector3(0, 0, -1);
 	if (GetComponentCamera()) {
 		dirVec.forward = GetComponentCamera()->camera->GetThirdPersonOrientation() * Vector3(0, 0, -1);
 		Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 		Vector3 target = PhysicsXSystem::getMe()->ScreenToWorld(*GetComponentCamera()->camera, screenSize / 2.0f, false);
 		dirVec.shootDir = (target - transform.GetPosition()).Normalised();
 	}
+	
 	dirVec.CaculateRight();
-	if (GetComponentInput())
+
+	if (GetComponentInput()) {
 		lastInput = GetComponentInput()->user_interface->get_inputs();
+		transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
+			lastInput.look_direction.y, 0));
+	}
+	if (networkInput) {
+		transform.SetOrientation(Quaternion::EulerAnglesToQuaternion(lastInput.look_direction.x,
+			lastInput.look_direction.y, 0));
+	}
 	playerState->Update(dt);
 	weaponState->Update(dt);
 	timeStack->dashCooldown -= dt;

@@ -40,7 +40,7 @@ void GamingState::OnSleep() {
 }
 
 PushdownState::PushdownResult GamingState::OnUpdate(float dt, PushdownState** newState) {
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE) or game->tLeft<0)
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE))
 	{
 		*newState = new PauseState(game);
 		return PushdownResult::Push;
