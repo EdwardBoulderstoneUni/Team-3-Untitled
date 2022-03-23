@@ -373,15 +373,17 @@ void OGLRenderer::free_reserved_textures()
 			texture = nullptr;
 		}
 	}
+	current_tex_unit_ = 0;
 }
 
 void OGLRenderer::reserve_texture(TextureBase& data)
 {
 	if (data.is_reserved())
 		return;
-	while (reserved_texture_slot_[current_tex_unit_]) {
-		current_tex_unit_++;
-		assert(current_tex_unit_ < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+	auto reserved_text_unit = 1 > current_tex_unit_ ? 1 : current_tex_unit_;
+	while (reserved_texture_slot_[reserved_text_unit]) {
+		reserved_text_unit++;
+		assert(reserved_text_unit < GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 	}
 
 	if (const auto ogl_texture = dynamic_cast<const OGLTexture*>(&data))
@@ -389,19 +391,18 @@ void OGLRenderer::reserve_texture(TextureBase& data)
 		const unsigned tex_id = static_cast<int>(ogl_texture->GetObjectID());
 
 
-		glActiveTexture(GL_TEXTURE0 + current_tex_unit_);
+		glActiveTexture(GL_TEXTURE0 + reserved_text_unit);
 		glBindTexture(GL_TEXTURE_2D, tex_id);
 
-		reserved_texture_slot_[current_tex_unit_] = &data;
-		data.reserve(current_tex_unit_);
-		current_tex_unit_ += 1;
+		reserved_texture_slot_[reserved_text_unit] = &data;
+		data.reserve(reserved_text_unit);
 	}
 }
 
 void OGLRenderer::bind_reserved_texture(const std::string& shader_property_name, const TextureBase& texture)
 {
 	if (!texture.is_reserved())
-		return;
+		bind_shader_property(shader_property_name, texture);
 	glActiveTexture(GL_TEXTURE0 + texture.get_reserved_address());
 	const int ogl_texture_address = glGetUniformLocation(bound_shader_->programID, shader_property_name.c_str());
 	glUniform1i(ogl_texture_address, static_cast<GLint>(dynamic_cast<const OGLTexture&>(texture).GetObjectID()));
