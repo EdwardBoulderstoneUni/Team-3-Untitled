@@ -8,7 +8,7 @@ class PaintableSurface : public Component
 {
 
 public:
-	explicit PaintableSurface(const GameObject* surface);
+	explicit PaintableSurface(const GameObject* parent);
 	void Paint(const NCL::Maths::Vector3& local_pos);
 	Vector3 GetColour(const NCL::Maths::Vector3& local_pos) const;
 	PaintableRenderObject* GetRenderObject() const;

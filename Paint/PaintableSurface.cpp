@@ -2,9 +2,9 @@
 
 #include "PaintManager.h"
 constexpr float kMinIntensity = 0.7f;
-PaintableSurface::PaintableSurface(const GameObject* surface) : render_object_(
-	dynamic_cast<PaintableRenderObject*>(surface->GetRenderObject()))
+PaintableSurface::PaintableSurface(const GameObject* parent) : render_object_(dynamic_cast<PaintableRenderObject*>(parent->GetRenderObject()))
 {
+
 	type = Component::ComponentType::Paint;
 }
 
