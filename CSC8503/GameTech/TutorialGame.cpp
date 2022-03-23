@@ -237,7 +237,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	string worldID = pEvent->vArg[0];
 
 	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
-	player->GetPlayerPro()->ammo--;
+
 	Vector3 position = player->GetTransform().GetPosition() + Vector3(0,5,0);
 
 	auto bullet = new Bullet(*player);
@@ -332,7 +332,8 @@ void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	GameWorld* world = (GameWorld*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
-	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
+	if(player->GetPhysicsXObject())
+		player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
 }
 void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {

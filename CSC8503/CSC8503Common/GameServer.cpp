@@ -65,7 +65,7 @@ void GameServer::UpdateServer() {
 	}
 
 	ENetEvent event;
-	while (enet_host_service(netHandle, &event, 0) > 0) {
+	while (enet_host_service(netHandle, &event, 5) > 0) {
 		int type = event.type;
 		ENetPeer* p = event.peer;
 

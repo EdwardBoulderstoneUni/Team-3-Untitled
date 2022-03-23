@@ -45,6 +45,7 @@ void NetworkedGame::StartAsServer() {
 void NetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient = new GameClient();
 	thisClient->Connect(a, b, c, d, NetworkBase::GetDefaultPort());
+	thisClient->RegisterPacketHandler(Sync_Obj, this);
 	thisClient->RegisterPacketHandler(Sync_State, this);
 	thisClient->RegisterPacketHandler(Event_State, this);
 	thisClient->RegisterPacketHandler(Delta_State, this);
@@ -65,7 +66,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
+		timeToNextPacket += 1.0f / 60.0f; //20hz server/client update
 	}
 	if (thisServer && timeToUpdateMiniState < 0) {
 		UpdateMinimumState();
@@ -111,7 +112,12 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 
 	if (not localPlayer) return;
 	ClientPacket newPacket;
+	pc->update(dt);
 	Input lastinput = pc->get_inputs();
+	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
+		YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE,localPlayer->GetWorldID());
+		newPacket.buttonstates[7] = 1;
+	}
 	if (lastinput.buttons[jump]) {
 		newPacket.buttonstates[0] = 1;
 	}
@@ -133,9 +139,7 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 	if (lastinput.movement_direction == Vector2(1, 0)) {
 		newPacket.buttonstates[6] = 1;
 	}
-	if (lastinput.buttons[attack]) {
-		newPacket.buttonstates[7] = 1;
-	}
+	
 	newPacket.angles[0] = lastinput.look_direction.x;
 	newPacket.angles[1] = lastinput.look_direction.y;
 	newPacket.angles[2] = 0;
@@ -145,7 +149,6 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 	newPacket.type = Received_State;
 	newPacket.playerID = localPlayerID;
 	thisClient->SendPacket(newPacket);
-	pc->update(dt);
 }
 
 
@@ -217,6 +220,10 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		input.look_direction.y = realPacket->angles[1];
 		player->SetLastInput(input);
 		player->networkInput = true;
+		
+		SyncStatePacket newPacket;
+		newPacket.state = *player->GetPlayerPro();
+		thisServer->SendPacketToPeer(newPacket,realPacket->playerID);
 	}
 	else if (type == Event_State) {
 		EventPacket* realPacket = (EventPacket*)payload;
@@ -248,11 +255,16 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		networkObjects[realPacket->objectID]->ReadPacket(*realPacket);
 		localLastID = networkObjects[realPacket->objectID]->GetLatestNetworkState().stateID;
 	}
-	else if (type == Sync_State) {
+	else if (type == Sync_Obj) {
 		SyncPacket* realPacket = (SyncPacket*)payload;
 		NetworkState state =realPacket->fullState;
-		if (realPacket->objType == GameObjectType_team1) {
-			Player* newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+		if (realPacket->objType == GameObjectType_team1 
+			or realPacket->objType == GameObjectType_team2) {
+			Player* newPlayer = nullptr;
+			if (realPacket->objType == GameObjectType_team1) 
+				newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
+			else
+				newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team2);
 			newPlayer->RemoveComponetCamera();
 			newPlayer->RemoveComponetInput();
 			newPlayer->RemoveComponetPhysics();
@@ -267,6 +279,10 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			}
 		}
 
+	}
+	else if (type == Sync_State) {
+		SyncStatePacket* realPacket=(SyncStatePacket*)payload;
+		*localPlayer->GetPlayerPro() = realPacket->state;
 	}
 	else if (type == Message) {
 		MessagePacket* realPacket = (MessagePacket*)payload;
@@ -390,8 +406,8 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	auto game = (NetworkedGame*)dwOwnerData;
 	int playerID = stoi(pEvent->vArg[0]);
 	if (game->localPlayer) {
-		Player* newPlayer = game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team1);
-		newPlayer->RemoveComponetCamera();
+		Player* newPlayer = playerID % 2 != 0 ? game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team1)
+			: game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team2);
 		newPlayer->RemoveComponetInput();
 		game->ToggleNetworkState(newPlayer, true);
 
@@ -407,7 +423,8 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 		}
 	}
 	else {
-		Player* newPlayer = game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team1);
+		Player* newPlayer = playerID % 2 != 0 ? game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team1)
+			: game->InitPlayer(Vector3(-200, 50, 0), GameObjectType_team2);
 		game->localPlayer = newPlayer;
 		game->ToggleNetworkState(newPlayer, true);
 		game->world->SetMainCamera(newPlayer->GetComponentCamera()->camera);
