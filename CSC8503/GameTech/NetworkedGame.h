@@ -72,6 +72,7 @@ namespace NCL {
 			static void _worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _exitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _serverShutdownHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+
 		};
 	}
 }

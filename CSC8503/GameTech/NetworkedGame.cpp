@@ -117,6 +117,10 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
 		if (localPlayer->GetPlayerPro()->ammo > 0) {
 			YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, localPlayer->GetWorldID());
+			EventPacket newPacket;
+			newPacket.eventID = PLAYER_OPEN_FIRE;
+			newPacket.networkID = localPlayerID;
+			thisClient->SendPacket(newPacket);
 		}
 		newPacket.buttonstates[7] = 1;
 	}
@@ -239,6 +243,24 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			break;
 		case PLAYER_EXIT_WORLD:
 			YiEventSystem::GetMe()->PushEvent(PLAYER_EXIT_WORLD, realPacket->playerID,realPacket->networkID);
+			break;
+		case PLAYER_OPEN_FIRE:
+			if (thisServer) {
+				for (auto i : networkplayers) {
+					if (i.first == realPacket->playerID)continue;
+					EventPacket newPacket;
+					newPacket.eventID = PLAYER_OPEN_FIRE;
+					newPacket.networkID = i.second->GetNetworkObject()->GetNetworkID();
+					thisServer->SendPacketToPeer(newPacket, i.first);
+				}
+			}
+			if (thisClient) {
+				for (auto i : networkObjects) {
+					if (i->GetNetworkID() == realPacket->networkID) {
+						YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, i->GetWorldID());
+					}
+				}
+			}
 			break;
 		default:
 			break;
