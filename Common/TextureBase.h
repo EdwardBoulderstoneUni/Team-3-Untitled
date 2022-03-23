@@ -13,6 +13,7 @@ namespace NCL
 			void reserve(unsigned address);
 			bool is_reserved() const { return reserved_; }
 			unsigned get_reserved_address() const { return reserved_address_; }
+			void unreserve() { reserved_ = false; reserved_address_ = 0; }
 
 		protected:
 			TextureBase();
