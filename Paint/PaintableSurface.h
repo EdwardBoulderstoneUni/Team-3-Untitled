@@ -4,7 +4,7 @@
 #include "../CSC8503/CSC8503Common/GameObject.h"
 #include "../Gameplay/Component.h"
 
-class PaintableSurface : Component
+class PaintableSurface : public Component
 {
 
 public:
