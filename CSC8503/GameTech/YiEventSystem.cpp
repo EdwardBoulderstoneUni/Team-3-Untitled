@@ -28,9 +28,9 @@ YiEventSystem::~YiEventSystem()
 
 void YiEventSystem::Initial()
 {
-	INT nEventNum = sizeof(g_GlobalEvent) / sizeof(EVENT_DEFINE);
+	int nEventNum = sizeof(g_GlobalEvent) / sizeof(EVENT_DEFINE);
 
-	for (INT i = 0; i < nEventNum; i++)
+	for (int i = 0; i < nEventNum; i++)
 	{
 		m_mapEventIndex_AsName[g_GlobalEvent[i].szEvent] = &(g_GlobalEvent[i]);
 
@@ -90,35 +90,35 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id)
 	_PushEvent(event);
 }
 
-void YiEventSystem::PushEvent(GAME_EVENT_ID id, INT iArg0)
+void YiEventSystem::PushEvent(GAME_EVENT_ID id, int iArg0)
 {
 	if (m_mapEventIndex_AsID.find(id) == m_mapEventIndex_AsID.end()) return;
 
 	EVENT event;
 	event.pEventDef = m_mapEventIndex_AsID[id];
 
-	CHAR szTemp[32];
+	char szTemp[32];
 	_snprintf_s(szTemp, 32, "%d", iArg0);
 	event.vArg.push_back(szTemp);
 
 	_PushEvent(event);
 }
 
-void YiEventSystem::PushEvent(GAME_EVENT_ID id, FLOAT fArg0)
+void YiEventSystem::PushEvent(GAME_EVENT_ID id, float fArg0)
 {
 	if (m_mapEventIndex_AsID.find(id) == m_mapEventIndex_AsID.end()) return;
 
 	EVENT event;
 	event.pEventDef = m_mapEventIndex_AsID[id];
 
-	CHAR szTemp[32];
+	char szTemp[32];
 	_snprintf_s(szTemp, 32, "%f", fArg0);
 	event.vArg.push_back(szTemp);
 
 	_PushEvent(event);
 }
 
-void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0)
+void YiEventSystem::PushEvent(GAME_EVENT_ID id, const char* szArg0)
 {
 	if (m_mapEventIndex_AsID.find(id) == m_mapEventIndex_AsID.end()) return;
 
@@ -130,7 +130,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0)
 	_PushEvent(event);
 }
 
-void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1)
+void YiEventSystem::PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1)
 {
 	if (m_mapEventIndex_AsID.find(id) == m_mapEventIndex_AsID.end()) return;
 
@@ -143,7 +143,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1)
 	_PushEvent(event);
 }
 
-void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT nArg2)
+void YiEventSystem::PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1, int nArg2)
 {
 	if (m_mapEventIndex_AsID.find(id) == m_mapEventIndex_AsID.end()) return;
 
@@ -152,21 +152,21 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, 
 
 	event.vArg.push_back(szArg0);
 	event.vArg.push_back(szArg1);
-	CHAR szTemp[32];
+	char szTemp[32];
 	_snprintf_s(szTemp, 32, "%d", nArg2);
 	event.vArg.push_back(szTemp);
 
 	_PushEvent(event);
 }
 
-void YiEventSystem::PushEvent(GAME_EVENT_ID id, INT iArg0, INT iArg1)
+void YiEventSystem::PushEvent(GAME_EVENT_ID id, int iArg0, int iArg1)
 {
 	if (m_mapEventIndex_AsID.find(id) == m_mapEventIndex_AsID.end()) return;
 
 	EVENT event;
 	event.pEventDef = m_mapEventIndex_AsID[id];
 
-	CHAR szTemp[32];
+	char szTemp[32];
 
 	_snprintf_s(szTemp, 32, "%d", iArg0);
 	event.vArg.push_back(szTemp);
@@ -176,7 +176,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, INT iArg0, INT iArg1)
 	_PushEvent(event);
 }
 
-void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT iArg2, INT iArg3)
+void YiEventSystem::PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1, int iArg2, int iArg3)
 {
 	if (m_mapEventIndex_AsID.find(id) == m_mapEventIndex_AsID.end()) return;
 
@@ -186,7 +186,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, 
 	event.vArg.push_back(szArg0);
 	event.vArg.push_back(szArg1);
 
-	CHAR szTemp[32];
+	char szTemp[32];
 	_snprintf_s(szTemp, 32, "%d", iArg2);
 	event.vArg.push_back(szTemp);
 	_snprintf_s(szTemp, 32, "%d", iArg3);
@@ -195,7 +195,7 @@ void YiEventSystem::PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, 
 	_PushEvent(event);
 }
 
-void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, DWORD64 uOwnerData)
+void YiEventSystem::RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, unsigned long long uOwnerData)
 {
 	if (!funHandle) return;
 
@@ -242,9 +242,6 @@ void YiEventSystem::ProcessAllEvent()
 		}
 
 		if (bMultiPushed) continue;
-		if (event.pEventDef->idEvent == PLAYER_THROW_GRENADE) {
-			OutputDebugString("%d");
-		}
 		_ProcessEvent(event);
 	}
 	m_queueEvent.clear();
