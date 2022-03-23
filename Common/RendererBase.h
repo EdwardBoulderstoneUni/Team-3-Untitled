@@ -66,7 +66,6 @@ namespace NCL
 			virtual void bind_shader_defaults() {}
 			virtual void reset_shader_for_next_object() {}
 			virtual void reset_state_for_next_shader() {}
-			virtual void reset_state_for_next_frame();
 			virtual void free_reserved_textures() = 0;
 			virtual void reserve_texture(TextureBase& data) = 0;
 			virtual void bind_reserved_texture(const std::string& shader_property_name, const TextureBase& texture) = 0;
@@ -92,7 +91,7 @@ namespace NCL
 
 			virtual void BeginFrame() = 0;
 			virtual void RenderFrame() = 0;
-			virtual void EndFrame() = 0;
+			virtual void EndFrame();
 			virtual void SwapBuffers() = 0;
 			Window& hostWindow;
 
@@ -100,10 +99,11 @@ namespace NCL
 			int currentHeight;
 		};
 
-		inline void RendererBase::reset_state_for_next_frame()
+		inline void RendererBase::EndFrame()
 		{
 			free_reserved_textures();
 		}
+
 		template <>
 		inline void RendererBase::bind_shader_property<int>(const std::string& shader_property_name, const int& data) {
 			bind_int_to_shader(shader_property_name, data);

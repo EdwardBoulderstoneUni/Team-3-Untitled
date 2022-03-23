@@ -114,7 +114,6 @@ void GameTechRenderer::RenderFrame()
 	{
 		gameUI->DrawUI();
 	}
-	reset_state_for_next_frame();
 }
 
 void GameTechRenderer::build_object_list()
