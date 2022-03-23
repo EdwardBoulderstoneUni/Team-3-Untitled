@@ -1,20 +1,18 @@
 #pragma once
+#include "PaintableRenderObject.h"
 #include "../Common/Vector3.h"
+#include "../CSC8503/CSC8503Common/GameObject.h"
 #include "../Gameplay/Component.h"
-class PaintableRenderObject;
 
-enum Colour {};
 class PaintableSurface : Component
 {
 
 public:
-	PaintableSurface();
-
-	Colour GetColour(NCL::Maths::Vector2 local_pos);
-	PaintableRenderObject* GetRenderObject();
+	explicit PaintableSurface(const GameObject* surface);
+	void Paint(const NCL::Maths::Vector3& local_pos);
+	Vector3 GetColour(const NCL::Maths::Vector3& local_pos) const;
+	PaintableRenderObject* GetRenderObject() const;
 protected:
-	NCL::Maths::Vector3 colour_;
 	PaintableRenderObject* render_object_;
-
 };
 
