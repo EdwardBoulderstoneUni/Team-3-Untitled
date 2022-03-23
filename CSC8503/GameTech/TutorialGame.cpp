@@ -150,7 +150,7 @@ void TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
 	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
-	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
 
