@@ -28,6 +28,7 @@ namespace NCL
 			virtual ~ShaderBase();
 
 			virtual void ReloadShader() = 0;
+			virtual bool LoadSuccess() const = 0;
 		protected:
 			string shaderFiles[static_cast<int>(ShaderStages::SHADER_MAX)];
 		};

@@ -1,5 +1,4 @@
 #pragma once
-#include <wtypes.h>
 #include <vector>
 #include <list>
 #include <String>
@@ -7,12 +6,12 @@
 
 enum GAME_EVENT_ID;
 struct EVENT;
-typedef void(__stdcall* FUNC_EVENT_HANDLE)(const EVENT* pEvent, UINT dwOwnerData);
+typedef void(__stdcall* FUNC_EVENT_HANDLE)(const EVENT* pEvent, unsigned long long dwOwnerData);
 struct EVENT_DEFINE
 {
-	typedef std::list< std::pair< FUNC_EVENT_HANDLE, UINT > > REGISTER_STRUCT;
+	typedef std::list< std::pair< FUNC_EVENT_HANDLE, unsigned long long > > REGISTER_STRUCT;
 	GAME_EVENT_ID		idEvent;
-	LPCTSTR				szEvent;
+	const char*				szEvent;
 	bool				delayProcess;
 	REGISTER_STRUCT		listFuncNotify;
 };
@@ -34,17 +33,17 @@ struct EVENT {
 class EventSystem {
 public:
 	virtual void	PushEvent(GAME_EVENT_ID id) = 0;
-	virtual void	PushEvent(GAME_EVENT_ID id, INT iArg0) = 0;
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0) = 0;
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1) = 0;
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT nArg2) = 0;
-	virtual void	PushEvent(GAME_EVENT_ID id, INT iArg0, INT iArg1) = 0;
-	virtual void	PushEvent(GAME_EVENT_ID id, LPCTSTR szArg0, LPCTSTR szArg1, INT iArg2, INT iArg3) = 0;
+	virtual void	PushEvent(GAME_EVENT_ID id, int iArg0) = 0;
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0) = 0;
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1) = 0;
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1, int nArg2) = 0;
+	virtual void	PushEvent(GAME_EVENT_ID id, int iArg0, int iArg1) = 0;
+	virtual void	PushEvent(GAME_EVENT_ID id, const char* szArg0, const char* szArg1, int iArg2, int iArg3) = 0;
 
-	
 
-			
-	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, UINT dwOwnerData = NULL) = 0;
-			
+
+
+	virtual void	RegisterEventHandle(const std::string& nameEvent, FUNC_EVENT_HANDLE funHandle, unsigned long long dwOwnerData = NULL) = 0;
+
 	virtual void	ProcessAllEvent(void) = 0;
 };

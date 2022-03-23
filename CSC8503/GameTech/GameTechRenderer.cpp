@@ -174,8 +174,9 @@ void GameTechRenderer::render_shadow_map()
 
 	shadow_matrix_ = bias_matrix * mv_matrix;
 
-	for (const auto& object : active_objects_)
+	for (int i = 0; i <  active_objects_.size(); ++i)
 	{
+		const RenderObject* object = active_objects_[i];
 		Matrix4 model_matrix = (*object).GetTransform()->GetMatrix();
 		Matrix4 mvp_matrix = mv_matrix * model_matrix;
 		glUniformMatrix4fv(mvp_location, 1, false, reinterpret_cast<float*>(&mvp_matrix));

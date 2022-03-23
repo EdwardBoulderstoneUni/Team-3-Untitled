@@ -76,6 +76,8 @@ namespace NCL
 			}
 			virtual void bind_mesh(MeshGeometry* m) = 0;
 			virtual void draw_bound_mesh(unsigned sub_layer = 0, unsigned num_instances = 1) const = 0;
+			virtual ShaderBase* load_default_shader() const = 0;
+			virtual TextureBase* init_blank_texture(unsigned width, unsigned height) const = 0;
 		protected:
 			virtual void bind_int_to_shader(const std::string& shader_property_name, const int& data) = 0;
 			virtual void bind_float_to_shader(const std::string& shader_property_name, const float& data) = 0;
