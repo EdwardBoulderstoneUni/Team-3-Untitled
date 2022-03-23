@@ -1,8 +1,6 @@
 #pragma once
-#include "PaintManager.h"
-#include "../Common/RendererBase.h"
-#include "../Common/Window.h"
 #include "../CSC8503/CSC8503Common/RenderObject.h"
+#include "../Common/Window.h"
 class PaintableRenderObject :
 	public NCL::CSC8503::RenderObject
 {

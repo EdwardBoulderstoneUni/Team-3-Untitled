@@ -1,5 +1,6 @@
 #include "PaintManager.h"
 #include "../Common/ShaderManager.h"
+PaintManager* PaintManager::instance_ = nullptr;
 PaintManager* PaintManager::init()
 {
 	if (!instance_)
@@ -29,13 +30,8 @@ void PaintManager::paint(PaintableSurface surface, const NCL::Maths::Vector3& po
 	renderer->blit(paint_dest, mask);
 }
 
-NCL::Rendering::ShaderBase* PaintManager::GetPaintableObjectShader()
-{
-	return instance_->paintable_object_shader_;
-}
 
 PaintManager::PaintManager() :
-	paintable_object_shader_(NCL::Rendering::ShaderManager::GetInstance()->GetShader("PaintableObjectShader")),
 	paint_instance_shader_(NCL::Rendering::ShaderManager::GetInstance()->GetShader("PaintInstanceShader"))
 {
 	if (!instance_)
