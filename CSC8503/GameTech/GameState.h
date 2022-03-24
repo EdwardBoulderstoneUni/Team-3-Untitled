@@ -7,7 +7,7 @@
 #include "TutorialMenu.h"
 #include "../GameTech/EndingMenu.h"
 #include "../GameTech/PauseMenu.h"
-
+#include <thread>
 using namespace NCL;
 using namespace CSC8503;
 
@@ -87,4 +87,5 @@ private:
 	GameTechRenderer* renderer;
 	GameObject* object;
 	Vector3 scale;
+	std::thread loadingThread;
 };

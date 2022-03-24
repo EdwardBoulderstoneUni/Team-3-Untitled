@@ -3,6 +3,7 @@
 #include "../../Common/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "NetworkedGame.h"
+
 #pragma region Start State
 PushdownState::PushdownResult StartState::OnUpdate(float dt, PushdownState** newState)
 {

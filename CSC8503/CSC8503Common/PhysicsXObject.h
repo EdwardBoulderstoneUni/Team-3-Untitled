@@ -38,4 +38,6 @@ public:
 	PhyProperties properties;
 	PxRigidActor* rb;
 	PxController* controller;
+	PxVec3 collisionPoint;
+	PxVec3 collisionNormal;
 };

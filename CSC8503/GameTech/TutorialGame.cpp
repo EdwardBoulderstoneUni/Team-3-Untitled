@@ -149,7 +149,7 @@ void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object, Vector4 color)
 	GameObject* disc = new GameObject();
 	disc->GetTransform()
 		.SetScale(Vector3(15, 0.01f, 15))
-		.SetPosition(object->GetTransform().GetPosition());
+		.SetPosition(PhysXConvert::PxVec3ToVector3(object->GetPhysicsXObject()->collisionPoint));
 
 	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), 
 		AssetManager::GetInstance()->GetMesh("Cylinder.msh"), 
@@ -294,7 +294,7 @@ void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
 	GameObject* bullet = game->world->FindObjectbyID(stoi(worldID));
-	PlayerRole pColor = game->GetPlayer()->GetRole();
+	PlayerRole pColor = game->localPlayer->GetRole();
 
 	Vector4 color;
 	switch (pColor)
