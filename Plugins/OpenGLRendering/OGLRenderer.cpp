@@ -267,9 +267,11 @@ void OGLRenderer::render_to(TextureBase* texture)
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, *associated_fbo_.at(texture));
 	glViewport(0, 0, static_cast<int>(texture->get_width()), static_cast<int>(texture->get_height()));
+	glDisable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	draw_bound_mesh();
+	glEnable(GL_DEPTH_TEST);
 }
 
 void OGLRenderer::blit(TextureBase* source, TextureBase* dest)
