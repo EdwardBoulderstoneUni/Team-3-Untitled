@@ -58,7 +58,8 @@ void AudioManager::LoadSoundFiles()
 {
 	m_Sounds.insert({ SoundPreset_InGame, new SoundTemplate("fightmusic.mp3", true, m_System) });
 	m_Sounds.insert({ SoundPreset_MainMenu, new SoundTemplate("Beach_song.mp3", true, m_System) });
-	m_Sounds.insert({ SoundPreset_Collision,new SoundTemplate("Bam sound effect.mp3", false, m_System) });
+	m_Sounds.insert({ SoundPreset_Fire,new SoundTemplate("Bam sound effect.mp3", false, m_System) });
+	m_Sounds.insert({ SoundPreset_Collision,new SoundTemplate("boink.mp3", false, m_System) });
 }
 
 void AudioManager::SoundTemplate::LoadSound(const char* fileName, bool loop, FMOD::System *system)

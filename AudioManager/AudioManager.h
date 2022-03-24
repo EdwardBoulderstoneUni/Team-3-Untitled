@@ -32,6 +32,7 @@ public:
 	{
 		SoundPreset_MainMenu,
 		SoundPreset_InGame,
+		SoundPreset_Fire,
 		SoundPreset_Collision,
 		SoundPreset_MAX
 	};

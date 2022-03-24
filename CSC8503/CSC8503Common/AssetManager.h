@@ -16,7 +16,7 @@ namespace NCL
 		std::map<const char*, NCL::Rendering::OGLTexture*> m_Textures;
 		std::map<std::string, NCL::MeshMaterial*> m_Materials;
 
-		static AssetManager* m_Instance;
+		static AssetManager* m_Instance; 
 		AssetManager();
 		~AssetManager();
 		void LoadMeshData();

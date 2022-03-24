@@ -30,12 +30,14 @@ namespace NCL {
 
 			void SetSingleMode();
 			void SetMultiMode();
+			Player* GetPlayer() { return localPlayer; }
 			float tLeft = 900;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
 			void InitAbilityContainer();
 			Player* InitPlayer(Vector3 pos, GameObjectType team);
+			void AddPaint(GameObject* object, Vector4 color);
 		
 			void InitWorld();
 
@@ -60,6 +62,7 @@ namespace NCL {
 
 			GameUI* gameUI;
 			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _paint(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);

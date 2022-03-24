@@ -15,7 +15,7 @@ namespace NCL
 		class NetworkObject;
 		class GameObject
 		{
-			void ( *m_CollisionFunction)(GameObject*, Vector3) ;
+			std::function<void(GameObject*, Vector3)> m_CollisionFunction;
 		public:
 			GameObject(string name = "");
 			~GameObject();
@@ -66,7 +66,7 @@ namespace NCL
 				return name;
 			}
 
-			void SetCollisionFunction(void (*function)(GameObject*, Vector3)) { m_CollisionFunction = function; }
+			void SetCollisionFunction(std::function<void(GameObject*, Vector3)> function) { m_CollisionFunction = function; }
 
 			virtual void OnCollisionBegin(GameObject* otherObject, Vector3 point = Vector3(0, 5, 0)) { if (m_CollisionFunction) m_CollisionFunction(otherObject, point); }
 
