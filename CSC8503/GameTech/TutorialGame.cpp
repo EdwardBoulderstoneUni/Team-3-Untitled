@@ -84,7 +84,7 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt)
 {
-	#ifndef DEBUG
+#ifndef DEBUG
 	TIMER_START(x);
     eventSystem->ProcessAllEvent();
     TIMER_STOP(x);
@@ -104,13 +104,13 @@ void TutorialGame::UpdateGame(float dt)
 	physicsX->Update(dt);
 	TIMER_STOP(x);
 	Debug::Print("PhysicsX:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 85));
-	#endif
-
+	#else
 	eventSystem->ProcessAllEvent();
 	AudioManager::GetInstance().Update(dt);
-	
+
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
+	#endif
 #ifndef ORBIS
 	HUDUpdate(dt);
 #endif
@@ -149,7 +149,7 @@ void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object, Vector4 color)
 	GameObject* disc = new GameObject();
 	disc->GetTransform()
 		.SetScale(Vector3(15, 0.01f, 15))
-		.SetPosition(object->GetTransform().GetPosition());
+		.SetPosition(PhysXConvert::PxVec3ToVector3(object->GetPhysicsXObject()->collisionPoint));
 
 	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), 
 		AssetManager::GetInstance()->GetMesh("Cylinder.msh"), 
@@ -186,7 +186,7 @@ void TutorialGame::RegisterEventHandles()
 
 	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
-	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
+	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
@@ -217,9 +217,8 @@ void TutorialGame::HUDUpdate(float dt)
 	else {
 	//	YiEventSystem::GetMe()->PushEvent(GAME_OVER);
 	}
-
-	renderer->DrawString("Score: " + std::to_string(playerPro->score), Vector2(70, 80));
-	renderer->DrawString("TeamKill: " + std::to_string(playerPro->teamKill), Vector2(70, 20));
+	renderer->DrawString("Team1Kill: " + std::to_string(team1Kill), Vector2(70, 85));
+	renderer->DrawString("Team2Kill: " + std::to_string(team2Kill), Vector2(70, 20));
 
 	if(timeStack->dashCooldown>0)
 		renderer->DrawString("Dash CD: " + std::to_string(timeStack->dashCooldown), Vector2(5, 80));
@@ -269,7 +268,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	string worldID = pEvent->vArg[0];
 
 	Player* player = static_cast<Player*>(game->world->FindObjectbyID(stoi(worldID)));
-	player->GetPlayerPro()->ammo--;
+
 	Vector3 position = player->GetTransform().GetPosition() + Vector3(0,5,0);
 
 	auto bullet = new Bullet(*player);
@@ -294,8 +293,10 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
+	string wallID = pEvent->vArg[1];
 	GameObject* bullet = game->world->FindObjectbyID(stoi(worldID));
-	PlayerRole pColor = game->GetPlayer()->GetRole();
+	GameObject* wall = game->world->FindObjectbyID(stoi(wallID));
+	PlayerRole pColor = game->localPlayer->GetRole();
 
 	Vector4 color;
 	switch (pColor)
@@ -355,20 +356,28 @@ void TutorialGame::_HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
 	string bulletID = pEvent->vArg[0];
 	string hitID = pEvent->vArg[1];
-	GameWorld* world = (GameWorld*)dwOwnerData;
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
 
-	Bullet* bullet = static_cast<Bullet*>(world->FindObjectbyID(stoi(bulletID)));
+	Bullet* bullet = static_cast<Bullet*>(game->world->FindObjectbyID(stoi(bulletID)));
 	if (not bullet)return;
 	int shooterID = bullet->GetShooterID();
 
-	Player* shooter = static_cast<Player*>(world->FindObjectbyID(shooterID));
-	Player* hitobj = static_cast<Player*>(world->FindObjectbyID(stoi(hitID)));
+	Player* shooter = static_cast<Player*>(game->world->FindObjectbyID(shooterID));
+	Player* hitobj = static_cast<Player*>(game->world->FindObjectbyID(stoi(hitID)));
 	PlayerPro* playerPro = hitobj->GetPlayerPro();
 	int health=hitobj->GetPlayerPro()->health;
 	if (health > 0 and playerPro->health - bullet->GetDamage() <= 0) {
 		std::cout << (std::to_string(shooter->GetWorldID()) + " --->" +
 			std::to_string(hitobj->GetWorldID())) << std::endl;
-		shooter->GetPlayerPro()->teamKill++;
+		shooter->GetPlayerPro()->playerKill++;
+		if (shooter->type = GameObjectType_team1)
+		{
+			game->team1Kill++;
+		}
+		else if (shooter->type == GameObjectType_team2)
+		{
+			game->team2Kill++;
+		}
 	}
 	if (playerPro->health not_eq 0)
 		shooter->GetPlayerPro()->score++;
@@ -380,7 +389,8 @@ void TutorialGame::_respawnHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 	GameWorld* world = (GameWorld*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
  	Player* player = static_cast<Player*>(world->FindObjectbyID(stoi(worldID)));
-	player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
+	if(player->GetPhysicsXObject())
+		player->GetPhysicsXObject()->CTrans(PxExtendedVec3(-200, 50, 0));
 }
 void TutorialGame::_colorzoneHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 {
@@ -441,7 +451,9 @@ void TutorialGame::_damageRangeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) 
 							playerPro->health = 0;
 							std::cout << (std::to_string(player->GetWorldID()) + " --->" +
 								std::to_string(enemy->GetWorldID())) << std::endl;
-							player->GetPlayerPro()->teamKill++;
+							player->GetPlayerPro()->playerKill++;
+							//game->team1Kill++;
+		
 						}
 						YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, stoi(grenadeID));
 					}
@@ -469,3 +481,19 @@ void TutorialGame::UpdateGameObjects(float dt)
 	);
 }
 
+int TutorialGame::GetTeamKill()
+{
+	for (auto i : world->GetGameObjects())
+	{
+		if (localPlayer->type == GameObjectType_team1)
+		{
+			team1Kill += localPlayer->GetPlayerPro()->playerKill;
+			return team1Kill;
+		}
+		if (localPlayer->type == GameObjectType_team2)
+		{
+			team2Kill += localPlayer->GetPlayerPro()->playerKill;
+			return team2Kill;
+		}
+	}
+}

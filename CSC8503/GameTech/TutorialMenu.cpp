@@ -26,7 +26,7 @@ void TutorialMenu::Draw()
 		ImGui::SliderFloat("Push Force", &(game->forceMagnitude), 10.0f, 50000.0f);
 	
 	}*/
-
+	
 	if (ImGui::CollapsingHeader("Configuration"))
 	{
 		static bool full_screen = Window::GetWindow()->IsFullScreen();
@@ -46,7 +46,7 @@ void TutorialMenu::Draw()
 		ImGui::BulletText("Use Up|Down|Left|Right to control the locked object.");
 		ImGui::Separator();
 	}
-
+	
 
 
 	ImGui::End();

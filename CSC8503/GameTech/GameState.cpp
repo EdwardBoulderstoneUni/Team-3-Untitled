@@ -3,6 +3,7 @@
 #include "../../Common/ShaderManager.h"
 #include "../../Common/TextureLoader.h"
 #include "NetworkedGame.h"
+
 #pragma region Start State
 PushdownState::PushdownResult StartState::OnUpdate(float dt, PushdownState** newState)
 {
@@ -49,6 +50,12 @@ PushdownState::PushdownResult GamingState::OnUpdate(float dt, PushdownState** ne
 		return PushdownResult::Push;
 	}
 	
+	if (game->tLeft <= 0)
+	{
+		*newState = new EndState(game);
+		return PushdownResult::Push;
+	}
+	
 	game->UpdateGame(dt);
 	return PushdownResult::NoChange;
 }
@@ -67,21 +74,15 @@ void PauseState::OnSleep() {
 
 PauseState::PauseState(TutorialGame* tg) : game(tg)
 {
-	pause_menu.reset(new MainMenu()); 
-	pause_menu->PauseMode = true; 
+	pause_menu.reset(new PauseMenu(game));
+ 
 }
 
 PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** newState) {
 
 	AudioManager::GetInstance().Update(dt);
-	if (pause_menu->EnterGame) {
-		game->SetMultiMode();
-		game->tLeft = 900.0f;
-		*newState = new GamingState(game);
-		AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset_InGame);
-		return PushdownResult::Pop;
-	}
-	else if (pause_menu->QuitGame) {
+
+	if (pause_menu->QuitGame) {
 		exit(0);
 	}
 	if (pause_menu->Cancel) {
@@ -94,6 +95,28 @@ PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** new
 }
 
 #pragma endregion
+
+#pragma region End State
+void EndState::OnAwake() {
+	game->GetUI()->PushMenu(end_menu);
+	Window::GetWindow()->ShowOSPointer(true);
+	Window::GetWindow()->LockMouseToWindow(true);
+}
+
+void EndState::OnSleep() {
+	game->GetUI()->RemoveMenu(end_menu);
+}
+
+PushdownState::PushdownResult EndState::OnUpdate(float dt, PushdownState** newState)
+{
+
+	if (end_menu->QuitGame) {
+		exit(0);
+	}
+
+	game->StartRender();
+	return PushdownResult::NoChange;
+}
 
 #pragma region Load State
 LoadState::LoadState() {

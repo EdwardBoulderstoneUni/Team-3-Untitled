@@ -1,11 +1,13 @@
-#include "PauseMenu.h"
+#include "EndingMenu.h"
 #include "TutorialGame.h"
+#include"../GameTech/GameTechRenderer.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-void PauseMenu::Draw()
+void EndingMenu::Draw()
 {
+	
 	const ImGuiViewport* mainVp = ImGui::GetMainViewport();
 
 	//Draw background
@@ -22,12 +24,29 @@ void PauseMenu::Draw()
 	ImFont* title = game->GetUI()->titleFont;
 	ImGui::PushFont(title);
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 119, 255, 255));
-	ImGui::SetCursorPos(ImVec2(mainVp->GetCenter().x - ImGui::CalcTextSize("YIANSER").x * 0.5, mainVp->GetCenter().y - 300));
-	ImGui::Text("YIANSER");
+	ImGui::SetCursorPos(ImVec2(mainVp->GetCenter().x - ImGui::CalcTextSize("GameOver").x * 0.5, mainVp->GetCenter().y - 300));
+	ImGui::Text("GameOver");
 	ImGui::PopFont();
 	ImGui::PopStyleColor();
 
-
+	ImFont* header = game->GetUI()->headerFont;
+	ImGui::PushFont(header);
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(150, 150, 150, 255));
+	ImGui::SetCursorPos(ImVec2(mainVp->GetCenter().x - ImGui::CalcTextSize("GameOver").x * 0.5, mainVp->GetCenter().y - 100));
+	if (game->team1Kill > game->team2Kill)
+	{
+		ImGui::Text("teamONEwin!!!");
+	}
+	else if (game->team2Kill > game->team1Kill)
+	{
+		ImGui::Text("teamTWOwin!!!");
+	}
+	else if (game->team1Kill == game->team2Kill)
+	{
+		ImGui::Text("Tie!!!!");
+	}
+	ImGui::PopFont();
+	ImGui::PopStyleColor();
 
 
 	ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y + 40), ImGuiCond_Always);
@@ -37,17 +56,6 @@ void PauseMenu::Draw()
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.6, 0.1, 0.1, 1));
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.9, 0.1, 0.1, 1));
 	QuitGame = ImGui::Button("Quit Game", ImVec2(contentWidth, 50));
-	ImGui::PopStyleColor(3);
-	ImGui::EndChild();
-
-	ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y - 30), ImGuiCond_Always);
-	ImGui::BeginChild("Cancel", ImVec2(400, 70), true, ImGuiWindowFlags_NoSavedSettings);
-	ImGui::SetWindowFontScale(1.5);
-	//float contentWidth = ImGui::GetWindowContentRegionWidth();
-	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.7, 0.6, 1));
-	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.2, 0.2, 0.2, 1));
-	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4, 0.4, 0.4, 1));
-	Cancel = ImGui::Button("Cancel", ImVec2(contentWidth, 50));
 	ImGui::PopStyleColor(3);
 	ImGui::EndChild();
 

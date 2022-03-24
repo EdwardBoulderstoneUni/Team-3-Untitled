@@ -144,6 +144,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="EndingMenu.cpp" />
     <ClCompile Include="GameTechRenderer.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="NetworkedGame.cpp" />
     <ClCompile Include="NetworkPlayer.cpp" />
+    <ClCompile Include="PauseMenu.cpp" />
     <ClCompile Include="TutorialGame.cpp" />
     <ClCompile Include="TutorialMenu.cpp" />
     <ClCompile Include="YiEventSystem.cpp" />
@@ -158,6 +160,8 @@
   <ItemGroup>
     <ClInclude Include="DebugMode.h" />
     <ClInclude Include="EventSystem.h" />
+    <ClInclude Include="EndingMenu.h" />
+    <ClInclude Include="PauseMenu.h" />
     <ClInclude Include="YiEventSystem.h" />
   </ItemGroup>
   <ItemGroup>

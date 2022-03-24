@@ -20,7 +20,11 @@ GameUI::GameUI()
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 	//io.Fonts->AddFontFromFileTTF("fonts/Roboto-Medium.ttf", 16);
-	io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontDefault();
+
+	defaultFont = io.Fonts->AddFontFromFileTTF("../../Assets/Fonts/Debrosee-ALPnL.ttf",20);
+	headerFont	= io.Fonts->AddFontFromFileTTF("../../Assets/Fonts/Debrosee-ALPnL.ttf", 100);
+	titleFont	= io.Fonts->AddFontFromFileTTF("../../Assets/Fonts/Debrosee-ALPnL.ttf", 200);
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();

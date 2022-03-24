@@ -6103,7 +6103,8 @@ void ImGui::ShowStyleEditor(ImGuiStyle* ref)
 }
 
 //-----------------------------------------------------------------------------
-// [SECTION] Example App: Main Menu Bar / ShowExampleAppMainMenuBar()
+// [SECTION] Example App: Main Menu Bar / ShowExampleApp
+// Bar()
 //-----------------------------------------------------------------------------
 // - ShowExampleAppMainMenuBar()
 // - ShowExampleMenuFile()

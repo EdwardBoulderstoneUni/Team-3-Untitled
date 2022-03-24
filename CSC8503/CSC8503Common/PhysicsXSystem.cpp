@@ -4,6 +4,7 @@
 #include <vector>
 #include "../../include/PhysX/PxPhysicsAPI.h"
 #include "../../Gameplay/Player.h"
+#include "../../Gameplay/Bullet.h"
 
 PhysicsXSystem* PhysicsXSystem::p_self = nullptr;
 
@@ -103,25 +104,25 @@ class ContackCallback :public PxSimulationEventCallback {
 		GameObject* a = (GameObject*)pairHeader.actors[0]->userData;
 		GameObject* b = (GameObject*)pairHeader.actors[1]->userData;
 		const PxU32 bufferSize = 64;
-		//TODO写一个队列来存这些碰撞数据
-		/*PxContactPairPoint contacts[bufferSize];
+
+		PxContactPairPoint contacts[bufferSize];
+		PxVec3 point=PxVec3();
+		PxVec3 normal=PxVec3();
 		for (PxU32 i = 0; i < nbPairs; i++)
 		{
 			const PxContactPair& cp = pairs[i];
 
 			PxU32 nbContacts = pairs[i].extractContacts(contacts, bufferSize);
-			for (PxU32 j = 0; j < nbContacts; j++)
-			{
-				PxVec3 point = contacts[j].position;
-				PxVec3 impulse = contacts[j].impulse;
-				PxU32 internalFaceIndex0 = contacts[j].internalFaceIndex0;
-				PxU32 internalFaceIndex1 = contacts[j].internalFaceIndex1;
-			}
-		}*/
-		_CONTACT_O2OHandle(a, b);
+			point = contacts[0].position;
+			normal = contacts[0].normal;
+		}
+		_CONTACT_O2OHandle(a, b,point,normal);
 	}
-	void _CONTACT_O2OHandle(GameObject* a, GameObject* b) {
+	void _CONTACT_O2OHandle(GameObject* a, GameObject* b,PxVec3 position,PxVec3 normal) {
 		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
+			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT, a->GetWorldID(), b->GetWorldID());
+		}
+		if (a->type == GameObjectType_team2Bullet and b->type == GameObjectType_team1) {
 			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT, a->GetWorldID(), b->GetWorldID());
 		}
 		if (a->type == GameObjectType_team1Grenade and b->type == GameObjectType_floor) {
@@ -129,7 +130,9 @@ class ContackCallback :public PxSimulationEventCallback {
 			YiEventSystem::GetMe()->PushEvent(GRENADE_DAMAGE_RANGE, a->GetWorldID(), b->GetWorldID());
 		}
 		if ((a->type == GameObjectType_team1Bullet or a->type == GameObjectType_team2Bullet) and (b->type == GameObjectType_floor or b->type == GameObjectType_wall)) {
-			YiEventSystem::GetMe()->PushEvent(Bullet_HIT_FLOOR,a->GetWorldID());
+			a->GetPhysicsXObject()->collisionPoint = position;
+			a->GetPhysicsXObject()->collisionNormal = normal;
+			YiEventSystem::GetMe()->PushEvent(Bullet_HIT_FLOOR,a->GetWorldID(),b->GetWorldID());
 		}
 		if ((a->type == GameObjectType_floor or a->type == GameObjectType_wall) and (b->type == GameObjectType_team1Bullet or b->type == GameObjectType_team2Bullet)) {
 			b->OnCollisionBegin(a, b->GetTransform().GetPosition());

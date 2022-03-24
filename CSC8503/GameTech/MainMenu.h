@@ -16,7 +16,7 @@ namespace NCL {
 			bool QuitGame;
 			bool Cancel;
 
-			bool PauseMode;
+			
 		};
 
 	}

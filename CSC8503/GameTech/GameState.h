@@ -5,7 +5,9 @@
 #include "../GameTech/MainMenu.h"
 #include "TutorialGame.h"
 #include "TutorialMenu.h"
-#include<thread>
+#include "../GameTech/EndingMenu.h"
+#include "../GameTech/PauseMenu.h"
+#include <thread>
 using namespace NCL;
 using namespace CSC8503;
 
@@ -21,7 +23,7 @@ public:
 private:
 	TutorialGame* game;
 
-	std::shared_ptr<MainMenu> pause_menu;
+	std::shared_ptr<PauseMenu> pause_menu;
 };
 
 class GamingState : public PushdownState {
@@ -54,6 +56,21 @@ private:
 	std::shared_ptr<MainMenu> start_menu;
 };
 
+class EndState : public PushdownState {
+public:
+	EndState(TutorialGame* tg) : game(tg) { end_menu.reset(new EndingMenu(game)); }
+	~EndState() {}
+	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+
+	void OnAwake() override;
+	void OnSleep() override;
+
+private:
+	TutorialGame* game;
+
+	std::shared_ptr<EndingMenu> end_menu;
+};
+
 class LoadState {
 public:
 	LoadState();
@@ -63,7 +80,6 @@ public:
 	void Update(float dt);
 private:
 	bool loadingGame = true;
-	std::thread loadingThread;
 	OGLMesh* mesh;
 	OGLMesh* cubeMesh = nullptr;
 
@@ -71,4 +87,5 @@ private:
 	GameTechRenderer* renderer;
 	GameObject* object;
 	Vector3 scale;
+	std::thread loadingThread;
 };

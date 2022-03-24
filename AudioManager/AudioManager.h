@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include "../CSC8503/GameTech/YiEventSystem.h"
 namespace FMOD
 {
 	class System;
@@ -43,4 +44,7 @@ public:
 	
 	void Play_Sound(SoundPreset preset, bool stopCurrent = true);
 	void Update(float dt);
+private:
+	void RegisterHandlers();
+	static void _openFirHandle(const EVENT* pEvent, unsigned long long dwOwnerData);
 };

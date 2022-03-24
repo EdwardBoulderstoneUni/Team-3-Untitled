@@ -21,6 +21,10 @@ public:
 	void UpdateUI() const;
 	void DrawUI() const;
 
+	ImFont* defaultFont;
+	ImFont* headerFont;
+	ImFont* titleFont;
+
 private:
 	bool IsValid = false;
 	std::vector<GameMenuPtr> menus;
