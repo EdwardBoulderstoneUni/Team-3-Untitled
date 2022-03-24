@@ -31,7 +31,7 @@ namespace NCL {
 			int GetTeamKill();
 			void SetSingleMode();
 			void SetMultiMode();
-			float tLeft = 3;
+			float tLeft = 120;
 
 			int team1Kill = 1;
 			int team2Kill = 0;

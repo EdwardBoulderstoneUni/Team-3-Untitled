@@ -84,7 +84,7 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt)
 {
-	#ifndef DEBUG
+#ifndef DEBUG
 	TIMER_START(x);
     eventSystem->ProcessAllEvent();
     TIMER_STOP(x);
