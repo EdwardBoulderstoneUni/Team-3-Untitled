@@ -67,6 +67,7 @@ private:
 	TutorialGame* game;
 
 	std::shared_ptr<EndingMenu> end_menu;
+};
 
 class LoadState {
 public:
@@ -77,7 +78,6 @@ public:
 	void Update(float dt);
 private:
 	bool loadingGame = true;
-	std::thread loadingThread;
 	OGLMesh* mesh;
 
 	GameWorld* world;
