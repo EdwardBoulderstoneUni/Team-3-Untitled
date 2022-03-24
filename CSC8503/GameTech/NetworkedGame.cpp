@@ -77,7 +77,8 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsServer();
 	}
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
-		StartAsClient(10,70,33,127);
+		//StartAsClient(10,70,33,127);
+		StartAsClient(127, 0, 0, 1);
 	}
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 		EventPacket newPacket;
@@ -115,13 +116,6 @@ PlayerPro* pro = localPlayer->GetPlayerPro();                \
 	pc->update(dt);
 	Input lastinput = pc->get_inputs();
 	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) {
-		if (localPlayer->GetPlayerPro()->ammo > 0) {
-			YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, localPlayer->GetWorldID());
-			EventPacket newPacket;
-			newPacket.eventID = PLAYER_OPEN_FIRE;
-			newPacket.networkID = localPlayerID;
-			thisClient->SendPacket(newPacket);
-		}
 		newPacket.buttonstates[7] = 1;
 	}
 	if (lastinput.buttons[jump]) {
@@ -245,20 +239,10 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 			YiEventSystem::GetMe()->PushEvent(PLAYER_EXIT_WORLD, realPacket->playerID,realPacket->networkID);
 			break;
 		case PLAYER_OPEN_FIRE:
-			if (thisServer) {
-				for (auto i : networkplayers) {
-					if (i.first == realPacket->playerID)continue;
-					EventPacket newPacket;
-					newPacket.eventID = PLAYER_OPEN_FIRE;
-					newPacket.networkID = i.second->GetNetworkObject()->GetNetworkID();
-					thisServer->SendPacketToPeer(newPacket, i.first);
-				}
-			}
-			if (thisClient) {
-				for (auto i : networkObjects) {
-					if (i->GetNetworkID() == realPacket->networkID) {
-						YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, i->GetWorldID());
-					}
+			for (auto i : networkObjects) {
+				if (i->GetNetworkID() == realPacket->networkID) {
+					YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, i->GetWorldID());
+					break;
 				}
 			}
 			break;
@@ -335,7 +319,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		PlayerDisconnectPacket* realPacket = (PlayerDisconnectPacket*)payload;
 		std::cout << "Client: Player Disconnected!" << std::endl; 
 	}
-
 	else if (type == Shutdown) {
 		std::cout << "Server shutdown!" << std::endl;
 		YiEventSystem::GetMe()->PushEvent(SERVER_SHUT_DOWN);
@@ -423,6 +406,7 @@ void NetworkedGame::RegisterHandlers()
 	eventSystem->RegisterEventHandle("WORLD_SYN", _worldsyncHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("EXIT_WORLD", _exitHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("SHUT_DOWN", _serverShutdownHandle, (DWORD64)this);
+	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle, (DWORD64)this);
 }
 
 void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
@@ -519,7 +503,6 @@ void NetworkedGame::_exitHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 		newPacket.playerID = playerID;
 		game->thisServer->SendGlobalPacket(newPacket);
 	}
-	
 }
 void NetworkedGame::_serverShutdownHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	auto game = (NetworkedGame*)dwOwnerData;
@@ -530,3 +513,20 @@ void NetworkedGame::_serverShutdownHandle(const EVENT* pEvent, DWORD64 dwOwnerDa
 	}
 }
 
+void NetworkedGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	auto game = (NetworkedGame*)dwOwnerData;
+	int worldID = stoi(pEvent->vArg[0]);
+	if (game->thisServer) {
+		EventPacket newpacket;
+		newpacket.eventID = PLAYER_OPEN_FIRE;
+		for (auto i : game->networkObjects) {
+			if (i->GetWorldID() == worldID) {
+				newpacket.networkID = i->GetNetworkID();
+			}
+		}
+		game->thisServer->SendGlobalPacket(newpacket);
+	}
+	if (game->thisClient) {
+		int i = 0;
+	}
+}
