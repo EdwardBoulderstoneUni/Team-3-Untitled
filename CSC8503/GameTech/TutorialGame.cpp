@@ -293,7 +293,9 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
+	string wallID = pEvent->vArg[1];
 	GameObject* bullet = game->world->FindObjectbyID(stoi(worldID));
+	GameObject* wall = game->world->FindObjectbyID(stoi(wallID));
 	PlayerRole pColor = game->localPlayer->GetRole();
 
 	Vector4 color;

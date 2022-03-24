@@ -132,7 +132,7 @@ class ContackCallback :public PxSimulationEventCallback {
 		if ((a->type == GameObjectType_team1Bullet or a->type == GameObjectType_team2Bullet) and (b->type == GameObjectType_floor or b->type == GameObjectType_wall)) {
 			a->GetPhysicsXObject()->collisionPoint = position;
 			a->GetPhysicsXObject()->collisionNormal = normal;
-			YiEventSystem::GetMe()->PushEvent(Bullet_HIT_FLOOR,a->GetWorldID());
+			YiEventSystem::GetMe()->PushEvent(Bullet_HIT_FLOOR,a->GetWorldID(),b->GetWorldID());
 		}
 		if ((a->type == GameObjectType_floor or a->type == GameObjectType_wall) and (b->type == GameObjectType_team1Bullet or b->type == GameObjectType_team2Bullet)) {
 			b->OnCollisionBegin(a, b->GetTransform().GetPosition());
