@@ -157,6 +157,7 @@
     <ClCompile Include="YiEventSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DebugMode.h" />
     <ClInclude Include="EventSystem.h" />
     <ClInclude Include="EndingMenu.h" />
     <ClInclude Include="YiEventSystem.h" />

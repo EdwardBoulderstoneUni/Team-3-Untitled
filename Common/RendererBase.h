@@ -23,6 +23,10 @@ namespace NCL {
 
 namespace NCL
 {
+	namespace CSC8503
+	{
+		class GameWorld;
+	}
 	namespace Rendering
 	{
 		class TextureBase;
@@ -48,6 +52,8 @@ namespace NCL
 			virtual void Update(float dt)
 			{
 			}
+
+			virtual void SetWorld(NCL::CSC8503::GameWorld* world) {}
 
 			void Render()
 			{

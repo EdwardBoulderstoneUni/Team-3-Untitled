@@ -9,10 +9,11 @@
 #include "../../Common/TextureLoader.h"
 #include "../../Common/Assets.h"
 #include "../GameTech/TutorialMenu.h"
-#include "..//..//Gameplay/ePlayerRole.h"
+#include "../../Gameplay/ePlayerRole.h"
 #include "../../Gameplay/GameObjects.h"
 #include "../../Gameplay/Bullet.h"
 #include "../../Gameplay/Grenade.h"
+#include "../GameTech/DebugMode.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -21,7 +22,8 @@ TutorialGame::TutorialGame()
 { 
 	eventSystem = new YiEventSystem();
 	world = new GameWorld();
-	renderer = new GameTechRenderer(*world);
+	Window::GetWindow()->GetRenderer()->SetWorld(world);
+	renderer = dynamic_cast<GameTechRenderer*>(Window::GetWindow()->GetRenderer());
 	physicsX = new PhysicsXSystem(*world);
 
 	Debug::SetRenderer(renderer);
@@ -50,19 +52,15 @@ void TutorialGame::SetSingleMode()
 
 void TutorialGame::SetMultiMode()
 {
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_InGame);
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
-	//Loading Screen start
-	ShaderManager::GetInstance()->Init();
-	AssetManager::GetInstance()->Init();
-	//Loading End
 	InitAbilityContainer();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;
 	worldFilePath.append("world.json");
 	g.Generate(worldFilePath.c_str(), *world);
-
 	InitWorld();
 	//InitPlayer(Vector3(20, 3, 0), GameObjectType_team2);
 	//InitPlayer(Vector3(20, 3, -20), GameObjectType_team1,true);
@@ -86,10 +84,30 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt)
 {
-	eventSystem->ProcessAllEvent();
-	AudioManager::GetInstance().Play_Sound();
+	#ifndef DEBUG
+	TIMER_START(x);
+    eventSystem->ProcessAllEvent();
+    TIMER_STOP(x);
+    Debug::Print("EventSystem:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 95));
+	
+	TIMER_RESET(x);
 	AudioManager::GetInstance().Update(dt);
+	TIMER_STOP(x);
+	Debug::Print("AudioManager:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 100));
 
+	TIMER_RESET(x);
+	UpdateGameObjects(dt);
+	TIMER_STOP(x);
+	Debug::Print("GameObject:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 90));
+
+	TIMER_RESET(x);
+	physicsX->Update(dt);
+	TIMER_STOP(x);
+	Debug::Print("PhysicsX:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 85));
+	#endif
+
+	eventSystem->ProcessAllEvent();
+	AudioManager::GetInstance().Update(dt);
 	
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
@@ -102,9 +120,10 @@ void TutorialGame::UpdateGame(float dt)
 
 	Debug::FlushRenderables(dt);
 
-#ifdef DEBUG
+#ifndef DEBUG
 	physicsX->DrawCollisionLine();
 	CalculateFrameRate(dt);
+	Memoryfootprint();
 #endif // DEBUG
 }
 
@@ -128,7 +147,6 @@ Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 void TutorialGame::InitWorld()
 {
 	InitDefaultFloor();
-	AudioManager::Startup();
 }
 
 void TutorialGame::InitDefaultFloor()
@@ -153,9 +171,6 @@ void TutorialGame::RegisterEventHandles()
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("RESPWAN", _respawnHandle, (DWORD64)world);
 	eventSystem->RegisterEventHandle("COLOR_ZONE", _colorzoneHandle, (DWORD64)world);
-
-
-
 	eventSystem->RegisterEventHandle("DAMAGE_RANGE", _damageRangeHandle, (DWORD64)this);
 }
 
@@ -184,10 +199,8 @@ void TutorialGame::HUDUpdate(float dt)
 	else {
 	//	YiEventSystem::GetMe()->PushEvent(GAME_OVER);
 	}
-
 	renderer->DrawString("Team1Kill: " + std::to_string(team1Kill), Vector2(70, 85));
 	renderer->DrawString("Team2Kill: " + std::to_string(team2Kill), Vector2(70, 20));
-
 
 	if(timeStack->dashCooldown>0)
 		renderer->DrawString("Dash CD: " + std::to_string(timeStack->dashCooldown), Vector2(5, 80));
@@ -228,7 +241,7 @@ void TutorialGame::CalculateFrameRate(float dt) {
 		FPS = framesPerSecond;
 		framesPerSecond = 0;
 	}
-	renderer->DrawString("FPS: "+std::to_string(FPS), Vector2(60, 90));
+	renderer->DrawString("FPS: "+std::to_string(int(FPS)), Vector2(55, 65));
 }
 
 void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
@@ -254,8 +267,8 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 
 	game->world->AddGameObject(bullet);
 
-	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	//bullet->SetCollisionFunction(func);
+	auto func = [](GameObject* object, Vector3 position) {AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false); };
+	bullet->SetCollisionFunction(func);
 
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
@@ -281,8 +294,9 @@ void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 
 	game->world->AddGameObject(grenade);
 
-	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	//bullet->SetCollisionFunction(func);
+	auto func = [](GameObject* object, Vector3 position) {AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false); };
+	grenade->SetCollisionFunction(func);
+
 	game->physicsX->addActor(*grenade);
 	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 60.0f);
 }

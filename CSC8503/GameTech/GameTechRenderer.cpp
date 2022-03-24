@@ -13,7 +13,7 @@ constexpr unsigned shadow_size = 4096;
 
 Matrix4 bias_matrix = Matrix4::Translation(Vector3(0.5, 0.5, 0.5)) * Matrix4::Scale(Vector3(0.5, 0.5, 0.5));
 
-GameTechRenderer::GameTechRenderer(GameWorld& world) : OGLRenderer(*Window::GetWindow()), game_world_(world),
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()),
                                                        skybox_mesh_(new OGLMesh()), skybox_tex_(0), shadow_texture_address_(0), shadow_fbo_(0),
                                                        light_radius_(1000.0f)
 {
@@ -107,10 +107,10 @@ void GameTechRenderer::load_skybox()
 void GameTechRenderer::bind_shader_defaults()
 {
 	const float screen_aspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
-	const auto view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
-	const auto proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
+	const auto view_matrix = game_world_->GetMainCamera()->BuildViewMatrix();
+	const auto proj_matrix = game_world_->GetMainCamera()->BuildProjectionMatrix(screen_aspect);
 
-	bind_shader_property("cameraPos", game_world_.GetMainCamera()->GetPosition());
+	bind_shader_property("cameraPos", game_world_->GetMainCamera()->GetPosition());
 	bind_shader_property("projMatrix", proj_matrix);
 	bind_shader_property("viewMatrix", view_matrix);
 	bind_shader_property("lightPos", light_position_);
@@ -140,7 +140,7 @@ void GameTechRenderer::build_object_list()
 {
 	active_objects_.clear();
 
-	game_world_.OperateOnContents(
+	game_world_->OperateOnContents(
 		[&](const GameObject* o)
 		{
 			if (o->IsActive())
@@ -202,8 +202,8 @@ void GameTechRenderer::render_skybox()
 	glDisable(GL_DEPTH_TEST);
 
 	const float screen_aspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
-	Matrix4 view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
-	Matrix4 proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
+	Matrix4 view_matrix = game_world_->GetMainCamera()->BuildViewMatrix();
+	Matrix4 proj_matrix = game_world_->GetMainCamera()->BuildProjectionMatrix(screen_aspect);
 
 	bind_shader(skybox_shader_);
 
@@ -241,8 +241,8 @@ void GameTechRenderer::render_camera()
 Matrix4 GameTechRenderer::SetupDebugLineMatrix() const
 {
 	const float screen_aspect = static_cast<float>(currentWidth) / static_cast<float>(currentHeight);
-	const Matrix4 view_matrix = game_world_.GetMainCamera()->BuildViewMatrix();
-	const Matrix4 proj_matrix = game_world_.GetMainCamera()->BuildProjectionMatrix(screen_aspect);
+	const Matrix4 view_matrix = game_world_->GetMainCamera()->BuildViewMatrix();
+	const Matrix4 proj_matrix = game_world_->GetMainCamera()->BuildProjectionMatrix(screen_aspect);
 
 	return proj_matrix * view_matrix;
 }
@@ -253,7 +253,8 @@ Matrix4 GameTechRenderer::SetupDebugStringMatrix() const
 }
 
 void GameTechRenderer::BeginFrame() {
-	gameUI->UpdateUI();
+	if(gameUI)
+		gameUI->UpdateUI();
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	bind_shader(nullptr);

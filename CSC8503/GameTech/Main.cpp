@@ -5,6 +5,8 @@
 #include "../CSC8503Common/State.h"
 
 #include "../CSC8503Common/NavigationGrid.h"
+#include "../CSC8503Common/AssetManager.h"
+#include "../../Common/ShaderManager.h"
 
 #include "TutorialGame.h"
 #include "PauseMenu.h"
@@ -38,14 +40,21 @@ int main() {
 #endif
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
-	//auto g = new TutorialGame();
-	auto g = new NetworkedGame();
 
+	RendererBase* renderer = new GameTechRenderer();
+	w->SetRenderer(renderer);
+
+	w->GetTimer()->GetTimeDeltaSeconds();
+	float dt = w->GetTimer()->GetTimeDeltaSeconds();
+	
+	LoadState load;
+	load.LoadGame();
+
+	auto g = new NetworkedGame();
 	PushdownMachine machine(new StartState(g));
 
-	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	while (w->UpdateWindow()) {
-		float dt = w->GetTimer()->GetTimeDeltaSeconds();
+		dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
 			continue; //must have hit a breakpoint or something to have a 1 second frame time!
@@ -64,9 +73,7 @@ int main() {
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
 		machine.Update(dt);
-		
-		
 	}
-	delete g;
+	//delete g;
 	Window::DestroyGameWindow();
 }
