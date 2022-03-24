@@ -12,7 +12,7 @@ using namespace CSC8503;
 
 class PauseState : public PushdownState {
 public:
-	PauseState(TutorialGame* tg) : game(tg) { pause_menu.reset(new MainMenu()); pause_menu->PauseMode = true; }
+	PauseState(TutorialGame* tg); 
 	~PauseState() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 
