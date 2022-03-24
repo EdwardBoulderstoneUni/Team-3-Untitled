@@ -269,6 +269,15 @@ MeshGeometry* MeshGeometry::GenerateTriangle(MeshGeometry* input)
 	return input;
 }
 
+MeshGeometry* MeshGeometry::GenerateSquare(MeshGeometry* input) {
+	input->SetVertexPositions({ Vector3(-1, -1, 0), Vector3(1, -1, 0), Vector3(1, 1, 0), Vector3(-1, 1, 0) });
+	input->SetVertexColours({ Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1) });
+	input->SetVertexTextureCoords({ Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1) });
+	input->SetVertexIndices({ 0, 1, 2, 3});
+	input->debugName = "LoadingSquare";
+	return input;
+}
+
 void MeshGeometry::SetDebugName(const std::string& newName)
 {
 	debugName = newName;

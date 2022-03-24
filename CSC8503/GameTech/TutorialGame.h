@@ -1,11 +1,11 @@
 #pragma once
+#include "GameState.h"
 #include "GameTechRenderer.h"
 #include "OGLTexture.h"
+#include "YiEventSystem.h"
 #include "../CSC8503Common/PhysicsXSystem.h"
 #include "../../AudioManager/AudioManager.h"
 #include "../CSC8503Common/PushdownMachine.h"
-#include "GameState.h"
-#include "YiEventSystem.h"
 #include "../../Gameplay/Player.h"
 
 //#define DEBUG
@@ -51,6 +51,7 @@ namespace NCL {
 			Player*				localPlayer;
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
+
 	
 			OGLMesh* capsuleMesh = nullptr;
 			OGLMesh* cubeMesh = nullptr;
