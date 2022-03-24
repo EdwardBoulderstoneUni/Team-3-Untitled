@@ -39,11 +39,10 @@ void Bullet::OnCollisionBegin(GameObject* otherObject, Vector3 point)
 {
 	if (otherObject->type == GameObjectType_floor || otherObject->type == GameObjectType_wall)
 	{
-		const auto local_collision_point = point - otherObject->GetTransform().GetPosition();
 		const auto floor_or_wall = dynamic_cast<ComponentGameObject*>(otherObject);
 		const auto paint_surface = floor_or_wall->GetComponent(Component::Paint);
 		if (paint_surface) {
-			dynamic_cast<PaintableSurface*>(paint_surface)->Paint(local_collision_point);
+			dynamic_cast<PaintableSurface*>(paint_surface)->Paint(point);
 		}
 		YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, worldID);
 	}

@@ -5,17 +5,17 @@ constexpr float kMinIntensity = 0.7f;
 PaintableSurface::PaintableSurface(const GameObject* parent) : render_object_(dynamic_cast<PaintableRenderObject*>(parent->GetRenderObject()))
 {
 
-	type = Component::ComponentType::Paint;
+	type = ComponentType::Paint;
 }
 
-void PaintableSurface::Paint(const NCL::Maths::Vector3& local_pos)
+void PaintableSurface::Paint(const NCL::Maths::Vector3& world_pos) const
 {
-	PaintManager::paint(this, local_pos);
+	PaintManager::paint(this, world_pos);
 }
 
-Vector3 PaintableSurface::GetColour(const NCL::Maths::Vector3& local_pos) const
+Vector3 PaintableSurface::GetColour(const NCL::Maths::Vector3& world_pos) const
 {
-	auto colour = render_object_->get_colour_at(local_pos);
+	auto colour = render_object_->get_colour_at(world_pos);
 	if (colour.x > kMinIntensity)
 		colour.x = 1;
 	else
