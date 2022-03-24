@@ -62,6 +62,7 @@ namespace NCL {
 
 		struct SyncStatePacket :public GamePacket {
 			PlayerPro state;
+			float timer = 0;
 			SyncStatePacket() {
 				type = Sync_State;
 				size = sizeof(SyncStatePacket);

@@ -84,7 +84,7 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt)
 {
-	#ifndef DEBUG
+#ifndef DEBUG
 	TIMER_START(x);
     eventSystem->ProcessAllEvent();
     TIMER_STOP(x);
@@ -104,13 +104,13 @@ void TutorialGame::UpdateGame(float dt)
 	physicsX->Update(dt);
 	TIMER_STOP(x);
 	Debug::Print("PhysicsX:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 85));
-	#endif
-
+	#else
 	eventSystem->ProcessAllEvent();
 	AudioManager::GetInstance().Update(dt);
-	
+
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
+	#endif
 #ifndef ORBIS
 	HUDUpdate(dt);
 #endif
