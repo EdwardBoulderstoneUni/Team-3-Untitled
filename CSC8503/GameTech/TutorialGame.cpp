@@ -148,7 +148,7 @@ void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object)
 {
 	GameObject* disc = new GameObject();
 	disc->GetTransform()
-		.SetScale(Vector3(4, 0.01f, 4))
+		.SetScale(Vector3(15, 0.01f, 15))
 		.SetPosition(object->GetTransform().GetPosition());
 
 	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), 
