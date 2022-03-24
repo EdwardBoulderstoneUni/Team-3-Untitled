@@ -6,7 +6,7 @@
 
 
 #define COLLISION_MSG 30
-
+#define HOST 10,70,33,127
 struct MessagePacket : public GamePacket {
 	short playerID = -1;
 	short messageID = -1;
@@ -77,8 +77,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsServer();
 	}
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
-		StartAsClient(10,70,33,127);
-		//StartAsClient(127, 0, 0, 1);
+		StartAsClient(HOST);
 	}
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 		EventPacket newPacket;
@@ -273,7 +272,6 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 				newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team1);
 			else
 				newPlayer = InitPlayer(Vector3(20, 50, 0), GameObjectType_team2);
-			newPlayer->RemoveComponetCamera();
 			newPlayer->RemoveComponetInput();
 			newPlayer->RemoveComponetPhysics();
 			ToggleNetworkState(newPlayer, true);
