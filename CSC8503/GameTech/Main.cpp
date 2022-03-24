@@ -40,8 +40,6 @@ int main() {
 #endif
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
-	//auto g = new TutorialGame();
-	auto g = new NetworkedGame();
 
 	RendererBase* renderer = new GameTechRenderer();
 	w->SetRenderer(renderer);
@@ -52,8 +50,7 @@ int main() {
 	LoadState load;
 	load.LoadGame();
 
-	auto g = new TutorialGame();
-
+	auto g = new NetworkedGame();
 	PushdownMachine machine(new StartState(g));
 
 	while (w->UpdateWindow()) {
