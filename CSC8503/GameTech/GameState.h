@@ -6,6 +6,8 @@
 #include "TutorialGame.h"
 #include "TutorialMenu.h"
 #include "../GameTech/EndingMenu.h"
+#include "../GameTech/PauseMenu.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -21,7 +23,7 @@ public:
 private:
 	TutorialGame* game;
 
-	std::shared_ptr<MainMenu> pause_menu;
+	std::shared_ptr<PauseMenu> pause_menu;
 };
 
 class GamingState : public PushdownState {

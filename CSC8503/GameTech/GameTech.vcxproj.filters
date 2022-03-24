@@ -12,6 +12,7 @@
     <ClCompile Include="TutorialMenu.cpp" />
     <ClCompile Include="YiEventSystem.cpp" />
     <ClCompile Include="EndingMenu.cpp" />
+    <ClCompile Include="PauseMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EventSystem.h" />
@@ -26,5 +27,7 @@
     <ClInclude Include="TutorialMenu.h" />
     <ClInclude Include="YiEventSystem.h" />
     <ClInclude Include="EndingMenu.h" />
+    <ClInclude Include="DebugMode.h" />
+    <ClInclude Include="PauseMenu.h" />
   </ItemGroup>
 </Project>

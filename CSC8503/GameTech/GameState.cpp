@@ -73,21 +73,15 @@ void PauseState::OnSleep() {
 
 PauseState::PauseState(TutorialGame* tg) : game(tg)
 {
-	pause_menu.reset(new MainMenu()); 
-	pause_menu->PauseMode = true; 
+	pause_menu.reset(new PauseMenu(game));
+ 
 }
 
 PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** newState) {
 
 	AudioManager::GetInstance().Update(dt);
-	if (pause_menu->EnterGame) {
-		game->SetMultiMode();
-		game->tLeft =30.0f;
-		*newState = new GamingState(game);
-		AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset_InGame);
-		return PushdownResult::Pop;
-	}
-	else if (pause_menu->QuitGame) {
+
+	if (pause_menu->QuitGame) {
 		exit(0);
 	}
 	if (pause_menu->Cancel) {

@@ -5,7 +5,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-MainMenu::MainMenu() : EnterGame(false), QuitGame(false), PauseMode(false), Cancel(false) 
+MainMenu::MainMenu() : EnterGame(false), QuitGame(false), Cancel(false) 
 {
 	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_MainMenu);
 }
@@ -55,7 +55,7 @@ void MainMenu::Draw()
 	QuitGame = ImGui::Button("Quit Game", ImVec2(contentWidth, 50));
 	ImGui::PopStyleColor(3);
 	ImGui::EndChild();
-
+	/*
 	if (PauseMode) {
 		ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y - 30), ImGuiCond_Always);
 		ImGui::BeginChild("Cancel", ImVec2(300, 70), true, ImGuiWindowFlags_NoSavedSettings);
@@ -69,7 +69,7 @@ void MainMenu::Draw()
 		ImGui::EndChild();
 	}
 
-	
+	*/
 
 	ImGui::End();
 }
