@@ -144,6 +144,22 @@ Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 	return player;
 }
 
+void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object)
+{
+	GameObject* disc = new GameObject();
+	disc->GetTransform()
+		.SetScale(Vector3(4, 0.01f, 4))
+		.SetPosition(object->GetTransform().GetPosition());
+
+	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), 
+		AssetManager::GetInstance()->GetMesh("Cylinder.msh"), 
+		AssetManager::GetInstance()->GetTexture("checkerboard"), 
+		ShaderManager::GetInstance()->GetShader("default")));
+	disc->GetRenderObject()->SetColour(Vector4(1, 0, 0, 1));
+
+	world->AddGameObject(disc);
+}
+
 void TutorialGame::InitWorld()
 {
 	InitDefaultFloor();
@@ -165,6 +181,9 @@ void TutorialGame::InitDefaultFloor()
 void TutorialGame::RegisterEventHandles()
 {
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("BHF", _paint, (DWORD64)this);
+
+
 	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)world);
@@ -267,13 +286,20 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 
 	game->world->AddGameObject(bullet);
 
-	auto func = [](GameObject* object, Vector3 position) {AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false); };
-	bullet->SetCollisionFunction(func);
 
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Fire, false);
 }
-
+void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+	GameObject* bullet = game->world->FindObjectbyID(stoi(worldID));
+	if (not bullet)
+		return;
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false);
+	game->AddPaint(bullet);
+}
 void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
