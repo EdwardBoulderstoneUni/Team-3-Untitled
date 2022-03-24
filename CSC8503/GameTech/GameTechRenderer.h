@@ -44,9 +44,7 @@ namespace NCL
 
 			//shadow mapping things
 			OGLShader* shadow_shader_;
-			GLuint shadow_texture_address_;
 			TextureBase* shadow_texture_;
-			unsigned bound_shadow_tex_;
 			GLuint shadow_fbo_;
 			Matrix4 shadow_matrix_;
 

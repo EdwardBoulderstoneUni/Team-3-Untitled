@@ -22,10 +22,13 @@ namespace NCL
 			//friend class OGLRenderer;
 			OGLTexture();
 			OGLTexture(unsigned width, unsigned height, unsigned channels = 4, GLuint* data = nullptr);
-			OGLTexture(GLuint texToOwn);
+			OGLTexture(unsigned width, unsigned height, GLint internal_format, GLint pixel_format, GLint pixel_type, GLuint* data = nullptr);
+			static OGLTexture* init_shadow_texture(unsigned shadow_size);
+			explicit OGLTexture(GLuint tex_to_own);
 			~OGLTexture() override;
 
-			static TextureBase* RGBATextureFromData(char* data, int width, int height, int channels);
+
+			static TextureBase* RGBATextureFromData(const char* data, int width, int height, int channels);
 
 			static TextureBase* RGBATextureFromFilename(const std::string& name);
 
@@ -33,11 +36,13 @@ namespace NCL
 
 			GLuint GetObjectID() const
 			{
-				return texID;
+				return tex_id_;
 			}
 
 		protected:
-			GLuint texID;
+
+			void init_texture(GLint internal_format, GLint pixel_format, GLint pixel_type, const GLuint* data) const;
+			GLuint tex_id_;
 		};
 	}
 }
