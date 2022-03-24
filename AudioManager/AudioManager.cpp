@@ -52,6 +52,7 @@ AudioManager::AudioManager()
 	m_Channel = nullptr;
 
 	LoadSoundFiles();
+	RegisterHandlers();
 }
 
 void AudioManager::LoadSoundFiles()
@@ -89,4 +90,11 @@ AudioManager::~AudioManager()
 	ERRCHECK(m_Result);
 	m_Result = m_System->release();
 	ERRCHECK(m_Result);
+}
+void AudioManager::_openFirHandle(const EVENT* pEvent, unsigned long long dwOwnerData)
+{
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false);
+}
+void AudioManager::RegisterHandlers() {
+	YiEventSystem::GetMe()->RegisterEventHandle("OPEN_FIRE",_openFirHandle);
 }
