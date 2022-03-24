@@ -267,8 +267,7 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 
 	game->world->AddGameObject(bullet);
 
-	auto func = [](GameObject* object, Vector3 position) {AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false); };
-	bullet->SetCollisionFunction(func);
+	//AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false)
 
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
