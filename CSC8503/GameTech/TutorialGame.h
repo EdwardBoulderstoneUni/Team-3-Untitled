@@ -41,7 +41,7 @@ namespace NCL {
 			void InitialiseUI();
 			void InitAbilityContainer();
 			Player* InitPlayer(Vector3 pos, GameObjectType team);
-			void AddPaint(GameObject* object, Vector4 color);
+			void AddPaint(GameObject* object, GameObject *collisionSurface, Vector4 color);
 		
 			void InitWorld();
 

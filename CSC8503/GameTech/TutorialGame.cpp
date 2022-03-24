@@ -144,12 +144,13 @@ Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 	return player;
 }
 
-void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object, Vector4 color)
+void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object, GameObject *collisionSurface, Vector4 color)
 {
 	GameObject* disc = new GameObject();
 	disc->GetTransform()
 		.SetScale(Vector3(15, 0.01f, 15))
-		.SetPosition(PhysXConvert::PxVec3ToVector3(object->GetPhysicsXObject()->collisionPoint));
+		.SetPosition(PhysXConvert::PxVec3ToVector3(object->GetPhysicsXObject()->collisionPoint))
+		.SetOrientation(collisionSurface->GetTransform().GetOrientation());
 
 	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), 
 		AssetManager::GetInstance()->GetMesh("Cylinder.msh"), 
@@ -315,7 +316,7 @@ void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	if (not bullet)
 		return;
 	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false);
-	game->AddPaint(bullet, color);
+	game->AddPaint(bullet, wall, color);
 }
 void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
