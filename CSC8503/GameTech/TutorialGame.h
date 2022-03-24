@@ -30,13 +30,14 @@ namespace NCL {
 
 			void SetSingleMode();
 			void SetMultiMode();
+			Player* GetPlayer() { return localPlayer; }
 			float tLeft = 900;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();
 			void InitAbilityContainer();
 			Player* InitPlayer(Vector3 pos, GameObjectType team);
-			void AddPaint(GameObject* object);
+			void AddPaint(GameObject* object, Vector4 color);
 		
 			void InitWorld();
 

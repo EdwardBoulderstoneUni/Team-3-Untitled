@@ -133,7 +133,7 @@ void TutorialGame::InitAbilityContainer() {
 
 Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 {
-	auto player = new Player(PlayerRole_blue, abilityContainer, team);
+	auto player = new Player(PlayerRole_green, abilityContainer, team);
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
@@ -144,7 +144,7 @@ Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 	return player;
 }
 
-void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object)
+void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object, Vector4 color)
 {
 	GameObject* disc = new GameObject();
 	disc->GetTransform()
@@ -155,7 +155,7 @@ void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object)
 		AssetManager::GetInstance()->GetMesh("Cylinder.msh"), 
 		AssetManager::GetInstance()->GetTexture("paint"), 
 		ShaderManager::GetInstance()->GetShader("default")));
-	disc->GetRenderObject()->SetColour(Vector4(1, 0, 0, 1));
+	disc->GetRenderObject()->SetColour(color);
 
 	world->AddGameObject(disc);
 }
@@ -295,10 +295,26 @@ void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];
 	GameObject* bullet = game->world->FindObjectbyID(stoi(worldID));
+	PlayerRole pColor = game->GetPlayer()->GetRole();
+
+	Vector4 color;
+	switch (pColor)
+	{
+	case PlayerRole::PlayerRole_blue:
+		color = Vector4(0, 0, 1, 1);
+		break;
+	case PlayerRole::PlayerRole_green:
+		color = Vector4(0, 1, 0, 1);
+		break;
+	case PlayerRole::PlayerRole_red:
+		color = Vector4(1, 0, 0, 1);
+		break;
+	}
+	
 	if (not bullet)
 		return;
 	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false);
-	game->AddPaint(bullet);
+	game->AddPaint(bullet, color);
 }
 void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
