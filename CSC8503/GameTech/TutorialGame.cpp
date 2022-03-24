@@ -21,7 +21,8 @@ TutorialGame::TutorialGame()
 { 
 	eventSystem = new YiEventSystem();
 	world = new GameWorld();
-	renderer = new GameTechRenderer(*world);
+	Window::GetWindow()->GetRenderer()->SetWorld(world);
+	renderer = dynamic_cast<GameTechRenderer*>(Window::GetWindow()->GetRenderer());
 	physicsX = new PhysicsXSystem(*world);
 
 	Debug::SetRenderer(renderer);
@@ -53,9 +54,6 @@ void TutorialGame::SetMultiMode()
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
-
-	ShaderManager::GetInstance()->Init();
-	AssetManager::GetInstance()->Init();
 	InitAbilityContainer();
 	GameObjectGenerator g;
 	std::string worldFilePath = Assets::DATADIR;

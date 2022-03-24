@@ -31,8 +31,6 @@ namespace NCL {
 			void SetSingleMode();
 			void SetMultiMode();
 			float tLeft = 900;
-
-			bool loadingGame = false;
 		protected:
 			void InitialiseAssets();
 			void InitialiseUI();

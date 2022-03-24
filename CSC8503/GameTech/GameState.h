@@ -5,7 +5,7 @@
 #include "../GameTech/MainMenu.h"
 #include "TutorialGame.h"
 #include "TutorialMenu.h"
-
+#include<thread>
 using namespace NCL;
 using namespace CSC8503;
 
@@ -64,7 +64,7 @@ public:
 	void OnSleep() override;
 private:
 	bool loadingGame = true;
-
+	std::thread loadingThread;
 	OGLMesh* mesh;
 
 	GameWorld* world;

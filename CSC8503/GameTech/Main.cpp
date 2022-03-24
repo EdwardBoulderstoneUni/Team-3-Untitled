@@ -36,14 +36,16 @@ int main() {
 	w->ShowOSPointer(true);
 	w->LockMouseToWindow(true);
 
-	PushdownMachine loadMachine(new LoadState());
+	RendererBase* renderer = new GameTechRenderer();
+	w->SetRenderer(renderer);
+
 	w->GetTimer()->GetTimeDeltaSeconds();
 	float dt = w->GetTimer()->GetTimeDeltaSeconds();
-	loadMachine.Update(dt);
-	auto g = new TutorialGame();
-	PushdownMachine machine(new StartState(g));
+	PushdownMachine loadMachine(new LoadState());
 
-	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
+	/*auto g = new TutorialGame();
+	PushdownMachine machine(new StartState(g));*/
+
 	while (w->UpdateWindow()) {
 		dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
@@ -63,10 +65,8 @@ int main() {
 		*/
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-		machine.Update(dt);
-		
-		
+		loadMachine.Update(dt);
 	}
-	delete g;
+	//delete g;
 	Window::DestroyGameWindow();
 }

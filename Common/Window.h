@@ -88,7 +88,7 @@ namespace NCL
 		static const	Mouse* GetMouse()			{ return mouse; }
 		static const	GameTimer* GetTimer()		{ return timer; }
 		virtual bool	IsFullScreen()				{ return true; }
-		static const RendererBase* GetRenderer() { return GetWindow()->renderer; }
+		static RendererBase* GetRenderer() { return GetWindow()->renderer; }
 
 		static Window* const GetWindow()			{ return window; }
 	protected:

@@ -10,8 +10,6 @@ using namespace CSC8503;
 
 GameWorld::GameWorld()
 {
-	//mainCamera = new Camera();
-
 	shuffleConstraints = false;
 	shuffleObjects = false;
 	worldIDCounter = 0;

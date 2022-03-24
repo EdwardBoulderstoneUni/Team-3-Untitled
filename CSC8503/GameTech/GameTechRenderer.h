@@ -14,9 +14,11 @@ namespace NCL
 		class GameTechRenderer final : public OGLRenderer
 		{
 		public:
-			explicit GameTechRenderer(GameWorld& world);
+			explicit GameTechRenderer();
 			~GameTechRenderer() override;
 			void SetUI(const GameUI* ui) { gameUI = ui; }
+			void SetWorld(GameWorld* world) { game_world_ = world; }
+
 		protected:
 			void bind_shader_defaults() override;
 			void RenderFrame() override;
@@ -25,7 +27,7 @@ namespace NCL
 			Matrix4 SetupDebugLineMatrix() const override;
 			Matrix4 SetupDebugStringMatrix() const override;
 
-			GameWorld& game_world_;
+			GameWorld* game_world_;
 	
 
 			void build_object_list();

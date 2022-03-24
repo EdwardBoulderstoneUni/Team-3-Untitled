@@ -1,8 +1,8 @@
 #include "../GameTech/GameState.h"
 #include "../CSC8503Common/AssetManager.h"
 #include "../../Common/ShaderManager.h"
-#include "../../Common/TextureLoader.cpp"
-
+#include "../../Common/TextureLoader.h"
+#include "NetworkedGame.h"
 #pragma region Start State
 PushdownState::PushdownResult StartState::OnUpdate(float dt, PushdownState** newState)
 {
@@ -86,7 +86,12 @@ PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** new
 #pragma endregion
 
 #pragma region Load State
-LoadState::LoadState() {}
+LoadState::LoadState() {
+	loadingGame = true;
+	loadingThread = std::thread([this]() {	ShaderManager::GetInstance()->Init();
+	AssetManager::GetInstance()->Init();
+	loadingGame = false; });
+}
 
 LoadState::~LoadState() {
 	delete mesh;
@@ -96,23 +101,27 @@ LoadState::~LoadState() {
 }
 
 void LoadState::OnAwake() {
-	mesh = new OGLMesh();
-	mesh->GenerateSquare(mesh);
 
 	world = new GameWorld();
-	renderer = new GameTechRenderer(*world);
-	object = new GameObject();
+	world->SetMainCamera(new Camera(0, 0, Vector3(-50, 0, -50)));
+	Window::GetWindow()->GetRenderer()->SetWorld(world);
+	renderer = dynamic_cast<GameTechRenderer*>(Window::GetWindow()->GetRenderer());
 
+	mesh = new OGLMesh();
+	mesh->GenerateSquare(mesh);
+	mesh->SetPrimitiveType(GeometryPrimitive::Triangles);
+	mesh->UploadToGPU(renderer);
+
+	object = new GameObject();
 
 	object->SetRenderObject(new RenderObject(&object->GetTransform(),
 		mesh, 
-		(OGLTexture*)TextureLoader::LoadAPITexture("Logo.png"), 
+		(OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png"), 
 		new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl")));
 
-	ShaderManager::GetInstance()->Init();
-	AssetManager::GetInstance()->Init();
+	world->AddGameObject(object);
 
-	loadingGame = false;
+	OnUpdate(0.01f, nullptr);
 }
 
 void LoadState::OnSleep() {
@@ -120,11 +129,16 @@ void LoadState::OnSleep() {
 
 PushdownState::PushdownResult LoadState::OnUpdate(float dt, PushdownState** newState) {
 	if (!loadingGame) {
-		return PushdownResult::Pop;
+		auto g = new TutorialGame();
+		*newState = new StartState(g);
+		return PushdownResult::Push;
 	}
+	world->UpdateWorld(dt);
+
+	world->UpdateWorld(dt);
 	renderer->Update(dt);
+	renderer->Render();
 
 	return PushdownResult::NoChange;
 }
-
 #pragma endregion
