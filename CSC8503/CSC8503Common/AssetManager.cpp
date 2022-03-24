@@ -63,6 +63,9 @@ namespace NCL
 		NCL::Rendering::OGLTexture *basicTex = (NCL::Rendering::OGLTexture*)
 												TextureLoader::LoadAPITexture("checkerboard.png");
 		m_Textures.insert({"checkerboard", basicTex});
+		basicTex = (NCL::Rendering::OGLTexture*)
+												TextureLoader::LoadAPITexture("logo.png");
+		m_Textures.insert({"logo", basicTex});
 	}
 	void AssetManager::LoadMaterials()
 	{

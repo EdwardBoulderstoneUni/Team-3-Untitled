@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\assimp\mesh.h" />
     <ClInclude Include="AABBVolume.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AssimpHelper.h" />

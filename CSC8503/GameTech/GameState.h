@@ -1,18 +1,17 @@
 #pragma once
-
 #include "../../Common/Window.h"
 #include "../CSC8503Common/PushdownState.h"
 #include "../CSC8503Common/PushdownMachine.h"
-#include "TutorialGame.h"
 #include "../GameTech/MainMenu.h"
+#include "TutorialGame.h"
 #include "TutorialMenu.h"
-
+#include<thread>
 using namespace NCL;
 using namespace CSC8503;
 
 class PauseState : public PushdownState {
 public:
-	PauseState(TutorialGame* tg) : game(tg) { pause_menu.reset(new MainMenu()); pause_menu->PauseMode = true; }
+	PauseState(TutorialGame* tg); 
 	~PauseState() {}
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 
@@ -53,4 +52,21 @@ private:
 	TutorialGame* game;
 
 	std::shared_ptr<MainMenu> start_menu;
+};
+
+class LoadState {
+public:
+	LoadState();
+	~LoadState();
+
+	void LoadGame();
+	void Update(float dt);
+private:
+	bool loadingGame = true;
+	std::thread loadingThread;
+	OGLMesh* mesh;
+
+	GameWorld* world;
+	GameTechRenderer* renderer;
+	GameObject* object;
 };
