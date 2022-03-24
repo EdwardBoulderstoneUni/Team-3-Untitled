@@ -25,6 +25,6 @@ void NCL::CSC8503::Floor::SetUp()
 	physics->phyObj->properties = properties;
 	PushComponent(physics);
 	SetRenderObject(new RenderObject(&transform, AssetManager::GetInstance()->GetMesh("Cube.msh"),
-		AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"))));
+		AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 	
 }
