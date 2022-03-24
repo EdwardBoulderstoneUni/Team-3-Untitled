@@ -92,9 +92,9 @@ void NCL::CSC8503::GameObjectGenerator::SetRenderObject(GameObject* object, cons
 		break;
 	case 1:
 		
-		object->SetRenderObject(new RenderObject
+		object->SetRenderObject(new PaintableRenderObject
 		(&object->GetTransform(), AssetManager::GetInstance()->GetMesh(value["meshPath"].GetString()),
-			AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default"), material));
+			AssetManager::GetInstance()->GetTexture("checkerboard"), material));
 		break;
 	case 2:
 
@@ -127,6 +127,7 @@ void NCL::CSC8503::GameObjectGenerator::Generate(const char* fileName, GameWorld
 			SetTransform(object, objects[i]);
 			SetPhysicsObject(object, objects[i]);
 			SetRenderObject(object, objects[i]);
+			object->PushComponent(new PaintableSurface(object));
 			object->type = GameObjectType_wall;
 			world.AddGameObject(object);
 		}
