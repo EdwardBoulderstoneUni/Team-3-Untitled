@@ -77,8 +77,8 @@ void NetworkedGame::UpdateGame(float dt) {
 		StartAsServer();
 	}
 	if (!thisClient && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F10)) {
-		//StartAsClient(10,70,33,127);
-		StartAsClient(127, 0, 0, 1);
+		StartAsClient(10,70,33,127);
+		//StartAsClient(127, 0, 0, 1);
 	}
 	if (!thisServer && Window::GetKeyboard()->KeyPressed(KeyboardKeys::F11)) {
 		EventPacket newPacket;
@@ -527,6 +527,6 @@ void NetworkedGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 		game->thisServer->SendGlobalPacket(newpacket);
 	}
 	if (game->thisClient) {
-		int i = 0;
+		
 	}
 }
