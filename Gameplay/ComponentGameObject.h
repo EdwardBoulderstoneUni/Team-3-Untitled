@@ -16,10 +16,11 @@ namespace NCL {
 			void RemoveComponetCamera();
 			void RemoveComponetInput();
 			void RemoveComponetPhysics();
-			virtual void SetUp() = 0;
+			virtual void SetUp() {};
 			virtual void Update(float dt);
 			void InitAllComponent();
 			void PushComponent(Component* newCom);
+			Component* GetComponent(const Component::ComponentType& component) const { return components[component]; }
 		private:
 			void UpdateComponents(float dt);
 			void InitComponents();

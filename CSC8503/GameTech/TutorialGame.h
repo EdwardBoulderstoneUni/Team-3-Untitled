@@ -41,6 +41,7 @@ namespace NCL {
 			void InitialiseUI();
 			void InitAbilityContainer();
 			Player* InitPlayer(Vector3 pos, GameObjectType team);
+			void AddPaint(GameObject* object, Vector4 color);
 		
 			void InitWorld();
 
@@ -57,19 +58,6 @@ namespace NCL {
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 
-	
-			OGLMesh* capsuleMesh = nullptr;
-			OGLMesh* cubeMesh = nullptr;
-			OGLMesh* sphereMesh = nullptr;
-			OGLTexture* basicTex = nullptr;
-			OGLShader* basicShader = nullptr;
-
-			//Coursework Meshes
-			OGLMesh* charMeshA = nullptr;
-			OGLMesh* charMeshB = nullptr;
-			OGLMesh* enemyMesh = nullptr;
-			OGLMesh* bonusMesh = nullptr;
-
 			float FPS = 0.0f;
 			float framesPerSecond = 0.0f;
 			float lastTime = 0.0f;
@@ -79,6 +67,7 @@ namespace NCL {
 
 			GameUI* gameUI;
 			static void _openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
+			static void _paint(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _deleteHandle(const EVENT* pEvent, DWORD64 dwOwnerData);
 			static void _HitHandle(const EVENT* pEvent, DWORD64 dwOwnerData);

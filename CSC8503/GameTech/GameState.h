@@ -76,13 +76,15 @@ public:
 	LoadState();
 	~LoadState();
 
-	void LoadGame();
+	void LoadGame(float dt);
 	void Update(float dt);
 private:
 	bool loadingGame = true;
 	OGLMesh* mesh;
+	OGLMesh* cubeMesh = nullptr;
 
 	GameWorld* world;
 	GameTechRenderer* renderer;
 	GameObject* object;
+	Vector3 scale;
 };

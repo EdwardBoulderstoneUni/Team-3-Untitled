@@ -52,8 +52,7 @@ void Player::SetUp()
 	camera->camera->SetFarPlane(500.0f);
 	camera->camera->SetPitch(-15.0f);
 
-	PushComponent(camera);
-	
+	PushComponent(camera);	
 }
 
 

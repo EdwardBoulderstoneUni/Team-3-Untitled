@@ -11,6 +11,7 @@ public:
 		return damage;
 	}
 	int GetShooterID() { return shooterID; }
+	void OnCollisionBegin(GameObject* otherObject, Vector3 point) override;
 private:
 	float timeStack = 0;
 	float damage = 0;

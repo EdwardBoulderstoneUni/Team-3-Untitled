@@ -133,7 +133,7 @@ void TutorialGame::InitAbilityContainer() {
 
 Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 {
-	auto player = new Player(PlayerRole_blue, abilityContainer, team);
+	auto player = new Player(PlayerRole_green, abilityContainer, team);
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
@@ -142,6 +142,22 @@ Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 
 	world->AddGameObject(player);
 	return player;
+}
+
+void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object, Vector4 color)
+{
+	GameObject* disc = new GameObject();
+	disc->GetTransform()
+		.SetScale(Vector3(15, 0.01f, 15))
+		.SetPosition(object->GetTransform().GetPosition());
+
+	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), 
+		AssetManager::GetInstance()->GetMesh("Cylinder.msh"), 
+		AssetManager::GetInstance()->GetTexture("paint"), 
+		ShaderManager::GetInstance()->GetShader("default")));
+	disc->GetRenderObject()->SetColour(color);
+
+	world->AddGameObject(disc);
 }
 
 void TutorialGame::InitWorld()
@@ -158,7 +174,6 @@ void TutorialGame::InitDefaultFloor()
 		.SetPosition(Vector3(-250, 10, 0));
 
 	floor->InitAllComponent();
-	floor->SetRenderObject(new RenderObject(&floor->GetTransform(), AssetManager::GetInstance()->GetMesh("Cube.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 	world->AddGameObject(floor);
 
 }
@@ -166,6 +181,9 @@ void TutorialGame::InitDefaultFloor()
 void TutorialGame::RegisterEventHandles()
 {
 	eventSystem->RegisterEventHandle("OPEN_FIRE", _openFirHandle,(DWORD64)this);
+	eventSystem->RegisterEventHandle("BHF", _paint, (DWORD64)this);
+
+
 	eventSystem->RegisterEventHandle("THROW_GRENADE", _GrenadeHandle, (DWORD64)this);
 	eventSystem->RegisterEventHandle("OBJECT_DELETE", _deleteHandle,(DWORD64)this);
 	eventSystem->RegisterEventHandle("HIT", _HitHandle, (DWORD64)this);
@@ -267,12 +285,36 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 
 	game->world->AddGameObject(bullet);
 
-	//AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false)
 
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Fire, false);
 }
+void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
+	TutorialGame* game = (TutorialGame*)dwOwnerData;
+	string worldID = pEvent->vArg[0];
+	GameObject* bullet = game->world->FindObjectbyID(stoi(worldID));
+	PlayerRole pColor = game->GetPlayer()->GetRole();
 
+	Vector4 color;
+	switch (pColor)
+	{
+	case PlayerRole::PlayerRole_blue:
+		color = Vector4(0, 0, 1, 1);
+		break;
+	case PlayerRole::PlayerRole_green:
+		color = Vector4(0, 1, 0, 1);
+		break;
+	case PlayerRole::PlayerRole_red:
+		color = Vector4(1, 0, 0, 1);
+		break;
+	}
+	
+	if (not bullet)
+		return;
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false);
+	game->AddPaint(bullet, color);
+}
 void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
 	string worldID = pEvent->vArg[0];

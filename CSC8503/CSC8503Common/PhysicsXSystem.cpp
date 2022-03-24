@@ -121,9 +121,6 @@ class ContackCallback :public PxSimulationEventCallback {
 		_CONTACT_O2OHandle(a, b);
 	}
 	void _CONTACT_O2OHandle(GameObject* a, GameObject* b) {
-		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_floor) {
-			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
-		}
 		if (a->type == GameObjectType_team1Bullet and b->type == GameObjectType_team2) {
 			YiEventSystem::GetMe()->PushEvent(PLAYER_HIT, a->GetWorldID(), b->GetWorldID());
 		}
@@ -133,6 +130,12 @@ class ContackCallback :public PxSimulationEventCallback {
 		if (a->type == GameObjectType_team1Grenade and b->type == GameObjectType_floor) {
 			a->OnCollisionBegin(b, a->GetTransform().GetPosition());
 			YiEventSystem::GetMe()->PushEvent(GRENADE_DAMAGE_RANGE, a->GetWorldID(), b->GetWorldID());
+		}
+		if ((a->type == GameObjectType_team1Bullet or a->type == GameObjectType_team2Bullet) and (b->type == GameObjectType_floor or b->type == GameObjectType_wall)) {
+			YiEventSystem::GetMe()->PushEvent(Bullet_HIT_FLOOR,a->GetWorldID());
+		}
+		if ((a->type == GameObjectType_floor or a->type == GameObjectType_wall) and (b->type == GameObjectType_team1Bullet or b->type == GameObjectType_team2Bullet)) {
+			b->OnCollisionBegin(a, b->GetTransform().GetPosition());
 		}
 	}
 };
