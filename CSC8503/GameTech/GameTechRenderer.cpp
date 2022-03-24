@@ -14,7 +14,7 @@ constexpr unsigned shadow_size = 4096;
 Matrix4 bias_matrix = Matrix4::Translation(Vector3(0.5, 0.5, 0.5)) * Matrix4::Scale(Vector3(0.5, 0.5, 0.5));
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()),
-                                                       skybox_mesh_(new OGLMesh()), skybox_tex_(0), shadow_texture_address_(0), shadow_fbo_(0),
+                                                       skybox_mesh_(new OGLMesh()), skybox_tex_(0), shadow_fbo_(0),
                                        light_radius_(1000.0f)
 {
 	glEnable(GL_DEPTH_TEST);
