@@ -153,7 +153,7 @@ void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object)
 
 	disc->SetRenderObject(new RenderObject(&disc->GetTransform(), 
 		AssetManager::GetInstance()->GetMesh("Cylinder.msh"), 
-		AssetManager::GetInstance()->GetTexture("checkerboard"), 
+		AssetManager::GetInstance()->GetTexture("paint"), 
 		ShaderManager::GetInstance()->GetShader("default")));
 	disc->GetRenderObject()->SetColour(Vector4(1, 0, 0, 1));
 

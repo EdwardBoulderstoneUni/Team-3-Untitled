@@ -60,12 +60,14 @@ namespace NCL
 	}
 	void AssetManager::LoadTextures()
 	{
-		NCL::Rendering::OGLTexture *basicTex = (NCL::Rendering::OGLTexture*)
-												TextureLoader::LoadAPITexture("checkerboard.png");
+		NCL::Rendering::OGLTexture *basicTex = (NCL::Rendering::OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png");
 		m_Textures.insert({"checkerboard", basicTex});
-		basicTex = (NCL::Rendering::OGLTexture*)
-												TextureLoader::LoadAPITexture("logo.png");
+		
+		basicTex = (NCL::Rendering::OGLTexture*)TextureLoader::LoadAPITexture("logo.png");
 		m_Textures.insert({"logo", basicTex});
+
+		basicTex = (NCL::Rendering::OGLTexture*)TextureLoader::LoadAPITexture("Paint.png");
+		m_Textures.insert({ "paint", basicTex });
 	}
 	void AssetManager::LoadMaterials()
 	{
