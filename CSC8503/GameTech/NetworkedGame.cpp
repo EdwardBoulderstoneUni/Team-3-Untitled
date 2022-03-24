@@ -222,6 +222,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 		
 		SyncStatePacket newPacket;
 		newPacket.state = *player->GetPlayerPro();
+		newPacket.timer = tLeft;
 		thisServer->SendPacketToPeer(newPacket,realPacket->playerID);
 	}
 	else if (type == Event_State) {
@@ -289,6 +290,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	else if (type == Sync_State) {
 		SyncStatePacket* realPacket=(SyncStatePacket*)payload;
 		*localPlayer->GetPlayerPro() = realPacket->state;
+		tLeft = realPacket->timer;
 	}
 	else if (type == Message) {
 		MessagePacket* realPacket = (MessagePacket*)payload;
