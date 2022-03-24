@@ -62,7 +62,7 @@ namespace NCL {
 		};
 		class Player : public ComponentGameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type,bool localplayer=false);
+			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
 			~Player();
 			virtual void Update(float dt)override;
 			void SetUp() override;
@@ -72,11 +72,13 @@ namespace NCL {
 			DirectionVec GetDirectionVec() { return dirVec;}
 
 			Input GetLastInput() { return lastInput; }
+			void SetLastInput(Input i) { lastInput = i; }
 			PlayerRole GetRole() { return pColour; }
 			TimeStack* GetTimeStack() { return timeStack; }
 			PlayerPro* GetPlayerPro() { return playerPro; }
+			
+			bool networkInput;
 		private:
-			bool isLocalPlayer;
 			TimeStack* timeStack;
 			PlayerPro* playerPro;
 			PushdownMachine* playerState;

@@ -9,6 +9,7 @@ Player* player = static_cast<Player*>(userdata);	\
 Input lastInput = player->GetLastInput();           \
 TimeStack* timeStack = player->GetTimeStack();		\
 PhysicsXObject* phyobj =player->GetPhysicsXObject(); \
+Transform trans=player->GetTransform();            \
 DirectionVec dir=player->GetDirectionVec();         \
 PlayerPro* playerPro=player->GetPlayerPro();         \
 
@@ -55,19 +56,24 @@ if (lastInput.movement_direction != Vector2()){				 \
 
 #define M_PLAYER_MOVE                                                                \
 if (lastInput.movement_direction == Vector2(0, 1)) {								 \
-	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * playerPro->speed);	 \
+	if (phyobj) phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * playerPro->speed);	 \
+	else trans.SetPosition((dir.forward) * playerPro->speed);                         \
 }																					 \
 if (lastInput.movement_direction == Vector2(0, -1)) {								 \
-	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * playerPro->speed);	 \
+	if (phyobj) phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * playerPro->speed);	 \
+	else trans.SetPosition((-dir.forward) * playerPro->speed);                         \
 }																					 \
 if (lastInput.movement_direction == Vector2(1, 0)) {								 \
-	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.right) * playerPro->speed);		 \
+	if (phyobj) phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.right) * playerPro->speed);	 \
+	else trans.SetPosition((dir.right) * playerPro->speed);                         \
 }																					 \
 if (lastInput.movement_direction == Vector2(-1, 0)) {								 \
-	phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.right) * playerPro->speed);	 \
+	if (phyobj) phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.right) * playerPro->speed);	 \
+	else trans.SetPosition((-dir.right) * playerPro->speed);                         \
 }																					 \
 
-#define M_GRAVITY player->GetPhysicsXObject()->CMove(PxVec3(0, -9.8f, 0) * 0.1f);
+#define M_GRAVITY if (phyobj)player->GetPhysicsXObject()->CMove(PxVec3(0, -9.8f, 0) * 0.1f);\
+else trans.SetPosition(Vector3(0,-9.8f,0)*0.1f);\
 
 #define DASH_OFF 5.0f
 class Die :public PushdownState {
@@ -97,22 +103,27 @@ class Dash :public PushdownState {
 				return PushdownResult::Pop;
 			}
 		M_DIE
-			if (lastInput.movement_direction == Vector2(0, 1)) {
-				phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * DASH_OFF);
-			}
-		if (lastInput.movement_direction == Vector2(0, -1)) {
-			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * DASH_OFF);
-		}
-		if (lastInput.movement_direction == Vector2(1, 0)) {
-			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.right) * DASH_OFF);
-		}
+		if (lastInput.movement_direction == Vector2(0, 1)){
+			if (phyobj)phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * DASH_OFF);
+			else trans.SetPosition(dir.forward* DASH_OFF);
+		}																		
+		if (lastInput.movement_direction == Vector2(0, -1)){
+			if (phyobj)phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * DASH_OFF);
+			else trans.SetPosition(dir.forward * DASH_OFF);
+		}																		
+		if (lastInput.movement_direction == Vector2(1, 0)){
+			if (phyobj)phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.right) * DASH_OFF);
+			else trans.SetPosition(dir.right * DASH_OFF);
+		}																		
 		if (lastInput.movement_direction == Vector2(-1, 0)) {
-			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.forward) * DASH_OFF);
-		}
+			if (phyobj)phyobj->CMove(PhysXConvert::Vector3ToPxVec3(-dir.right) * DASH_OFF);
+			else trans.SetPosition(-dir.right * DASH_OFF);
+		}																		
 		if (lastInput.movement_direction == Vector2(0, 0)) {
-			phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * DASH_OFF);
-		}
-		timeStack->dashingTimeStack += dt;
+			if (phyobj)phyobj->CMove(PhysXConvert::Vector3ToPxVec3(dir.forward) * DASH_OFF);
+			else trans.SetPosition(dir.forward * DASH_OFF);
+		}																	
+		timeStack->dashingTimeStack += dt;									    
 		return PushdownResult::NoChange;
 	}
 };
@@ -120,14 +131,15 @@ class DoubleJump :public PushdownState {
 	PushdownResult OnUpdate(float dt,
 		PushdownState** newState) override {
 		M_INIT
-			if (timeStack->jumpingTimeStack > DOUBLE_DURA)
-			{
-				return PushdownResult::Pop;
-			}
+		if (timeStack->jumpingTimeStack> DOUBLE_DURA)
+		{
+			return PushdownResult::Pop;
+		}
 		M_DASH
-			M_DIE
-			M_PLAYER_MOVE
-			player->GetPhysicsXObject()->CMove(PxVec3(0, 1, 0) * cos(timeStack->jumpingTimeStack));
+		M_DIE
+		M_PLAYER_MOVE
+		if (phyobj)player->GetPhysicsXObject()->CMove(PxVec3(0, 1, 0) * cos(timeStack->jumpingTimeStack));
+		else trans.SetPosition(Vector3(0,1,0) * cos(timeStack->jumpingTimeStack));
 		timeStack->jumpingTimeStack += dt * 3;
 		return PushdownResult::NoChange;
 	}
@@ -142,10 +154,11 @@ class StandingJump :public PushdownState {
 				return PushdownResult::Pop;
 			}
 		M_DOUBLEJUMP
-			M_DASH
-			M_DIE
-			M_PLAYER_MOVE
-			player->GetPhysicsXObject()->CMove(PxVec3(0, 1, 0) * cos(timeStack->jumpingTimeStack));
+		M_DASH
+		M_DIE
+		M_PLAYER_MOVE
+		if (phyobj)player->GetPhysicsXObject()->CMove(PxVec3(0, 1, 0) * cos(timeStack->jumpingTimeStack));
+		else trans.SetPosition(Vector3(0, 1, 0) * cos(timeStack->jumpingTimeStack));
 		timeStack->jumpingTimeStack += dt * 3;
 		return PushdownResult::NoChange;
 	}

@@ -31,46 +31,17 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EventSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTechRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkedGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TutorialGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TutorialMenu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="YiEventSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{b3fd2280-8104-42d6-9c61-94fbe049cc5d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{e6e5aa62-c6aa-4584-bd7f-2a503b25d256}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="EventSystem.h" />
+    <ClInclude Include="GameMenu.h" />
+    <ClInclude Include="GameTechRenderer.h" />
+    <ClInclude Include="GameUI.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="NetworkedGame.h" />
+    <ClInclude Include="NetworkPlayer.h" />
+    <ClInclude Include="TutorialGame.h" />
+    <ClInclude Include="TutorialMenu.h" />
+    <ClInclude Include="YiEventSystem.h" />
+    <ClInclude Include="DebugMode.h" />
   </ItemGroup>
 </Project>

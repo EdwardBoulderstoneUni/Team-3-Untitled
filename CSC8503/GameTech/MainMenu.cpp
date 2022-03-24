@@ -1,8 +1,14 @@
 #include "MainMenu.h"
 #include"../GameTech/GameTechRenderer.h"
+#include "../../AudioManager/AudioManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
+
+MainMenu::MainMenu() : EnterGame(false), QuitGame(false), PauseMode(false), Cancel(false) 
+{
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_MainMenu);
+}
 
 void MainMenu::Draw()
 {

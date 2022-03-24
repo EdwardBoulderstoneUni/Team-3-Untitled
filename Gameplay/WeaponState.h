@@ -21,7 +21,6 @@ class Shooting :public PushdownState {
 			{
 				if (playerPro->ammo > 0) {
 					YiEventSystem::GetMe()->PushEvent(PLAYER_OPEN_FIRE, player->GetWorldID());
-					playerPro->ammo--;
 				}
 			}
 		if (lastInput.buttons[reload])

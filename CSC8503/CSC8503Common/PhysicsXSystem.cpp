@@ -245,6 +245,7 @@ void PhysicsXSystem::initPhysics()
 void PhysicsXSystem::Update(float dt)
 {
 	SyncGameObjs();
+	//SyncObjsTransform();
 	float mStepSize = 1.0f / 60.0f;
 	dTOffset += dt;
 	if (dTOffset < mStepSize)return;
@@ -325,8 +326,10 @@ void PhysicsXSystem::addActor(GameObject& actor)
 }
 void PhysicsXSystem::deleteActor(GameObject& actor)
 {
-	PxActor* temp = actor.GetPhysicsXObject()->rb;
-	gScene->removeActor(*temp);
+	if (actor.GetPhysicsXObject()) {
+		PxActor* temp = actor.GetPhysicsXObject()->rb;
+		gScene->removeActor(*temp);
+	}
 }
 void PhysicsXSystem::SynActorsPose(PxRigidActor** actors, const PxU32 numActors)
 {
@@ -478,6 +481,7 @@ void PhysicsXSystem::SyncGameObjs()
 	for (auto actor : actors)
 	{
 		PhysicsXObject* obj = actor->GetPhysicsXObject();
+		if (not obj)continue;
 		if (obj->rb)continue;
 		addActor(*actor);
 	}
@@ -490,6 +494,8 @@ void PhysicsXSystem::DrawCollisionLine() {
 		Debug::DrawLine(PhysXConvert::PxVec3ToVector3(line.pos0), PhysXConvert::PxVec3ToVector3(line.pos1));
 	}
 }
+
+
 
 
 

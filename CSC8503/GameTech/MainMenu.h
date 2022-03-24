@@ -7,7 +7,7 @@ namespace NCL {
 		class MainMenu : public GameMenu
 		{
 		public:
-			MainMenu() :EnterGame(false), QuitGame(false), PauseMode(false), Cancel(false) {};
+			MainMenu();
 			virtual ~MainMenu() {};
 
 			virtual void Draw() override;
