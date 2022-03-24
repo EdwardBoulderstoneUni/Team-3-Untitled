@@ -290,8 +290,8 @@ void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 		.SetScale(cubeSize)
 		.SetPosition(position + dir.shootDir * 15);
 	grenade->InitAllComponent();
-	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), game->cubeMesh,
-		game->basicTex, game->basicShader));
+	grenade->SetRenderObject(new RenderObject(&grenade->GetTransform(), AssetManager::GetInstance()->GetMesh("Cube.msh"),
+		AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
 
 	game->world->AddGameObject(grenade);
 

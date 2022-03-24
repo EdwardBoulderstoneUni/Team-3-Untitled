@@ -101,25 +101,28 @@ LoadState::LoadState() {
 
 	ShaderManager::GetInstance()->Init();
 	world = new GameWorld();
-	world->SetMainCamera(new Camera(0, 0, Vector3(-50, 0, -50)));
+	world->SetMainCamera(new Camera(0, 270, Vector3(-15, 0, 0)));
 	Window::GetWindow()->GetRenderer()->SetWorld(world);
 	renderer = dynamic_cast<GameTechRenderer*>(Window::GetWindow()->GetRenderer());
 
-	mesh = new OGLMesh();
-	mesh->GenerateSquare(mesh);
-	mesh->SetPrimitiveType(GeometryPrimitive::Triangles);
-	mesh->UploadToGPU(renderer);
+	auto loadFunc = [](const string& name, OGLMesh** into) {
+		*into = new OGLMesh(name);
+		(*into)->SetPrimitiveType(GeometryPrimitive::Triangles);
+		(*into)->UploadToGPU();
+	};
 
+	loadFunc("cube.msh", &cubeMesh);
+
+	scale = Vector3(15, 15, 15);
 	object = new GameObject();
-
+	object->GetTransform().SetScale(scale);
 	object->SetRenderObject(new RenderObject(&object->GetTransform(),
-		mesh,
-		(OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png"),
+		cubeMesh,
+		(OGLTexture*)TextureLoader::LoadAPITexture("Logo.png"),
 		ShaderManager::GetInstance()->GetShader("default")));
 
 	world->AddGameObject(object);
 	
-
 	loadingThread = std::thread([this]() {
 	AssetManager::GetInstance()->Init(); loadingGame = false;  });	
 }
@@ -131,18 +134,21 @@ LoadState::~LoadState() {
 	delete object;
 }
 
-void LoadState::LoadGame() {
-
+void LoadState::LoadGame(float dt) {
 	while (loadingGame) {
-		Update(0.01f);
+		dt += Window::GetWindow()->GetTimer()->GetTimeDeltaSeconds();
+		scale += Vector3(0.1, 0.1, 0.1);
+		Update(dt);
 	}
 	loadingThread.join();
 	AssetManager::GetInstance()->UploadToGPU();
 }
 
 void LoadState::Update(float dt) {
+	world->GetGameObjects()[0]->GetTransform().SetScale(scale);
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 	renderer->Render();
+	std::cout << dt << std::endl;
 }
 #pragma endregion

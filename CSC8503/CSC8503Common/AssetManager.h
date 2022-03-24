@@ -7,8 +7,8 @@ namespace NCL
 	class MeshMaterial;
 	namespace Rendering {
 		class OGLMesh;
-		class OGLTexture;		
-	}
+		class OGLTexture;
+	};
 	class AssetManager
 	{
 
