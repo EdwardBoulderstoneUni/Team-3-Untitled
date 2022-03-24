@@ -278,6 +278,18 @@ MeshGeometry* MeshGeometry::GenerateSquare(MeshGeometry* input) {
 	return input;
 }
 
+MeshGeometry* MeshGeometry::GenerateCube(MeshGeometry* input) {
+	input->SetVertexPositions({ Vector3(-1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, 1), Vector3(-1, 1, 1),
+								Vector3(-1, -1, -1), Vector3(1, -1, -1), Vector3(1, 1, -1), Vector3(-1, 1, -1) });
+	input->SetVertexColours({ Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1),
+							Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1), Vector4(0, 0, 0, 1) });
+	input->SetVertexTextureCoords({ Vector2(0, 0), Vector2(1, 0), Vector2(1, 1),
+									Vector2(0, 1), Vector2(0, 0), Vector2(1, 0), Vector2(1, 1), Vector2(0, 1) });
+	input->SetVertexIndices({ 0, 1, 2, 3, 4, 5, 6, 7 });
+	input->debugName = "LoadingCube";
+	return input;
+}
+
 void MeshGeometry::SetDebugName(const std::string& newName)
 {
 	debugName = newName;

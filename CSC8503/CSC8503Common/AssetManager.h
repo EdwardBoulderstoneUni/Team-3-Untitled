@@ -7,8 +7,8 @@ namespace NCL
 	class MeshMaterial;
 	namespace Rendering {
 		class OGLMesh;
-		class OGLTexture;		
-	}
+		class OGLTexture;
+	};
 	class AssetManager
 	{
 
@@ -19,7 +19,7 @@ namespace NCL
 		static AssetManager* m_Instance;
 		AssetManager();
 		~AssetManager();
-		void LoadMeshes();
+		void LoadMeshData();
 		void LoadTextures();
 		void LoadMaterials();
 	public:
@@ -29,6 +29,7 @@ namespace NCL
 		NCL::Rendering::OGLMesh* GetMesh(const char*) const;
 		NCL::Rendering::OGLTexture* GetTexture(const char*) const;
 		NCL::MeshMaterial* GetMaterial(const char*) const;
+		void UploadToGPU();
 	};
 }
 
