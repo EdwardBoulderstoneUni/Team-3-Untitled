@@ -5,6 +5,8 @@
 #include "../CSC8503Common/State.h"
 
 #include "../CSC8503Common/NavigationGrid.h"
+#include "../CSC8503Common/AssetManager.h"
+#include "../../Common/ShaderManager.h"
 
 #include "TutorialGame.h"
 #include "PauseMenu.h"
@@ -41,10 +43,12 @@ int main() {
 
 	w->GetTimer()->GetTimeDeltaSeconds();
 	float dt = w->GetTimer()->GetTimeDeltaSeconds();
-	PushdownMachine loadMachine(new LoadState());
+	
+	LoadState load;
+	load.LoadGame();
 
-	/*auto g = new TutorialGame();
-	PushdownMachine machine(new StartState(g));*/
+	auto g = new TutorialGame();
+	PushdownMachine machine(new StartState(g));
 
 	while (w->UpdateWindow()) {
 		dt = w->GetTimer()->GetTimeDeltaSeconds();
@@ -65,7 +69,7 @@ int main() {
 		*/
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-		loadMachine.Update(dt);
+		machine.Update(dt);
 	}
 	//delete g;
 	Window::DestroyGameWindow();

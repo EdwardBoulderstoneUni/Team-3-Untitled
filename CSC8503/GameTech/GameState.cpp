@@ -88,20 +88,6 @@ PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** new
 #pragma region Load State
 LoadState::LoadState() {
 	loadingGame = true;
-	loadingThread = std::thread([this]() {	ShaderManager::GetInstance()->Init();
-	AssetManager::GetInstance()->Init();
-	loadingGame = false; });
-}
-
-LoadState::~LoadState() {
-	delete mesh;
-	delete world;
-	delete renderer;
-	delete object;
-}
-
-void LoadState::OnAwake() {
-
 	world = new GameWorld();
 	world->SetMainCamera(new Camera(0, 0, Vector3(-50, 0, -50)));
 	Window::GetWindow()->GetRenderer()->SetWorld(world);
@@ -115,30 +101,38 @@ void LoadState::OnAwake() {
 	object = new GameObject();
 
 	object->SetRenderObject(new RenderObject(&object->GetTransform(),
-		mesh, 
-		(OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png"), 
+		mesh,
+		(OGLTexture*)TextureLoader::LoadAPITexture("checkerboard.png"),
 		new OGLShader("GameTechVert.glsl", "GameTechFrag.glsl")));
 
 	world->AddGameObject(object);
-
-	OnUpdate(0.01f, nullptr);
+	loadingThread = std::thread([this]() {	
+		ShaderManager::GetInstance()->Init();
+		AssetManager::GetInstance()->Init();
+		loadingGame = false; 
+	});
 }
 
-void LoadState::OnSleep() {
+LoadState::~LoadState() {
+	delete mesh;
+	delete world;
+	delete renderer;
+	delete object;
 }
 
-PushdownState::PushdownResult LoadState::OnUpdate(float dt, PushdownState** newState) {
-	if (!loadingGame) {
-		auto g = new TutorialGame();
-		*newState = new StartState(g);
-		return PushdownResult::Push;
+void LoadState::LoadGame() {
+
+
+
+	while (loadingGame) {
+		Update(0.01f);
 	}
-	world->UpdateWorld(dt);
+	loadingThread.join();
+}
 
+void LoadState::Update(float dt) {
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 	renderer->Render();
-
-	return PushdownResult::NoChange;
 }
 #pragma endregion

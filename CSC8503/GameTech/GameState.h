@@ -54,14 +54,13 @@ private:
 	std::shared_ptr<MainMenu> start_menu;
 };
 
-class LoadState : public PushdownState {
+class LoadState {
 public:
 	LoadState();
 	~LoadState();
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 
-	void OnAwake() override;
-	void OnSleep() override;
+	void LoadGame();
+	void Update(float dt);
 private:
 	bool loadingGame = true;
 	std::thread loadingThread;
