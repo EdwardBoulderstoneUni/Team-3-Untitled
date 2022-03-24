@@ -21,26 +21,32 @@ void EndingMenu::Draw()
 		ImGui::End();
 		return;
 	}
+	ImFont* title = game->GetUI()->titleFont;
+	ImGui::PushFont(title);
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 119, 255, 255));
+	ImGui::SetCursorPos(ImVec2(mainVp->GetCenter().x - ImGui::CalcTextSize("GameOver").x * 0.5, mainVp->GetCenter().y - 300));
+	ImGui::Text("GameOver");
+	ImGui::PopFont();
+	ImGui::PopStyleColor();
 
-	ImGui::PushItemWidth(ImGui::GetFontSize() * 30);
-	ImGui::SetCursorPos(ImVec2(mainVp->GetCenter().x, mainVp->GetCenter().y -200));
-	ImGui::Text("Game Over");
-
-	ImGui::PushItemWidth(ImGui::GetFontSize() * 20);
-	ImGui::SetCursorPos(ImVec2(mainVp->GetCenter().x, mainVp->GetCenter().y));
-	
+	ImFont* header = game->GetUI()->headerFont;
+	ImGui::PushFont(header);
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(150, 150, 150, 255));
+	ImGui::SetCursorPos(ImVec2(mainVp->GetCenter().x - ImGui::CalcTextSize("GameOver").x * 0.5, mainVp->GetCenter().y - 100));
 	if (game->team1Kill > game->team2Kill)
 	{
-		ImGui::Text("team1 win!!!");
+		ImGui::Text("teamONEwin!!!");
 	}
 	else if (game->team2Kill > game->team1Kill)
 	{
-		ImGui::Text("team2 win!!!");
+		ImGui::Text("teamTWOwin!!!");
 	}
 	else if (game->team1Kill == game->team2Kill)
 	{
 		ImGui::Text("Tie!!!!");
 	}
+	ImGui::PopFont();
+	ImGui::PopStyleColor();
 
 
 	ImGui::SetNextWindowPos(ImVec2(mainVp->GetCenter().x - 150, mainVp->GetCenter().y + 40), ImGuiCond_Always);
