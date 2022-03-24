@@ -53,19 +53,6 @@ namespace NCL {
 			AbilityContainer*	abilityContainer;
 			YiEventSystem* eventSystem;
 
-	
-			OGLMesh* capsuleMesh = nullptr;
-			OGLMesh* cubeMesh = nullptr;
-			OGLMesh* sphereMesh = nullptr;
-			OGLTexture* basicTex = nullptr;
-			OGLShader* basicShader = nullptr;
-
-			//Coursework Meshes
-			OGLMesh* charMeshA = nullptr;
-			OGLMesh* charMeshB = nullptr;
-			OGLMesh* enemyMesh = nullptr;
-			OGLMesh* bonusMesh = nullptr;
-
 			float FPS = 0.0f;
 			float framesPerSecond = 0.0f;
 			float lastTime = 0.0f;

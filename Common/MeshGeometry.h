@@ -170,6 +170,7 @@ namespace NCL
 
 		static MeshGeometry* GenerateTriangle(MeshGeometry* input);
 		static MeshGeometry* GenerateSquare(MeshGeometry* input);
+		static MeshGeometry* GenerateCube(MeshGeometry* input);
 		void AddSubMeshFromFBXData(const void* meshData);
 
 	protected:

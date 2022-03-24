@@ -18,16 +18,14 @@ namespace NCL
 	AssetManager::AssetManager()
 	{		
 		AssimpHelper::GetInstance().Init();
-		LoadMeshes();
-		LoadTextures();
+		LoadMeshData();
 		LoadMaterials();
 	}
-	void AssetManager::LoadMeshes()
+	void AssetManager::LoadMeshData()
 	{
 		auto loadFunc = [](const std::string& name) {
 			NCL::Rendering::OGLMesh* into = new NCL::Rendering::OGLMesh(name);
-			(into)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);
-			(into)->UploadToGPU();
+			(into)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);			
 			return into;
 		};
 		std::string filename;			
@@ -78,7 +76,6 @@ namespace NCL
 			{
 				filename = entry.path().filename().generic_string();
 				NCL::MeshMaterial* material = new NCL::MeshMaterial(filename.c_str());
-				material->LoadTextures();
 				m_Materials.insert({filename, material});
 			}
 		}
@@ -129,5 +126,25 @@ namespace NCL
 	NCL::MeshMaterial* AssetManager::GetMaterial(const char*name) const
 	{
 		return m_Materials.at(name);
+	}
+	void AssetManager::UploadToGPU()
+	{
+		auto loadFunc = [](const std::string& name) {
+			NCL::Rendering::OGLMesh* into = new NCL::Rendering::OGLMesh(name);
+			(into)->SetPrimitiveType(NCL::GeometryPrimitive::Triangles);
+			(into)->UploadToGPU();
+			return into;
+		};
+		for (auto& mesh : m_Meshes)
+		{
+			mesh.second->UploadToGPU();
+		}
+
+		for (auto& material : m_Materials)
+		{
+			material.second->LoadTextures();
+		}
+
+		LoadTextures();
 	}
 };
