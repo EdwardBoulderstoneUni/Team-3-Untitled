@@ -16,7 +16,6 @@ out Vertex
 
 void main(void)
 {
-	mat4 mvp = (projMatrix * viewMatrix * modelMatrix);
 	OUT.worldPos = (modelMatrix * vec4 (position, 1)).xyz;
 	OUT.texCoord = texCoord;
 	gl_Position = vec4(position.x * 2 - 1, 1 - 2 * position.y, 0 , 1);
