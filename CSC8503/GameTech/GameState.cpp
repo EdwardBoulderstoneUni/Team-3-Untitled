@@ -12,7 +12,7 @@ PushdownState::PushdownResult StartState::OnUpdate(float dt, PushdownState** new
 	else if (start_menu->QuitGame) {
 		exit(0);
 	}
-
+	AudioManager::GetInstance().Update(dt);
 	game->StartRender();
 	return PushdownResult::NoChange;
 }
@@ -62,17 +62,27 @@ void PauseState::OnSleep() {
 	game->GetUI()->RemoveMenu(pause_menu);
 }
 
+PauseState::PauseState(TutorialGame* tg) : game(tg)
+{
+	pause_menu.reset(new MainMenu()); 
+	pause_menu->PauseMode = true; 
+}
+
 PushdownState::PushdownResult PauseState::OnUpdate(float dt, PushdownState** newState) {
+
+	AudioManager::GetInstance().Update(dt);
 	if (pause_menu->EnterGame) {
 		game->SetMultiMode();
 		game->tLeft = 900.0f;
 		*newState = new GamingState(game);
+		AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset_InGame);
 		return PushdownResult::Pop;
 	}
 	else if (pause_menu->QuitGame) {
 		exit(0);
 	}
 	if (pause_menu->Cancel) {
+		AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset_InGame);
 		return PushdownResult::Pop;
 	}
 

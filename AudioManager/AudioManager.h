@@ -9,15 +9,24 @@ namespace FMOD
 
 class AudioManager
 {
+public:
+	enum SoundPreset;
+	struct SoundTemplate
+	{
+		FMOD::Sound* sound;
+		FMOD::Channel* channel;	
+		SoundTemplate(const char* name, bool aLoop, FMOD::System* system) { LoadSound(name, aLoop, system); }
+		void LoadSound(const char* name, bool loop, FMOD::System *system);
+	};
+private:
 	static AudioManager* m_Instance;
 	AudioManager();
 	void LoadSoundFiles();
-	FMOD::Sound* GetSound(const char* fileName, bool loop = false, int frequency = 12000, int priority = 128);
-	enum SoundPreset;
+
 	FMOD::System* m_System;
 	FMOD::Channel* m_Channel;
+	std::map<SoundPreset, SoundTemplate*>m_Sounds;
 
-	std::map<SoundPreset, FMOD::Sound*>m_Sounds;
 public:
 	enum SoundPreset
 	{
@@ -31,6 +40,6 @@ public:
 	static void Startup();
 	static void Cleanup();
 	
-	void Play_Sound(SoundPreset preset);
+	void Play_Sound(SoundPreset preset, bool stopCurrent = true);
 	void Update(float dt);
 };

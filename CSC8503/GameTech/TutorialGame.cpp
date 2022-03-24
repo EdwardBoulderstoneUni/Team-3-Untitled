@@ -51,6 +51,7 @@ void TutorialGame::SetSingleMode()
 
 void TutorialGame::SetMultiMode()
 {
+	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_InGame);
 	InitWorld();
 }
 void TutorialGame::InitialiseAssets() {
@@ -94,7 +95,6 @@ void TutorialGame::UpdateGame(float dt)
     Debug::Print("EventSystem:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 95));
 	
 	TIMER_RESET(x);
-	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 	TIMER_STOP(x);
 	Debug::Print("AudioManager:" + std::to_string(TIMER_MSEC(x)) + "ms", Vector2(55, 100));
@@ -111,7 +111,6 @@ void TutorialGame::UpdateGame(float dt)
 	#endif
 
 	eventSystem->ProcessAllEvent();
-	AudioManager::GetInstance().Play_Sound();
 	AudioManager::GetInstance().Update(dt);
 	
 	UpdateGameObjects(dt);
@@ -152,7 +151,6 @@ Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 void TutorialGame::InitWorld()
 {
 	InitDefaultFloor();
-	AudioManager::Startup();
 }
 
 void TutorialGame::InitDefaultFloor()
@@ -277,8 +275,8 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 
 	game->world->AddGameObject(bullet);
 
-	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	//bullet->SetCollisionFunction(func);
+	auto func = [](GameObject* object, Vector3 position) {AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision); };
+	bullet->SetCollisionFunction(func);
 
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
@@ -304,8 +302,9 @@ void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 
 	game->world->AddGameObject(grenade);
 
-	//auto func = [](GameObject* object, Vector3 position) {TutorialGame::getMe()->AddPaint(position); };
-	//bullet->SetCollisionFunction(func);
+	auto func = [](GameObject* object, Vector3 position) {AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision); };
+	grenade->SetCollisionFunction(func);
+
 	game->physicsX->addActor(*grenade);
 	grenade->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 60.0f);
 }
