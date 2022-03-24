@@ -9,6 +9,9 @@ namespace NCL
         ShaderManager::ShaderManager()
         {
             m_Shaders.insert({ "default", Window::GetRenderer()->load_default_shader() });
+            m_Shaders.insert({ "PaintableObjectShader", Window::GetRenderer()->get_paintable_object_shader() });
+            m_Shaders.insert({ "PaintInstanceShader", Window::GetRenderer()->get_paintable_instance_shader() });
+
             for (const auto& shader : m_Shaders)
             {
                 if (!(shader.second->LoadSuccess()))

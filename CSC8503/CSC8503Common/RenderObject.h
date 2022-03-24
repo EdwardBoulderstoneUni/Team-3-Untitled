@@ -3,6 +3,7 @@
 #include "../../Common/ShaderBase.h"
 #include "../../Common/TextureBase.h"
 #include "../../Common/Vector4.h"
+#include "../../Common/RendererBase.h"
 
 namespace NCL
 {
@@ -23,7 +24,8 @@ namespace NCL
 		{
 		public:
 			RenderObject(Transform* parent_transform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshMaterial* mat = nullptr);
-			
+
+			void bind_mesh(RendererBase* renderer) const;
 			virtual void bind_shader_values(RendererBase* renderer) const;
 
 			virtual void render(RendererBase* renderer) const;

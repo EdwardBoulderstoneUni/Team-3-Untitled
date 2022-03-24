@@ -46,20 +46,7 @@ void NCL::CSC8503::ComponentGameObject::InitAllComponent()
 
 void NCL::CSC8503::ComponentGameObject::PushComponent(Component* newCom)
 {
-	switch (newCom->type)
-	{
-	case Component::Camera:
-		components[Component::Camera] = newCom;
-		break;
-	case Component::Input:
-		components[Component::Input] = newCom;
-		break;
-	case Component::Physics:
-		components[Component::Physics] = newCom;
-		break;
-	default:
-		break;
-	}
+	components[newCom->type] = newCom;
 }
 
 void NCL::CSC8503::ComponentGameObject::UpdateComponents(float dt)
