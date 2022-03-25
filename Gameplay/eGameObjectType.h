@@ -10,6 +10,7 @@ enum GameObjectType {
 	GameObjectType_team2,
 	GameObjectType_team2Bullet,
 	GameObjectType_team2Grenade,
+	GameObjectType_AI,
 	GameObjectType_max_size,
 	GameObjectType_invalid
 };

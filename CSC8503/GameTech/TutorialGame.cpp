@@ -133,15 +133,32 @@ void TutorialGame::InitAbilityContainer() {
 
 Player* TutorialGame::InitPlayer(Vector3 pos, GameObjectType team)
 {
-	auto player = new Player(PlayerRole_green, abilityContainer, team);
+	auto player = new Player(abilityContainer, team);
 	player->GetTransform()
 		.SetScale(Vector3(4, 4, 4))
 		.SetPosition(pos);
 	player->InitAllComponent();
 	player->SetRenderObject(new RenderObject(&player->GetTransform(), AssetManager::GetInstance()->GetMesh("Male_Guard.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
-
+	if (team == GameObjectType_team1)
+		player->GetRenderObject()->SetColour(Vector4(0,1,0,1));
+	else
+		player->GetRenderObject()->SetColour(Vector4(1,0,0,1));
 	world->AddGameObject(player);
 	return player;
+}
+
+Creeper* NCL::CSC8503::TutorialGame::InitCreeper(Vector3 pos)
+{
+	auto creeper = new Creeper(*world);
+	creeper->GetTransform()
+		.SetScale(Vector3(4, 4, 4))
+		.SetPosition(pos);
+	creeper->InitAllComponent();
+	creeper->SetRenderObject(new RenderObject(&creeper->GetTransform(), 
+		AssetManager::GetInstance()->GetMesh("Male_Guard.msh"), AssetManager::GetInstance()->GetTexture("checkerboard"), ShaderManager::GetInstance()->GetShader("default")));
+	creeper->GetRenderObject()->SetColour(Vector4(1, 0.4, 0.7, 1));
+	world->AddGameObject(creeper);
+	return creeper;
 }
 
 void NCL::CSC8503::TutorialGame::AddPaint(GameObject* object, GameObject *collisionSurface, Vector4 color)
@@ -292,11 +309,12 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 }
 void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
-	string worldID = pEvent->vArg[0];
+	string bulletID = pEvent->vArg[0];
 	string wallID = pEvent->vArg[1];
-	GameObject* bullet = game->world->FindObjectbyID(stoi(worldID));
+	Bullet* bullet =(Bullet*)game->world->FindObjectbyID(stoi(bulletID));
 	GameObject* wall = game->world->FindObjectbyID(stoi(wallID));
-	PlayerRole pColor = game->localPlayer->GetRole();
+	int shootID = bullet->GetShooterID();
+	PlayerRole pColor = ((Player*)game->world->FindObjectbyID(shootID))->GetRole();
 
 	Vector4 color;
 	switch (pColor)

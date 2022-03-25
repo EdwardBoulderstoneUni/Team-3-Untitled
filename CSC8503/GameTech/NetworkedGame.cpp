@@ -6,7 +6,8 @@
 
 
 #define COLLISION_MSG 30
-#define HOST 10,70,33,127
+#define HOST 127,0,0,1
+//#define HOST 10,70,33,127
 struct MessagePacket : public GamePacket {
 	short playerID = -1;
 	short messageID = -1;
@@ -66,7 +67,7 @@ void NetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += 1.0f / 60.0f; //20hz server/client update
+		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
 	}
 	if (thisServer && timeToUpdateMiniState < 0) {
 		UpdateMinimumState();
@@ -285,7 +286,20 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 				thisClient->SendPacket(newPacket);
 			}
 		}
-
+		else if (realPacket->objType == GameObjectType_AI) {
+			Creeper* creeper = nullptr;
+			creeper = InitCreeper(Vector3(20, 50, 0));
+			creeper->RemoveComponetPhysics();
+			ToggleNetworkState(creeper, true);
+			creeper->GetTransform().SetPosition(state.position);
+			creeper->GetTransform().SetOrientation(state.orientation);
+			if (networkObjects.size() == realPacket->SyncTotalCount) {
+				EventPacket newPacket;
+				newPacket.eventID = PLAYER_ENTER_WORLD;
+				newPacket.networkID = localPlayerID;
+				thisClient->SendPacket(newPacket);
+			}
+		}
 	}
 	else if (type == Sync_State) {
 		SyncStatePacket* realPacket=(SyncStatePacket*)payload;
@@ -441,6 +455,8 @@ void NetworkedGame::_enterHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 			newPlayer->RemoveComponetPhysics();
 		}
 		if (game->thisServer) {
+			Creeper* creeper = game->InitCreeper(Vector3(-200, 50, 10));
+			game->ToggleNetworkState(creeper, true);
 		}
 		
 	}
@@ -460,6 +476,10 @@ void NetworkedGame::_worldsyncHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 			case GameObjectType_team1:
 				newPacket.objType = GameObjectType_team1;
 				break;
+			case GameObjectType_team2:
+				newPacket.objType = GameObjectType_team2;
+			case GameObjectType_AI:
+				newPacket.objType = GameObjectType_AI;
 			default:
 				break;
 			}

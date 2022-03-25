@@ -136,6 +136,7 @@
     <ClCompile Include="ComponentInput.cpp" />
     <ClCompile Include="ComponentPhysics.cpp" />
     <ClCompile Include="ComponentGameObject.cpp" />
+    <ClCompile Include="Creeper.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="Grenade.cpp" />
@@ -152,6 +153,8 @@
     <ClInclude Include="ComponentInput.h" />
     <ClInclude Include="ComponentPhysics.h" />
     <ClInclude Include="ComponentGameObject.h" />
+    <ClInclude Include="Creeper.h" />
+    <ClInclude Include="CreeperState.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="eGameObjectType.h" />
     <ClInclude Include="ePlayerRole.h" />

@@ -54,6 +54,9 @@
     <ClCompile Include="Grenade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Creeper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player.h">
@@ -111,6 +114,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Grenade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Creeper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CreeperState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
