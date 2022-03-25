@@ -286,7 +286,6 @@ void TutorialGame::_openFirHandle(const EVENT* pEvent, DWORD64 dwOwnerData)
 
 	game->world->AddGameObject(bullet);
 
-
 	game->physicsX->addActor(*bullet);
 	bullet->GetPhysicsXObject()->SetLinearVelocity(dir.shootDir * 250.0f);
 	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Fire, false);
@@ -317,6 +316,7 @@ void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 		return;
 	AudioManager::GetInstance().Play_Sound(AudioManager::SoundPreset::SoundPreset_Collision, false);
 	game->AddPaint(bullet, wall, color);
+	YiEventSystem::GetMe()->PushEvent(OBJECT_DELETE, bullet->GetWorldID());
 }
 void TutorialGame::_GrenadeHandle(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	TutorialGame* game = (TutorialGame*)dwOwnerData;
