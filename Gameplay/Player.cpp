@@ -3,11 +3,18 @@
 #include "../CSC8503/CSC8503Common/PhysicsXSystem.h"
 #include "PlayerState.h"
 #include "WeaponState.h"
-Player::Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type)
+Player::Player(AbilityContainer* aCont, GameObjectType type)
 {
 	dirVec.forward = Quaternion(transform.GetOrientation()) * Vector3(0, 0, 1);
 	dirVec.CaculateRight();
-	pColour = colour;
+	switch (type) {
+	case GameObjectType_team1:
+		pColour = PlayerRole_green;
+		break;
+	case GameObjectType_team2:
+		pColour = PlayerRole_red;
+		break;
+	}
 	playerPro = new PlayerPro();
 	timeStack = new TimeStack();
 	networkInput = false;

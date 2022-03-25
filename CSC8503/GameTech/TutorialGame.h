@@ -7,7 +7,7 @@
 #include "../../AudioManager/AudioManager.h"
 #include "../CSC8503Common/PushdownMachine.h"
 #include "../../Gameplay/Player.h"
-
+#include "../../Gameplay/Creeper.h"
 //#define DEBUG
 namespace NCL {
 	namespace CSC8503 {
@@ -41,6 +41,7 @@ namespace NCL {
 			void InitialiseUI();
 			void InitAbilityContainer();
 			Player* InitPlayer(Vector3 pos, GameObjectType team);
+			Creeper* InitCreeper(Vector3 pos);
 			void AddPaint(GameObject* object, GameObject *collisionSurface, Vector4 color);
 		
 			void InitWorld();

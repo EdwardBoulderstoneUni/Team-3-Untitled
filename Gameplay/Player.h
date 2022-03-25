@@ -62,7 +62,7 @@ namespace NCL {
 		};
 		class Player : public ComponentGameObject {
 		public:
-			Player(PlayerRole colour, AbilityContainer* aCont, GameObjectType type);
+			Player(AbilityContainer* aCont, GameObjectType type);
 			~Player();
 			virtual void Update(float dt)override;
 			void SetUp() override;
