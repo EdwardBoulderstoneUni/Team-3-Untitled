@@ -111,7 +111,7 @@ void TutorialGame::UpdateGame(float dt)
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
 	#endif
-#ifndef ORBIS
+#ifdef DEBUG_MODE
 	HUDUpdate(dt);
 #endif
 	world->UpdateWorld(dt);
@@ -120,7 +120,7 @@ void TutorialGame::UpdateGame(float dt)
 
 	Debug::FlushRenderables(dt);
 
-#ifndef DEBUG
+#ifdef DEBUG_MODE
 	physicsX->DrawCollisionLine();
 	CalculateFrameRate(dt);
 	Memoryfootprint();

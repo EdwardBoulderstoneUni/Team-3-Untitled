@@ -21,6 +21,9 @@ const Vector4 Debug::CYAN = Vector4(0, 1, 1, 1);
 
 void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& colour)
 {
+#ifndef DEBUG_MODE
+	return;
+#endif
 	DebugStringEntry newEntry;
 
 	newEntry.data = text;
