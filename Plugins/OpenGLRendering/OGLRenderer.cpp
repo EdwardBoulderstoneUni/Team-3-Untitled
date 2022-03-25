@@ -125,6 +125,7 @@ void OGLRenderer::BeginFrame()
 void OGLRenderer::EndFrame()
 {
 	free_reserved_textures();
+	DrawDebugData();
 }
 
 void OGLRenderer::SwapBuffers()
