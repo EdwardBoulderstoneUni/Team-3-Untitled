@@ -314,6 +314,7 @@ void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	string wallID = pEvent->vArg[1];
 	Bullet* bullet =(Bullet*)game->world->FindObjectbyID(stoi(bulletID));
 	GameObject* wall = game->world->FindObjectbyID(stoi(wallID));
+	if (not bullet)return;
 	int shootID = bullet->GetShooterID();
 	PlayerRole pColor = ((Player*)game->world->FindObjectbyID(shootID))->GetRole();
 

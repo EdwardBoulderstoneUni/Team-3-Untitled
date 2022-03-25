@@ -6,8 +6,8 @@
 
 
 #define COLLISION_MSG 30
-#define HOST 127,0,0,1
-//#define HOST 10,70,33,127
+//#define HOST 127,0,0,1
+#define HOST 10,70,33,127
 struct MessagePacket : public GamePacket {
 	short playerID = -1;
 	short messageID = -1;
