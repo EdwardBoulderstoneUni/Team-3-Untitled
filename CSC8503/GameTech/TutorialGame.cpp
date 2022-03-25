@@ -111,9 +111,9 @@ void TutorialGame::UpdateGame(float dt)
 	UpdateGameObjects(dt);
 	physicsX->Update(dt);
 	#endif
-#ifdef DEBUG_MODE
+
 	HUDUpdate(dt);
-#endif
+
 	world->UpdateWorld(dt);
 	renderer->Update(dt);
 	renderer->Render();
@@ -235,8 +235,8 @@ void TutorialGame::HUDUpdate(float dt)
 	else {
 	//	YiEventSystem::GetMe()->PushEvent(GAME_OVER);
 	}
-	renderer->DrawString("Team1Kill: " + std::to_string(team1Kill), Vector2(70, 85));
-	renderer->DrawString("Team2Kill: " + std::to_string(team2Kill), Vector2(70, 20));
+	renderer->DrawString("PlayerKill: " + std::to_string(localPlayer->GetPlayerPro()->playerKill), Vector2(70, 85));
+	
 
 	if(timeStack->dashCooldown>0)
 		renderer->DrawString("Dash CD: " + std::to_string(timeStack->dashCooldown), Vector2(5, 80));
@@ -313,6 +313,7 @@ void TutorialGame::_paint(const EVENT* pEvent, DWORD64 dwOwnerData) {
 	string wallID = pEvent->vArg[1];
 	Bullet* bullet =(Bullet*)game->world->FindObjectbyID(stoi(bulletID));
 	GameObject* wall = game->world->FindObjectbyID(stoi(wallID));
+	if (not bullet)return;
 	int shootID = bullet->GetShooterID();
 	PlayerRole pColor = ((Player*)game->world->FindObjectbyID(shootID))->GetRole();
 
